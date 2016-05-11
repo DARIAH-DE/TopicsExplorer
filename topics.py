@@ -50,8 +50,8 @@ def removeHapaxLeg(texts):
 
 # Remove stopwords according to stopword list
 def removeStopWords(texts, stoplist):
-    if stoplist == 'en':
-        file = open('./helpful_stuff/stopwords_en')
+    if isinstance(stoplist, str):
+        file = open('./helpful_stuff/stopwords/' + stoplist)
         stoplist = file.read()
         stoplist = [word for word in stoplist.split()]
         stoplist = set(stoplist)
