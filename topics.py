@@ -2,9 +2,24 @@
 # Load all dependencies
 ################################################################################
 
-#from collections import defaultdict
-#import logging
-#from gensim import corpora, models, similarities
+import glob
+import logging
+import re
+from collections import defaultdict
+from gensim import corpora, models, similarities
+
+################################################################################
+# Preprocessing
+################################################################################
+
+def readCorpus(path):
+    files = glob.glob(path)
+    documents = []
+    for file in files:
+        document = open(file)
+        document = document.read()
+        documents.append(document)
+    return documents
 
 ################################################################################
 # Preprocessing
@@ -12,13 +27,19 @@
 
 # Tokenize texts
 def tokenize(documents):
-    texts = [[word for word in document.lower().split()]
-             for document in documents]
+    # define regular expression for tokenization
+    myRegEx = re.compile('\w+') # compile regex for fast repetition
+    texts = []
+    for document in documents:
+        text = myRegEx.findall(document.lower())
+        texts.append(text)
+    # Version from Gensim-Tutorial: whithout regex
+    #texts = [[word for word in document.lower().split()]
+    #         for document in documents]
     return texts
 
 # Remove hapax legomena
 def removeHapaxLeg(texts):
-    from collections import defaultdict
     frequency = defaultdict(int)
     for text in texts:
         for token in text:
@@ -29,6 +50,11 @@ def removeHapaxLeg(texts):
 
 # Remove stopwords according to stopword list
 def removeStopWords(texts, stoplist):
+    if stoplist == 'en':
+        file = open('./helpful_stuff/stopwords_en')
+        stoplist = file.read()
+        stoplist = [word for word in stoplist.split()]
+        stoplist = set(stoplist)
     texts = [[word for word in text if word not in stoplist]
              for text in texts]
     return texts
@@ -42,11 +68,8 @@ def getTopics(texts, # list of tokenized texts
                ldaSource = 'gensim', # 'gensim' or 'mallet'
                mallet_path = '~/Software/mallet/bin/mallet' #future default 'UNKNOWN', or docker solution
               ):
-    # import necessary packages
-    import logging
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
                         level=logging.INFO)
-    from gensim import corpora, models, similarities
 
     # create dictionary and vectorize
     dictionary = corpora.Dictionary(texts)
