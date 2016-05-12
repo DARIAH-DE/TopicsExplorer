@@ -99,3 +99,7 @@ def getTopics(texts, # list of tokenized texts
 ################################################################################
 # Topic visualization
 ################################################################################
+#
+#LDAvis
+#Not convinient on MS Windows, pip installation on Ubuntu failed too
+#http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf
