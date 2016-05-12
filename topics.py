@@ -3,15 +3,22 @@
 ################################################################################
 
 import glob
+import os
 import logging
 import re
+import numpy as np
 from collections import defaultdict
 from gensim import corpora, models, similarities
 
+# Enable gensim logging
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
+                    level=logging.INFO)
+
 ################################################################################
-# Preprocessing
+# Corpus ingestion
 ################################################################################
 
+# Read corpus into a list of lists
 def readCorpus(path):
     files = glob.glob(path)
     documents = []
@@ -20,6 +27,12 @@ def readCorpus(path):
         document = document.read()
         documents.append(document)
     return documents
+
+# Create a list of document labels from file names
+def docLabels(path):
+    labels = [os.path.basename(x) for x in glob.glob(path)]
+    labels = [x.split('.')[0] for x in labels]
+    return labels
 
 ################################################################################
 # Preprocessing
@@ -63,13 +76,12 @@ def removeStopWords(texts, stoplist):
 # Model creation
 ################################################################################
 
-def getTopics(texts, # list of tokenized texts
+# Not sure yet if this wrapping function is the optimal solution.
+def gensimModel(texts, # list of tokenized texts
                topics = 10, # number of topics
                ldaSource = 'gensim', # 'gensim' or 'mallet'
                mallet_path = '~/Software/mallet/bin/mallet' #future default 'UNKNOWN', or docker solution
-              ):
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
-                        level=logging.INFO)
+               ):
 
     # create dictionary and vectorize
     dictionary = corpora.Dictionary(texts)
@@ -94,7 +106,21 @@ def getTopics(texts, # list of tokenized texts
         )
 
     # return results
-    return model
+    return [model, dictionary, corpus, topics] #TODO: store more info about model specifications
+
+################################################################################
+# Doc-Topic matrix
+################################################################################
+
+# Create a doc-topic matrix from gensim output
+def gensim_to_dtm(model, corpus, no_of_topics):
+    no_of_docs = len(corpus)
+    doc_topic = np.zeros((no_of_docs, no_of_topics))
+    for doc, i in zip(corpus, range(no_of_docs)):   # Use document bow from corpus
+        topic_dist = model.__getitem__(doc)         # to get topic distribution from model
+        for topic in topic_dist:                    # topic_dist is a list of tuples (topic_id, topic_prob)
+            doc_topic[i][topic[0]] = topic[1]       # save topic probability
+    return doc_topic
 
 ################################################################################
 # Topic visualization
