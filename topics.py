@@ -7,6 +7,7 @@ import os
 import logging
 import re
 import numpy as np
+import matplotlib.pyplot as plt
 from collections import defaultdict
 from gensim import corpora, models, similarities
 
@@ -73,7 +74,7 @@ def removeStopWords(texts, stoplist):
     return texts
 
 ################################################################################
-# Model creation
+# Gensim model creation
 ################################################################################
 
 # Not sure yet if this wrapping function is the optimal solution.
@@ -108,6 +109,34 @@ def gensimModel(texts, # list of tokenized texts
     # return results
     return [model, dictionary, corpus, topics] #TODO: store more info about model specifications
 
+# Generate topic labels from gensim model
+def topicLabels(model, no_of_topics): #TODO: extract no_of_topics from corpus
+    labels = []
+    for i in range(no_of_topics):
+        terms = [x[1] for x in model.show_topic(i, topn=3)]
+        labels.append(" ".join(terms))
+    return labels
+
+# Save all the gensim output
+def saveGensimModel(model,
+    corpus,
+    dictionary,
+    no_of_topics,
+    doc_labels,
+    foldername = 'corpus'
+    ):
+    print("saving ...\n")
+    topics = model.show_topics(num_topics = no_of_topics)
+    if not os.path.exists("out"): os.makedirs("out")
+    with open("out/"+foldername+"_doclabels.txt", "w") as f:
+        for item in doc_labels: f.write(item+"\n")
+    with open("out/"+foldername+"_topics.txt", "w") as f:
+        for item, i in zip(topics, enumerate(topics)):
+            f.write("topic #"+str(i[0])+": "+item+"\n")
+    dictionary.save("out/"+foldername+".dict")
+    corpora.MmCorpus.serialize("out/"+foldername+".mm", corpus)
+    model.save("out/"+foldername+".lda")
+
 ################################################################################
 # Doc-Topic matrix
 ################################################################################
@@ -129,3 +158,15 @@ def gensim_to_dtm(model, corpus, no_of_topics):
 #LDAvis
 #Not convinient on MS Windows, pip installation on Ubuntu failed too
 #http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf
+
+# Document-topic heatmap
+def docTopHeatmap(doc_topic, doc_labels, topic_labels):
+    no_of_topics = len(doc_labels)
+    if no_of_topics > 20 or no_of_topics > 20: plt.figure(figsize=(20,20))    # if many items, enlarge figure
+    plt.pcolor(doc_topic, norm=None, cmap='Reds')
+    plt.yticks(np.arange(doc_topic.shape[0])+1.0, doc_labels)
+    plt.xticks(np.arange(doc_topic.shape[1])+0.5, topic_labels, rotation='90')
+    plt.gca().invert_yaxis()
+    plt.colorbar(cmap='Reds')
+    plt.tight_layout()
+    plt.show()
