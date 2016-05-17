@@ -113,7 +113,7 @@ def gensimModel(texts, # list of tokenized texts
 def topicLabels(model, no_of_topics): #TODO: extract no_of_topics from corpus
     labels = []
     for i in range(no_of_topics):
-        terms = [x[1] for x in model.show_topic(i, topn=3)]
+        terms = [x[0] for x in model.show_topic(i, topn=3)]
         labels.append(" ".join(terms))
     return labels
 
@@ -132,7 +132,7 @@ def saveGensimModel(model,
         for item in doc_labels: f.write(item+"\n")
     with open("out/"+foldername+"_topics.txt", "w") as f:
         for item, i in zip(topics, enumerate(topics)):
-            f.write("topic #"+str(i[0])+": "+item+"\n")
+            f.write("topic #"+str(i[0])+": "+str(item)+"\n")
     dictionary.save("out/"+foldername+".dict")
     corpora.MmCorpus.serialize("out/"+foldername+".mm", corpus)
     model.save("out/"+foldername+".lda")
