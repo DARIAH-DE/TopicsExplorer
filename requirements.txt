@@ -1,0 +1,8 @@
+glob
+logging
+os
+re
+numpy
+matplotlib
+collections
+gensim
