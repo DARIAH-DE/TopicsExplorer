@@ -11,4 +11,4 @@
 ### Requirements
 - Python (tested with 3.4)
 - NumPy, matplotlib, gensim
-- tetsted on Linux (Ubuntu 14.04), OS X (10.10, 10.11) and Windows 10
+- Tested on Linux (Ubuntu 14.04), OS X (10.10, 10.11) and Windows 10
