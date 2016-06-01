@@ -33,7 +33,6 @@ def testing():
       print("NumPy", numpy.__version__, "\nmatplotlib", matplotlib.__version__, "\ngensim", gensim.__version__)
   except ImportError:
       print("ERROR: Make sure all required packages are installed.")
-"""
 
 ################################################################################
 # Corpus ingestion
