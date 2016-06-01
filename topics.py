@@ -283,7 +283,7 @@ def docTopHeatmap(doc_topic, doc_labels, topic_labels):
     topic_labels: In topicLabels created labels.
 
   Returns:
-    A heatmap saved as .png 
+    A heatmap
   """
 	
   no_of_topics = len(doc_labels)
