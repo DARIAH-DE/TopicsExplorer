@@ -17,7 +17,7 @@ from gensim import corpora, models, similarities
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
                     level=logging.INFO)
 
-def testing(required_1, required_2, required_3):
+def testing(numpy, matplotlib, gensim):
   """
   Test import libraries.
 
@@ -31,10 +31,10 @@ def testing(required_1, required_2, required_3):
   """
   
   try:
-      import required_1
-      import required_2
-      import required_3
-      print(required_1, required_1.__version__, "\n", required_2, required_2.__version__, "\n", required_3, required_3.__version__)
+      import numpy
+      import matplotlib
+      import gensim
+      print(numpy.__version__, matplotlib.__version__, gensim.__version__)
   except ImportError:
       print("ERROR: Make sure all required packages are installed.")
 
