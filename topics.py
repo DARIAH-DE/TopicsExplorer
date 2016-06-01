@@ -87,7 +87,7 @@ def tokenize(documents):
 
   Returns:
     Tokens in a list.
-	"""
+  """
 	
   # define regular expression for tokenization
   myRegEx = re.compile('\w+') # compile regex for fast repetition
@@ -102,14 +102,14 @@ def tokenize(documents):
 
 def removeHapaxLeg(texts):
   """
-	Remove hapax legomena and return text.
+  Remove hapax legomena and return text.
 
   Args:
     texts: A list of lists containing tokens.
 
   Returns:
     Tokens in a list minus hapax legomena.
-	"""
+  """
 	
   frequency = defaultdict(int)
   for text in texts:
@@ -121,7 +121,7 @@ def removeHapaxLeg(texts):
 
 def removeStopWords(texts, stoplist):
   """
-	Remove stopwords according to stopword list.
+  Remove stopwords according to stopword list.
 
   Args:
     texts: A list of lists containing tokens.
@@ -129,7 +129,7 @@ def removeStopWords(texts, stoplist):
 
   Returns:
     Tokens in a list minus stopwords.
-	"""
+  """
 	
   if isinstance(stoplist, str):
     file = open('./helpful_stuff/stopwords/' + stoplist)
@@ -151,7 +151,7 @@ def gensimModel(texts, # list of tokenized texts
                mallet_path = '~/Software/mallet/bin/mallet' #future default 'UNKNOWN', or docker solution
                ):
   """
-	Create model with gensim or mallet.
+  Create model with gensim or mallet.
 
   Args:
     texts: A list of lists containing tokens.
@@ -161,7 +161,7 @@ def gensimModel(texts, # list of tokenized texts
 
   Returns:
     The model, dictionary, corpus and topics.
-	"""
+  """
 
   # create dictionary and vectorize
   dictionary = corpora.Dictionary(texts)
@@ -198,7 +198,7 @@ def topicLabels(model, no_of_topics): #TODO: extract no_of_topics from corpus
 
   Returns:
     The topic labels.
-	"""
+  """
 	
   labels = []
   for i in range(no_of_topics):
@@ -214,7 +214,7 @@ def saveGensimModel(model,
                     foldername = 'corpus'
                     ):
   """
-	Save all the gensim output in folder "out".
+  Save all the gensim output in folder "out".
 
   Args:
     model: In gensimModel created model.
@@ -226,7 +226,7 @@ def saveGensimModel(model,
 
   Returns:
     corpus_doclabels.txt, corpus_topics.txt, corpus.dict, corpus.mm, corpus.lda.
-	"""
+  """
 	
   print("saving ...\n")
   topics = model.show_topics(num_topics = no_of_topics)
@@ -246,7 +246,7 @@ def saveGensimModel(model,
 
 def gensim_to_dtm(model, corpus, no_of_topics):
   """
-	Create a doc-topic matrix from gensim output.
+  Create a doc-topic matrix from gensim output.
 
   Args:
     model: In gensimModel created model.
@@ -255,7 +255,7 @@ def gensim_to_dtm(model, corpus, no_of_topics):
 
   Returns:
     A doc-topic matrix.
-	"""
+  """
 	
   no_of_docs = len(corpus)
   doc_topic = np.zeros((no_of_docs, no_of_topics))
@@ -275,7 +275,7 @@ def gensim_to_dtm(model, corpus, no_of_topics):
 
 def docTopHeatmap(doc_topic, doc_labels, topic_labels):
   """
-	Create document-topic heatmap.
+  Create document-topic heatmap.
 
   Args:
     doc_topic: In gensim_to_dtm created doc-topic matrix.
@@ -284,7 +284,7 @@ def docTopHeatmap(doc_topic, doc_labels, topic_labels):
 
   Returns:
     A heatmap saved as .png 
-	"""
+  """
 	
   no_of_topics = len(doc_labels)
   if no_of_topics > 20 or no_of_topics > 20: plt.figure(figsize=(20,20))    # if many items, enlarge figure
