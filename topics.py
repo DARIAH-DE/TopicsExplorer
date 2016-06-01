@@ -29,10 +29,10 @@ def testing():
   """
   
   try:
-	import pkg_resources as pkg
-	print("NumPy", pkg.get_distribution("numpy").version, "\nmatplotlib", pkg.get_distribution("matplotlib").version, "\ngensim", pkg.get_distribution("gensim").version)
+	  import pkg_resources as pkg
+	  print("NumPy", pkg.get_distribution("numpy").version, "\nmatplotlib", pkg.get_distribution("matplotlib").version, "\ngensim", pkg.get_distribution("gensim").version)
   except ImportError:
-        print("ERROR: Make sure all required packages are installed.")
+	  print("ERROR: Make sure all required packages are installed.")
 
 ################################################################################
 # Corpus ingestion
