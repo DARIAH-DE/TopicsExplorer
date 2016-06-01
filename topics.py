@@ -30,7 +30,7 @@ def testing():
   
   try:
       import numpy, matplotlib, gensim
-      print("NumPy", numpy.__version__, "\nmatplotlib", matplotlib.__version__, "\ngensim", gensim.__version__, "\n\nEVERYTHING IS WORKING FINE!)
+      print("NumPy", numpy.__version__, "\nmatplotlib", matplotlib.__version__, "\ngensim", gensim.__version__, "\n\nWELL DONE"!)
   except ImportError:
       print("ERROR: Make sure all required packages are installed.")
 
