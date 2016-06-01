@@ -16,6 +16,8 @@ from gensim import corpora, models, similarities
 # Enable gensim logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
                     level=logging.INFO)
+"""
+working on it:
 
 def testing(numpy, matplotlib, gensim):
   """
@@ -37,7 +39,7 @@ def testing(numpy, matplotlib, gensim):
       print(numpy.__version__, matplotlib.__version__, gensim.__version__)
   except ImportError:
       print("ERROR: Make sure all required packages are installed.")
-
+"""
 ################################################################################
 # Corpus ingestion
 ################################################################################
