@@ -1,7 +1,7 @@
 # Topics - Easy Topic Modeling in Python #
 
 ### Requirements
-- Python (tested with 3.4)
+- Python (tested with 3.5.1)
 - NumPy, matplotlib, gensim
 - Tested on Linux (Ubuntu 14.04), OS X (10.10, 10.11) and Windows 10
 
