@@ -16,30 +16,25 @@ from gensim import corpora, models, similarities
 # Enable gensim logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
                     level=logging.INFO)
-"""
-working on it:
 
-def testing(numpy, matplotlib, gensim):
+def testing():
   """
-  Test import libraries.
+  Trying to import required libraries.
 
   Args:
-    required_1: Name of the library, e.g. numpy.
-    required_2: Name of the library, e.g. matplotlib
-    required_3: Name of the library, e.g. gensim
+    none
 
   Returns:
-    Name of the library plus version or error.
+     Prints out library versions or error.
   """
   
   try:
-      import numpy
-      import matplotlib
-      import gensim
-      print(numpy.__version__, matplotlib.__version__, gensim.__version__)
+      import numpy, matplotlib, gensim
+      print("NumPy", numpy.__version__, "\nmatplotlib", matplotlib.__version__, "\ngensim", gensim.__version__)
   except ImportError:
       print("ERROR: Make sure all required packages are installed.")
 """
+
 ################################################################################
 # Corpus ingestion
 ################################################################################
