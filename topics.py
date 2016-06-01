@@ -29,8 +29,10 @@ def testing():
   """
   
   try:
-      import numpy, matplotlib, gensim
-      print("NumPy", numpy.__version__, "\nmatplotlib", matplotlib.__version__, "\ngensim", gensim.__version__)
+  	import pkg_resources as pkg
+	print("NumPy", pkg.get_distribution("numpy").version,
+	      "\nmatplotlib", pkg.get_distribution("matplotlib").version,
+	      "\ngensim", pkg.get_distribution("gensim").version)
   except ImportError:
       print("ERROR: Make sure all required packages are installed.")
 
