@@ -60,7 +60,7 @@ def readCorpus(path):
     Read corpus into a list of lists.
 
     Args:
-        path (str): Path / glob pattern of the text files to process.
+        path (str): Path/glob pattern of the text files to process.
 
     Author:
         DARIAH-DE
