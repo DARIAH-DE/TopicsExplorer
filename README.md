@@ -12,7 +12,7 @@
 3. Install [Jupyter](http://jupyter.readthedocs.io/en/latest/install.html) and run it by typing `jupyter notebook` in your command prompt
 4. Access the folder **Topics** through Jupyter in your browser, open **topics.ipynb** and follow the instructions
 
-**Hint**: If you have trouble unzipping the archive, try using [7zip](http://www.7-zip.org). For more information about reading archives using software, click [here](https://en.wikipedia.org/wiki/Comparison_of_file_archivers#Reading).
+**Hint**: If you have trouble unzipping the archive, try using [7zip](http://www.7-zip.org).
 
 ### Getting Started (using Git)
 1. Download and install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
