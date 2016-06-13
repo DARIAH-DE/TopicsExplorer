@@ -1,4 +1,18 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Functions for easy topic modeling.
+"""
+
+
+
+__author__ = "DARIAH-DE"
+__authors__ = "Steffen Pielstroem"
+__email__ = "pielstroem@biozentrum.uni-wuerzburg.de"
+__license__ = ""
+__version__ = "0.1"
+__date__ = "2016-06-13"
 
 ########################################################################
 # Load all dependencies
