@@ -60,9 +60,9 @@ def readCorpus(path):
     files = glob.glob(path)
     documents = []
     for file in files:
-        document = open(file)
-        document = document.read()
-        documents.append(document)
+        with open(file, 'r', encoding='utf-8') as document:
+            document = document.read()
+            documents.append(document)
     return documents
 
 
