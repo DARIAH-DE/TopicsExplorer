@@ -35,8 +35,8 @@ def testing():
 
     try:
         import pkg_resources as pkg
-        print(pkg.get_distribution("numpy").version,
-              pkg.get_distribution("matplotlib").version,
+        print(pkg.get_distribution("numpy").version, "\n",
+              pkg.get_distribution("matplotlib").version, "\n",
               pkg.get_distribution("gensim").version)
     except ImportError:
         print("ERROR: Make sure all required packages are installed.")
