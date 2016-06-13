@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Functions for easy topic modeling.
-"""
-
-
-
 __author__ = "DARIAH-DE"
 __authors__ = "Steffen Pielstroem"
 __email__ = "pielstroem@biozentrum.uni-wuerzburg.de"
@@ -359,7 +353,8 @@ def docTopHeatmap(doc_topic, doc_labels, topic_labels):
 
     no_of_topics = len(doc_labels)
     no_of_topics = len(doc_labels)
-    if no_of_topics > 20 or no_of_topics > 20: plt.figure(figsize=(20,20))    # if many items, enlarge figure
+    if no_of_topics > 20 or no_of_topics > 20:
+        plt.figure(figsize=(20, 20))    # if many items, enlarge figure
     plt.pcolor(doc_topic, norm=None, cmap='Reds')
     plt.yticks(np.arange(doc_topic.shape[0])+1.0, doc_labels)
     plt.xticks(np.arange(doc_topic.shape[1])+0.5, topic_labels, rotation='90')
