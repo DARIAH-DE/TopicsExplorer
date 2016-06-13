@@ -6,7 +6,7 @@
 - Tested on Linux (Ubuntu 14.04), OS X (10.10, 10.11) and Windows 10
 
 ### Getting Started (for beginners)
-1. Click the green button **Clone or download** and choose **Download as ZIP**
+1. Click the green button **Clone or download** and choose **Download ZIP**
 ![ZIP Download](https://raw.githubusercontent.com/severinsimmler/stuff/master/beginners.png)
 2. Unzip the archive and move the extracted folder into your [home folder](https://en.wikipedia.org/wiki/Home_directory)
 3. Install [Jupyter](http://jupyter.readthedocs.io/en/latest/install.html) and run it by typing `jupyter notebook` in your command prompt
