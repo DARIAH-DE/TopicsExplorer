@@ -20,14 +20,14 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
 
 def testing():
     """
-    Check whether required packages (NumPy, matplotlib, gensim) are
+    Check whether required packages (numpy, matplotlib, gensim) are
     correctly installed or not.
 
     Args:
         None
 
     Todo:
-        * replace pkg_resources by another module?
+        * replace pkg_resources by another, more lightweighted module?
 
     Author:
         DARIAH-DE
@@ -35,9 +35,9 @@ def testing():
 
     try:
         import pkg_resources as pkg
-        print("NumPy\n", pkg.get_distribution("numpy").version,
-              "matplotlib", pkg.get_distribution("matplotlib").version,
-              "\ngensim", pkg.get_distribution("gensim").version)
+        print(pkg.get_distribution("numpy").version,
+              pkg.get_distribution("matplotlib").version,
+              pkg.get_distribution("gensim").version)
     except ImportError:
         print("ERROR: Make sure all required packages are installed.")
 
@@ -317,7 +317,7 @@ def gensim_to_dtm(model, corpus, no_of_topics):
         topic_dist = model.__getitem__(doc)
         # topic_dist is a list of tuples (topic_id, topic_prob)
         for topic in topic_dist:
-            doc_topic[i][topic[0]] = topic[1]       # save topic probability
+            doc_topic[i][topic[0]] = topic[1]   # save topic probability
     return doc_topic
 
 ########################################################################
