@@ -1,17 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__ = "DARIAH-DE"
-__authors__ = "Steffen Pielstroem"
-__email__ = "pielstroem@biozentrum.uni-wuerzburg.de"
-__license__ = ""
-__version__ = "0.1"
-__date__ = "2016-06-13"
-
-########################################################################
-# Load all dependencies
-########################################################################
-
 import glob
 import os
 import logging
@@ -20,6 +9,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
 from gensim import corpora, models, similarities
+
+__author__ = "DARIAH-DE"
+__authors__ = "Steffen Pielstroem"
+__email__ = "pielstroem@biozentrum.uni-wuerzburg.de"
+__license__ = ""
+__version__ = "0.1"
+__date__ = "2016-06-13"
+
+########################################################################
+# Prearrangements
+########################################################################
+
 
 # Enable gensim logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
