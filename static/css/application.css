@@ -1,0 +1,483 @@
+/**
+ * DARIAH-DE Website
+ * 
+ * This is the application specific stylesheet. It works in conjunction with
+ * customized bootstap 2.2.2 css files.
+ * 
+ * @project   DARIAH-DE Website
+ * @author    Patrick Heck (patrick@patrickheck.de)
+ * @see       http://twitter.github.com/bootstrap/index.html
+ */
+
+
+/**
+ * Fonts
+ * @section   Fonts
+ * @see       http://www.exljbris.com/museo.html
+ */
+@font-face {
+    font-family: 'MuseoSansRounded700';
+    src: url('../fonts/museosansrounded_700_macroman/MuseoSansRounded-700-webfont.eot');
+    src: url('../fonts/museosansrounded_700_macroman/MuseoSansRounded-700-webfont.eot?iefix') format('eot'),
+         url('../fonts/museosansrounded_700_macroman/MuseoSansRounded-700-webfont.woff') format('woff'),
+         url('../fonts/museosansrounded_700_macroman/MuseoSansRounded-700-webfont.ttf') format('truetype'),
+         url('../fonts/museosansrounded_700_macroman/MuseoSansRounded-700-webfont.svg#webfontAhOK7zbK') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+/**
+ * Layout 
+ * @section layout
+ */
+
+.chromeframe {
+	background: yellow;
+	color: black;
+}
+
+body {
+	background: transparent url("../img/paper-pattern1-0.jpg") 50% 0 repeat;
+}
+
+.span9.no-margin {
+	margin-left: 0;
+	width: 756px;
+}
+.lt-ie9 .span9.no-margin {
+	width: 754px
+}
+.span9.offset3.no-margin {
+	margin-left: 252px;
+}
+/**
+ * main content wrapper
+ *
+ * this is the big container, that holds all of the actual content
+ */
+.main-content-wrapper {
+	margin-left:0;
+	background: #fff;
+	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+	
+  -webkit-border-radius: 5px; /* Android ≤ 1.6, iOS 1-3.2, Safari 3-4 */
+          border-radius: 5px; /* Android 2.1+, Chrome, Firefox 4+, IE 9+, iOS 4+, Opera 10.50+, Safari 5+ */
+
+  /* useful if you don't want a bg color from leaking outside the border: */
+  -webkit-background-clip: padding-box; background-clip: padding-box;
+  
+  /* Menus should be shown even when not in white area */
+  /*overflow: hidden;*/
+  position:relative;
+	z-index: 2;
+}
+
+/**
+ * content wrapper
+ *
+ * use this when you don't want a navigation panel to the left
+ */
+.content-wrapper {
+
+	background: #fff;
+	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+	
+  -webkit-border-radius: 5px; /* Android ≤ 1.6, iOS 1-3.2, Safari 3-4 */
+          border-radius: 5px; /* Android 2.1+, Chrome, Firefox 4+, IE 9+, iOS 4+, Opera 10.50+, Safari 5+ */
+
+  /* useful if you don't want a bg color from leaking outside the border: */
+  -webkit-background-clip: padding-box; background-clip: padding-box;
+  
+  /* Menus should be shown even when not in white area */
+  /*overflow: hidden;*/
+  position:relative;
+	z-index: 2;
+}
+
+.lt-ie9 .main-content-wrapper {
+	border: 1px solid #ddd;
+}
+
+/* TGR: Changed this to prevent the buttons from being colored badly */
+.primary-area p a *:not(.btn) * {
+	color: #ab95fe;
+}
+
+.primary-area .btn a {
+	color: #000000;
+}
+
+.sidebar-area,
+.primary-area {
+	/** Bad for tables positioned in this primary-area */
+	/*display: table-cell;*/ 
+	vertical-align: top;
+	padding: 31px;
+}
+.sidebar-area {
+	width: 199px;
+	border-left: 1px solid #ddd;
+	background: #f3f3f3;
+}
+
+.columns-wrapper {
+	display: table;
+	width: 100%;
+}
+
+/**
+ * Top Menu Bar
+ */
+.navbar-dariah {
+	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); 
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); 
+}
+.navbar-dariah .nav > li > a {
+	/* padding-left: 30px;
+	padding-right: 0; */
+}
+.navbar-dariah .nav.closer > li > a {
+	padding-left: 0;	
+}
+/* .navbar-dariah .nav > li > a.brand {
+	padding-left:0;
+} */
+
+/** 
+ * Primary Navigation
+ */
+
+ .navbar .nav {
+ 	/*margin-top: 16px;
+ 	margin-bottom: 10px;*/
+ }
+
+.nav-list.nav-primary-dariah {
+	padding-left: 0;
+	padding-right: 0;
+}
+.nav-list.nav-primary-dariah > li.active {
+	background: #fff;
+	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+  -webkit-border-radius: 5px 0 0 5px; /* Android ≤ 1.6, iOS 1-3.2, Safari 3-4 */
+          border-radius: 5px 0 0 5px; /* Android 2.1+, Chrome, Firefox 4+, IE 9+, iOS 4+, Opera 10.50+, Safari 5+ */
+
+  /* useful if you don't want a bg color from leaking outside the border: */
+  -webkit-background-clip: padding-box; background-clip: padding-box;
+}
+.lt-ie9 .nav-list.nav-primary-dariah > li.active {
+	border: 1px solid #ddd;
+	border-right: 0;
+}
+
+.nav-list.nav-primary-dariah > li {
+  margin-left: -30px;
+  padding-top: 25px;
+  padding-bottom: 25px;
+}
+.nav-list.nav-primary-dariah > li li a {
+	padding-left: 45px;
+	font-size: 15px;
+}
+.nav-list.nav-primary-dariah > li li a:hover {
+	background: #ccc;
+	color: #000;
+	
+}
+.nav-list.nav-primary-dariah > li > a {
+	display: inline;
+	background: none;
+	color: inherit;
+	font-family: "MuseoSansRounded700";
+	font-weight: normal;
+	font-size: 18px;
+	padding-left:30px;
+	margin-left:0;
+}
+.nav-list.nav-primary-dariah > li > a:hover {
+	background: none;
+	color: inherit;
+}
+/** 
+ * General Layout
+ */
+.searchbar-dariah {
+	margin-top: 20px;
+}
+
+.btn-transparent {
+	background: none;
+} 
+
+.searchbox-dariah {
+	background: #fff;
+}
+
+.logo-dariah {
+	display: block;
+	margin-left:-33px;
+	margin-top: -40px;
+	margin-bottom: 25px;
+	width: 220px;
+	height: 103px;
+}
+
+.footer {
+	padding: 1em 1em 0 1em;
+	font-size: 85%;
+}
+
+/**
+ * Carousel
+ */
+.carousel {
+	border-bottom: 1px solid #ddd;
+	margin-bottom: 0;
+}
+.carousel-caption {
+	color: #333;
+	padding: 23px 31px;
+}
+.carousel-caption h4 {
+	color: inherit;
+	font-size:18px;
+	line-height:1.39em;
+	font-weight: normal;
+}
+.carousel-caption a {
+	color: #7A7395;
+}
+
+/** 
+ * Breadcrumbs
+ */
+.breadcrumb {
+	background: none;
+	padding: 0;
+	font-size: 13px;
+}
+.breadcrumb .active {
+	font-weight: bold;
+}
+.breadcrumb > li > .divider {
+	color: #999;
+} 
+
+/**
+ * Typography 
+ * @section typography
+ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-top:0;
+}
+h4, h5, h6 { 
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: bold;
+}
+h2 {
+	line-height: 30px;
+}
+.media-heading {
+	font-weight:normal;
+}
+ul.spaced > li {
+	margin-bottom:1em;
+}
+h1 + .meta {
+	margin-top:-1em;
+}
+
+.header-box {
+	background: #ddd;
+	padding: 7px 10px;
+	font-size: 12px;
+	margin-bottom: 1em;
+}
+.media-body .meta {
+	font-size:12px;
+}
+figure {
+	margin: 1em 0;
+}
+figcaption {
+	font-size: 12px;
+}
+
+@media (max-width: 767px) {
+	body {
+		background: #fff;
+		padding: 0;
+	}
+	.footer {
+		padding: 1em 10px 0 ;
+	}
+	.wrapper, .container.main, .primary-area, .sidebar-area  {
+		display:block;
+		width:auto;
+		  -webkit-box-shadow: none; /* Saf3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+          box-shadow: none; /* Opera 10.5, IE9, FF4+, Chrome 6+, iOS 5 */
+	}
+	.sidebar-area, .primary-area {
+    padding: 10px;
+	}
+	#heroCarousel, .header-small-nav {
+		display: none;
+	}
+	.site-logo {
+		padding: 40px 0 20px;
+	}
+	.span9.offset3.no-margin,
+	.span9.no-margin {
+		margin-left: 0;
+		width: auto;
+	}
+	.nav-list.nav-primary-dariah > li {
+		margin-left:0;
+	}
+	.navbar-dariah {
+		margin: 0;
+	}
+	.main-content-wrapper {
+		border-radius: 0;
+		-webkit-border-radius: 0;
+	}
+	.nav-list.nav-primary-dariah > li li.active a {
+		color: #fff;
+	}
+	.nav-list.nav-primary-dariah > li.active {
+		border-radius: 0;
+		-webkit-border-radius: 0;
+		box-shadow: none;
+		-webkit-box-shadow: none;
+	}
+	.nav-list.nav-primary-dariah > li {
+		padding: 15px 0 0 0;
+	}
+	.navbar .nav > li > a.brand {
+		margin:0;
+		padding-left:0;
+	}
+	.navbar-inner {
+		padding-left:10px;
+		padding-right:10px;
+	}
+	.navbar-inverse .brand, .navbar-inverse .nav > li > a.brand {
+		color: #fff;
+	}
+	
+	.navbar .btn-navbar {
+		margin-right:0;		
+	}
+}
+@media print {
+	 * {
+        background: transparent !important;
+        color: #000 !important; /* Black prints faster: h5bp.com/s */
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /*
+* Don't show links for images, or javascript/internal links
+*/
+
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group; /* h5bp.com/t */
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    @page {
+        margin: 0.5cm;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+	
+	 .main-content-wrapper , .primary-area, .sidebar-area, .row, .container  {
+		display:block;
+		width:auto;
+		  -webkit-box-shadow: none; /* Saf3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+          box-shadow: none; /* Opera 10.5, IE9, FF4+, Chrome 6+, iOS 5 */
+		/* padding: 2em 0; */
+		margin: 0;
+	} 
+	.span9.offset3.no-margin,
+	.span9.no-margin {
+		margin-left: 0;
+		width: auto;
+	}
+	.site-logo a:after {
+		content: "";	
+	}
+	.site-logo {
+		padding:1em 0;
+		margin: 0;
+	}
+	.container.header {
+		border-color: #000;
+	}
+	
+	/* h1, h2, h3, h4, h5, h6 {
+		font-family: "SancoaleSoftenedRegularRg", sans-serif;
+	} */
+/*
+* Hide Elements that are not needed in Print. Like menus and decoration
+*/
+	.lang-nav, .header-small-nav, .header-main-nav, .copy-and-nav .nav, .btn i, .container.hero,
+	.footer, .breadcrumb, .push, .navigation-wrapper, .navbar-static-top, .searchbar-dariah, .breadcrumb {
+		display: none;
+	}
+}
