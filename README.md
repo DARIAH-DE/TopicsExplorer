@@ -14,5 +14,5 @@
 Run [demo.py](https://github.com/thvitt/cophi-toolbox/blob/master/demonstrator/demo.py), your default browser opens automatically.
 
 
-![screenshot](https://raw.githubusercontent.com/pielstroem/Topics/master/demonstrator/Jinja2/bef.png)
-![screenshot](https://raw.githubusercontent.com/pielstroem/Topics/master/demonstrator/Jinja2/after.png)
+![screenshot](https://raw.githubusercontent.com/thvitt/cophi-toolbox/master/demonstrator/Jinja2/bef.png)
+![screenshot](https://raw.githubusercontent.com/thvitt/cophi-toolbox/master/demonstrator/Jinja2/after.png)
