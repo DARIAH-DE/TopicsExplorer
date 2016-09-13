@@ -45,6 +45,7 @@ def upload_file():
         * ~/out/corpus_doclabels.txt
         * ~/out/corpus_topics.txt
         * ~/mycorpus.txt
+        * ~/static/corpus_heatmap.svg
 
     As well as (for example):
         * ~/swcorp/Doyle_AStudyinScarlet.txt
