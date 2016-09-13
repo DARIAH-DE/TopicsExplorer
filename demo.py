@@ -45,7 +45,6 @@ def upload_file():
         * ~/out/corpus_doclabels.txt
         * ~/out/corpus_topics.txt
         * ~/mycorpus.txt
-        * ~/static/corpus_heatmap.svg
 
     As well as (for example):
         * ~/swcorp/Doyle_AStudyinScarlet.txt
@@ -258,6 +257,7 @@ def upload_file():
 
     print("\n ta-daaaa ...\n")
 
+	# VISUALIZATION
     no_of_topics = model.num_topics
     no_of_docs = len(doc_labels)
     doc_topic = np.zeros((no_of_docs, no_of_topics))
