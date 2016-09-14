@@ -16,4 +16,4 @@
 
 ***
 
-Run [demo.py](https://github.com/thvitt/cophi-toolbox/blob/master/demonstrator/demo.py), your default browser opens automatically.
+Run [demo.py](https://github.com/pielstroem/Topics/blob/master/demonstrator/demo.py), your default browser opens automatically.
