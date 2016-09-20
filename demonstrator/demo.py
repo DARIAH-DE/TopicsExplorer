@@ -29,7 +29,6 @@ def index():
     """
     Render template ~/static/index.html
     """
-
     return render_template('index.html')
 
 
@@ -49,6 +48,7 @@ def upload_file():
     As well as (for example):
         * ~/swcorp/Doyle_AStudyinScarlet.txt
         * ~/swcorp/Lovecraft_AttheMountainofMadness.txt
+        * etc.
     """
 
     # INPUT
@@ -62,7 +62,9 @@ def upload_file():
     regex = re.compile('\w+')
     stopwords = request.files['stoplist']
     stopwords = str(stopwords.readlines())
-    stopwords = set(regex.findall(stopwords))
+    stopwords = regex.findall(stopwords)
+    stopwords.extend(("'", "'d", "'s")) # temporary solution
+    print(stopwords)
 
     # document size (in words)
     doc_size = 1000
@@ -76,7 +78,7 @@ def upload_file():
 
     # no. of lda iterations - usually, the more the better, but
     # increases computing time
-    no_of_passes = 10
+    no_of_passes = 1
 
     # perplexity estimation every n chunks -
     # the smaller the better, but increases computing time
@@ -256,23 +258,29 @@ def upload_file():
             ['corpus', 'lda'])))
 
     print("\n ta-daaaa ...\n")
-
-	# VISUALIZATION
+    
+    # VISUALIZATION
     no_of_topics = model.num_topics
     no_of_docs = len(doc_labels)
     doc_topic = np.zeros((no_of_docs, no_of_topics))
+    
     for doc, i in zip(corpus, range(no_of_docs)):
+        # topic_dist is a list of tuples (topic_id, topic_prob)
         topic_dist = model.__getitem__(doc)
         for topic in topic_dist:
             doc_topic[i][topic[0]] = topic[1]
-
+    
+    # get plot labels
     topic_labels = []
     for i in range(no_of_topics):
+        # show_topic() returns tuples (word_prob, word)
         topic_terms = [x[0] for x in model.show_topic(i, topn=3)]
         topic_labels.append(" ".join(topic_terms))
+        
+    # cf. https://de.dariah.eu/tatom/topic_model_visualization.html
 
     if no_of_docs > 20 or no_of_topics > 20:
-        plt.figure(figsize=(20, 20))
+        plt.figure(figsize=(20, 20)) # if many items, enlarge figure
     plt.pcolor(doc_topic, norm=None, cmap='Reds')
     plt.yticks(np.arange(doc_topic.shape[0])+1.0, doc_labels)
     plt.xticks(
@@ -280,10 +288,9 @@ def upload_file():
     plt.gca().invert_yaxis()
     plt.colorbar(cmap='Reds')
     plt.tight_layout()
-    plt.savefig("./static/corpus_heatmap.svg")
-
+    plt.savefig("./static/corpus_heatmap123.svg")
     return render_template('success.html')
-
+    
 if __name__ == '__main__':
     threading.Timer(
         1.25, lambda: webbrowser.open('http://127.0.0.1:5000')).start()
