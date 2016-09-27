@@ -1,8 +1,7 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
-This script creates a LDA model and a heatmap
+This script creates a LDA model plus heatmap
 """
 
 import os
@@ -14,14 +13,13 @@ from gensim import corpora, models, similarities
 __author__ = "DARIAH-DE"
 __authors__ = "Steffen Pielstroem"
 __email__ = "pielstroem@biozentrum.uni-wuerzburg.de"
-__license__ = ""
-__version__ = "0.1"
-__date__ = "2016-06-13"
+__version__ = "0.2"
+__date__ = "2016-09-27"
+
 
 ########################################################################
 # Prearrangements
 ########################################################################
-
 
 # Enable gensim logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
@@ -30,7 +28,6 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
 ########################################################################
 # Gensim model creation
 ########################################################################
-
 
 def gensimModel(texts,
                 topics=10,
@@ -153,7 +150,6 @@ def saveGensimModel(model,
 # Doc-Topic matrix
 ########################################################################
 
-
 def gensim_to_dtm(model, corpus, no_of_topics):
     """
     Create a doc-topic matrix from gensim output.
@@ -181,7 +177,6 @@ def gensim_to_dtm(model, corpus, no_of_topics):
 ########################################################################
 # Topic visualization
 ########################################################################
-
 
 def docTopHeatmap(doc_topic, doc_labels, topic_labels):
     """
