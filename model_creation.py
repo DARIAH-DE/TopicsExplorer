@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from cophi_toolbox.dariah import topics
 import os
 import logging
 import numpy as np
