@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This script creates a LDA model and creates a heatmap
+This script creates a LDA model and a heatmap
 """
 
 import os
