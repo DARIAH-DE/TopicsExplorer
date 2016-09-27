@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from cophi_toolbox.dariah import topics
+import os
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
-from collections import defaultdict
 from gensim import corpora, models, similarities
 
 __author__ = "DARIAH-DE"
