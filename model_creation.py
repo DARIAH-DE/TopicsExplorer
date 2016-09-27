@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+This script creates a LDA model and creates a heatmap
+"""
+
 import os
 import logging
 import numpy as np
