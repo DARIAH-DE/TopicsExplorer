@@ -136,7 +136,6 @@ def saveGensimModel(model,
         DARIAH-DE
     """
 
-    print("saving ...\n")
     topics = model.show_topics(num_topics=no_of_topics)
     if not os.path.exists("out"):
         os.makedirs("out")
