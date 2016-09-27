@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import glob
-import os
+from cophi_toolbox.dariah import topics
 import logging
-import re
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import defaultdict
