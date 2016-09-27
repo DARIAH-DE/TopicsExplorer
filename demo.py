@@ -288,7 +288,7 @@ def upload_file():
     plt.gca().invert_yaxis()
     plt.colorbar(cmap='Reds')
     plt.tight_layout()
-    plt.savefig("./static/corpus_heatmap123.svg")
+    plt.savefig("./static/corpus_heatmap.svg")
     return render_template('success.html')
     
 if __name__ == '__main__':
