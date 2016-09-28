@@ -1,0 +1,13 @@
+csv
+re
+threading
+webbrowser
+os
+glob
+collections
+pandas
+numpy
+matplotlib
+flask
+werkzeug
+gensim
