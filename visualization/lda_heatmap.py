@@ -21,8 +21,15 @@ from gensim.models import LdaModel
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import logging
 
+log = logging.getLogger('lda_heatmap.py')
+log.addHandler(logging.NullHandler())
 
+# To enable logger, uncomment the following three lines.
+#logging.basicConfig(level=logging.INFO,
+#                    format='%(asctime)s %(levelname)s %(name)s: %(message)s',
+#                    datefmt='%d-%b-%Y %H:%M:%S')
 
 # get path to gensim output files
 path = os.path.join(os.getcwd(),"out")
@@ -34,16 +41,16 @@ path = os.path.join(os.getcwd(),"out")
 doc_labels = []
 
 # get document labels
-print("\n get labels \n")
+log.info('get labels')
 with open(os.path.join(path, "corpus_doclabels.txt"), "r") as f:
     for line in f: doc_labels.append(line)
 
 # load corpus
-print("\n load corpus \n")
+log.info('load corpus')
 corpus = MmCorpus(os.path.join(path,"corpus.mm"))
 
 # load model
-print("\n load model \n")
+log.info('load model')
 model = LdaModel.load(os.path.join(path,"corpus.lda"))
 
 no_of_topics = model.num_topics
