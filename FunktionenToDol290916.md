@@ -13,9 +13,9 @@ Nicht von Leerzeichen als Trenner ausgehen, sondern mit /n trennen.
 
 Generatoren zwischen den Funktionen hin und herreichen.
 
-Prints durch Logging ersetzen,  (verschiedene Loglevels, z.b. Log-Error) → Severin
+Prints durch Logging ersetzen,  (verschiedene Loglevels, z.b. Log-Error) → Severin ✓
 
-TimeStamps für alle Funktionen (mit Logging) → Severin?
+TimeStamps für alle Funktionen (mit Logging) → Severin? ✓
 
 Statt glob.glob – Liste von Dateinamen, die die Reihenfolge im Ordner behält.
 
