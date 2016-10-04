@@ -22,12 +22,40 @@ Statt glob.glob – Liste von Dateinamen, die die Reihenfolge im Ordner behält.
 Globale Variablen - Kommandozeilenparameter (Arg.path)
 
 
-##Funktionen - ToDo:
+#Cophi-Toolbox-Funktionen
 
 
-#### readDKPRoWrapperFiles
+#### makeRemoveLists(mycounter : Counter) -> set -> Sina
+
+- Counter schneller als Series?, Counter als Series ausgeben?
+
+- Funktion aufteilen in:
+
+	removeStopwords()
+
+	remove Hapax ()
+
+#### splitFiles(): -> Philip
+
+- eigene Funktion für Segmentierung
+
+#### readDKPRoWrapperFiles 
 
 - Csv in Dataframe
+
+
+#### getPOSTags(): -> Philip
+
+- Filterung der POS-Tags 
+
+- auf Gruppierung verzichten. CPOS-Feld beim Einlesen der CSV und mit Pandas Methoden zur Filterung nutzen. (Dann kann Funktion vor der Segmentierung aufgerufen werden).
+
+- Aus verbleibender Tabelle eine Tokenliste machen und dann Modell übergeben
+
+
+
+#Topic - Funktionen
+
 
 #### makeCorpusFile(inDir : str,  outFileName : str) -> None
 
@@ -38,41 +66,13 @@ Globale Variablen - Kommandozeilenparameter (Arg.path)
 - Umbennen
 
 
-#### makeCounter(path : str) -> Counter
+#### makeCounter(path : str) -> Counter -> Sina
 
 	
 - Keine eigene Funktion f-> Konstruktor von Counter nehmen
 
 
-#### makeRemoveLists(mycounter : Counter) -> set, set
-
-- Counter schneller als Series?, Counter als Series ausgeben?
-
-- Funktion aufteilen in:
-
-	removeStopwords()
-
-	remove Hapax ()
-
-
-#### splitFiles():
-
-- eigene Funktion für Segmentierung
-
-
-
-#### getPOSTags():
-
-- Filterung der POS-Tags 
-
-- auf Gruppierung verzichten. CPOS-Feld beim Einlesen der CSV und mit Pandas Methoden zur Filterung nutzen. (Dann kann Funktion vor der Segmentierung aufgerufen werden).
-
-- Aus verbleibender Tabelle eine Tokenliste machen und dann Modell übergeben
-
-
-
-
-#### gensimFunktionen → Sina
+#### gensimVisualisierungen → Sina
 
 
 Gensim-Funktion mit Übergabeparameter und Default-Werten (braucht jemand Corpus ohne LDA-Model zu fitten)
