@@ -24,7 +24,15 @@ from gensim.corpora import MmCorpus, Dictionary
 import os
 import pyLDAvis.gensim
 import time
+import logging
 
+log = logging.getLogger('cophi_toolbox.dariah.topics')
+log.addHandler(logging.NullHandler())
+
+# To enable logger, uncomment the following three lines.
+#logging.basicConfig(level=logging.INFO,
+#                    format='%(asctime)s %(levelname)s %(name)s: %(message)s',
+#                    datefmt='%d-%b-%Y %H:%M:%S')
 
 # get path to gensim output files
 path = os.path.join(os.getcwd(),"out")
@@ -43,26 +51,26 @@ def tac():
     t_sec = round(time.time() - _start_time)
     (t_min, t_sec) = divmod(t_sec,60)
     (t_hour,t_min) = divmod(t_min,60) 
-    print('Time passed: {}hour:{}min:{}sec'.format(t_hour,t_min,t_sec))
+    log.info('Time passed: {}hour:{}min:{}sec'.format(t_hour,t_min,t_sec))
 	
 ########################################################################
 # load gensim output files
 ########################################################################
 
 # load dictionary
-print("\n load dictionary \n")
+log.info('load dictionary \n")
 dictionary = Dictionary.load(os.path.join(path,"corpus.dict"))
 
 # load corpus
-print("\n load corpus \n")
+log.info('load corpus')
 corpus = MmCorpus(os.path.join(path,"corpus.mm"))
 
 # load model
-print("\n load model \n")
+log.info('load model')
 model = LdaModel.load(os.path.join(path,"corpus.lda"))
 
 
-print("processing")
+log.info('processing ...')
 
 
 ########################################################################
@@ -72,13 +80,13 @@ print("processing")
 tic()
 vis = pyLDAvis.gensim.prepare(model, corpus, dictionary)
 tac()
-print("\n visualization calculated \n")
+log.info('visualization calculated')
 
-print("\n save interactive.html \n")
+log.info('save interactive.html')
 pyLDAvis.save_html(vis, "_interactive.html")
 
-print("\n save interactive.json \n")
+log.info('save interactive.json')
 pyLDAvis.save_json(vis, "interactive.json")
 
 pyLDAvis.prepared_data_to_html(vis)
-print("\n done \n")
+log.info('----DONE----')
