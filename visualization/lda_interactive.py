@@ -26,7 +26,7 @@ import pyLDAvis.gensim
 import time
 import logging
 
-log = logging.getLogger('cophi_toolbox.dariah.topics')
+log = logging.getLogger('lda_interactive')
 log.addHandler(logging.NullHandler())
 
 # To enable logger, uncomment the following three lines.
