@@ -167,22 +167,9 @@ class filterPOS(object):
                     
 class Visualization():
     
-    log = logging.getLogger('lda_vis')
-    log.addHandler(logging.NullHandler())
 
-    logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s %(name)s: %(message)s',
-                    datefmt='%d-%b-%Y %H:%M:%S')
+    def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
 
-    def __init__(self, lda_model, corpus, dictionary, doc_labels):
-        
-        self.__lda_model = lda_model
-        self.__corpus =  corpus
-        self.__dictionary = dictionary
-        self.__doc_labels = doc_labels
-              
-
-    def load_gensim_output(path, interactive=False):
         """Loads Gensim output for further processing.
     
         The output folder should contain ``corpus.mm``, ``corpus.lda``, as well as
@@ -209,29 +196,40 @@ class Visualization():
         Author:
             DARIAH-DE
         """
-    
+
+        self.__lda_model = lda_model
+        self.__corpus =  corpus
+        self.__dictionary = dictionary
+        self.__doc_labels = doc_labels
+            
+    def loadGensimOutput(self):
+
+		log = logging.getLogger('lda_vis')
+		log.addHandler(logging.NullHandler())
+		logging.basicConfig(level=logging.INFO,format='%(asctime)s %(levelname)s %(name)s: %(message)s',datefmt='%d-%b-%Y %H:%M:%S')
+
         try:
             log.info("Accessing corpus ...")
-            corpus = MmCorpus(os.path.join(path, 'corpus.mm'))
+            self.corpus = MmCorpus(corpus)
     
             log.info("Accessing model ...")
-            model = LdaModel.load(os.path.join(path, 'corpus.lda'))
+            model = LdaModel.load(lda_model)
     
             if interactive == False:
                 log.debug("`interactive` set to False.")
                 log.info("Accessing doc_labels ...")
-                with open(os.path.join(path, 'corpus_doclabels.txt'), 'r', encoding='utf-8') as f:
+                with open(doc_labels, 'r', encoding='utf-8') as f:
                     doc_labels = [line for line in f.read().split()]
                     log.debug("Saved %s doc_labels.", len(doc_labels))
                 log.info("Successfully created corpus, model, doc_labels for heatmap visualization.")
-                return corpus, model, doc_labels
+                return {'corpus':corpus, 'model':model ,'doc_labels':doc_labels }
     
             else:
                 log.debug("`interactive` set to True.")
                 log.info("Accessing dictionary ...")
-                dictionary = Dictionary.load(os.path.join(path, 'corpus.dict'))
+                dictionary = Dictionary.load(dictionary)
                 log.info("Successfully created corpus, model, dictionary for interactive visualization.")
-                return corpus, model, dictionary
+                return {'corpus':corpus, 'model':model ,'dictionary':dictionary }
     
         except OSError as err:
             log.error("OS error: {0}".format(err))
