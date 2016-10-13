@@ -106,12 +106,12 @@ class filterPOS(object):
         
     """
     
-    def __init__(self, path, pos_tags, files):
+    def __init__(self, path, pos, files):
         
         self.path = path
         self.files = files
-        #self.pos_tags = pos_tags
-        self.pos_tags = ['ADJ', "V", "NN"]
+        self.pos_tags = pos
+        #self.pos_tags = ['ADJ', "V", "NN"]
         self.columns = ['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']
         self.doc = pd.DataFrame()
         self.labels = []
