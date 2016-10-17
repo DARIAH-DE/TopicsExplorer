@@ -1,21 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Gensim-functions for topic modeling and visualization.
+"""Topic Modeling and LDA visualization.
 
+This module provivdes various `Gensim`_ functions for topic modeling and LDA
+visualization.
+
+.. _Gensim:
+    https://radimrehurek.com/gensim/index.html
 .. _DARIAH-DE:
     https://de.dariah.eu
     https://github.com/DARIAH-DE
-    
-    ToDo: logging
 """
 
 __author__ = "DARIAH-DE"
 __authors__ = "Stefan Pernes, Steffen Pielstroem, Philip Duerholt, Sina Bock, Severin Simmler"
 __email__ = "stefan.pernes@uni-wuerzburg.de, pielstroem@biozentrum.uni-wuerzburg.de"
 __version__ = "0.2"
-__date__ = "2016-10-13"
+__date__ = "2016-10-16"
 
 import pandas as pd
 import re
@@ -30,84 +32,106 @@ import logging
 from gensim.corpora import MmCorpus, Dictionary
 from gensim.models import LdaModel
 
-def createListOfDocuments(path):
-    doclist = glob.glob(path)
+log = logging.getLogger('collection')
+log.addHandler(logging.NullHandler())
+logging.basicConfig(level = logging.INFO,
+                    format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
+                    datefmt = '%d-%b-%Y %H:%M:%S')
+
+def create_document_list(path):
+    """Creates a list of files with their full path.
+
+    Args:
+        path (str): Path to folder, e.g. "/tmp/corpus".
+
+    Returns:
+        list[str]: List of files with full path.
+
+    Author:
+        DARIAH-DE
+    """
+    doclist = glob.glob(path + "/*")
     return doclist
 
 
 class ReadFromTXT:
-    
+    """Opens files using a list of paths.
+
+    """
+
     def __init__(self, doclist):
+        """
+        Note:
+            Use `create_document_list()` to create instance attributes.
+        """
 
         self.doclist = doclist
-        
+
     def __iter__(self):
-        
-        """
-        Yields document slizes with length words.
-        
+        """Yields document slizes with length words.
+
         Args:
-            doclist (list): List of all documents in the corpus
-            
-        ToDo:
+            doclist (:obj:`list[str]`): List of all documents in the corpus.
+
+        Todo:
             Seperate metadata (author, header)?
         """
-        
         for file in self.doclist:
-            with open(file, 'r', encoding = "utf-8") as f:
-                
+            with open(file, 'r', encoding = 'utf-8') as f:
                 yield f.read()
-                
-                
-                                                
+
 class Segmenter:
-    
+    """Segments documents.
+    """
     def __init__(self, doc, length):
-        
+        """
+        Args:
+            doc (str): Strings.
+            length (int):
+        """
+
         self.doc = doc
         self.length = length
-        
+
     def __iter__(self):
 
-        """
-        Yield document slizes with length words.
-        
+        """Yields document slizes with length words.
+
         Args:
-            doc (iterable): An iterable of tokens that is to be segmented. 
+            doc (iterable): An iterable of tokens that is to be segmented.
             length (int): Target size of segments.
-            
+
         Todo:
             Implement fuzzy option to consider paragraph breaks.
         """
-        
+
         doc = self.doc.split()
         for i, word in enumerate(doc):
             if i % self.length == 0:
                 yield doc[i : i + self.length]
-                
-                
-                
-                        
+
+
+
+
 #files = sorted(os.listdir(path=path)
-                
-class filterPOS(object):
-    
-    """
-    Get selected POS-tags from DKPRO-wrapper output
+
+class FilterPOS(object):
+
+    """Get selected POS-tags from DKPRO-wrapper output
 
     Args:
-        path (String): Path to DKPRO-wrapper output folder
-        pos_tags (List): List of DKPRO pos_tags that should be selected
-            
+        path (String): Path to DKPro-Wrapper output folder
+        pos_tags (List): List of DKPro pos_tags that should be selected
+
     ToDo:
-        columns (List): List of DKPRO columns that should be selected?
+        columns (List): List of DKPro columns that should be selected?
         default values for parameters
         readCSV-function?
-        
+
     """
-    
+
     def __init__(self, path, pos, files):
-        
+
         self.path = path
         self.files = files
         self.pos_tags = pos
@@ -115,17 +139,17 @@ class filterPOS(object):
         self.columns = ['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']
         self.doc = pd.DataFrame()
         self.labels = []
-    
-    
-        
-      
-    def getLabels(self):
-        
+
+
+
+
+    def get_labels(self):
+
         """
-        Get document labels 
-        
+        Get document labels
+
         """
-        
+
         for self.file in self.files:
             if not self.file.startswith("."):
                 filepath = os.path.join(self.path, self.file)
@@ -137,16 +161,16 @@ class filterPOS(object):
 
                 for p in pos_tags:
                     self.doc = self.doc.append(df.loc[df["CPOS"] == p])
-                    
-                yield label
-                
-                
-            
 
-    def getLemma(self):
-        
+                yield label
+
+
+
+
+    def get_lemma(self):
+
         """
-        Get lemma from DKPRO-wrapper output
+        Get lemma from DKPro-Wrapper output
 
         """
         for self.file in self.files:
@@ -160,61 +184,46 @@ class filterPOS(object):
 
                 for p in pos_tags:
                     yield df.loc[df["CPOS"] == p]["Lemma"]
-                    
-                    
-                    
-                    
-                    
+
+
+
+
+
 class Visualization():
-    
+
 
     def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
 
         """Loads Gensim output for further processing.
-    
+
         The output folder should contain ``corpus.mm``, ``corpus.lda``, as well as
         ``corpus_doclabels.txt`` (for heatmap) or ``corpus.dict`` (for interactive
         visualization).
-    
+
         Args:
             path (str): Path to output folder.
             interactive (bool, optional): True if interactive visualization,
                 False if heatmap is desired. Defaults to False.
-    
+
         Returns:
             If `interactive == False`: corpus, model, doc_labels.
             If `interactive == True`: corpus, model, dictionary.
-    
+
         Raises:
             OSError: If directory or files not found.
             ValueError: If no matching values found.
             Unexpected error: Everything else.
-    
-        To do:
-            * Is this the pythonic way?
-    
+
         Author:
             DARIAH-DE
         """
-
-        self.__lda_model = lda_model
-        self.__corpus =  corpus
-        self.__dictionary = dictionary
-        self.__doc_labels = doc_labels
-            
-    def loadGensimOutput(self):
-
-		log = logging.getLogger('lda_vis')
-		log.addHandler(logging.NullHandler())
-		logging.basicConfig(level=logging.INFO,format='%(asctime)s %(levelname)s %(name)s: %(message)s',datefmt='%d-%b-%Y %H:%M:%S')
-
         try:
             log.info("Accessing corpus ...")
-            self.corpus = MmCorpus(corpus)
-    
+            corpus = MmCorpus(self.corpus)
+
             log.info("Accessing model ...")
             model = LdaModel.load(lda_model)
-    
+
             if interactive == False:
                 log.debug("`interactive` set to False.")
                 log.info("Accessing doc_labels ...")
@@ -223,14 +232,14 @@ class Visualization():
                     log.debug("Saved %s doc_labels.", len(doc_labels))
                 log.info("Successfully created corpus, model, doc_labels for heatmap visualization.")
                 return {'corpus':corpus, 'model':model ,'doc_labels':doc_labels }
-    
+
             else:
                 log.debug("`interactive` set to True.")
                 log.info("Accessing dictionary ...")
                 dictionary = Dictionary.load(dictionary)
                 log.info("Successfully created corpus, model, dictionary for interactive visualization.")
                 return {'corpus':corpus, 'model':model ,'dictionary':dictionary }
-    
+
         except OSError as err:
             log.error("OS error: {0}".format(err))
         except ValueError:
@@ -240,48 +249,50 @@ class Visualization():
             log.error("Unexpected error:", sys.exc_info()[0])
             sys.exit(1)
             raise
-    
+        self.__lda_model = lda_model
+        self.__corpus = corpus
+        self.__dictionary = dictionary
+        self.__doc_labels = doc_labels
+
+
     def make_heatmap(corpus, model, doc_labels):
         """Generates heatmap from LDA model.
-    
+
         The ingested data (e.g. with `load_gensim_output()`) has to be transmitted
         as parameters.
-    
+
         Args:
             corpus: Corpus created by Gensim, e.g. corpus.mm.
             model: LDA model created by Gensim, e.g. corpus.lda.
             doc_labels(list[str]): List of document labels, e.g. corpus_doclabels.txt.
-    
+
         Returns:
             Matplotlib heatmap figure.
-            
-        ToDo: 
+
+        ToDo:
             create figure dynamically?
             -> http://stackoverflow.com/questions/23058560/plotting-dynamic-data-using-matplotlib
-    
-        Author:
-            DARIAH-DE
         """
-    
+
         no_of_topics = model.num_topics
         no_of_docs = len(doc_labels)
         doc_topic = np.zeros((no_of_docs, no_of_topics))
-    
+
         log.info("Loading topic distribution from model ...")
         for doc, i in zip(corpus, range(no_of_docs)):
             topic_dist = model.__getitem__(doc)
-    
+
         log.info("Saving topic probability ...")
         for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
             doc_topic[i][topic[0]] = topic[1]
-    
+
         log.info("Loading plot labels ...")
         topic_labels = []
         for i in range(no_of_topics):
             topic_terms = [x[0] for x in model.show_topic(i, topn=3)] # show_topic() returns tuples (word_prob, word)
             topic_labels.append(" ".join(topic_terms))
         log.debug("Saved %s topic_labels.", len(topic_labels))
-    
+
         log.info("Creating heatmap figure ...")
         if no_of_docs > 20 or no_of_topics > 20:
             plt.figure(figsize=(20,20))    # if many items, enlarge figure
@@ -293,66 +304,57 @@ class Visualization():
         heatmap = plt.tight_layout()
         log.info("Successfully created heatmap figure.")
         return heatmap
-    
+
     def save_heatmap(heatmap, path):
         """Saves Matplotlib heatmap figure.
-    
+
         The created visualization (e.g. with `make_heatmap()`) has to be
         transmitted as parameter.
-    
+
         Args:
             heatmap: plt.figure created by ``matplotlib.pyplot``.
             path(str): Path to output folder. Defaults to global variable `path`.
-    
+
         Returns:
             ~/out/corpus_heatmap.png
-    
-        Author:
-            DARIAH-DE
         """
         log.info("Saving heatmap ...")
         plt.savefig(os.path.join(path, 'corpus_heatmap.png'), dpi= 200)
         log.info("Successfully saved heatmap as corpus_heatmap.png")
-    
+
     def make_interactive(corpus, model, dictionary):
         """Generates interactive visualization from LDA model.
-    
+
         The ingested data (e.g. with `load_gensim_output()`) has to be transmitted
         as parameters.
-    
+
         Args:
             corpus: Corpus created by Gensim, e.g. corpus.mm.
             model: LDA model created by Gensim, e.g. corpus.lda.
             dictionary(dict): Dictionary created by Gensim, e.g. corpus.dict.
-    
+
         Returns:
             pyLDAvis visualization.
-    
-        Author:
-            DARIAH-DE
         """
         log.info("Loading model, corpus, dictionary ...")
         vis = pyLDAvis.gensim.prepare(model, corpus, dictionary)
         log.info("Successfully created interactive visualization.")
         return vis
-    
-    
+
+
     def save_interactive(vis, path):
         """Saves interactive visualization.
-    
+
         The created visualization (e.g. with `make_interactive()`) has to be
         transmitted as parameter.
-    
+
         Args:
             vis: Interactive visualization created by pyLDAvis.
             path(str): Path to output folder. Defaults to global variable `path`.
-    
+
         Returns:
             ~/out/corpus_interactive.html
             ~/out/corpus_interactive.json
-    
-        Author:
-            DARIAH-DE
         """
         log.info("Saving interactive visualization ...")
         pyLDAvis.save_html(vis, os.path.join(path, 'corpus_interactive.html'))
