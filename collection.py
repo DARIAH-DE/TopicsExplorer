@@ -38,17 +38,17 @@ logging.basicConfig(level = logging.INFO,
                     format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
                     datefmt = '%d-%b-%Y %H:%M:%S')
 
-def create_document_list(path=path):
+def create_document_list(path, ext='.txt'):
     """Creates a list of files with their full path.
 
     Args:
-        path (str): Path to folder, e.g. "/tmp/corpus". Defaults to global
-            variable `path`.
+        path (str): Path to folder, e.g. '/tmp/corpus'.
+        suffix (str): File extension, e.g. '.csv'. Defaults to '.txt'.
 
     Returns:
         list[str]: List of files with full path.
     """
-    doclist = glob.glob(path + "/*")
+    doclist = glob.glob(path + "/*" + ext)
     return doclist
 
 
@@ -131,7 +131,7 @@ class FilterPOS(object):
         readCSV-function?
     """
 
-    def __init__(self, path, pos, files):
+    def __init__(self, files, pos_tags):
         """Initializes `path`, `pos` and `files`.
 
         Args:
@@ -139,9 +139,8 @@ class FilterPOS(object):
             pos_tags (list[str]): List of DKPro `pos_tags` that should be selected.
             files:
         """
-        self.path = path
         self.files = files
-        self.pos_tags = pos
+        self.pos_tags = pos_tags
         #self.pos_tags = ['ADJ', "V", "NN"]
         self.columns = ['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']
         self.doc = pd.DataFrame()
@@ -153,20 +152,14 @@ class FilterPOS(object):
         Yields:
             iterable: Document labels.
         """
-
         for self.file in self.files:
-            if not self.file.startswith("."):
-                filepath = os.path.join(self.path, self.file)
+            label = os.path.basename(self.file)
+            df = pd.read_csv(self.file, sep="\t", quoting=csv.QUOTE_NONE)
+            df = df[self.columns]
 
-                label = os.path.basename(self.file)
-
-                df = pd.read_csv(filepath, sep="\t", quoting=csv.QUOTE_NONE)
-                df = df[self.columns]
-
-                for p in pos_tags:
-                    self.doc = self.doc.append(df.loc[df["CPOS"] == p])
-
-                yield label
+            for p in self.pos_tags:
+                self.doc = self.doc.append(df.loc[df["CPOS"] == p])
+            yield label
 
     def get_lemma(self):
         """Gets lemma from DKPro-Wrapper output.
@@ -175,20 +168,12 @@ class FilterPOS(object):
             Lemma from DKPro output.
         """
         for self.file in self.files:
-            if not self.file.startswith("."):
-                filepath = os.path.join(self.path, self.file)
+            df = pd.read_csv(self.file, sep="\t", quoting=csv.QUOTE_NONE)
+            df = df[self.columns]
+            for p in self.pos_tags:
+                yield df.loc[df["CPOS"] == p]["Lemma"]
 
-                label = os.path.basename(self.file)
-
-                df = pd.read_csv(filepath, sep="\t", quoting=csv.QUOTE_NONE)
-                df = df[self.columns]
-
-                for p in pos_tags:
-                    yield df.loc[df["CPOS"] == p]["Lemma"]
-
-class Visualization():
-
-
+class Visualization:
     def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
 
         """Loads Gensim output for further processing.
@@ -216,26 +201,25 @@ class Visualization():
         """
         try:
             log.info("Accessing corpus ...")
-            corpus = MmCorpus(self.corpus)
+            self.corpus = MmCorpus(corpus)
 
             log.info("Accessing model ...")
-            model = LdaModel.load(lda_model)
+            self.model = LdaModel.load(lda_model)
 
             if interactive == False:
                 log.debug("`interactive` set to False.")
                 log.info("Accessing doc_labels ...")
-                with open(doc_labels, 'r', encoding='utf-8') as f:
-                    doc_labels = [line for line in f.read().split()]
-                    log.debug("Saved %s doc_labels.", len(doc_labels))
+                self.doc_labels = doc_labels
+                with open(self.doc_labels, 'r', encoding='utf-8') as f:
+                    self.doc_labels = [line for line in f.read().split()]
+                    log.debug("Accessed %s doc_labels.", len(doc_labels))
                 log.info("Successfully created corpus, model, doc_labels for heatmap visualization.")
-                return {'corpus':corpus, 'model':model ,'doc_labels':doc_labels }
 
-            else:
+            elif interactive == True:
                 log.debug("`interactive` set to True.")
                 log.info("Accessing dictionary ...")
-                dictionary = Dictionary.load(dictionary)
+                self.dictionary = Dictionary.load(dictionary)
                 log.info("Successfully created corpus, model, dictionary for interactive visualization.")
-                return {'corpus':corpus, 'model':model ,'dictionary':dictionary }
 
         except OSError as err:
             log.error("OS error: {0}".format(err))
@@ -246,13 +230,8 @@ class Visualization():
             log.error("Unexpected error:", sys.exc_info()[0])
             sys.exit(1)
             raise
-        self.__lda_model = lda_model
-        self.__corpus = corpus
-        self.__dictionary = dictionary
-        self.__doc_labels = doc_labels
 
-
-    def make_heatmap(corpus, model, doc_labels):
+    def make_heatmap(self):
         """Generates heatmap from LDA model.
 
         The ingested data (e.g. with `load_gensim_output()`) has to be transmitted
@@ -270,14 +249,13 @@ class Visualization():
             create figure dynamically?
             -> http://stackoverflow.com/questions/23058560/plotting-dynamic-data-using-matplotlib
         """
-
-        no_of_topics = model.num_topics
-        no_of_docs = len(doc_labels)
+        no_of_topics = self.model.num_topics
+        no_of_docs = len(self.doc_labels)
         doc_topic = np.zeros((no_of_docs, no_of_topics))
 
         log.info("Loading topic distribution from model ...")
-        for doc, i in zip(corpus, range(no_of_docs)):
-            topic_dist = model.__getitem__(doc)
+        for doc, i in zip(self.corpus, range(no_of_docs)):
+            topic_dist = self.model.__getitem__(doc)
 
         log.info("Saving topic probability ...")
         for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
@@ -286,9 +264,9 @@ class Visualization():
         log.info("Loading plot labels ...")
         topic_labels = []
         for i in range(no_of_topics):
-            topic_terms = [x[0] for x in model.show_topic(i, topn=3)] # show_topic() returns tuples (word_prob, word)
+            topic_terms = [x[0] for x in self.model.show_topic(i, topn=3)] # show_topic() returns tuples (word_prob, word)
             topic_labels.append(" ".join(topic_terms))
-        log.debug("Saved %s topic_labels.", len(topic_labels))
+        log.debug("Saved %s topic_labels.", len(self.topic_labels))
 
         log.info("Creating heatmap figure ...")
         if no_of_docs > 20 or no_of_topics > 20:
@@ -302,7 +280,7 @@ class Visualization():
         log.info("Successfully created heatmap figure.")
         return heatmap
 
-    def save_heatmap(heatmap, path=path):
+    def save_heatmap(self, path):
         """Saves Matplotlib heatmap figure.
 
         The created visualization (e.g. with `make_heatmap()`) has to be
@@ -319,7 +297,7 @@ class Visualization():
         plt.savefig(os.path.join(path, 'corpus_heatmap.png'), dpi= 200)
         log.info("Successfully saved heatmap as corpus_heatmap.png")
 
-    def make_interactive(model, corpus, dictionary):
+    def make_interactive(self):
         """Generates interactive visualization from LDA model.
 
         The ingested data (e.g. with `load_gensim_output()`) has to be transmitted
@@ -334,12 +312,12 @@ class Visualization():
             pyLDAvis visualization.
         """
         log.info("Loading model, corpus, dictionary ...")
-        vis = pyLDAvis.gensim.prepare(model, corpus, dictionary)
+        vis = pyLDAvis.gensim.prepare(self.model, self.corpus, self.dictionary)
         log.info("Successfully created interactive visualization.")
         return vis
 
 
-    def save_interactive(vis, path=path):
+    def save_interactive(self, path):
         """Saves interactive visualization.
 
         The created visualization (e.g. with `make_interactive()`) has to be
