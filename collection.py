@@ -3,8 +3,8 @@
 
 """Topic Modeling and LDA visualization.
 
-This module provivdes various `Gensim`_ functions for topic modeling and LDA
-visualization.
+This module contains various `Gensim`_ related functions for topic modeling and
+LDA visualization provided by `DARIAH-DE`_.
 
 .. _Gensim:
     https://radimrehurek.com/gensim/index.html
@@ -16,8 +16,8 @@ visualization.
 __author__ = "DARIAH-DE"
 __authors__ = "Stefan Pernes, Steffen Pielstroem, Philip Duerholt, Sina Bock, Severin Simmler"
 __email__ = "stefan.pernes@uni-wuerzburg.de, pielstroem@biozentrum.uni-wuerzburg.de"
-__version__ = "0.2"
-__date__ = "2016-10-16"
+__version__ = "0.3"
+__date__ = "2016-10-17"
 
 import pandas as pd
 import re
@@ -38,17 +38,15 @@ logging.basicConfig(level = logging.INFO,
                     format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
                     datefmt = '%d-%b-%Y %H:%M:%S')
 
-def create_document_list(path):
+def create_document_list(path=path):
     """Creates a list of files with their full path.
 
     Args:
-        path (str): Path to folder, e.g. "/tmp/corpus".
+        path (str): Path to folder, e.g. "/tmp/corpus". Defaults to global
+            variable `path`.
 
     Returns:
         list[str]: List of files with full path.
-
-    Author:
-        DARIAH-DE
     """
     doclist = glob.glob(path + "/*")
     return doclist
@@ -57,21 +55,26 @@ def create_document_list(path):
 class ReadFromTXT:
     """Opens files using a list of paths.
 
+    Note:
+        Use `create_document_list()` to create instance attributes.
     """
-
     def __init__(self, doclist):
-        """
-        Note:
-            Use `create_document_list()` to create instance attributes.
-        """
+        """Initializes `doclist`.
 
+        Args:
+            doclist (list[str]): List of all documents in the corpus.
+        """
         self.doclist = doclist
 
     def __iter__(self):
-        """Yields document slizes with length words.
+        """Yields documents to open.
 
         Args:
-            doclist (:obj:`list[str]`): List of all documents in the corpus.
+            doclist (:obj:`list[str]`): Initialized list of all documents in
+                the corpus.
+
+        Yields:
+            iterable: The documents in `doclist`.
 
         Todo:
             Seperate metadata (author, header)?
@@ -82,27 +85,30 @@ class ReadFromTXT:
 
 class Segmenter:
     """Segments documents.
+
+    Note:
+        Use `ReadFromTXT` to create instance attributes.
+
+    Todo:
+        Implement fuzzy option to consider paragraph breaks.
     """
     def __init__(self, doc, length):
-        """
-        Args:
-            doc (str): Strings.
-            length (int):
-        """
+        """Initializes `doc` and `length`.
 
+        Args:
+            doc (str): Document as iterable.
+            length (int): Target size of segments, e.g. 1000.
+        """
         self.doc = doc
         self.length = length
 
     def __iter__(self):
-
         """Yields document slizes with length words.
 
         Args:
-            doc (iterable): An iterable of tokens that is to be segmented.
-            length (int): Target size of segments.
-
-        Todo:
-            Implement fuzzy option to consider paragraph breaks.
+            doc (:obj:`iterable`): Initialized iterable of tokens that is to
+                be segmented.
+            length (:obj:`int`): Initialized target size of segments.
         """
 
         doc = self.doc.split()
@@ -110,28 +116,29 @@ class Segmenter:
             if i % self.length == 0:
                 yield doc[i : i + self.length]
 
-
-
-
 #files = sorted(os.listdir(path=path)
 
 class FilterPOS(object):
-
-    """Get selected POS-tags from DKPRO-wrapper output
+    """Gets selected POS-tags from DKPro-Wrapper output.
 
     Args:
-        path (String): Path to DKPro-Wrapper output folder
-        pos_tags (List): List of DKPro pos_tags that should be selected
+        path (str): Path to DKPro-Wrapper output folder.
+        pos_tags (list[str]): List of DKPro pos_tags that should be selected
 
     ToDo:
         columns (List): List of DKPro columns that should be selected?
         default values for parameters
         readCSV-function?
-
     """
 
     def __init__(self, path, pos, files):
+        """Initializes `path`, `pos` and `files`.
 
+        Args:
+            path (str): Path to DKPro-Wrapper output folder.
+            pos_tags (list[str]): List of DKPro `pos_tags` that should be selected.
+            files:
+        """
         self.path = path
         self.files = files
         self.pos_tags = pos
@@ -140,14 +147,11 @@ class FilterPOS(object):
         self.doc = pd.DataFrame()
         self.labels = []
 
-
-
-
     def get_labels(self):
+        """Gets document labels.
 
-        """
-        Get document labels
-
+        Yields:
+            iterable: Document labels.
         """
 
         for self.file in self.files:
@@ -164,14 +168,11 @@ class FilterPOS(object):
 
                 yield label
 
-
-
-
     def get_lemma(self):
+        """Gets lemma from DKPro-Wrapper output.
 
-        """
-        Get lemma from DKPro-Wrapper output
-
+        Yields:
+            Lemma from DKPro output.
         """
         for self.file in self.files:
             if not self.file.startswith("."):
@@ -184,10 +185,6 @@ class FilterPOS(object):
 
                 for p in pos_tags:
                     yield df.loc[df["CPOS"] == p]["Lemma"]
-
-
-
-
 
 class Visualization():
 
@@ -264,7 +261,7 @@ class Visualization():
         Args:
             corpus: Corpus created by Gensim, e.g. corpus.mm.
             model: LDA model created by Gensim, e.g. corpus.lda.
-            doc_labels(list[str]): List of document labels, e.g. corpus_doclabels.txt.
+            doc_labels (list[str]): List of document labels, e.g. corpus_doclabels.txt.
 
         Returns:
             Matplotlib heatmap figure.
@@ -305,7 +302,7 @@ class Visualization():
         log.info("Successfully created heatmap figure.")
         return heatmap
 
-    def save_heatmap(heatmap, path):
+    def save_heatmap(heatmap, path=path):
         """Saves Matplotlib heatmap figure.
 
         The created visualization (e.g. with `make_heatmap()`) has to be
@@ -322,7 +319,7 @@ class Visualization():
         plt.savefig(os.path.join(path, 'corpus_heatmap.png'), dpi= 200)
         log.info("Successfully saved heatmap as corpus_heatmap.png")
 
-    def make_interactive(corpus, model, dictionary):
+    def make_interactive(model, corpus, dictionary):
         """Generates interactive visualization from LDA model.
 
         The ingested data (e.g. with `load_gensim_output()`) has to be transmitted
@@ -342,7 +339,7 @@ class Visualization():
         return vis
 
 
-    def save_interactive(vis, path):
+    def save_interactive(vis, path=path):
         """Saves interactive visualization.
 
         The created visualization (e.g. with `make_interactive()`) has to be
