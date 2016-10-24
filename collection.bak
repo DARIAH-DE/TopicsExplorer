@@ -92,19 +92,18 @@ def segmenter(doc, length):
         Implement fuzzy option to consider paragraph breaks.              
     """
 
-    doc = doc.split()
-    for i, word in enumerate(doc):
-        if i % length == 0:
-            yield doc[i : i + length]
+    doc = self.doc.split()
+        for i, word in enumerate(doc):
+            if i % self.length == 0:
+                yield doc[i : i + self.length]
 
 
-def filter_POS_tags(doclist_csv, pos_tags, columns):
+def filter_POS_tags(path, columns, files, pos_tags):
     """Gets selected POS-tags from DKPro-Wrapper output.
 
     Args:
-        doclist (list[str]): List of DKPro output files that should be selected
+        path (str): Path to DKPro-Wrapper output folder.
         pos_tags (list[str]): List of DKPro pos_tags that should be selected
-        columns (list[str]): List of columns that should be selected
         
     Yields:
         Lemma from DKPro output.
@@ -139,9 +138,8 @@ def get_labels(files):
     labels = []
         
     for file in files:
-        label = os.path.basename(file)
+        label = os.path.basename(self.file)
         yield label
-
 
 class Visualization:
     def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):

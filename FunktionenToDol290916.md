@@ -3,21 +3,21 @@
 ##﻿Allgemein:
 
 
-Alle Funktionen die etwas Inhaltliches machen, sollen auf Iterables (statt Listen) arbeiten, getrennt von Dateioperationen
+Alle Funktionen die etwas Inhaltliches machen, sollen auf Iterables (statt Listen) arbeiten, getrennt von Dateioperationen ✓
 
-Einzeldateischreiben vermeiden, Speicherfunktionen können default-werte (für Dateinamen) haben. Dateien/Folder sollen dynamisch benannt werden  
+Einzeldateischreiben vermeiden, Speicherfunktionen können default-werte (für Dateinamen) haben. Dateien/Folder sollen dynamisch benannt werden 
 
 Split- und Join-Operationen vermeiden
 
 Nicht von Leerzeichen als Trenner ausgehen, sondern mit /n trennen.
 
-Generatoren zwischen den Funktionen hin und herreichen.
+Generatoren zwischen den Funktionen hin und herreichen ✓
 
 Prints durch Logging ersetzen,  (verschiedene Loglevels, z.b. Log-Error) → Severin ✓
 
 TimeStamps für alle Funktionen (mit Logging) → Severin? ✓
 
-Statt glob.glob – Liste von Dateinamen, die die Reihenfolge im Ordner behält.
+Statt glob.glob – Liste von Dateinamen, die die Reihenfolge im Ordner behält ✓
 
 Globale Variablen - Kommandozeilenparameter (Arg.path)
 
@@ -35,7 +35,7 @@ Globale Variablen - Kommandozeilenparameter (Arg.path)
 
 	remove Hapax ()
 
-#### splitFiles(): -> Philip
+#### splitFiles(): -> Philip ✓
 
 - eigene Funktion für Segmentierung
 
@@ -44,7 +44,7 @@ Globale Variablen - Kommandozeilenparameter (Arg.path)
 - Csv in Dataframe
 
 
-#### getPOSTags(): -> Philip
+#### getPOSTags(): -> Philip 
 
 - Filterung der POS-Tags 
 
