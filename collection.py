@@ -92,7 +92,7 @@ def segmenter(doc, length):
         Implement fuzzy option to consider paragraph breaks.              
     """
     log.info("Segmenting documents ...")
-    doc = doc.split()
+    doc = next(doc)
     for i, word in enumerate(doc):
         if i % length == 0:
             yield doc[i : i + length]
