@@ -49,7 +49,7 @@ def create_document_list(path, ext='.txt'):
         list[str]: List of files with full path.
     """
     
-    log.info("Creating document list ...")
+    log.info("Creating document list from %s files ...", ext)
     doclist = glob.glob(path + "/*" + ext)
     log.debug("Document list successfully created.")
     return doclist
