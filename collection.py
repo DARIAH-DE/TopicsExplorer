@@ -74,6 +74,30 @@ def read_from_txt(doclist):
         with open(file, 'r', encoding = 'utf-8') as f:
             yield f.read()
     log.debug("Documents successfully accessed.")
+    
+def read_from_csv(doclist, columns):
+    """Opens files using a list of paths.
+
+    Note:
+        Use `create_document_list()` to create `doclist`.
+        
+    Args:
+        doclist (list[str]): List of all documents in the corpus.
+        
+    Yields:
+        Documents in `doclist`.
+
+    Todo:
+        Seperate metadata (author, header)?
+    """
+    log.info("Accessing documents ...")
+    
+    df = pd.DataFrame()  
+    for doc in doclist:
+        df = pd.read_csv(doc, sep="\t", quoting=csv.QUOTE_NONE)
+        yield df[columns]
+        
+    log.debug("Documents successfully accessed.")
 
 def segmenter(doc, length):
     """Segments documents.
