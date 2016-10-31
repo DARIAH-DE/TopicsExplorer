@@ -76,12 +76,12 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
     """Opens files using a list of paths.
     Note:
         Use `create_document_list()` to create `doclist`.
-        
+
     Args:
         doclist (list[str]): List of all documents in the corpus.
         columns (list[str]): List of column names.
             Defaults to '['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']'.
-        
+
     Yields:
         Documents in `doclist`.
 
@@ -117,7 +117,7 @@ def segmenter(doc, length=1000):
             yield doc[i : i + length]
     log.debug("Document segmented after %s characters.", length)
 
-def filter_POS_tags(doclist, pos_tags=['ADJ', 'V', 'NN']):
+def filter_POS_tags(corpus_csv, pos_tags=['ADJ', 'V', 'NN']):
     """Gets selected POS-tags from DKPro-Wrapper output.
 
     Args:
@@ -134,8 +134,8 @@ def filter_POS_tags(doclist, pos_tags=['ADJ', 'V', 'NN']):
         * Delete pd.read_csv
     """
     log.info("Accessing %s lemmas ...", pos_tags)
-    for f, p in zip(doclist, pos_tags):
-        df = pd.read_csv(f, sep='\t', quoting=csv.QUOTE_NONE)
+    df = next(docs_csv)
+    for p in pos_tags:
         df = df.loc[df['CPOS'] == p]
         yield df.loc[df['CPOS'] == p]['Lemma']
     log.debug("Lemmas available.")
