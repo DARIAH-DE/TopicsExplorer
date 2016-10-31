@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """Topic Modeling and LDA visualization.
+
 This module contains various `Gensim`_ related functions for topic modeling and
 LDA visualization provided by `DARIAH-DE`_.
+
 .. _Gensim:
     https://radimrehurek.com/gensim/index.html
 .. _DARIAH-DE:
@@ -66,11 +68,11 @@ def read_from_txt(doclist):
     Todo:
         * Seperate metadata (author, header)?
     """
-    log.info("Accessing documents ...")
+    log.info("Accessing TXT documents ...")
     for file in doclist:
         with open(file, 'r', encoding = 'utf-8') as f:
             yield f.read()
-    log.debug("Documents available.")
+    log.debug("TXT documents available.")
 
 def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']):
     """Opens files using a list of paths.
@@ -88,11 +90,11 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
     Todo:
         * Seperate metadata (author, header)?
     """
-    log.info("Accessing documents ...")
+    log.info("Accessing CSV documents ...")
     for file in doclist:
         df = pd.read_csv(file, sep="\t", quoting=csv.QUOTE_NONE)
         yield df[columns]
-    log.debug("Documents available.")
+    log.debug("CSV documents available.")
 
 def segmenter(doc, length=1000):
     """Segments documents.
@@ -134,7 +136,7 @@ def filter_POS_tags(corpus_csv, pos_tags=['ADJ', 'V', 'NN']):
         * Delete pd.read_csv
     """
     log.info("Accessing %s lemmas ...", pos_tags)
-    df = next(docs_csv)
+    df = next(corpus_csv)
     for p in pos_tags:
         df = df.loc[df['CPOS'] == p]
         yield df.loc[df['CPOS'] == p]['Lemma']
