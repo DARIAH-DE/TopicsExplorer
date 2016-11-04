@@ -28,6 +28,7 @@ import pyLDAvis.gensim
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+from itertools import dropwhile
 import logging
 from gensim.corpora import MmCorpus, Dictionary
 from gensim.models import LdaModel
@@ -119,6 +120,22 @@ def segmenter(doc, length=1000):
             yield doc[i : i + length]
     log.debug("Document segmented after %s characters.", length)
 
+def removeStopwords(counter, mfw):
+
+    for key, value in counter.most_common(mfw):
+        del counter[key]
+                
+    return counter
+    
+    
+def removeHapax(counter):
+    
+    for key, value in dropwhile(lambda key_count: key_count[1] > 1, counter.most_common()):
+        del counter[key]
+    
+    return counter
+    
+    
 def filter_POS_tags(corpus_csv, pos_tags=['ADJ', 'V', 'NN']):
     """Gets selected POS-tags from DKPro-Wrapper output.
 
