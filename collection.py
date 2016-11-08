@@ -247,9 +247,8 @@ class Visualization:
             Matplotlib heatmap figure.
 
         ToDo:
-            object oriented
-                http://matplotlib.org/examples/pylab_examples/pythonic_matplotlib.html
-            create figure dynamically?
+            * add colorbar
+            * create figure dynamically?
                 http://stackoverflow.com/questions/23058560/plotting-dynamic-data-using-matplotlib
         """
         no_of_topics = self.model.num_topics
