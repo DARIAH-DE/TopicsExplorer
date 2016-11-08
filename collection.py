@@ -275,13 +275,17 @@ class Visualization:
 
         log.info("Creating heatmap figure ...")
         if no_of_docs > 20 or no_of_topics > 20:
-            plt.figure(figsize=(20,20))    # if many items, enlarge figure
-        plt.pcolor(doc_topic, norm=None, cmap='Reds')
-        plt.yticks(np.arange(doc_topic.shape[0])+1.0, self.doc_labels)
-        plt.xticks(np.arange(doc_topic.shape[1])+0.5, topic_labels, rotation='90')
-        plt.gca().invert_yaxis()
-        plt.colorbar(cmap='Reds')
-        heatmap_vis = plt.tight_layout()
+            fig = plt.figure(figsize=(20,20))    # if many items, enlarge figure
+        else:
+            fig = plt.figure()
+            ax = fig.add_subplot(1,1,1)
+            ax.pcolor(doc_topic, norm=None, cmap='Reds')
+            ax.set_yticks(np.arange(doc_topic.shape[0])+1.0)
+            ax.set_yticklabels(self.doc_labels)
+            ax.set_xticks(np.arange(doc_topic.shape[1])+0.5)
+            ax.set_xticklabels(topic_labels, rotation='90')
+            ax.invert_yaxis()
+            heatmap_vis = fig.tight_layout()
         log.debug("Heatmap figure available.")
         return heatmap_vis
 
