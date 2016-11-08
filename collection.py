@@ -302,7 +302,7 @@ class Visualization:
             ~/out/corpus_heatmap.png
         """
         log.info("Saving heatmap figure...")
-        plt.savefig(os.path.join(path, filename + '.' + ext), dpi=dpi)
+        fig.savefig(os.path.join(path, filename + '.' + ext), dpi=dpi)
         log.debug("Heatmap figure available at %s/%s.%s", path, filename, ext)
 
     def make_interactive(self):
