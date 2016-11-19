@@ -120,92 +120,74 @@ def segmenter(doc, length=1000):
         if i % length == 0:
             yield doc[i : i + length]
     log.debug("Document segmented after %s characters.", length)
-    
-    
-def calculateTermFrequency(corpus_txt):
-    """Creates a counter with term and term frequency
+
+def calculate_term_frequency(corpus_txt):
+    """Creates a counter with term and term frequency.
 
     Note:
-        Use `read_from_txt" to create `corpus_txt`.
+        Use `read_from_txt()` to create `corpus_txt`.
 
     Args:
-        corpus_txt (str): corpus as iterable.
+        corpus_txt (str): Corpus as iterable.
 
     Todo:
         * Tokenizer
     """
-    log.info("Calculating term frequency ...")    
-
+    log.info("Calculating term frequency ...")
     counter = Counter()
 
     for doc in corpus_txt:
         #split() immer noch, da kein Tokenizer vorhanden und nur temporär zum Testen
         counter.update(doc.split())
-    
-    return counter.iteritems()
-    
+    return counter
 
-def findStopwords(counter, mfw):
-    """Creates a stopword list
+
+def find_stopwords(counter, mfw):
+    """Creates a stopword list.
 
     Note:
-        Use `calculateTermFrequency` to create `counter`.
+        Use `calculate_term_frequency()` to create `counter`.
 
     Args:
         counter (Counter): Counter with term and term frequency.
-        mfw (int): Target size of most frequent words to be considered
-
-    Todo:
+        mfw (int): Target size of most frequent words to be considered.
     """
-    log.info("Find stopwords ...")
-
+    log.info("Finding stopwords ...")
     stopwordlist =  counter.most_common(mfw)
-
     return stopwordlist
-    
-    
-def findHapax(counter):
-    """Creates list with hapax legommena
+
+
+def find_hapax(counter):
+    """Creates list with hapax legommena.
 
     Note:
-        Use `calculateTermFrequency` to create `counter`.
+        Use `calculate_term_frequency()` to create `counter`.
 
     Args:
         counter (Counter): Counter with term and term frequency.
-
-    Todo:
     """
     log.info("Find hapax ...")
-    
     hapax
-    
     for key, value in dropwhile(lambda key_count: key_count[1] == 1, counter):
         hapax.add(key)
-    
     return hapax
 
-def removeStopwords(list, counter):
-    """Remove stopwords and/or hapax
+def remove_stopwords(list, counter):
+    """Removes stopwords and/or hapax.
 
     Note:
-        Use `calculateTermFrequency` to create `stopwords' and/or 'hapax`.
+        Use `calculate_term_frequency()` to create `stopwords` and/or `hapax`.
 
     Args:
         list(str): List with stopwords or hapax
         counter (Counter): Counter with term and term frequency.
-
-    Todo:
     """
-    log.info("Remove stopwords ...")
-    
+    log.info("Removing stopwords ...")
     for word in list:
-        for key, value in counter.iteritems():
+        for key, value in counter.items():
             if key == word:
                 del counter[key]
-    
     return counter
-
-    
     
 def filter_POS_tags(corpus_csv, pos_tags=['ADJ', 'V', 'NN']):
     """Gets selected POS-tags from DKPro-Wrapper output.
