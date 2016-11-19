@@ -355,9 +355,10 @@ class Visualization:
             ax.set_xticks(np.arange(doc_topic.shape[1])+0.5)
             ax.set_xticklabels(topic_labels, rotation='90')
             ax.invert_yaxis()
-            heatmap_vis = fig.tight_layout()
-        log.debug("Heatmap figure available.")
-        return heatmap_vis
+            fig.tight_layout()
+            self.heatmap_vis = fig
+            log.debug("Heatmap figure available.")
+
 
     def save_heatmap(self, path, filename='heatmap', ext='png', dpi=200):
         """Saves Matplotlib heatmap figure.
@@ -373,8 +374,11 @@ class Visualization:
             ~/out/corpus_heatmap.png
         """
         log.info("Saving heatmap figure...")
-        fig.savefig(os.path.join(path, filename + '.' + ext), dpi=dpi)
-        log.debug("Heatmap figure available at %s/%s.%s", path, filename, ext)
+        try:
+            self.heatmap_vis.savefig(os.path.join(path, filename + '.' + ext), dpi=dpi)
+            log.debug("Heatmap figure available at %s/%s.%s", path, filename, ext)
+        except AttributeError:
+            log.error("Run make_heatmap()")
 
     def make_interactive(self):
         """Generates interactive visualization from LDA model.
@@ -393,7 +397,6 @@ class Visualization:
         log.info("Accessing model, corpus and dictionary ...")
         self.interactive_vis = pyLDAvis.gensim.prepare(self.model, self.corpus, self.dictionary)
         log.debug("Interactive visualization available.")
-        return self.interactive_vis
 
 
     def save_interactive(self, path, filename='corpus_interactive'):
@@ -409,8 +412,11 @@ class Visualization:
             ~/out/corpus_interactive.html
             ~/out/corpus_interactive.json
         """
-        log.info("Saving interactive visualization ...")
-        pyLDAvis.save_html(self.interactive_vis, os.path.join(path, 'corpus_interactive.html'))
-        pyLDAvis.save_json(self.interactive_vis, os.path.join(path, 'corpus_interactive.json'))
-        pyLDAvis.prepared_data_to_html(self.interactive_vis)
-        log.debug("Interactive visualization available at %s/corpus_interactive.html and %s/corpus_interactive.json", path, path)
+        try:
+            log.info("Saving interactive visualization ...")
+            pyLDAvis.save_html(self.interactive_vis, os.path.join(path, 'corpus_interactive.html'))
+            pyLDAvis.save_json(self.interactive_vis, os.path.join(path, 'corpus_interactive.json'))
+            pyLDAvis.prepared_data_to_html(self.interactive_vis)
+            log.debug("Interactive visualization available at %s/corpus_interactive.html and %s/corpus_interactive.json", path, path)
+        except AttributeError:
+            log.error("Run save_interactive()")
