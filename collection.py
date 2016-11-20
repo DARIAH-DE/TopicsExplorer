@@ -16,8 +16,8 @@ LDA visualization provided by `DARIAH-DE`_.
 __author__ = "DARIAH-DE"
 __authors__ = "Stefan Pernes, Steffen Pielstroem, Philip Duerholt, Sina Bock, Severin Simmler"
 __email__ = "stefan.pernes@uni-wuerzburg.de, pielstroem@biozentrum.uni-wuerzburg.de"
-__version__ = "0.4"
-__date__ = "2016-10-31"
+__version__ = "0.5"
+__date__ = "2016-11-11"
 
 import pandas as pd
 import re
@@ -32,6 +32,7 @@ from itertools import dropwhile
 import logging
 from gensim.corpora import MmCorpus, Dictionary
 from gensim.models import LdaModel
+from collections import Counter
 
 log = logging.getLogger('collection')
 log.addHandler(logging.NullHandler())
@@ -49,10 +50,25 @@ def create_document_list(path, ext='txt'):
     Returns:
         list[str]: List of files with full path.
     """
-    log.info("Creating document list from %s files ...", ext)
+    log.info("Creating document list from %s files ...", ext.upper())
     doclist = glob.glob(path + "/*." + ext)
-    log.debug("%s entries in document list available.", len(doclist))
+    log.debug("%s entries in document list.", len(doclist))
     return doclist
+
+def get_labels(files):
+    """Gets document labels.
+
+    Args:
+        files (list[str]): List of file paths.
+
+    Yields:
+        Iterable: Document labels.
+    """
+    log.info("Creating document labels ...")
+    for file in files:
+        label = os.path.basename(file)
+        yield label
+    log.debug("Document labels available.")
 
 def read_from_txt(doclist):
     """Opens files using a list of paths.
@@ -69,11 +85,10 @@ def read_from_txt(doclist):
     Todo:
         * Seperate metadata (author, header)?
     """
-    log.info("Accessing TXT documents ...")
     for file in doclist:
         with open(file, 'r', encoding = 'utf-8') as f:
+            log.debug("Accessing TXT document ...")
             yield f.read()
-    log.debug("TXT documents available.")
 
 def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']):
     """Opens files using a list of paths.
@@ -91,17 +106,16 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
     Todo:
         * Seperate metadata (author, header)?
     """
-    log.info("Accessing CSV documents ...")
     for file in doclist:
         df = pd.read_csv(file, sep="\t", quoting=csv.QUOTE_NONE)
+        log.info("Accessing CSV documents ...")
         yield df[columns]
-    log.debug("CSV documents available.")
 
 def segmenter(doc, length=1000):
     """Segments documents.
 
     Note:
-        Use `ReadFromTXT` to create `doc`.
+        Use `read_from_txt()` to create `doc`.
 
     Args:
         doc (str): Document as iterable.
@@ -113,29 +127,13 @@ def segmenter(doc, length=1000):
     Todo:
         * Implement fuzzy option to consider paragraph breaks.
     """
-    log.info("Segmenting document ...")
     doc = next(doc)
+    log.info("Segmenting document ...")
     for i, word in enumerate(doc):
         if i % length == 0:
+            log.debug("Segment has a length of %s characters.", length)
             yield doc[i : i + length]
-    log.debug("Document segmented after %s characters.", length)
 
-def removeStopwords(counter, mfw):
-
-    for key, value in counter.most_common(mfw):
-        del counter[key]
-                
-    return counter
-    
-    
-def removeHapax(counter):
-    
-    for key, value in dropwhile(lambda key_count: key_count[1] > 1, counter.most_common()):
-        del counter[key]
-    
-    return counter
-    
-    
 def filter_POS_tags(corpus_csv, pos_tags=['ADJ', 'V', 'NN']):
     """Gets selected POS-tags from DKPro-Wrapper output.
 
@@ -152,27 +150,89 @@ def filter_POS_tags(corpus_csv, pos_tags=['ADJ', 'V', 'NN']):
         * Separate readCSV-function?
         * Delete pd.read_csv
     """
-    log.info("Accessing %s lemmas ...", pos_tags)
     df = next(corpus_csv)
+    log.info("Accessing %s lemmas ...", pos_tags)
     for p in pos_tags:
         df = df.loc[df['CPOS'] == p]
         yield df.loc[df['CPOS'] == p]['Lemma']
-    log.debug("Lemmas available.")
 
-def get_labels(files):
-    """Gets document labels.
+def calculate_term_frequency(corpus_txt):
+    """Creates a counter with term and term frequency.
+
+    Note:
+        Use `read_from_txt()` to create `corpus_txt`.
 
     Args:
-        files (list[str]): List of file paths.
+        corpus_txt (str): Corpus as iterable.
 
-    Yields:
-        Iterable: Document labels.
+    Todo:
+        * Tokenizer
     """
-    log.info("Creating document labels ...")
-    for file in files:
-        label = os.path.basename(file)
-        yield label
-    log.debug("Document labels available.")
+    log.info("Calculating term frequency ...")
+    counter = Counter()
+    for doc in corpus_txt:
+        #split() immer noch, da kein Tokenizer vorhanden und nur temporär zum Testen
+        counter.update(doc.split())
+        log.debug("Term frequency calculated.")
+    return counter
+
+
+def find_stopwords(counter, mfw):
+    """Creates a stopword list.
+
+    Note:
+        Use `calculate_term_frequency()` to create `counter`.
+
+    Args:
+        counter (Counter): Counter with term and term frequency.
+        mfw (int): Target size of most frequent words to be considered.
+    """
+    log.info("Finding stopwords ...")
+    stopwords = pd.DataFrame(counter.most_common(mfw), columns=['word', 'freq'])
+    log.debug("%s stopwords found.", len(stopwords))
+    return stopwords
+
+
+def find_hapax(counter):
+    """Creates list with hapax legommena.
+
+    Note:
+        Use `calculate_term_frequency()` to create `counter`.
+
+    Args:
+        counter (Counter): Counter with term and term frequency.
+
+    To do:
+        * 'lambda' war ja nicht die optimale Lösung?! Eventuell lässt sich
+            reversed most_common auch noch eleganter lösen!?
+    """
+    log.info("Find hapax legomena ...")
+    df = pd.DataFrame(list(reversed(counter.most_common())), columns=['word', 'freq'])
+    hapax = df[df['freq'] == 1]
+    #for key, value in dropwhile(lambda key_count: key_count[1] == 1, counter):
+    #    hapax.add(key)
+    log.debug("%s hapax legomena found.", len(hapax))
+    return hapax
+
+def remove_filtered_words(counter, filter):
+    """Removes stopwords and/or hapax.
+
+    Note:
+        Use `calculate_term_frequency()` to create `stopwords` and/or `hapax`.
+
+    Args:
+        list(str): List with stopwords or hapax
+        counter (Counter): Counter with term and term frequency.
+    """
+    log.info("Removing stopwords ...")
+    total = 0
+    for key in filter['word']:
+        if key in counter:
+            del counter[key]
+            total += 1
+    log.debug("%s words removed.", total)
+    return counter
+
 
 class Visualization:
     def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
@@ -224,8 +284,10 @@ class Visualization:
 
         except OSError as err:
             log.error("OS error: {0}".format(err))
+            raise
         except ValueError:
             log.error("Value error: No matching value found.")
+            raise
         except:
             import sys
             log.error("Unexpected error:", sys.exc_info()[0])
@@ -284,9 +346,10 @@ class Visualization:
             ax.set_xticks(np.arange(doc_topic.shape[1])+0.5)
             ax.set_xticklabels(topic_labels, rotation='90')
             ax.invert_yaxis()
-            heatmap_vis = fig.tight_layout()
-        log.debug("Heatmap figure available.")
-        return heatmap_vis
+            fig.tight_layout()
+            self.heatmap_vis = fig
+            log.debug("Heatmap figure available.")
+
 
     def save_heatmap(self, path, filename='heatmap', ext='png', dpi=200):
         """Saves Matplotlib heatmap figure.
@@ -302,8 +365,12 @@ class Visualization:
             ~/out/corpus_heatmap.png
         """
         log.info("Saving heatmap figure...")
-        fig.savefig(os.path.join(path, filename + '.' + ext), dpi=dpi)
-        log.debug("Heatmap figure available at %s/%s.%s", path, filename, ext)
+        try:
+            self.heatmap_vis.savefig(os.path.join(path, filename + '.' + ext), dpi=dpi)
+            log.debug("Heatmap figure available at %s/%s.%s", path, filename, ext)
+        except AttributeError:
+            log.error("Run make_heatmap() before save_heatmp()")
+            raise
 
     def make_interactive(self):
         """Generates interactive visualization from LDA model.
@@ -322,7 +389,6 @@ class Visualization:
         log.info("Accessing model, corpus and dictionary ...")
         self.interactive_vis = pyLDAvis.gensim.prepare(self.model, self.corpus, self.dictionary)
         log.debug("Interactive visualization available.")
-        return self.interactive_vis
 
 
     def save_interactive(self, path, filename='corpus_interactive'):
@@ -338,8 +404,12 @@ class Visualization:
             ~/out/corpus_interactive.html
             ~/out/corpus_interactive.json
         """
-        log.info("Saving interactive visualization ...")
-        pyLDAvis.save_html(self.interactive_vis, os.path.join(path, 'corpus_interactive.html'))
-        pyLDAvis.save_json(self.interactive_vis, os.path.join(path, 'corpus_interactive.json'))
-        pyLDAvis.prepared_data_to_html(self.interactive_vis)
-        log.debug("Interactive visualization available at %s/corpus_interactive.html and %s/corpus_interactive.json", path, path)
+        try:
+            log.info("Saving interactive visualization ...")
+            pyLDAvis.save_html(self.interactive_vis, os.path.join(path, 'corpus_interactive.html'))
+            pyLDAvis.save_json(self.interactive_vis, os.path.join(path, 'corpus_interactive.json'))
+            pyLDAvis.prepared_data_to_html(self.interactive_vis)
+            log.debug("Interactive visualization available at %s/corpus_interactive.html and %s/corpus_interactive.json", path, path)
+        except AttributeError:
+            log.error("Run make_interactive() before save_interactive()")
+            raise
