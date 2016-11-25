@@ -292,10 +292,11 @@ def create_TF_matrix(doc_tokens, doc_labels):
         * TBA
     """
 
-    termdocmatrix = pd.Dataframe()
+    termdocmatrix = pd.DataFrame()
 
     for label, doc in zip(doc_labels, doc_tokens):
-    
+        print(label)
+        print(doc[:3])
         try:
             termdocmatrix[label] = pd.Series(Counter(doc))
 
@@ -305,7 +306,7 @@ def create_TF_matrix(doc_tokens, doc_labels):
     
     log.info("Term Document Matrix successfully created.")
             
-    return termdocmatrix
+    return termdocmatrix.fillna
 
 class Visualization:
     def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
