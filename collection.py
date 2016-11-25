@@ -148,6 +148,24 @@ def segmenter(doc_txt, length=1000):
             segment = doc[i : i + length]
             yield segment
 
+def tokenizer(doc_txt):
+    """Tokenizes text documents.
+    Note:
+        Use `read_from_txt()` to create `doc_txt`.
+
+    Args:
+        doc_txt (str): Document as iterable.
+
+    Yields:
+        List of Strings
+
+    Todo:
+        * Tokenize with regex and not with split()
+    """
+
+    for doc in doc_txt:
+        yield doc.split()
+            
 def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     """Gets lemmas by selected POS-tags from DKPro-Wrapper output.
 
@@ -257,52 +275,37 @@ def remove_features(term_frequency, features):
     log.debug("%s features removed.", total)
     return clean_term_frequency
 
-def create_matrix_market(clean_term_frequency, doc_labels):
-    """Creates Matrix Market.
+def create_TF_matrix(doc_tokens, doc_labels):
+    """Creates Document to Term Frequency Matrix.
 
     Note:
-        Use `remove_features()` to create `clean_term_frequency`.
+        Use `tokenizer()` to create `doc_tokens`.
 
     Args:
-       clean_term_frequency (Series): Series with term and term frequency.
-       doc_labels:
+       doc_tokens (Generator): Generator with Lists of String.
+       doc_labels: List of String.
 
     Returns:
-        Term-Doc-Matrix and Doc-Term-Matrix.
+        Term-Doc-Matrix as pandas Dataframe
 
     To do:
-        * doc_labels-part not working yet (line 281)... Generator problem?!
+        * TBA
     """
 
-    corpus_txt = read_from_txt(doc_labels)
+    termdocmatrix = pd.Dataframe()
 
-    # and now we make our words list
-    allwords = clean_term_frequency.index.tolist()
-    alldocs = range(len(next(doc_labels)))
-    print(alldocs)
+    for label, doc in zip(doc_labels, doc_tokens):
+    
+        try:
+            termdocmatrix[label] = pd.Series(Counter(doc))
 
-    termdocmatrix = np.zeros((len(allwords), len(alldocs)), dtype = np.int)
-
-    for docindex, doc in zip(alldocs, corpus_txt):
-        for word in doc.split():
-            try:
-                wordindex = allwords.index(word)
-                termdocmatrix[wordindex, docindex] += 1
-
-            except:
-                pass
-
-    # The term/document matrix has a row for each word
-    # and a column for each document
-    print("this is the term/document matrix:\n", termdocmatrix, "\n")
-
-    # and now we swap rows and columns:
-    # The document/term matrix has a row for each document
-    # and a column for each term
-    doctermmatrix = termdocmatrix.transpose()
-    print("this is the document/term matrix:\n", doctermmatrix, "\n")
-
-    return termdocmatrix, doctermmatrix
+        except:
+            log.debug("Error while trying to count tokens in %s .", label)
+            pass
+    
+    log.info("Term Document Matrix successfully created.")
+            
+    return termdocmatrix
 
 class Visualization:
     def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
