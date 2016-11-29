@@ -16,21 +16,23 @@ LDA visualization provided by `DARIAH-DE`_.
 __author__ = "DARIAH-DE"
 __authors__ = "Stefan Pernes, Steffen Pielstroem, Philip Duerholt, Sina Bock, Severin Simmler"
 __email__ = "stefan.pernes@uni-wuerzburg.de, pielstroem@biozentrum.uni-wuerzburg.de"
-__version__ = "0.4"
-__date__ = "2016-10-31"
+__version__ = "0.1"
+__date__ = "2016-11-24"
 
-import pandas as pd
-import re
-import os
+from collections import Counter
 import csv
-import glob
-import pyLDAvis.gensim
-import numpy as np
-import matplotlib.pyplot as plt
-import sys
-import logging
 from gensim.corpora import MmCorpus, Dictionary
 from gensim.models import LdaModel
+import glob
+from itertools import dropwhile
+import logging
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+import pandas as pd
+import pyLDAvis.gensim
+import re
+import sys
 
 log = logging.getLogger('collection')
 log.addHandler(logging.NullHandler())
@@ -48,62 +50,89 @@ def create_document_list(path, ext='txt'):
     Returns:
         list[str]: List of files with full path.
     """
-    log.info("Creating document list from %s files ...", ext)
+    log.info("Creating document list from %s files ...", ext.upper())
     doclist = glob.glob(path + "/*." + ext)
-    log.debug("%s entries in document list available.", len(doclist))
+    log.debug("%s entries in document list.", len(doclist))
     return doclist
 
+def get_labels(doclist):
+    """Creates a list of document labels.
+
+    Note:
+        Use `create_document_list()` to create `doclist`.
+
+    Args:
+        doclist (list[str]): List of file paths.
+
+    Yields:
+        Iterable: Document labels.
+    """
+    log.info("Creating document labels ...")
+    for doc in doclist:
+        label = os.path.basename(doc)
+        label = os.path.splitext(label)[0]
+        yield label
+    log.debug("Document labels available.")
+
 def read_from_txt(doclist):
-    """Opens files using a list of paths.
+    """Opens files using a list of paths or one single path.
 
     Note:
         Use `create_document_list()` to create `doclist`.
 
     Args:
         doclist (list[str]): List of all documents in the corpus.
+        doclist (str): Path to TXT file.
 
     Yields:
-        Documents in `doclist`.
+        Iterable: Document.
 
     Todo:
         * Seperate metadata (author, header)?
     """
-    log.info("Accessing TXT documents ...")
-    for file in doclist:
-        with open(file, 'r', encoding = 'utf-8') as f:
-            yield f.read()
-    log.debug("TXT documents available.")
+    if type(doclist) == str:
+        with open(doclist, 'r', encoding='utf-8') as f:
+            log.debug("Accessing TXT document ...")
+            doc = f.read()
+            yield doc
+    else:
+        for file in doclist:
+            with open(file, 'r', encoding='utf-8') as f:
+                log.debug("Accessing TXT document ...")
+                doc_txt = f.read()
+                yield doc_txt
 
 def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']):
     """Opens files using a list of paths.
+
     Note:
         Use `create_document_list()` to create `doclist`.
 
     Args:
         doclist (list[str]): List of all documents in the corpus.
-        columns (list[str]): List of column names.
+        columns (list[str]): List of CSV column names.
             Defaults to '['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']'.
 
     Yields:
-        Documents in `doclist`.
+        Document.
 
     Todo:
         * Seperate metadata (author, header)?
     """
-    log.info("Accessing CSV documents ...")
     for file in doclist:
         df = pd.read_csv(file, sep="\t", quoting=csv.QUOTE_NONE)
-        yield df[columns]
-    log.debug("CSV documents available.")
+        log.info("Accessing CSV documents ...")
+        doc_csv = df[columns]
+        yield doc_csv
 
-def segmenter(doc, length=1000):
+def segmenter(doc_txt, length=1000):
     """Segments documents.
 
     Note:
-        Use `ReadFromTXT` to create `doc`.
+        Use `read_from_txt()` to create `doc_txt`.
 
     Args:
-        doc (str): Document as iterable.
+        doc_txt (str): Document as iterable.
         length (int): Target size of segments. Defaults to '1000'.
 
     Yields:
@@ -112,53 +141,170 @@ def segmenter(doc, length=1000):
     Todo:
         * Implement fuzzy option to consider paragraph breaks.
     """
+    doc = next(doc_txt)
     log.info("Segmenting document ...")
-    doc = next(doc)
     for i, word in enumerate(doc):
         if i % length == 0:
-            yield doc[i : i + length]
-    log.debug("Document segmented after %s characters.", length)
+            log.debug("Segment has a length of %s characters.", length)
+            segment = doc[i : i + length]
+            yield segment
 
-def filter_POS_tags(corpus_csv, pos_tags=['ADJ', 'V', 'NN']):
-    """Gets selected POS-tags from DKPro-Wrapper output.
+def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
+    """Gets lemmas by selected POS-tags from DKPro-Wrapper output.
+
+    Note:
+        Use `read_from_csv()` to create `doc_csv`.
 
     Args:
         doclist (list[str]): List of DKPro output files that should be selected.
-        pos_tags (list[str]): List of DKPro pos_tags that should be selected.
+        pos_tags (list[str]): List of DKPro POS-tags that should be selected.
             Defaults to '['ADJ', 'V', 'NN']'.
 
     Yields:
-        Lemma from DKPro output.
-
-    ToDo:
-        * columns (List): Not necessary?
-        * Separate readCSV-function?
-        * Delete pd.read_csv
+        Lemma.
     """
+    df = next(doc_csv)
     log.info("Accessing %s lemmas ...", pos_tags)
-    df = next(corpus_csv)
     for p in pos_tags:
         df = df.loc[df['CPOS'] == p]
-        yield df.loc[df['CPOS'] == p]['Lemma']
-    log.debug("Lemmas available.")
+        lemma = df.loc[df['CPOS'] == p]['Lemma']
+        yield lemma
 
-def get_labels(files):
-    """Gets document labels.
+def calculate_term_frequency(doc_txt):
+    """Creates a counter with term and term frequency.
+
+    Note:
+        Use `read_from_txt()` to create `doc_txt`.
 
     Args:
-        files (list[str]): List of file paths.
+        doc_txt (str): Corpus as iterable.
 
-    Yields:
-        Iterable: Document labels.
+    Returns:
+        Series with term and frequency.
     """
-    log.info("Creating document labels ...")
-    for file in files:
-        label = os.path.basename(file)
-        yield label
-    log.debug("Document labels available.")
+    log.info("Calculating term frequency ...")
+    counter = Counter()
+    for doc in doc_txt:
+        #split() immer noch, da kein Tokenizer vorhanden und nur temporär zum Testen
+        counter.update(doc.split())
+        log.debug("Term frequency calculated.")
+    term_frequency = pd.Series(counter, index=counter.keys())
+    return term_frequency.sort_index()
+
+def find_stopwords(term_frequency, mfw):
+    """Creates a stopword list.
+
+    Note:
+        Use `calculate_term_frequency()` to create `term_frequency`.
+
+    Args:
+        term_frequency (Series): Series with term and term frequency.
+        mfw (int): Target size of most frequent words to be considered.
+
+    Returns:
+        Most frequent words in Series.
+    """
+    log.info("Finding stopwords ...")
+    stopwords = term_frequency.sort_values(ascending=False).head(mfw)
+    log.debug("%s stopwords found.", len(stopwords))
+    return stopwords
+
+def find_hapax(term_frequency):
+    """Creates list with hapax legommena.
+
+    Note:
+        Use `calculate_term_frequency()` to create `term_frequency`.
+
+    Args:
+        term_frequency (Series): Series with term and term frequency.
+
+    Returns:
+        Hapax legomena in Series.
+    """
+    log.info("Find hapax legomena ...")
+    hapax = term_frequency.loc[term_frequency == 1]
+    log.debug("%s hapax legomena found.", len(hapax))
+    return hapax
+
+def remove_features(term_frequency, features):
+    """Removes features.
+
+    Note:
+        Use `find_stopwords()` or `find_hapax()` to create `features`.
+
+    Args:
+        term_frequency (Series): Series with term and term frequency.
+        features (Series): Series with features to remove.
+        features (str): Text as iterable. Use `read_from_txt()` to create iterable.
+
+    Returns:
+        Clean corpus.
+    """
+    log.info("Removing features ...")
+    total = 0
+    if type(features) == pd.Series:
+        for feature in features.index:
+            del term_frequency[feature]
+            total += 1
+    elif type(features) != pd.Series:
+        features = next(features)
+        stoplist = [word for word in features.split()] # replace with final tokenize function
+        for term in stoplist:
+            if term in term_frequency:
+                del term_frequency[term]
+                total += 1
+    clean_term_frequency = term_frequency
+    log.debug("%s features removed.", total)
+    return clean_term_frequency
+
+def create_matrix_market(clean_term_frequency, doc_labels):
+    """Creates Matrix Market.
+
+    Note:
+        Use `remove_features()` to create `clean_term_frequency`.
+
+    Args:
+       clean_term_frequency (Series): Series with term and term frequency.
+       doc_labels:
+
+    Returns:
+        Term-Doc-Matrix and Doc-Term-Matrix.
+
+    To do:
+        * doc_labels-part not working yet (line 281)... Generator problem?!
+    """
+
+    corpus_txt = read_from_txt(doc_labels)
+
+    # and now we make our words list
+    allwords = clean_term_frequency.index.tolist()
+    alldocs = range(len(next(doc_labels)))
+    print(alldocs)
+
+    termdocmatrix = np.zeros((len(allwords), len(alldocs)), dtype = np.int)
+
+    for docindex, doc in zip(alldocs, corpus_txt):
+        for word in doc.split():
+            try:
+                wordindex = allwords.index(word)
+                termdocmatrix[wordindex, docindex] += 1
+
+            except:
+                pass
+
+    # The term/document matrix has a row for each word
+    # and a column for each document
+    print("this is the term/document matrix:\n", termdocmatrix, "\n")
+
+    # and now we swap rows and columns:
+    # The document/term matrix has a row for each document
+    # and a column for each term
+    doctermmatrix = termdocmatrix.transpose()
+    print("this is the document/term matrix:\n", doctermmatrix, "\n")
+    return termdocmatrix, doctermmatrix
 
 class Visualization:
-    def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
+    def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive=False):
         """Loads Gensim output for further processing.
 
         The output folder should contain ``corpus.mm``, ``corpus.lda``, as well as
@@ -166,7 +312,10 @@ class Visualization:
         visualization).
 
         Args:
-            path (str): Path to output folder.
+            lda_model: Path to output folder.
+            corpus:
+            dictionary:
+            doc_labels:
             interactive (bool, optional): True if interactive visualization,
                 False if heatmap is desired. Defaults to False.
 
@@ -193,7 +342,7 @@ class Visualization:
                 log.info("Accessing doc_labels ...")
                 self.doc_labels = doc_labels
                 log.debug("doc_labels accessed.")
-                with open(self.doc_labels, 'r', encoding='utf-8') as f:
+                with open(doc_labels, 'r', encoding='utf-8') as f:
                     self.doc_labels = [line for line in f.read().split()]
                     log.debug("%s doc_labels available.", len(doc_labels))
                 log.debug("Corpus, model and doc_labels available.")
@@ -207,8 +356,10 @@ class Visualization:
 
         except OSError as err:
             log.error("OS error: {0}".format(err))
+            raise
         except ValueError:
             log.error("Value error: No matching value found.")
+            raise
         except:
             import sys
             log.error("Unexpected error:", sys.exc_info()[0])
@@ -230,25 +381,22 @@ class Visualization:
             Matplotlib heatmap figure.
 
         ToDo:
-            object oriented
-                http://matplotlib.org/examples/pylab_examples/pythonic_matplotlib.html
-            create figure dynamically?
+            * add colorbar
+            * create figure dynamically?
                 http://stackoverflow.com/questions/23058560/plotting-dynamic-data-using-matplotlib
         """
         no_of_topics = self.model.num_topics
         no_of_docs = len(self.doc_labels)
         doc_topic = np.zeros((no_of_docs, no_of_topics))
 
-        log.info("Accessing topic distribution ...")
+        log.info("Accessing topic distribution and topic probability ...")
         for doc, i in zip(self.corpus, range(no_of_docs)):
             topic_dist = self.model.__getitem__(doc)
-        log.debug("Topic distribution available.")
-
-        log.info("Accessing topic probability ...")
-        for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
-            doc_topic[i][topic[0]] = topic[1]
-        log.debug("Topic probability available.")
-
+            print("Topic distribution:\n", topic_dist, "\n\n")
+            for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
+                doc_topic[i][topic[0]] = topic[1]
+        log.debug("Topic distribution and topic probability available.")
+        
         log.info("Accessing plot labels ...")
         topic_labels = []
         for i in range(no_of_topics):
@@ -258,15 +406,19 @@ class Visualization:
 
         log.info("Creating heatmap figure ...")
         if no_of_docs > 20 or no_of_topics > 20:
-            plt.figure(figsize=(20,20))    # if many items, enlarge figure
-        plt.pcolor(doc_topic, norm=None, cmap='Reds')
-        plt.yticks(np.arange(doc_topic.shape[0])+1.0, self.doc_labels)
-        plt.xticks(np.arange(doc_topic.shape[1])+0.5, topic_labels, rotation='90')
-        plt.gca().invert_yaxis()
-        plt.colorbar(cmap='Reds')
-        heatmap_vis = plt.tight_layout()
-        log.debug("Heatmap figure available.")
-        return heatmap_vis
+            fig = plt.figure(figsize=(20,20))    # if many items, enlarge figure
+        else:
+            fig = plt.figure()
+            ax = fig.add_subplot(1,1,1)
+            ax.pcolor(doc_topic, norm=None, cmap='Reds')
+            ax.set_yticks(np.arange(doc_topic.shape[0])+1.0)
+            ax.set_yticklabels(self.doc_labels)
+            ax.set_xticks(np.arange(doc_topic.shape[1])+0.5)
+            ax.set_xticklabels(topic_labels, rotation='90')
+            ax.invert_yaxis()
+            fig.tight_layout()
+            self.heatmap_vis = fig
+            log.debug("Heatmap figure available.")
 
     def save_heatmap(self, path, filename='heatmap', ext='png', dpi=200):
         """Saves Matplotlib heatmap figure.
@@ -282,8 +434,12 @@ class Visualization:
             ~/out/corpus_heatmap.png
         """
         log.info("Saving heatmap figure...")
-        plt.savefig(os.path.join(path, filename + '.' + ext), dpi=dpi)
-        log.debug("Heatmap figure available at %s/%s.%s", path, filename, ext)
+        try:
+            self.heatmap_vis.savefig(os.path.join(path, filename + '.' + ext), dpi=dpi)
+            log.debug("Heatmap figure available at %s/%s.%s", path, filename, ext)
+        except AttributeError:
+            log.error("Run make_heatmap() before save_heatmp()")
+            raise
 
     def make_interactive(self):
         """Generates interactive visualization from LDA model.
@@ -302,8 +458,6 @@ class Visualization:
         log.info("Accessing model, corpus and dictionary ...")
         self.interactive_vis = pyLDAvis.gensim.prepare(self.model, self.corpus, self.dictionary)
         log.debug("Interactive visualization available.")
-        return self.interactive_vis
-
 
     def save_interactive(self, path, filename='corpus_interactive'):
         """Saves interactive visualization.
@@ -318,8 +472,12 @@ class Visualization:
             ~/out/corpus_interactive.html
             ~/out/corpus_interactive.json
         """
-        log.info("Saving interactive visualization ...")
-        pyLDAvis.save_html(self.interactive_vis, os.path.join(path, 'corpus_interactive.html'))
-        pyLDAvis.save_json(self.interactive_vis, os.path.join(path, 'corpus_interactive.json'))
-        pyLDAvis.prepared_data_to_html(self.interactive_vis)
-        log.debug("Interactive visualization available at %s/corpus_interactive.html and %s/corpus_interactive.json", path, path)
+        try:
+            log.info("Saving interactive visualization ...")
+            pyLDAvis.save_html(self.interactive_vis, os.path.join(path, 'corpus_interactive.html'))
+            pyLDAvis.save_json(self.interactive_vis, os.path.join(path, 'corpus_interactive.json'))
+            pyLDAvis.prepared_data_to_html(self.interactive_vis)
+            log.debug("Interactive visualization available at %s/corpus_interactive.html and %s/corpus_interactive.json", path, path)
+        except AttributeError:
+            log.error("Running make_interactive() before save_interactive() ...")
+            raise
