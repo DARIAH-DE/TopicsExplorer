@@ -33,6 +33,7 @@ import pandas as pd
 import pyLDAvis.gensim
 import re
 import sys
+import regex as re
 
 log = logging.getLogger('collection')
 log.addHandler(logging.NullHandler())
@@ -164,7 +165,7 @@ def tokenizer(doc_txt):
     """
 
     for doc in doc_txt:
-        yield doc.split()
+        yield re.findall("[A-Z][a-z][0-9]+(?=[A-Z])|[\w]+",doc)
             
 def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     """Gets lemmas by selected POS-tags from DKPro-Wrapper output.
@@ -187,42 +188,25 @@ def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
         lemma = df.loc[df['CPOS'] == p]['Lemma']
         yield lemma
 
-def calculate_term_frequency(doc_txt):
-    """Creates a counter with term and term frequency.
-
-    Note:
-        Use `read_from_txt()` to create `doc_txt`.
-
-    Args:
-        doc_txt (str): Corpus as iterable.
-
-    Returns:
-        Series with term and frequency.
-    """
-    log.info("Calculating term frequency ...")
-    counter = Counter()
-    for doc in doc_txt:
-        #split() immer noch, da kein Tokenizer vorhanden und nur temporär zum Testen
-        counter.update(doc.split())
-        log.debug("Term frequency calculated.")
-    term_frequency = pd.Series(counter, index=counter.keys())
-    return term_frequency.sort_index()
-
-def find_stopwords(term_frequency, mfw):
+#
+# Next 3 operations have to be changed because of TF-Matrix
+#
+    
+def find_stopwords(docterm_matrix, mfw):
     """Creates a stopword list.
 
     Note:
-        Use `calculate_term_frequency()` to create `term_frequency`.
+        Use `create_TF_matrix` to create `docterm_matrix`.
 
     Args:
-        term_frequency (Series): Series with term and term frequency.
+        docterm_matrix (DataFrame): DataFrame with term and term frequency by document.
         mfw (int): Target size of most frequent words to be considered.
 
     Returns:
-        Most frequent words in Series.
+        Most frequent words in DataFrame.
     """
     log.info("Finding stopwords ...")
-    stopwords = term_frequency.sort_values(ascending=False).head(mfw)
+    stopwords = set(docterm_matrix.T.max().sort_values(ascending = False)[:mfw].index)
     log.debug("%s stopwords found.", len(stopwords))
     return stopwords
 
@@ -275,6 +259,7 @@ def remove_features(term_frequency, features):
     log.debug("%s features removed.", total)
     return clean_term_frequency
 
+
 def create_TF_matrix(doc_tokens, doc_labels):
     """Creates Document to Term Frequency Matrix.
 
@@ -295,8 +280,6 @@ def create_TF_matrix(doc_tokens, doc_labels):
     termdocmatrix = pd.DataFrame()
 
     for label, doc in zip(doc_labels, doc_tokens):
-        print(label)
-        print(doc[:3])
         try:
             termdocmatrix[label] = pd.Series(Counter(doc))
 
@@ -306,7 +289,7 @@ def create_TF_matrix(doc_tokens, doc_labels):
     
     log.info("Term Document Matrix successfully created.")
             
-    return termdocmatrix.fillna
+    return termdocmatrix.fillna(0)
 
 class Visualization:
     def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
