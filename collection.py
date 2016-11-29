@@ -243,10 +243,9 @@ def remove_features(term_frequency, features):
     log.info("Removing features ...")
     total = 0
     if type(features) == pd.Series:
-        for term in features.index:
-            if term in term_frequency:
-                del term_frequency[term]
-                total += 1
+        for feature in features.index:
+            del term_frequency[feature]
+            total += 1
     elif type(features) != pd.Series:
         features = next(features)
         stoplist = [word for word in features.split()] # replace with final tokenize function
@@ -302,7 +301,6 @@ def create_matrix_market(clean_term_frequency, doc_labels):
     # and a column for each term
     doctermmatrix = termdocmatrix.transpose()
     print("this is the document/term matrix:\n", doctermmatrix, "\n")
-
     return termdocmatrix, doctermmatrix
 
 class Visualization:
@@ -391,12 +389,6 @@ class Visualization:
         no_of_docs = len(self.doc_labels)
         doc_topic = np.zeros((no_of_docs, no_of_topics))
 
-        print("corpus.mm:")
-        for x in self.corpus:
-            print(x)
-            break
-        print("\n \n")
-
         log.info("Accessing topic distribution and topic probability ...")
         for doc, i in zip(self.corpus, range(no_of_docs)):
             topic_dist = self.model.__getitem__(doc)
@@ -404,9 +396,7 @@ class Visualization:
             for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
                 doc_topic[i][topic[0]] = topic[1]
         log.debug("Topic distribution and topic probability available.")
-
-        print("Topic probability (created by corpus.mm and corpus.lda):\n", doc_topic)
-
+        
         log.info("Accessing plot labels ...")
         topic_labels = []
         for i in range(no_of_topics):
@@ -429,7 +419,6 @@ class Visualization:
             fig.tight_layout()
             self.heatmap_vis = fig
             log.debug("Heatmap figure available.")
-
 
     def save_heatmap(self, path, filename='heatmap', ext='png', dpi=200):
         """Saves Matplotlib heatmap figure.
@@ -469,7 +458,6 @@ class Visualization:
         log.info("Accessing model, corpus and dictionary ...")
         self.interactive_vis = pyLDAvis.gensim.prepare(self.model, self.corpus, self.dictionary)
         log.debug("Interactive visualization available.")
-
 
     def save_interactive(self, path, filename='corpus_interactive'):
         """Saves interactive visualization.
