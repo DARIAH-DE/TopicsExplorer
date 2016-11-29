@@ -188,10 +188,7 @@ def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
         lemma = df.loc[df['CPOS'] == p]['Lemma']
         yield lemma
 
-#
-# Next 3 operations have to be changed because of TF-Matrix
-#
-    
+        
 def find_stopwords(docterm_matrix, mfw):
     """Creates a stopword list.
 
@@ -210,52 +207,44 @@ def find_stopwords(docterm_matrix, mfw):
     log.debug("%s stopwords found.", len(stopwords))
     return stopwords
 
-def find_hapax(term_frequency):
+def find_hapax(docterm_matrix):
     """Creates list with hapax legommena.
 
     Note:
-        Use `calculate_term_frequency()` to create `term_frequency`.
+        Use `create_TF_matrix` to create `docterm_matrix`.
 
     Args:
-        term_frequency (Series): Series with term and term frequency.
+        docterm_matrix (DataFrame): DataFrame with term and term frequency by document.
 
     Returns:
         Hapax legomena in Series.
     """
     log.info("Find hapax legomena ...")
-    hapax = term_frequency.loc[term_frequency == 1]
+    hapax = set(docterm_matrix[(docterm_matrix <= 1).all(axis=1)].index)
     log.debug("%s hapax legomena found.", len(hapax))
     return hapax
 
-def remove_features(term_frequency, features):
+def remove_features(docterm_matrix, features):
     """Removes features.
 
     Note:
         Use `find_stopwords()` or `find_hapax()` to create `features`.
 
     Args:
-        term_frequency (Series): Series with term and term frequency.
-        features (Series): Series with features to remove.
-        features (str): Text as iterable. Use `read_from_txt()` to create iterable.
+        docterm_matrix (DataFrame): DataFrame with term and term frequency by document.
+        features (set): Set with features to remove.
+        (not included) features (str): Text as iterable. Use `read_from_txt()` to create iterable.
 
     Returns:
         Clean corpus.
     """
     log.info("Removing features ...")
-    total = 0
-    if type(features) == pd.Series:
-        for term in features.index:
-            if term in term_frequency:
-                del term_frequency[term]
-                total += 1
-    elif type(features) != pd.Series:
-        features = next(features)
-        stoplist = [word for word in features.split()] # replace with final tokenize function
-        for term in stoplist:
-            if term in term_frequency:
-                del term_frequency[term]
-                total += 1
-    clean_term_frequency = term_frequency
+    
+    if type(features) == set:
+        clean_term_frequency = docterm_matrix.drop(features)
+    
+    total = len(features)
+    
     log.debug("%s features removed.", total)
     return clean_term_frequency
 
