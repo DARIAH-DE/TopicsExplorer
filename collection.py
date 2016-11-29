@@ -305,7 +305,7 @@ def create_matrix_market(clean_term_frequency, doc_labels):
     return termdocmatrix, doctermmatrix
 
 class Visualization:
-    def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
+    def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive=False):
         """Loads Gensim output for further processing.
 
         The output folder should contain ``corpus.mm``, ``corpus.lda``, as well as
@@ -313,7 +313,10 @@ class Visualization:
         visualization).
 
         Args:
-            path (str): Path to output folder.
+            lda_model: Path to output folder.
+            corpus:
+            dictionary:
+            doc_labels:
             interactive (bool, optional): True if interactive visualization,
                 False if heatmap is desired. Defaults to False.
 
@@ -340,7 +343,7 @@ class Visualization:
                 log.info("Accessing doc_labels ...")
                 self.doc_labels = doc_labels
                 log.debug("doc_labels accessed.")
-                with open(self.doc_labels, 'r', encoding='utf-8') as f:
+                with open(doc_labels, 'r', encoding='utf-8') as f:
                     self.doc_labels = [line for line in f.read().split()]
                     log.debug("%s doc_labels available.", len(doc_labels))
                 log.debug("Corpus, model and doc_labels available.")
@@ -387,15 +390,21 @@ class Visualization:
         no_of_docs = len(self.doc_labels)
         doc_topic = np.zeros((no_of_docs, no_of_topics))
 
-        log.info("Accessing topic distribution ...")
+        print("corpus.mm:\n")
+        for x in self.corpus:
+            print(x)
+            break
+        print("\n \n")
+
+        log.info("Accessing topic distribution and topic probability ...")
         for doc, i in zip(self.corpus, range(no_of_docs)):
             topic_dist = self.model.__getitem__(doc)
-        log.debug("Topic distribution available.")
+            print("Topic distribution:\n", topic_dist, "\n\n")
+            for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
+                doc_topic[i][topic[0]] = topic[1]
+        log.debug("Topic distribution and topic probability available.")
 
-        log.info("Accessing topic probability ...")
-        for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
-            doc_topic[i][topic[0]] = topic[1]
-        log.debug("Topic probability available.")
+        print("Topic probability (created by corpus.mm and corpus.lda):\n", doc_topic)
 
         log.info("Accessing plot labels ...")
         topic_labels = []
