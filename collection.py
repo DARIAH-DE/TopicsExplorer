@@ -156,7 +156,7 @@ def segmenter(doc_txt, length=1000):
         length (int): Target size of segments. Defaults to '1000'.
 
     Yields:
-        Document slizes with length words.
+        Document slices with length words.
 
     Todo:
         * Implement fuzzy option to consider paragraph breaks.
