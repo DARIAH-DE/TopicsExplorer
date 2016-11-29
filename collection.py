@@ -70,6 +70,7 @@ def get_labels(doclist):
     log.info("Creating document labels ...")
     for doc in doclist:
         label = os.path.basename(doc)
+        label = os.path.splitext(label)[0]
         yield label
     log.debug("Document labels available.")
 
@@ -390,7 +391,7 @@ class Visualization:
         no_of_docs = len(self.doc_labels)
         doc_topic = np.zeros((no_of_docs, no_of_topics))
 
-        print("corpus.mm:\n")
+        print("corpus.mm:")
         for x in self.corpus:
             print(x)
             break
