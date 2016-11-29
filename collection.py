@@ -428,7 +428,6 @@ class Visualization:
         log.info("Accessing topic distribution and topic probability ...")
         for doc, i in zip(self.corpus, range(no_of_docs)):
             topic_dist = self.model.__getitem__(doc)
-            print("Topic distribution:\n", topic_dist, "\n\n")
             for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
                 doc_topic[i][topic[0]] = topic[1]
         log.debug("Topic distribution and topic probability available.")
