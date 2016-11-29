@@ -145,6 +145,22 @@ def tokenize_with_nltk(doc_txt, language="german"):
     
     word_tokenize(doc_txt, language)
 
+def tokenize_simple(doc_txt):
+    """
+    Tokenize using Regex with pattern :'\w+|\$[\d\.]+|\S+'
+    
+    
+    Args:
+        doc_txt (str): Document as string.
+    
+    Returns:
+        list of tokenized text
+    
+    """
+    
+    tokenized_text =re.findall(doc_txt,'\w+|\$[\d\.]+|\S+')
+    return tokenized_text
+
 def segmenter(doc_txt, length=1000):
     """Segments documents.
 
