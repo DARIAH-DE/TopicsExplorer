@@ -31,7 +31,7 @@ import numpy as np
 import os
 import pandas as pd
 import pyLDAvis.gensim
-import re
+import regex
 import sys
 from nltk.tokenize import word_tokenize
 
@@ -144,44 +144,28 @@ def tokenize_with_nltk(doc_txt, language='german'):
     word_tokenize(doc_txt, language)
 
 def tokenize_simple(doc_txt, language='german'):
-    """Tokenize using Regex with pattern :'\w+|\$[\d\.]+|\S+'
+    """Tokenize using Regex.
    
     Args:
         doc_txt (str): Document as string.
+        language (str): Language of `doc_txt`.
     
     Returns:
         list of tokenized text
-        
-    To do:
-        * .lower() sinnvoll?
-        * \w matches letters and underscores, \W (note it’s uppercased) as 
-            opposite match all but letters and undescores, so [^\W_]
-            will match letters only (negation ^)
     """
-    doc_txt_lower = doc_txt.lower()
-    
-    # still in progress
-    regex = re.compile(
-    r'''(?x)
-    ([^\W_])+
-    | ([A-Z]\.|[a-z]\.)+
-    | w+(-\w+)*
-    | (\$?|€?|£?)\d+(\.\d+)?%?|€?
-    | \.\.\.
-    | [][.,;"'?():-_`]
-    ''', re.UNICODE | re.MULTILINE | re.DOTALL)
-    
-    if language == 'german':
-        regex = re.compile(r'\w+|\$[\d\.]+|\S+')
-    elif language == 'english':
+    if language == 'english':
+        pattern = re.compile(r'\w+|\$[\d\.]+|\S+')
+
+    elif language == 'german':
         
     elif language == 'french':
+        pattern = regex.compile('\p{L}[\p{L}\p{P}]*\p{L}')
         
     elif language == 'spanish':
         
     elif language == 'portuguese':
 
-    return regex.findall(doc_txt)
+    return pattern.findall(doc_txt)
 
 def segmenter(doc_txt, length=1000):
     """Segments documents.
