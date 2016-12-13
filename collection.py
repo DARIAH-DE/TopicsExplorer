@@ -127,9 +127,8 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
         yield doc_csv
         
         
-def tokenize_with_nltk(doc_txt, language="german"):
-    """
-    Tokenize text using nltk.tokenize.wordtokenize
+def tokenize_with_nltk(doc_txt, language='german'):
+    """Tokenize text using nltk.tokenize.wordtokenize
     
     Note:
         Use `read_from_txt()` to create `doc_txt`.
@@ -140,26 +139,49 @@ def tokenize_with_nltk(doc_txt, language="german"):
         
     Returns:
         list of tokenized Text
-    
     """
     
     word_tokenize(doc_txt, language)
 
-def tokenize_simple(doc_txt):
-    """
-    Tokenize using Regex with pattern :'\w+|\$[\d\.]+|\S+'
-    
-    
+def tokenize_simple(doc_txt, language='german'):
+    """Tokenize using Regex with pattern :'\w+|\$[\d\.]+|\S+'
+   
     Args:
         doc_txt (str): Document as string.
     
     Returns:
         list of tokenized text
-    
+        
+    To do:
+        * .lower() sinnvoll?
+        * \w matches letters and underscores, \W (note it’s uppercased) as 
+            opposite match all but letters and undescores, so [^\W_]
+            will match letters only (negation ^)
     """
+    doc_txt_lower = doc_txt.lower()
     
-    tokenized_text =re.findall(doc_txt,'\w+|\$[\d\.]+|\S+')
-    return tokenized_text
+    # still in progress
+    regex = re.compile(
+    r'''(?x)
+    ([^\W_])+
+    | ([A-Z]\.|[a-z]\.)+
+    | w+(-\w+)*
+    | (\$?|€?|£?)\d+(\.\d+)?%?|€?
+    | \.\.\.
+    | [][.,;"'?():-_`]
+    ''', re.UNICODE | re.MULTILINE | re.DOTALL)
+    
+    if language == 'german':
+        regex = re.compile(r'\w+|\$[\d\.]+|\S+')
+    elif language == 'english':
+        
+    elif language == 'french':
+        
+    elif language == 'spanish':
+        
+    elif language == 'portuguese':
+
+    return regex.findall(doc_txt)
 
 def segmenter(doc_txt, length=1000):
     """Segments documents.
