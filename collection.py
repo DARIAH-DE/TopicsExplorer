@@ -144,28 +144,27 @@ def tokenize_with_nltk(doc_txt, language='german'):
     word_tokenize(doc_txt, language)
 
 def tokenize_simple(doc_txt, language='german'):
-    """Tokenize using Regex.
+    """Tokenize using Unicode Regular Expressions.
    
     Args:
         doc_txt (str): Document as string.
         language (str): Language of `doc_txt`.
     
     Returns:
-        list of tokenized text
+        Series of tokens
     """
     if language == 'english':
-        pattern = re.compile(r'\w+|\$[\d\.]+|\S+')
-
+        pattern = regex.compile(r'\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?|\p{L}[\p{L}\p{P}]*\p{L}|\p{L}{1}|\p{N}\p{L}+')
     elif language == 'german':
-        
+        pattern = regex.compile(r'\p{L}[\p{L}\p{P}]*\p{L}|\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?')
     elif language == 'french':
-        pattern = regex.compile('\p{L}[\p{L}\p{P}]*\p{L}|\p{N}[\p{N}\p{P}]*\p{N}|\p{Sc}?\p{N}\p{Sc}?')
-        
+        pattern = regex.compile(r'\p{L}[\p{L}\p{P}]*\p{L}|\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?')
     elif language == 'spanish':
-        
+        pattern = regex.compile(r'\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?|\p{L}[\p{L}\p{P}]*\p{L}|\p{L}{1}')
     elif language == 'portuguese':
-
-    return pattern.findall(doc_txt)
+        pattern = regex.compile(r'\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?|\p{L}[\p{L}\p{P}]*\p{L}|\p{L}{1}')
+    tokens = pattern.findall(doc_text)
+    return pd.Series(tokens)
 
 def segmenter(doc_txt, length=1000):
     """Segments documents.
