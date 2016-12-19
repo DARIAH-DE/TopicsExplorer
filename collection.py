@@ -159,7 +159,7 @@ def tokenize_simple(doc_txt, language='german'):
     elif language == 'german':
         
     elif language == 'french':
-        pattern = regex.compile('\p{L}[\p{L}\p{P}]*\p{L}')
+        pattern = regex.compile('\p{L}[\p{L}\p{P}]*\p{L}|\p{N}[\p{N}\p{P}]*\p{N}|\p{Sc}?\p{N}\p{Sc}?')
         
     elif language == 'spanish':
         
