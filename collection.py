@@ -153,15 +153,12 @@ def tokenize_simple(doc_txt, language='german'):
     Returns:
         Series of tokens
     """
+    doc_txt = doc_txt.lower()
     if language == 'english':
         pattern = regex.compile(r'\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?|\p{L}[\p{L}\p{P}]*\p{L}|\p{L}{1}|\p{N}\p{L}+')
-    elif language == 'german':
+    elif (language == 'french') or (language == 'german'):
         pattern = regex.compile(r'\p{L}[\p{L}\p{P}]*\p{L}|\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?')
-    elif language == 'french':
-        pattern = regex.compile(r'\p{L}[\p{L}\p{P}]*\p{L}|\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?')
-    elif language == 'spanish':
-        pattern = regex.compile(r'\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?|\p{L}[\p{L}\p{P}]*\p{L}|\p{L}{1}')
-    elif language == 'portuguese':
+    elif (language == 'spanish') or (language == 'portuguese'):
         pattern = regex.compile(r'\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?|\p{L}[\p{L}\p{P}]*\p{L}|\p{L}{1}')
     tokens = pattern.findall(doc_text)
     return pd.Series(tokens)
