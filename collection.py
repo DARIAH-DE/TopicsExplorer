@@ -125,25 +125,8 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
         log.info("Accessing CSV documents ...")
         doc_csv = df[columns]
         yield doc_csv
-        
-        
-def tokenize_with_nltk(doc_txt, language='german'):
-    """Tokenize text using nltk.tokenize.wordtokenize
-    
-    Note:
-        Use `read_from_txt()` to create `doc_txt`.
-        
-    Args:
-        doc_txt (str): Document as iterable.
-        language(str): Specifies language. Default set to "german"
-        
-    Returns:
-        list of tokenized Text
-    """
-    
-    word_tokenize(doc_txt, language)
 
-def tokenize_simple(doc_txt, language='german'):
+def tokenize(doc_txt, language='german'):
     """Tokenize using Unicode Regular Expressions.
    
     Args:
