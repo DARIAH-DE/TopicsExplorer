@@ -129,7 +129,7 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
 
 def tokenize(doc_txt, expression=regular_expression, simple=False):
     """Tokenizes with Unicode Regular Expressions.
-   
+
     Args:
         doc_txt (str): Document as string.
         expression (str): Regular expression to find tokens.
@@ -139,11 +139,12 @@ def tokenize(doc_txt, expression=regular_expression, simple=False):
     Yields:
         Tokens
     """
-    log.info("Tokenizing with %s ...", expression)
     doc_txt = regex.sub("\.", "", doc_txt.lower())
     if simple == False:
+        log.info("Tokenizing with %s ...", expression)
         pattern = regex.compile(expression)
     elif simple == True:
+        log.info("Tokenizing with \w+ ...")
         pattern = regex.compile(r'\w+')
     tokens = pattern.finditer(doc_txt)
     for match in tokens:
@@ -420,7 +421,7 @@ class Visualization:
             for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
                 doc_topic[i][topic[0]] = topic[1]
         log.debug("Topic distribution and topic probability available.")
-        
+
         log.info("Accessing plot labels ...")
         topic_labels = []
         for i in range(no_of_topics):
