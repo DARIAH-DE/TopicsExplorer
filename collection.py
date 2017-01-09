@@ -3,8 +3,8 @@
 
 """Topic Modeling and LDA visualization.
 
-This module contains various `Gensim`_ related functions for topic modeling and
-LDA visualization provided by `DARIAH-DE`_.
+This module contains pre-processing functions, various `Gensim`_ related functions for
+topic modeling and LDA visualization provided by `DARIAH-DE`_.
 
 .. _Gensim:
     https://radimrehurek.com/gensim/index.html
@@ -33,13 +33,14 @@ import pandas as pd
 import pyLDAvis.gensim
 import regex
 import sys
-from nltk.tokenize import word_tokenize
 
 log = logging.getLogger('collection')
 log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.DEBUG,
                     format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
                     datefmt = '%d-%b-%Y %H:%M:%S')
+
+regular_expression = r'\p{Letter}[\p{Letter}\p{Punctuation}]*\p{Letter}|\p{Letter}{1}'
 
 def create_document_list(path, ext='txt'):
     """Creates a list of files with their full path.
@@ -126,25 +127,28 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
         doc_csv = df[columns]
         yield doc_csv
 
-def tokenize(doc_txt, language='german'):
-    """Tokenize using Unicode Regular Expressions.
+def tokenize(doc_txt, expression=regular_expression, simple=False):
+    """Tokenizes with Unicode Regular Expressions.
    
     Args:
         doc_txt (str): Document as string.
-        language (str): Language of `doc_txt`.
-    
-    Returns:
-        Series of tokens
+        expression (str): Regular expression to find tokens.
+        simple (boolean): Uses simple regular expression (r'\w+'). Defaults to False.
+            If set to True, argument `expression` will be ignored.
+
+    Yields:
+        Tokens
     """
-    doc_txt = doc_txt.lower()
-    if language == 'english':
-        pattern = regex.compile(r'\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?|\p{L}[\p{L}\p{P}]*\p{L}|\p{L}{1}|\p{N}\p{L}+')
-    elif (language == 'french') or (language == 'german'):
-        pattern = regex.compile(r'\p{L}[\p{L}\p{P}]*\p{L}|\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?')
-    elif (language == 'spanish') or (language == 'portuguese'):
-        pattern = regex.compile(r'\p{N}[\p{N}\p{P}]*\p{N}|\p{S}?\p{N}[\p{P}\p{N}]{3}\p{S}?|\p{L}[\p{L}\p{P}]*\p{L}|\p{L}{1}')
-    tokens = pattern.findall(doc_text)
-    return pd.Series(tokens)
+    log.info("Tokenizing with %s ...", expression)
+    doc_txt = regex.sub("\.", "", doc_txt.lower())
+    if simple == False:
+        pattern = regex.compile(expression)
+    elif simple == True:
+        pattern = regex.compile(r'\w+')
+    tokens = pattern.finditer(doc_txt)
+    for match in tokens:
+        log.info("'%s' was found between the indices %s", match.group(), match.span())
+        yield match.group()
 
 def segmenter(doc_txt, length=1000):
     """Segments documents.
