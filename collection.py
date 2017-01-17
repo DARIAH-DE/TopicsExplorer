@@ -324,16 +324,12 @@ def call_mallet(path_to_mallet, path_to_corpus, num_topics = 10, num_iter = 10):
         default num_iter
     
     """
-    #if sys == 'Windows':
-        #try:
-        #path_to_mallet = os.environ['Mallet_HOME'] + '\\bin\\mallet'
-        #except:
-        
+
     param = path_to_mallet + " import-dir --input " + path_to_corpus + " --output corpus.mallet --keep-sequence --remove-stopwords"
 
     try:
         log.info("Accessing Mallet ...")
-        p = Popen(param.split(), stdout=PIPE, stderr=PIPE)
+        p = Popen(param.split(), stdout=PIPE, stderr=PIPE, shell=True)
         out = p.communicate()
         log.debug("Mallet file available.")
     
