@@ -34,9 +34,10 @@ import pyLDAvis.gensim
 import re
 import sys
 import regex as re
-import scipy.i0
+import scipy.io
 import scipy.sparse as spa
-import subprocess
+from subprocess import call, Popen, PIPE
+from platform import system
 
 
 
@@ -302,7 +303,7 @@ def convert_TF_matrix(termdocmatrix):
     sparsematrix = spa.csc_matrix(termdocmatrix)
     
     
-def call_mallet(path_to_mallet, path_to_corpus, num_topics = 20, num_iter = 10, corpus_name):
+def call_mallet(path_to_mallet, path_to_corpus, num_topics = 10, num_iter = 10):
     """Calls mallet
 
     Note:
@@ -311,32 +312,38 @@ def call_mallet(path_to_mallet, path_to_corpus, num_topics = 20, num_iter = 10, 
     Args:
        path_to_mallet (String): Path to mallet
        path_to_coprus (String): Path to corpus files
+       num_topics = '10'
+       num_iter = '10'
 
     Returns:
         
 
-    To do: Windows -> os.getenv('MALLET_HOME'), Linux -> readlink -f mallet
+    To do: 
+        Windows -> os.getenv('MALLET_HOME')?
+        default num_topics
+        default num_iter
     
     """
-    #import platform
-    #sys = platform.system()
-    # if sys == 'Linux' / 'Windows
+    #if sys == 'Windows':
+        #try:
+        #path_to_mallet = os.environ['Mallet_HOME'] + '\\bin\\mallet'
+        #except:
+        
+    param = path_to_mallet + " import-dir --input " + path_to_corpus + " --output corpus.mallet --keep-sequence --remove-stopwords"
+
+    try:
+        log.info("Accessing Mallet ...")
+        p = Popen(param.split(), stdout=PIPE, stderr=PIPE)
+        out = p.communicate()
+        log.debug("Mallet file available.")
     
     
-    subprocess.call(['/home/sina/mallet/bin/mallet', 'run'])
-    #bin\mallet import-dir --input corpus_path --output corpus_name --keep-sequence --remove-stopwords
-    #bin\mallet train-topics  --input corpus_path --num-topics 20  --output-topic-keys tutorial_keys.txt --output-doc-topics tutorial_compostion.txt 
+    except KeyboardInterrupt:
+        log.info("Ending mallet process ...")
+        p.terminate()
+        log.debug("Mallet terminated.")
     
-    subprocess.Popen([
-                    path_to_mallet,
-                    'train-topics',
-                    '--input', path_to_corpus,
-                    '--num-topics', num_topics,
-                    '--num-iterations', num_iter,
-                    '--output-doc-topics', 'docTopics.txt',
-                    '--output-topic-keys', 'keys,txt'])
-    
-    
+ 
 
     
 
