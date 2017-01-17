@@ -34,6 +34,11 @@ import pyLDAvis.gensim
 import re
 import sys
 import regex as re
+import scipy.i0
+import scipy.sparse as spa
+import subprocess
+
+
 
 log = logging.getLogger('collection')
 log.addHandler(logging.NullHandler())
@@ -279,6 +284,61 @@ def create_TF_matrix(doc_tokens, doc_labels):
     log.info("Term Document Matrix successfully created.")
             
     return termdocmatrix.fillna(0)
+
+def convert_TF_matrix(termdocmatrix):
+    """Creates Market Matrix.
+
+    Note:
+        Use create_TF_matrix() to create `termdocmatrix`.
+
+    Args:
+       termdocmatrix (DataFrame): Term Frequency Matrix.
+
+    Returns:
+        Market-Matrix as Market Matrix
+
+    To do:
+    """
+    sparsematrix = spa.csc_matrix(termdocmatrix)
+    
+    
+def call_mallet(path_to_mallet, path_to_corpus, num_topics = 20, num_iter = 10, corpus_name):
+    """Calls mallet
+
+    Note:
+        Use create_TF_matrix() to create `termdocmatrix`.
+
+    Args:
+       path_to_mallet (String): Path to mallet
+       path_to_coprus (String): Path to corpus files
+
+    Returns:
+        
+
+    To do: Windows -> os.getenv('MALLET_HOME'), Linux -> readlink -f mallet
+    
+    """
+    #import platform
+    #sys = platform.system()
+    # if sys == 'Linux' / 'Windows
+    
+    
+    subprocess.call(['/home/sina/mallet/bin/mallet', 'run'])
+    #bin\mallet import-dir --input corpus_path --output corpus_name --keep-sequence --remove-stopwords
+    #bin\mallet train-topics  --input corpus_path --num-topics 20  --output-topic-keys tutorial_keys.txt --output-doc-topics tutorial_compostion.txt 
+    
+    subprocess.Popen([
+                    path_to_mallet,
+                    'train-topics',
+                    '--input', path_to_corpus,
+                    '--num-topics', num_topics,
+                    '--num-iterations', num_iter,
+                    '--output-doc-topics', 'docTopics.txt',
+                    '--output-topic-keys', 'keys,txt'])
+    
+    
+
+    
 
 class Visualization:
     def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
