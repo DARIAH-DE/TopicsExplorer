@@ -3,8 +3,8 @@
 
 """Topic Modeling and LDA visualization.
 
-This module contains pre-processing functions, various `Gensim`_ related functions for
-topic modeling and LDA visualization provided by `DARIAH-DE`_.
+This module contains various `Gensim`_ related functions for topic modeling and
+LDA visualization provided by `DARIAH-DE`_.
 
 .. _Gensim:
     https://radimrehurek.com/gensim/index.html
@@ -19,7 +19,7 @@ __email__ = "stefan.pernes@uni-wuerzburg.de, pielstroem@biozentrum.uni-wuerzburg
 __version__ = "0.1"
 __date__ = "2016-11-24"
 
-from collections import Counter
+from collections import Counter, defaultdict
 import csv
 from gensim.corpora import MmCorpus, Dictionary
 from gensim.models import LdaModel
@@ -31,16 +31,17 @@ import numpy as np
 import os
 import pandas as pd
 import pyLDAvis.gensim
-import regex
+import re
 import sys
+import regex as re
+from subprocess import Popen, call, PIPE
+from platform import system
 
 log = logging.getLogger('collection')
 log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.DEBUG,
                     format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
                     datefmt = '%d-%b-%Y %H:%M:%S')
-
-regular_expression = r'\p{Letter}[\p{Letter}\p{Punctuation}]*\p{Letter}|\p{Letter}{1}'
 
 def create_document_list(path, ext='txt'):
     """Creates a list of files with their full path.
@@ -71,8 +72,8 @@ def get_labels(doclist):
     """
     log.info("Creating document labels ...")
     for doc in doclist:
-        label = os.path.basename(doc)
-        label = os.path.splitext(label)[0]
+        #label = os.path.basename(doc)
+        label = doc
         yield label
     log.debug("Document labels available.")
 
@@ -100,7 +101,7 @@ def read_from_txt(doclist):
     else:
         for file in doclist:
             with open(file, 'r', encoding='utf-8') as f:
-                log.debug("Accessing TXT document ...")
+                log.debug("Accessing TXT document %s ...", file)
                 doc_txt = f.read()
                 yield doc_txt
 
@@ -127,30 +128,6 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
         doc_csv = df[columns]
         yield doc_csv
 
-def tokenize(doc_txt, expression=regular_expression, simple=False):
-    """Tokenizes with Unicode Regular Expressions.
-
-    Args:
-        doc_txt (str): Document as string.
-        expression (str): Regular expression to find tokens.
-        simple (boolean): Uses simple regular expression (r'\w+'). Defaults to False.
-            If set to True, argument `expression` will be ignored.
-
-    Yields:
-        Tokens
-    """
-    doc_txt = regex.sub("\.", "", doc_txt.lower())
-    if simple == False:
-        log.info("Tokenizing with %s ...", expression)
-        pattern = regex.compile(expression)
-    elif simple == True:
-        log.info("Tokenizing with \w+ ...")
-        pattern = regex.compile(r'\w+')
-    tokens = pattern.finditer(doc_txt)
-    for match in tokens:
-        log.info("'%s' was found between the indices %s", match.group(), match.span())
-        yield match.group()
-
 def segmenter(doc_txt, length=1000):
     """Segments documents.
 
@@ -162,7 +139,7 @@ def segmenter(doc_txt, length=1000):
         length (int): Target size of segments. Defaults to '1000'.
 
     Yields:
-        Document slices with length words.
+        Document slizes with length words.
 
     Todo:
         * Implement fuzzy option to consider paragraph breaks.
@@ -174,6 +151,24 @@ def segmenter(doc_txt, length=1000):
             log.debug("Segment has a length of %s characters.", length)
             segment = doc[i : i + length]
             yield segment
+
+def tokenizer(doc_txt):
+    """Tokenizes text documents.
+    Note:
+        Use `read_from_txt()` to create `doc_txt`.
+
+    Args:
+        doc_txt (str): Document as iterable.
+
+    Yields:
+        List of Strings
+
+    Todo:
+        * Tokenize with regex and not with split()
+    """
+
+    for doc in doc_txt:
+        yield re.findall("[A-Z][a-z][0-9]+(?=[A-Z])|[\w]+",doc)
 
 def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     """Gets lemmas by selected POS-tags from DKPro-Wrapper output.
@@ -187,7 +182,7 @@ def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
             Defaults to '['ADJ', 'V', 'NN']'.
 
     Yields:
-        Lemma.
+        Lemma.'''
     """
     df = next(doc_csv)
     log.info("Accessing %s lemmas ...", pos_tags)
@@ -196,141 +191,173 @@ def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
         lemma = df.loc[df['CPOS'] == p]['Lemma']
         yield lemma
 
-def calculate_term_frequency(doc_txt):
-    """Creates a counter with term and term frequency.
 
-    Note:
-        Use `read_from_txt()` to create `doc_txt`.
-
-    Args:
-        doc_txt (str): Corpus as iterable.
-
-    Returns:
-        Series with term and frequency.
-    """
-    log.info("Calculating term frequency ...")
-    counter = Counter()
-    for doc in doc_txt:
-        #split() immer noch, da kein Tokenizer vorhanden und nur temporär zum Testen
-        counter.update(doc.split())
-        log.debug("Term frequency calculated.")
-    term_frequency = pd.Series(counter, index=counter.keys())
-    return term_frequency.sort_index()
-
-def find_stopwords(term_frequency, mfw):
+def find_stopwords(docterm_matrix, mfw):
     """Creates a stopword list.
 
     Note:
-        Use `calculate_term_frequency()` to create `term_frequency`.
+        Use `create_TF_matrix` to create `docterm_matrix`.
 
     Args:
-        term_frequency (Series): Series with term and term frequency.
+        docterm_matrix (DataFrame): DataFrame with term and term frequency by document.
         mfw (int): Target size of most frequent words to be considered.
 
     Returns:
-        Most frequent words in Series.
+        Most frequent words in DataFrame.
     """
     log.info("Finding stopwords ...")
-    stopwords = term_frequency.sort_values(ascending=False).head(mfw)
+    stopwords = set(docterm_matrix.T.max().sort_values(ascending = False)[:mfw].index)
     log.debug("%s stopwords found.", len(stopwords))
     return stopwords
 
-def find_hapax(term_frequency):
+def find_hapax(docterm_matrix):
     """Creates list with hapax legommena.
 
     Note:
-        Use `calculate_term_frequency()` to create `term_frequency`.
+        Use `create_TF_matrix` to create `docterm_matrix`.
 
     Args:
-        term_frequency (Series): Series with term and term frequency.
+        docterm_matrix (DataFrame): DataFrame with term and term frequency by document.
 
     Returns:
         Hapax legomena in Series.
     """
     log.info("Find hapax legomena ...")
-    hapax = term_frequency.loc[term_frequency == 1]
+    hapax = set(docterm_matrix[(docterm_matrix <= 1).all(axis=1)].index)
     log.debug("%s hapax legomena found.", len(hapax))
     return hapax
 
-def remove_features(term_frequency, features):
+def remove_features(docterm_matrix, features):
     """Removes features.
 
     Note:
         Use `find_stopwords()` or `find_hapax()` to create `features`.
 
     Args:
-        term_frequency (Series): Series with term and term frequency.
-        features (Series): Series with features to remove.
-        features (str): Text as iterable. Use `read_from_txt()` to create iterable.
+        docterm_matrix (DataFrame): DataFrame with term and term frequency by document.
+        features (set): Set with features to remove.
+        (not included) features (str): Text as iterable. Use `read_from_txt()` to create iterable.
 
     Returns:
         Clean corpus.
     """
     log.info("Removing features ...")
-    total = 0
-    if type(features) == pd.Series:
-        for feature in features.index:
-            del term_frequency[feature]
-            total += 1
-    elif type(features) != pd.Series:
-        features = next(features)
-        stoplist = [word for word in features.split()] # replace with final tokenize function
-        for term in stoplist:
-            if term in term_frequency:
-                del term_frequency[term]
-                total += 1
-    clean_term_frequency = term_frequency
+
+    if type(features) == set:
+        clean_term_frequency = docterm_matrix.drop(features)
+
+    total = len(features)
+
     log.debug("%s features removed.", total)
     return clean_term_frequency
 
-def create_matrix_market(clean_term_frequency, doc_labels):
-    """Creates Matrix Market.
+    
+    
+def create_large_TF_matrix(doc_labels, doc_tokens):
 
-    Note:
-        Use `remove_features()` to create `clean_term_frequency`.
+    typeset = set()
 
-    Args:
-       clean_term_frequency (Series): Series with term and term frequency.
-       doc_labels:
+    temp_tokens = doc_tokens
+    
+    temp_labels = doc_labels
+    
+    doc_dictionary = defaultdict(list)
+    
+    for label, doc in zip(doc_labels, doc_tokens):
+        
+        tempset = set([token.lower() for token in doc])
+        
+        typeset.update(tempset)
+        
+        doc_dictionary[label].append(tempset)
+        
+        #log.debug("SIZE OF TYPESET: %i", len(typeset))
+    
+    type_dictionary = { id_num : token for id_num, token in enumerate(typeset) }
+    doc_ids = { id_num : doc for id_num, doc in enumerate(doc_labels) }
 
-    Returns:
-        Term-Doc-Matrix and Doc-Term-Matrix.
+    
+    return type_dictionary, doc_dictionary, doc_ids
+    
+def create_large_counter(doc_labels, doc_tokens, termdoc_matrix):
 
-    To do:
-        * doc_labels-part not working yet (line 281)... Generator problem?!
-    """
+    largecounter = defaultdict(dict)
 
-    corpus_txt = read_from_txt(doc_labels)
+    for doc, tokens in zip(doc_labels, doc_tokens):
+        largecounter[doc] = Counter([termdoc_matrix[token.lower()] for token in tokens])
+    
+    return largecounter
+    
+def create_sparse_index(largecounter):
+    
+    #tuples = list(zip(largecounter.keys(), largecounter.values().keys()))
+    tuples = []
+    
+    for key in range(len(largecounter)):
 
-    # and now we make our words list
-    allwords = clean_term_frequency.index.tolist()
-    alldocs = range(len(next(doc_labels)))
-    print(alldocs)
+        for value in largecounter[key].keys():
 
-    termdocmatrix = np.zeros((len(allwords), len(alldocs)), dtype = np.int)
+            tuples.append((key, value))
+    
+    
+    sparse_index = pd.MultiIndex.from_tuples(tuples, names = ["doc_id", "token_id"])
+    
+    #sparse_df = pd.DataFrame(largecounter.values(), index= largecounter.keys(), columns = ["token_id", "count"])
 
-    for docindex, doc in zip(alldocs, corpus_txt):
-        for word in doc.split():
-            try:
-                wordindex = allwords.index(word)
-                termdocmatrix[wordindex, docindex] += 1
+    return sparse_index
+    
+'''    
+def populate_sparse(sparse_index, largecounter):
+    
+    sparse_df_filled = pd.Series(index=sparse_index)
+    
+    for doc_id, token_id in enumerate(sparse_index):
+        try:
+            sparse_df_filled[doc_id][token_id] = largecounter[doc_id][token_id]
+         
+        except:
+            pass
+        
+    return sparse_df_filled
+'''
 
-            except:
-                pass
+def populate_two(sparse_index, largecounter):
+    
+    #sparse_df_filled_test = pd.Series(index=sparse_index).fillna(int(0))
+    sparse_df_filled_test = pd.DataFrame(np.zeros((len(sparse_index), 1), dtype = int), index = sparse_index)
+    
+    
+    index_iterator = sparse_index.groupby(sparse_index.get_level_values('doc_id'))
+    
+    for doc_id in range(len(sparse_index.levels[0])):
+        for token_id in [val[1] for val in index_iterator[doc_id]]:
+            
+            sparse_df_filled_test.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
+            
+    return sparse_df_filled_test
+ 
+def call_mallet(path_to_mallet, path_to_corpus, num_topics = 10, num_iter = 10):
 
-    # The term/document matrix has a row for each word
-    # and a column for each document
-    print("this is the term/document matrix:\n", termdocmatrix, "\n")
+    #path_to_mallet = os.environ['Mallet_HOME'] + '\\bin\\mallet'
 
-    # and now we swap rows and columns:
-    # The document/term matrix has a row for each document
-    # and a column for each term
-    doctermmatrix = termdocmatrix.transpose()
-    print("this is the document/term matrix:\n", doctermmatrix, "\n")
-    return termdocmatrix, doctermmatrix
+    print(path_to_mallet)
+    
+    param = path_to_mallet + " import-dir --input " + path_to_corpus + " --output corpus.mallet --keep-sequence --remove-stopwords"
+
+    try:
+       log.info("Accessing Mallet ...")
+       p = Popen(param.split(), stdout=PIPE, stderr=PIPE, shell = True)
+       out = p.communicate()
+       log.debug("Mallet file available.")
+
+
+    except KeyboardInterrupt:
+       log.info("Ending mallet process ...")
+       p.terminate()
+       log.debug("Mallet terminated.") 
 
 class Visualization:
-    def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive=False):
+    def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
         """Loads Gensim output for further processing.
 
         The output folder should contain ``corpus.mm``, ``corpus.lda``, as well as
@@ -338,10 +365,7 @@ class Visualization:
         visualization).
 
         Args:
-            lda_model: Path to output folder.
-            corpus:
-            dictionary:
-            doc_labels:
+            path (str): Path to output folder.
             interactive (bool, optional): True if interactive visualization,
                 False if heatmap is desired. Defaults to False.
 
@@ -368,7 +392,7 @@ class Visualization:
                 log.info("Accessing doc_labels ...")
                 self.doc_labels = doc_labels
                 log.debug("doc_labels accessed.")
-                with open(doc_labels, 'r', encoding='utf-8') as f:
+                with open(self.doc_labels, 'r', encoding='utf-8') as f:
                     self.doc_labels = [line for line in f.read().split()]
                     log.debug("%s doc_labels available.", len(doc_labels))
                 log.debug("Corpus, model and doc_labels available.")
@@ -415,12 +439,15 @@ class Visualization:
         no_of_docs = len(self.doc_labels)
         doc_topic = np.zeros((no_of_docs, no_of_topics))
 
-        log.info("Accessing topic distribution and topic probability ...")
+        log.info("Accessing topic distribution ...")
         for doc, i in zip(self.corpus, range(no_of_docs)):
             topic_dist = self.model.__getitem__(doc)
-            for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
-                doc_topic[i][topic[0]] = topic[1]
-        log.debug("Topic distribution and topic probability available.")
+        log.debug("Topic distribution available.")
+
+        log.info("Accessing topic probability ...")
+        for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
+            doc_topic[i][topic[0]] = topic[1]
+        log.debug("Topic probability available.")
 
         log.info("Accessing plot labels ...")
         topic_labels = []
@@ -444,6 +471,7 @@ class Visualization:
             fig.tight_layout()
             self.heatmap_vis = fig
             log.debug("Heatmap figure available.")
+
 
     def save_heatmap(self, path, filename='heatmap', ext='png', dpi=200):
         """Saves Matplotlib heatmap figure.
@@ -483,6 +511,7 @@ class Visualization:
         log.info("Accessing model, corpus and dictionary ...")
         self.interactive_vis = pyLDAvis.gensim.prepare(self.model, self.corpus, self.dictionary)
         log.debug("Interactive visualization available.")
+
 
     def save_interactive(self, path, filename='corpus_interactive'):
         """Saves interactive visualization.
