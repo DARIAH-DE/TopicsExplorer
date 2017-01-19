@@ -33,7 +33,7 @@ import pandas as pd
 import pyLDAvis.gensim
 import re
 import sys
-import regex as re
+import regex
 from subprocess import Popen, call, PIPE
 from platform import system
 
@@ -42,6 +42,8 @@ log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.DEBUG,
                     format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
                     datefmt = '%d-%b-%Y %H:%M:%S')
+
+regular_expression = r'\p{Letter}[\p{Letter}\p{Punctuation}]*\p{Letter}|\p{Letter}{1}'
 
 def create_document_list(path, ext='txt'):
     """Creates a list of files with their full path.
@@ -152,23 +154,29 @@ def segmenter(doc_txt, length=1000):
             segment = doc[i : i + length]
             yield segment
 
-def tokenizer(doc_txt):
-    """Tokenizes text documents.
-    Note:
-        Use `read_from_txt()` to create `doc_txt`.
+def tokenize(doc_txt, expression=regular_expression, simple=False):
+    """Tokenizes with Unicode Regular Expressions.
 
     Args:
-        doc_txt (str): Document as iterable.
+        doc_txt (str): Document as string.
+        expression (str): Regular expression to find tokens.
+        simple (boolean): Uses simple regular expression (r'\w+'). Defaults to False.
+            If set to True, argument `expression` will be ignored.
 
     Yields:
-        List of Strings
-
-    Todo:
-        * Tokenize with regex and not with split()
+        Tokens
     """
-
-    for doc in doc_txt:
-        yield re.findall("[A-Z][a-z][0-9]+(?=[A-Z])|[\w]+",doc)
+    doc_txt = regex.sub("\.", "", doc_txt.lower())
+    if simple == False:
+        log.info("Tokenizing with %s ...", expression)
+        pattern = regex.compile(expression)
+    elif simple == True:
+        log.info("Tokenizing with \w+ ...")
+        pattern = regex.compile(r'\w+')
+    tokens = pattern.finditer(doc_txt)
+    for match in tokens:
+        log.info("'%s' was found between the indices %s", match.group(), match.span())
+        yield match.group()
 
 def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     """Gets lemmas by selected POS-tags from DKPro-Wrapper output.
