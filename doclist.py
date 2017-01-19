@@ -14,6 +14,7 @@ implementations of varying powerfulness, all have the following in common:
   names_. Thus, you can easily create a mirror (of, e.g., files transformed
   in some way) in a different directory, or modify the way filenames are formed.
 
+
 Segments
 --------
 
@@ -21,63 +22,91 @@ Segments
 
 from pathlib import Path
 from itertools import zip_longest
+from abc import abstractmethod, abstractproperty
 
-class SimpleDocList:
+class BaseDocList:
     """
-    Very simple document list based on file name globbing.
+
     """
 
-    def __init__(self, basepath, glob_pattern='*', filenames=None):
-        """
-        Creates a new document list either from the given file names
-        or by looking for files matching the glob_pattern in the basepath.
-
-        Args:
-            basepath (Path or str): Root directory where your corpus resides
-            glob_pattern (str): A file glob pattern matching the files to
-                include.
-            filenames (list): An iterable of paths or file names relative to
-                basepath. If `None`, look for files on the file system.
-
-        Examples:
-            All existing '*.txt' files in the 'corpus_txt' directory
-            >>> SimpleDocList('corpus_txt', '*.txt')
-
-
-        """
+    def __init__(self, basepath):
         self.basepath = Path(basepath)
-        self.segments = None
-        if filenames is None:
-            self._files = list(p.relative_to(self.basepath)
-                            for p in self.basepath.glob(glob_pattern))
-        else:
-            self._files = list(Path(name) for name in filenames)
+        self._segment_counts = None
 
-    def full_paths(self, as_strlist=False):
+    def full_path(self, document, as_str=False):
         """
-        Returns an iterable of full paths for the (unsegmented) files.
+        Constructs a full path for the given document.
 
         Args:
-            as_strlist(bool): if True, the result is a `list` of `str`ings.
+            document: this is one document in the way the subclass chooses to
+                represent documents.
+            as_str (bool): if True, the result is a str, otherwise it is a `Path`
 
-        Returns:
-            Iterable over `Path`s representing the full paths.
+        Notes:
+            The default implementation passed document on to `Path()`.
+            Implementers will most probably want to override this.
         """
-        result = (Path(self.basepath, p) for p in self._files)
-        if as_strlist:
-            result = list(map(str, result))
-        return result
+        path = Path(self.basepath, document)
+        if as_str:
+            path = str(path)
+        return path
+
+    @abstractmethod
+    def get_docs(self):
+        """
+        Returns a sequence of documents, in the form the implementing class
+        chooses.
+
+        Note:
+            Subclasses may implement a method `_get_item(self, index)`, with
+            index being integer or slice, to speed access up.
+        """
+        pass
+
+    def full_paths(self, as_str=False):
+        """
+        Returns a list of full paths. Calls full_path.
+        """
+        return [self.full_path(doc, as_str) for doc in self.get_docs()]
+
+    @abstractmethod
+    def label(self, document):
+        """
+        Returns a label suitable for the document.
+        """
+        pass
 
     def __iter__(self):
-        return iter(self.full_paths())
+        """
+        When used as an iterable, this object looks like an iterable of full paths.
+        """
+        return iter(self.full_paths(as_str=True))
+
+    def __len__(self):
+        """
+        When used as a sequence, this object looks like a sequence of full paths.
+        """
+        return len(self.get_docs())
+
+    def __getitem__(self, index):
+        """
+        When used as a sequence, this object looks like a sequence of full paths.
+        """
+        try:
+            selection = self._getitem(index)
+        except AttributeError:
+            selection = self.get_docs()[index]
+
+        if isinstance(index, slice):
+            return [self.full_path(doc, as_str=True) for doc in selection]
+        else:
+            return self.full_path(selection, as_str=True)
 
     def labels(self):
-        return (path.stem for path in self._files)
-
-    def copy(self):
         """
-        Returns a copy of this list.
+        Returns a list of (human-readable) labels for all documents.
         """
+        return [self.label(doc) for doc in self.get_docs()]
 
     def flatten_segments(self, segmented_docs):
         """
@@ -135,16 +164,51 @@ class SimpleDocList:
         """
         return self._segment_counts
 
-
     def segments(self):
         """
-        Returns a tuple (filename, segment_no) for each segment, with filename
-        being the full path to the document and segment_no an integer starting at 0
+        Yields a tuple (document, segment_no) for each segment, with document
+        being the internal representation of each document and segment_count an
+        integer starting at 0
         """
-        for filename, segment_count in zip_longest(self.full_paths(),
+        for document, segment_count in zip_longest(self.get_docs(),
                                                    self.segment_counts()):
             if segment_count is None:
-                yield (filename, None)
+                yield (document, None)
             else:
                 for segment_no in range(segment_count):
-                    yield (filename, segment_no)
+                    yield (document, segment_no)
+
+
+class PathDocList(BaseDocList):
+    """
+    Document list based on a list of Paths.
+    """
+
+    def __init__(self, basepath, glob_pattern='*', filenames=None):
+        """
+        Creates a new document list either from the given file names
+        or by looking for files matching the glob_pattern in the basepath.
+
+        Args:
+            basepath (Path or str): Root directory where your corpus resides
+            glob_pattern (str): A file glob pattern matching the files to
+                include.
+            filenames (list): An iterable of paths or file names relative to
+                basepath. If `None`, look for files on the file system.
+        """
+        self.basepath = Path(basepath)
+        self.segments = None
+        if filenames is None:
+            self._files = [p.relative_to(self.basepath)
+                           for p in self.basepath.glob(glob_pattern)]
+        else:
+            paths = (Path(name) for name in filenames)
+            if glob_pattern is not None:
+                paths = (path for path in paths if path.matches(glob_pattern))
+            self._files = list(paths)
+
+    def get_docs(self):
+        return self._files
+
+    def label(self, document):
+        return document.stem
