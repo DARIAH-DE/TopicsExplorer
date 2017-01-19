@@ -168,14 +168,11 @@ def tokenize(doc_txt, expression=regular_expression, simple=False):
     """
     doc_txt = regex.sub("\.", "", doc_txt.lower())
     if simple == False:
-        log.info("Tokenizing with %s ...", expression)
         pattern = regex.compile(expression)
     elif simple == True:
-        log.info("Tokenizing with \w+ ...")
         pattern = regex.compile(r'\w+')
     tokens = pattern.finditer(doc_txt)
     for match in tokens:
-        log.info("'%s' was found between the indices %s", match.group(), match.span())
         yield match.group()
 
 def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
