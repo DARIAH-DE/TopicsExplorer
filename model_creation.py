@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+# DEPRECATED: All functions from this file should be migrated into or replaced
+# with either:
+#  * generic toolbox module             ---- currently both are collection.py
+#  * topic modelling toolbox module     /
 
 """
 This script creates a LDA model plus heatmap
