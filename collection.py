@@ -256,97 +256,97 @@ def remove_features(docterm_matrix, features):
     log.debug("%s features removed.", total)
     return clean_term_frequency
 
-    
-    
+
+
 def create_large_TF_matrix(doc_labels, doc_tokens):
 
     typeset = set()
 
     temp_tokens = doc_tokens
-    
+
     temp_labels = doc_labels
-    
+
     doc_dictionary = defaultdict(list)
-    
+
     for label, doc in zip(doc_labels, doc_tokens):
-        
+
         tempset = set([token.lower() for token in doc])
-        
+
         typeset.update(tempset)
-        
+
         doc_dictionary[label].append(tempset)
-        
+
         #log.debug("SIZE OF TYPESET: %i", len(typeset))
-    
+
     type_dictionary = { id_num : token for id_num, token in enumerate(typeset) }
     doc_ids = { id_num : doc for id_num, doc in enumerate(doc_labels) }
 
-    
+
     return type_dictionary, doc_dictionary, doc_ids
-    
+
 def create_large_counter(doc_labels, doc_tokens, termdoc_matrix):
 
     largecounter = defaultdict(dict)
 
     for doc, tokens in zip(doc_labels, doc_tokens):
         largecounter[doc] = Counter([termdoc_matrix[token.lower()] for token in tokens])
-    
+
     return largecounter
-    
+
 def create_sparse_index(largecounter):
-    
+
     #tuples = list(zip(largecounter.keys(), largecounter.values().keys()))
     tuples = []
-    
+
     for key in range(len(largecounter)):
 
         for value in largecounter[key].keys():
 
             tuples.append((key, value))
-    
-    
+
+
     sparse_index = pd.MultiIndex.from_tuples(tuples, names = ["doc_id", "token_id"])
-    
+
     #sparse_df = pd.DataFrame(largecounter.values(), index= largecounter.keys(), columns = ["token_id", "count"])
 
     return sparse_index
-    
-'''    
+
+'''
 def populate_sparse(sparse_index, largecounter):
-    
+
     sparse_df_filled = pd.Series(index=sparse_index)
-    
+
     for doc_id, token_id in enumerate(sparse_index):
         try:
             sparse_df_filled[doc_id][token_id] = largecounter[doc_id][token_id]
-         
+
         except:
             pass
-        
+
     return sparse_df_filled
 '''
 
 def populate_two(sparse_index, largecounter):
-    
+
     #sparse_df_filled_test = pd.Series(index=sparse_index).fillna(int(0))
     sparse_df_filled_test = pd.DataFrame(np.zeros((len(sparse_index), 1), dtype = int), index = sparse_index)
-    
-    
+
+
     index_iterator = sparse_index.groupby(sparse_index.get_level_values('doc_id'))
-    
+
     for doc_id in range(len(sparse_index.levels[0])):
         for token_id in [val[1] for val in index_iterator[doc_id]]:
-            
+
             sparse_df_filled_test.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
-            
+
     return sparse_df_filled_test
- 
+
 def call_mallet(path_to_mallet, path_to_corpus, num_topics = 10, num_iter = 10):
 
     #path_to_mallet = os.environ['Mallet_HOME'] + '\\bin\\mallet'
 
     print(path_to_mallet)
-    
+
     param = path_to_mallet + " import-dir --input " + path_to_corpus + " --output corpus.mallet --keep-sequence --remove-stopwords"
 
     try:
@@ -359,10 +359,10 @@ def call_mallet(path_to_mallet, path_to_corpus, num_topics = 10, num_iter = 10):
     except KeyboardInterrupt:
        log.info("Ending mallet process ...")
        p.terminate()
-       log.debug("Mallet terminated.") 
+       log.debug("Mallet terminated.")
 
 class Visualization:
-    def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive):
+    def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive=False):
         """Loads Gensim output for further processing.
 
         The output folder should contain ``corpus.mm``, ``corpus.lda``, as well as
@@ -370,7 +370,10 @@ class Visualization:
         visualization).
 
         Args:
-            path (str): Path to output folder.
+            lda_model: Path to output folder.
+            corpus:
+            dictionary:
+            doc_labels:
             interactive (bool, optional): True if interactive visualization,
                 False if heatmap is desired. Defaults to False.
 
@@ -397,7 +400,7 @@ class Visualization:
                 log.info("Accessing doc_labels ...")
                 self.doc_labels = doc_labels
                 log.debug("doc_labels accessed.")
-                with open(self.doc_labels, 'r', encoding='utf-8') as f:
+                with open(doc_labels, 'r', encoding='utf-8') as f:
                     self.doc_labels = [line for line in f.read().split()]
                     log.debug("%s doc_labels available.", len(doc_labels))
                 log.debug("Corpus, model and doc_labels available.")
@@ -444,15 +447,12 @@ class Visualization:
         no_of_docs = len(self.doc_labels)
         doc_topic = np.zeros((no_of_docs, no_of_topics))
 
-        log.info("Accessing topic distribution ...")
+        log.info("Accessing topic distribution and topic probability ...")
         for doc, i in zip(self.corpus, range(no_of_docs)):
             topic_dist = self.model.__getitem__(doc)
-        log.debug("Topic distribution available.")
-
-        log.info("Accessing topic probability ...")
-        for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
-            doc_topic[i][topic[0]] = topic[1]
-        log.debug("Topic probability available.")
+            for topic in topic_dist: # topic_dist is a list of tuples (topic_id, topic_prob)
+                doc_topic[i][topic[0]] = topic[1]
+        log.debug("Topic distribution and topic probability available.")
 
         log.info("Accessing plot labels ...")
         topic_labels = []
@@ -477,7 +477,6 @@ class Visualization:
             self.heatmap_vis = fig
             log.debug("Heatmap figure available.")
 
-
     def save_heatmap(self, path, filename='heatmap', ext='png', dpi=200):
         """Saves Matplotlib heatmap figure.
 
@@ -493,6 +492,8 @@ class Visualization:
         """
         log.info("Saving heatmap figure...")
         try:
+            if not os.path.exists(path):
+                os.makedirs(path)
             self.heatmap_vis.savefig(os.path.join(path, filename + '.' + ext), dpi=dpi)
             log.debug("Heatmap figure available at %s/%s.%s", path, filename, ext)
         except AttributeError:
@@ -517,7 +518,6 @@ class Visualization:
         self.interactive_vis = pyLDAvis.gensim.prepare(self.model, self.corpus, self.dictionary)
         log.debug("Interactive visualization available.")
 
-
     def save_interactive(self, path, filename='corpus_interactive'):
         """Saves interactive visualization.
         The created visualization (e.g. with `make_interactive()`) has to be
@@ -532,6 +532,8 @@ class Visualization:
             ~/out/corpus_interactive.json
         """
         try:
+            if not os.path.exists(path):
+                os.makedirs(path)
             log.info("Saving interactive visualization ...")
             pyLDAvis.save_html(self.interactive_vis, os.path.join(path, 'corpus_interactive.html'))
             pyLDAvis.save_json(self.interactive_vis, os.path.join(path, 'corpus_interactive.json'))
@@ -540,3 +542,5 @@ class Visualization:
         except AttributeError:
             log.error("Running make_interactive() before save_interactive() ...")
             raise
+        except FileNotFoundError:
+            pass
