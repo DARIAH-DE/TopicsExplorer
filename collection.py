@@ -499,6 +499,8 @@ class Visualization:
         except AttributeError:
             log.error("Run make_heatmap() before save_heatmp()")
             raise
+        except FileNotFoundError:
+            pass
 
     def make_interactive(self):
         """Generates interactive visualization from LDA model.
