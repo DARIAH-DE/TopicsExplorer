@@ -5,3 +5,5 @@ visualizations
 .project
 .settings/
 .pydevproject
+.eggs
+*.egg-info
