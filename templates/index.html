@@ -40,28 +40,6 @@
 							</a>
 							<div class="nav-collapse collapse">
 								<ul class="nav pull-right">
-									<li class="dropdown">
-										<a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-globe icon-white"></i>
-											Language <span class="caret"></span>
-										</a>
-										<!--
-										Language selection: change this list according to the list of languages that are
-										supported by your application
-										-->
-										<ul class="dropdown-menu" id="language_selection">
-											<li><a href="?lang=de"><img src="{{url_for('static', filename='img/famfamfam_flag_icons/png/de.png')}}" alt="German" /> German</a></li>
-											<li class="divider"></li>
-											<li><a href="?lang=en"><img src="{{url_for('static', filename='img/famfamfam_flag_icons/png/gb.png')}}" alt="English" /> English</a></li>
-											<li class="divider"></li>
-											<li><a href="?lang=de"><img src="{{url_for('static', filename='img/famfamfam_flag_icons/png/fr.png')}}" alt="German" /> French</a></li>
-
-										</ul>
-									</li>
-									<li>
-										<li>
-											<a href="#" ><i class="icon-signin icon-white"></i> Login</a>
-										</li>
-									</li>
 								</ul>
 								<ul class="nav">
 									<!--
@@ -90,7 +68,6 @@
 											  </li>
 										</ul>
 									</li>
-									<li  class="active"><a href="#">Demonstrator</a></li>
 								</ul>
 							</div>
 						</div>
@@ -103,33 +80,42 @@
 			<div class="row-fluid">
 				<div class="span10 offset1 main-content-wrapper no-margin">
 					<div id="content" class="primary-area">
-						<h1>Demonstrator</h1>
+						<h1>Demonstrator: Topic Modeling</h1>
 						<div id="contentInner">
 							<form action="/upload" method="POST" enctype="multipart/form-data">
-								<div class="alert alert-info">
-									<button type="button" class="close" data-dismiss="alert">&times;</button>
-									Select files to process data. Be aware of the file format: CSV.
-								</div>
+								<p>This web application introduces a workflow using the text mining technique <b>Topic Modeling</b>.</p>
+								<h3>1. Selecting a Corpus</h3>
+								<p>Choose some text files using the following button:</p>
 								<input type="file" name="files" multiple>
-								<hr>
-								<div class="alert alert-info">
-									<button type="button" class="close" data-dismiss="alert">&times;</button>
-									Select an appropriate stopwords list as e.g. available <a href="https://github.com/thvitt/cophi-toolbox/tree/master/demonstrator/stopwords">here</a>
-								</div>
-								<input type="file" name="stoplist"><br><br>
+								<br><br><h3>2. Data Preprocessing</h3>
+								<h4>Segmenting large text files</h4>
+								<p>If you have large text files (e.g. novels), it is recommended to segment the whole text into smaller parts, e.g. 1000 characters per segment. Type a number into the following field. If you don't want to segment your files, leave the field blank.</p>
+								<input type="text" name="segments">
+								<h4>Tokenizing text into words</h4>
+								<p>Regular expressions are one more or less reliable way to split a text into words. You can tokenize your text files with an integrated (and proved) regular expression for English, German, French, Spanish and Portuguese. If you want to submit your own regular expression, type it in the following text field.</p>
+								<input type="text" name="tokenizer">
+								<h4>Stopwords and Hapax Legomena</h4>
+								<p>You can determine stopwords and hapax legomena individually based on your corpus or upload your own words-to-remove-list. </p>
+								<p>How much stopwords?</p>
+								<input type="text" name="number_stopwords">
+								<input type="file" name="own_stopwords" multiple>
+								<h3>3. Visualization Options</h3>
+								<h3>4. Building the Model</h3>
 								<input type="submit" value="Send">
 							</form>
+							<hr>
+							<h2>Contact</h2>
+							<a href="mailto:pielstroem@biozentrum.uni-wuerzburg.de">Dr. Steffen Pielström</a>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="row-fluid">
 				<div id="footer" class="span10 offset1 no-margin footer">
-					<span>&copy; 2016 DARIAH-DE</span>
+					<span>&copy; 2017 DARIAH-DE</span>
 					<ul class="pull-right inline">
-						<li><a href="#">Privacy</a></li>
-						<li><a href="#">Impressum</a></li>
-						<li><a href="#">Contact</a></li>
+						<li><a href="https://de.dariah.eu/impressum">Impressum</a></li>
+						<li><a href="https://wiki.de.dariah.eu/display/publicde/Cluster+5%3A+Quantitative+Datenanalyse">Contact</a></li>
 					</ul>
 				</div>
 			</div>

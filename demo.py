@@ -1,14 +1,21 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import csv
-import re
+"""Demonstrator.
+
+This module contains pre-processing functions, various `Gensim`_ related functions for
+topic modeling and LDA visualization provided by `DARIAH-DE`_.
+
+.. _Gensim:
+    https://radimrehurek.com/gensim/index.html
+.. _DARIAH-DE:
+    https://de.dariah.eu
+    https://github.com/DARIAH-DE
+"""
+
 import threading
+import collection
 import webbrowser
-import os
-import glob
-from collections import defaultdict
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 from flask import Flask, request, render_template, send_file
 from werkzeug.utils import secure_filename
@@ -18,8 +25,8 @@ from gensim.models import LdaMulticore, LdaModel
 
 __author__ = "DARIAH-DE"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
-__version__ = "0.1"
-__date__ = "2016-09-13"
+__version__ = "0.2"
+__date__ = "2017-01-16"
 
 app = Flask(__name__)
 
@@ -51,56 +58,8 @@ def upload_file():
         * etc.
     """
 
-    # INPUT
-    # columns to read from csv file
-    columns = ['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']
-
-    # parts-of-speech to include into the model
-    pos_tags = ['ADJ', 'NN', 'V']
-
     # stopwords
-    regex = re.compile('\w+')
     stopwords = request.files['stoplist']
-    stopwords = str(stopwords.readlines())
-    stopwords = regex.findall(stopwords)
-    stopwords.extend(("'", "'d", "'s")) # temporary solution
-    print(stopwords)
-
-    # document size (in words)
-    doc_size = 1000
-
-    # uses the pipeline's ParagraphId to split text into documents,
-    # overrides doc_size - 1: on, 0: off
-    doc_split = 0
-
-    # no. of topics to be generated
-    no_of_topics = 30
-
-    # no. of lda iterations - usually, the more the better, but
-    # increases computing time
-    no_of_passes = 1
-
-    # perplexity estimation every n chunks -
-    # the smaller the better, but increases computing time
-    eval = 1
-
-    # documents to process at once
-    chunk = 100
-
-    # "symmetric", "asymmetric", "auto", or array
-    # (default: a symmetric 1.0/num_topics prior) affects sparsity of
-    # the document-topic (theta) distribution
-    alpha = "symmetric"
-
-    # custom alpha may increase topic coherence, but may also produce
-    # more topics with zero probability alpha = np.array([ 0.02, 0.02,
-    # 0.02, 0.03, 0.03, 0.03, 0.04, 0.04, 0.04, 0.05, 0.05, 0.04, 0.04,
-    # 0.04, 0.03, 0.03, 0.03, 0.02, 0.02, 0.02])
-
-    # can be a number (int/float), an array, or None
-    # affects topic-word (lambda) distribution - not necessarily
-    # beneficial to topic coherence
-    eta = None
 
     # PREPROCESSING
     files = request.files.getlist('files')
@@ -111,11 +70,12 @@ def upload_file():
 
     for file in files:
         file_label = secure_filename(file.filename).split('.')[0]
-
-        df = pd.read_csv(file, sep="\t", quoting=csv.QUOTE_NONE)
-        df = df[columns]
-        df = df.groupby('CPOS')
-
+        text_file = file.read().decode('utf-8')
+        # tokenize
+        tokens = list(collection.tokenize(text_file))
+        print(request.data['segments'])
+        segments = collection.segmenter(text_file, int(request.data['segments']))
+        print(segments)
         doc = pd.DataFrame()
         for p in pos_tags:  # collect only the specified parts-of-speech
             doc = doc.append(df.get_group(p))
@@ -258,25 +218,25 @@ def upload_file():
             ['corpus', 'lda'])))
 
     print("\n ta-daaaa ...\n")
-    
+
     # VISUALIZATION
     no_of_topics = model.num_topics
     no_of_docs = len(doc_labels)
     doc_topic = np.zeros((no_of_docs, no_of_topics))
-    
+
     for doc, i in zip(corpus, range(no_of_docs)):
         # topic_dist is a list of tuples (topic_id, topic_prob)
         topic_dist = model.__getitem__(doc)
         for topic in topic_dist:
             doc_topic[i][topic[0]] = topic[1]
-    
+
     # get plot labels
     topic_labels = []
     for i in range(no_of_topics):
         # show_topic() returns tuples (word_prob, word)
         topic_terms = [x[0] for x in model.show_topic(i, topn=3)]
         topic_labels.append(" ".join(topic_terms))
-        
+
     # cf. https://de.dariah.eu/tatom/topic_model_visualization.html
 
     if no_of_docs > 20 or no_of_topics > 20:
@@ -290,8 +250,8 @@ def upload_file():
     plt.tight_layout()
     plt.savefig("./static/corpus_heatmap.svg")
     return render_template('success.html')
-    
+
 if __name__ == '__main__':
     threading.Timer(
         1.25, lambda: webbrowser.open('http://127.0.0.1:5000')).start()
-    app.run()
+    app.run(debug=True)
