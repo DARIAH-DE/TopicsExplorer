@@ -5,3 +5,11 @@ visualizations
 .project
 .settings/
 .pydevproject
+.eggs
+*.egg-info
+*.pyc
+build
+dist
+.coverage
+coverage.xml
+nosetests.xml
