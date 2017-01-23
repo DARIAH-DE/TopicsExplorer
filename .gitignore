@@ -8,3 +8,8 @@ visualizations
 .eggs
 *.egg-info
 *.pyc
+build
+dist
+.coverage
+coverage.xml
+nosetests.xml

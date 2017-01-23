@@ -100,7 +100,7 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
         log.info("Accessing CSV documents ...")
         doc_csv = df[columns]
         yield doc_csv
-        
+
 def get_labels(doclist):
     """Creates a list of document labels.
 
@@ -112,9 +112,9 @@ def get_labels(doclist):
 
     Yields:
         Iterable: Document labels.
-        
+
     ToDo:
-        Replace this function with function from Toolbox 
+        Replace this function with function from Toolbox
     """
     log.info("Creating document labels ...")
     for doc in doclist:
@@ -158,6 +158,10 @@ def tokenize(doc_txt, expression=regular_expression, simple=False):
 
     Yields:
         Tokens
+
+    Example:
+        >>> list(tokenize("I am an example text."))
+        ['i', 'am', 'an', 'example', 'text']
     """
     doc_txt = regex.sub("\.", "", doc_txt.lower())
     if simple == False:
@@ -255,14 +259,14 @@ def create_large_TF_matrix(doc_labels, doc_tokens):
     """create_large_TF_matrix
 
     Note:
-        
+
 
     Args:
-        
+
 
     Returns:
-    
-    ToDo: 
+
+    ToDo:
     """
 
     typeset = set()
@@ -293,14 +297,14 @@ def create_large_counter(doc_labels, doc_tokens, termdoc_matrix):
     """create_large_TF_matrix
 
     Note:
-        
+
 
     Args:
-        
+
 
     Returns:
-    
-    ToDo: 
+
+    ToDo:
     """
 
     largecounter = defaultdict(dict)
@@ -314,14 +318,14 @@ def create_sparse_index(largecounter):
     """create_large_TF_matrix
 
     Note:
-        
+
 
     Args:
-        
+
 
     Returns:
-    
-    ToDo: 
+
+    ToDo:
     """
 
     #tuples = list(zip(largecounter.keys(), largecounter.values().keys()))
@@ -359,14 +363,14 @@ def populate_two(sparse_index, largecounter):
     """create_large_TF_matrix
 
     Note:
-        
+
 
     Args:
-        
+
 
     Returns:
-    
-    ToDo: 
+
+    ToDo:
     """
 
     #sparse_df_filled_test = pd.Series(index=sparse_index).fillna(int(0))
