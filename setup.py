@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='dariah_topics',
-    version='0.2.0dev',
+    version='0.2.0dev0',
     description='DARIAH Topic Modelling',
     # url
     author="DARIAH-DE Wuerzburg Group",
@@ -24,7 +24,15 @@ setup(
         'matplotlib==1.5.3',
         'numpy>=1.3',
         'scipy>=0.7',
-        'werkzeug>=0.11.15',  # to feature 'demonstrator'
-        'flask>=0.11.1',      # to feature 'demonstrator'
-        'pyLDAvis>=2.0.0',    # to feature 'pyldavis'
-    ])
+    ],
+    # pip install -e .[demonstrator,vis]
+    extras_require={
+        'demonstrator': [
+            'werkzeug>=0.11.15',
+            'flask>=0.11.1'
+        ],
+        'vis': [
+            'pyLDAvis>=2.0.0',    # to feature 'pyldavis'
+        ]
+    }
+)
