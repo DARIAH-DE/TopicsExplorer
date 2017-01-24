@@ -242,6 +242,9 @@ def remove_features(docterm_matrix, features):
 
     Returns:
         Clean corpus.
+        
+    ToDo:
+        Adapt function to work with mm-corpus format.
     """
     log.info("Removing features ...")
 
@@ -255,7 +258,7 @@ def remove_features(docterm_matrix, features):
 
 
 
-def create_large_TF_matrix(doc_labels, doc_tokens):
+def create_dictionaries(doc_labels, doc_tokens):
     """create_large_TF_matrix
 
     Note:
@@ -278,22 +281,21 @@ def create_large_TF_matrix(doc_labels, doc_tokens):
     doc_dictionary = defaultdict(list)
 
     for label, doc in zip(doc_labels, doc_tokens):
-
-        tempset = set([token.lower() for token in doc])
+        
+        tempdoc = list(doc)
+        
+        tempset = set([token.lower() for token in tempdoc])
 
         typeset.update(tempset)
 
-        doc_dictionary[label].append(tempset)
-
-        #log.debug("SIZE OF TYPESET: %i", len(typeset))
-
     type_dictionary = { id_num : token for id_num, token in enumerate(typeset) }
-    doc_ids = { id_num : doc for id_num, doc in enumerate(doc_labels) }
+    type_dictionary = { v : k for k, v in enumerate(typeset) }
+    doc_ids = { doc : id_num for id_num, doc in enumerate(doc_labels) }
 
 
-    return type_dictionary, doc_dictionary, doc_ids
+    return type_dictionary, doc_ids
 
-def create_large_counter(doc_labels, doc_tokens, termdoc_matrix):
+def _create_large_counter(doc_labels, doc_tokens, type_dictionary):
     """create_large_TF_matrix
 
     Note:
@@ -310,11 +312,12 @@ def create_large_counter(doc_labels, doc_tokens, termdoc_matrix):
     largecounter = defaultdict(dict)
 
     for doc, tokens in zip(doc_labels, doc_tokens):
-        largecounter[doc] = Counter([termdoc_matrix[token.lower()] for token in tokens])
+        
+        largecounter[doc] = Counter([type_dictionary[token.lower()] for token in tokens])
 
     return largecounter
 
-def create_sparse_index(largecounter):
+def _create_sparse_index(largecounter):
     """create_large_TF_matrix
 
     Note:
@@ -330,36 +333,21 @@ def create_sparse_index(largecounter):
 
     #tuples = list(zip(largecounter.keys(), largecounter.values().keys()))
     tuples = []
-
+    
     for key in range(len(largecounter)):
 
-        for value in largecounter[key].keys():
+        for value in largecounter[key]:
 
             tuples.append((key, value))
-
-
+            
     sparse_index = pd.MultiIndex.from_tuples(tuples, names = ["doc_id", "token_id"])
 
     #sparse_df = pd.DataFrame(largecounter.values(), index= largecounter.keys(), columns = ["token_id", "count"])
 
     return sparse_index
 
-'''
-def populate_sparse(sparse_index, largecounter):
 
-    sparse_df_filled = pd.Series(index=sparse_index)
-
-    for doc_id, token_id in enumerate(sparse_index):
-        try:
-            sparse_df_filled[doc_id][token_id] = largecounter[doc_id][token_id]
-
-        except:
-            pass
-
-    return sparse_df_filled
-'''
-
-def populate_two(sparse_index, largecounter):
+def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
     """create_large_TF_matrix
 
     Note:
@@ -373,8 +361,13 @@ def populate_two(sparse_index, largecounter):
     ToDo:
     """
 
-    #sparse_df_filled_test = pd.Series(index=sparse_index).fillna(int(0))
-    sparse_df_filled_test = pd.DataFrame(np.zeros((len(sparse_index), 1), dtype = int), index = sparse_index)
+    temp_counter = _create_large_counter(doc_labels, doc_tokens, type_dictionary)
+    
+    largecounter = {doc_ids[key] : value for key, value in temp_counter.items()}
+    
+    sparse_index = _create_sparse_index(largecounter)
+    
+    sparse_df_filled = pd.DataFrame(np.zeros((len(sparse_index), 1), dtype = int), index = sparse_index)
 
 
     index_iterator = sparse_index.groupby(sparse_index.get_level_values('doc_id'))
@@ -382,6 +375,6 @@ def populate_two(sparse_index, largecounter):
     for doc_id in range(len(sparse_index.levels[0])):
         for token_id in [val[1] for val in index_iterator[doc_id]]:
 
-            sparse_df_filled_test.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
+            sparse_df_filled.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
 
-    return sparse_df_filled_test
+    return sparse_df_filled
