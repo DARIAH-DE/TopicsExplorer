@@ -22,8 +22,8 @@ from subprocess import Popen, call, PIPE
 from gensim.corpora import MmCorpus, Dictionary
 from gensim.models import LdaModel
 import logging
-#from platform import system
-#import os
+from platform import system
+import os
 
 log = logging.getLogger('mallet')
 log.addHandler(logging.NullHandler())
@@ -31,28 +31,51 @@ logging.basicConfig(level = logging.DEBUG,
                     format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
                     datefmt = '%d-%b-%Y %H:%M:%S')
 
-def create_mallet_model(path_to_corpus, num_topics = 10, num_iter = 10):
-    """Create a mallet model
+def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "mallet_output", outfile = "malletBinary.mallet"):
+    """Create a mallet binary file
 
     Args:
-        path_to_corpus (str): Path to corpus folder, e.g. 'corpus_txt'.
-        num_topics (int): Number of topics, default = 10
-        num_iter (int): Number of iterations, default = 10
-
+        path_to_corpus (str): Absolute path to corpus folder, e.g. '/home/workspace/corpus_txt'.
+        path_to_mallet (str): If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
+        outfolder (str): Folder for Mallet output, default = 'mallet_output'
+        outfile (str): Name of the binary that will be generated, default = 'malletBinary.mallet'
+               
     ToDo:
     """
-
-    #path_to_mallet = os.environ['Mallet_HOME'] + '\\bin\\mallet'
-
-    print(path_to_mallet)
-
-    param = "mallet import-dir --input " + path_to_corpus + " --output corpus.mallet --keep-sequence --remove-stopwords"
+    
+    if not os.path.exists(outfolder):
+        log.info("Creating output folder ...")
+        os.makedirs(outfolder)
+        
+    param = []
+    param.append(path_to_mallet)
+    param.append("import-dir")
+    param.append("--input")
+    param.append(path_to_corpus)
+    
+    sys = system()
+    if sys == 'Windows':
+        output = outfolder + "\\" + outfile
+        log.debug(output)
+    else:
+        output = outfolder + "/" + outfile
+        log.debug(output)
+        
+    param.append("--output")
+    param.append(output)
+    param.append ("--keep-sequence")
+    param.append("--remove-stopwords")
+    
+    
+    if sys == 'Windows':
+        param.append("shell=True")
 
     try:
        log.info("Accessing Mallet ...")
-       p = Popen(param.split(), stdout=PIPE, stderr=PIPE, shell = True)
+       p = Popen(param, stdout=PIPE, stderr=PIPE)
        out = p.communicate()
        log.debug("Mallet file available.")
+       return(outfile, outfolder)
 
 
     except KeyboardInterrupt:
@@ -61,11 +84,53 @@ def create_mallet_model(path_to_corpus, num_topics = 10, num_iter = 10):
        log.debug("Mallet terminated.")
        
        
-def import_mallet_model(path_to_model):
+def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet", num_topics = "20", outfile = "malletBinary.mallet", doc_topics ="doc_topics.txt", topic_keys="topic_keys"):
     """Import a mallet model
 
     Args:
-        path_to_model (str): Path to mallet model
+        path_to_binary (str): Path to mallet binary
+        
+    Note: Use create_mallet_binary() to generate path_to_binary
         
     ToDo:
     """
+    
+    param = []
+    param.append(path_to_mallet)
+    param.append("train-topics")
+    param.append("--input")
+    param.append(path_to_binary)
+    param.append("--num-topics")
+    param.append(num_topics)
+    
+    sys = system()
+    if sys == 'Windows':
+        doc_topics = outfolder + "\\" + doc_topics
+        topic_keys = outfolder + "\\" + topic_keys
+        log.debug(outfolder)
+    else:
+        doc_topics = outfolder + "/" + doc_topics
+        topic_keys = outfolder + "/" + topic_keys
+        log.debug(outfolder)
+        
+    param.append("--output-doc-topics")
+    param.append(doc_topics)
+    param.append("--output-topic-keys")
+    param.append(topic_keys)
+    
+    if sys == 'Windows':
+        param.append("shell=True")
+
+    try:
+       log.info("Accessing Mallet ...")
+       p = Popen(param, stdout=PIPE, stderr=PIPE)
+       out = p.communicate()
+       log.debug("Mallet file available.")
+
+
+    except KeyboardInterrupt:
+       log.info("Ending mallet process ...")
+       p.terminate()
+       log.debug("Mallet terminated.")
+    
+   
