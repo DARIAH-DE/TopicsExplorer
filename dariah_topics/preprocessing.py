@@ -229,7 +229,7 @@ def find_hapax(docterm_matrix):
     log.debug("%s hapax legomena found.", len(hapax))
     return hapax
 
-def remove_features(docterm_matrix, features):
+def remove_features(mm, id_types, features):
     """Removes features.
 
     Note:
@@ -249,7 +249,10 @@ def remove_features(docterm_matrix, features):
     log.info("Removing features ...")
 
     if type(features) == set:
-        clean_term_frequency = docterm_matrix.drop(features)
+        
+        stoplist_applied = [word for word in set(id_types.keys()) if word in features]
+        
+        clean_term_frequency = mm.drop([id_types[word] for word in stoplist_applied], level="token_id")
 
     total = len(features)
 
