@@ -57,25 +57,26 @@ def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "m
     if sys == 'Windows':
         output = outfolder + "\\" + outfile
         log.debug(output)
+        shell=True
     else:
         output = outfolder + "/" + outfile
         log.debug(output)
+        shell=False
         
     param.append("--output")
     param.append(output)
     param.append ("--keep-sequence")
     param.append("--remove-stopwords")
     
-    
-    if sys == 'Windows':
-        param.append("shell=True")
 
+    print(param)
+        
     try:
        log.info("Accessing Mallet ...")
-       p = Popen(param, stdout=PIPE, stderr=PIPE)
+       p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
        out = p.communicate()
        log.debug("Mallet file available.")
-       return(outfile, outfolder)
+ 
 
 
     except KeyboardInterrupt:
