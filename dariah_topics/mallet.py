@@ -109,22 +109,21 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet", num_
         doc_topics = outfolder + "\\" + doc_topics
         topic_keys = outfolder + "\\" + topic_keys
         log.debug(outfolder)
+        shell = True
     else:
         doc_topics = outfolder + "/" + doc_topics
         topic_keys = outfolder + "/" + topic_keys
         log.debug(outfolder)
+        shell = False
         
     param.append("--output-doc-topics")
     param.append(doc_topics)
     param.append("--output-topic-keys")
     param.append(topic_keys)
     
-    if sys == 'Windows':
-        param.append("shell=True")
-
     try:
        log.info("Accessing Mallet ...")
-       p = Popen(param, stdout=PIPE, stderr=PIPE)
+       p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
        out = p.communicate()
        log.debug("Mallet file available.")
 
