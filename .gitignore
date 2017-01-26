@@ -16,3 +16,4 @@ nosetests.xml
 gb_plain.dictionary
 gb_plain.mm
 TestingGensim.ipynb
+grenzbote_plain/
