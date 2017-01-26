@@ -298,9 +298,9 @@ def create_dictionaries(doc_labels, doc_tokens):
 
         typeset.update(tempset)
 
-    type_dictionary = { id_num : token for id_num, token in enumerate(typeset) }
-    type_dictionary = { v : k for k, v in enumerate(typeset) }
-    doc_ids = { doc : id_num for id_num, doc in enumerate(doc_labels) }
+    type_dictionary = { id_num : token for id_num, token in enumerate(typeset, 1) }
+    type_dictionary = { v : k for k, v in enumerate(typeset, 1) }
+    doc_ids = { doc : id_num for id_num, doc in enumerate(doc_labels, 1) }
 
 
     return type_dictionary, doc_ids
@@ -344,7 +344,7 @@ def _create_sparse_index(largecounter):
     #tuples = list(zip(largecounter.keys(), largecounter.values().keys()))
     tuples = []
     
-    for key in range(len(largecounter)):
+    for key in range(1, len(largecounter)):
 
         for value in largecounter[key]:
 
@@ -382,7 +382,7 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
 
     index_iterator = sparse_index.groupby(sparse_index.get_level_values('doc_id'))
 
-    for doc_id in range(len(sparse_index.levels[0])):
+    for doc_id in range(1, len(sparse_index.levels[0])):
         for token_id in [val[1] for val in index_iterator[doc_id]]:
 
             sparse_df_filled.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
