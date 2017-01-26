@@ -194,7 +194,7 @@ def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
         yield lemma
 
 
-def find_stopwords(docterm_matrix, mfw):
+def find_stopwords(sparse_bow, id_types, mfw = 200):
     """Creates a stopword list.
 
     Note:
@@ -208,11 +208,14 @@ def find_stopwords(docterm_matrix, mfw):
         Most frequent words in DataFrame.
     """
     log.info("Finding stopwords ...")
-    stopwords = set(docterm_matrix.T.max().sort_values(ascending = False)[:mfw].index)
+    type2id = {value : key for key, value in id_types.items()}
+    sparse_bow_collapsed = sparse_bow.groupby(sparse_bow.index.get_level_values('token_id')).sum()
+    sparse_bow_stopwords = sparse_bow_collapsed[0].nlargest(mfw)
+    stopwords = [type2id[key] for key in sparse_bow_stopwords.index.get_level_values('token_id')]
     log.debug("%s stopwords found.", len(stopwords))
     return stopwords
 
-def find_hapax(docterm_matrix):
+def find_hapax(sparse_bow, id_types):
     """Creates list with hapax legommena.
 
     Note:
@@ -225,7 +228,11 @@ def find_hapax(docterm_matrix):
         Hapax legomena in Series.
     """
     log.info("Find hapax legomena ...")
-    hapax = set(docterm_matrix[(docterm_matrix <= 1).all(axis=1)].index)
+    
+    type2id = {value : key for key, value in id_types.items()}
+    sparse_bow_hapax = sparse_bow[sparse_bow[0] == 1]
+    hapax = set([type2id[key] for key in sparse_bow_hapax.index.get_level_values('token_id')])
+    
     log.debug("%s hapax legomena found.", len(hapax))
     return hapax
 

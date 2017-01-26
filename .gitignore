@@ -13,3 +13,6 @@ dist
 .coverage
 coverage.xml
 nosetests.xml
+gb_plain.dictionary
+gb_plain.mm
+TestingGensim.ipynb
