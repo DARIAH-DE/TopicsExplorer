@@ -2,13 +2,14 @@ from subprocess import check_output, STDOUT, CalledProcessError
 from nose.plugins.skip import SkipTest
 from pathlib import Path
 import logging
+import re
 
 project_path = Path(__file__).absolute().parent.parent
 
 
 def jupyter_integration_test():
     """
-    Tries to run the integration test notebook using jupyter.
+    Integration test notebook (via Jupyter)
     """
     try:
         check_output(["jupyter-nbconvert", "--execute",
@@ -21,5 +22,10 @@ def jupyter_integration_test():
         raise SkipTest("jupyter-nbconvert not found. Cannot run integration test. "
                    + str(e))
     except CalledProcessError as e:
-        logging.error(e.output)
+        message = e.output
+        cellinfo = re.search('nbconvert.preprocessors.execute.CellExecutionError: (.+)$',
+                  message, re.MULTILINE | re.DOTALL)
+        if cellinfo:
+            message = cellinfo.group(1)
+        logging.error(message)
         raise
