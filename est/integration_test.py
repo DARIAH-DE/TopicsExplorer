@@ -12,6 +12,9 @@ def jupyter_integration_test():
     """
     try:
         check_output(["jupyter-nbconvert", "--execute",
+                     "--log-level=ERROR",
+                     "--ExecutePreprocessor.iopub_timeout=30",
+                      "--ExecutePreprocessor.timeout=None",
                     str(Path(project_path, "IntegrationTest_v01.ipynb"))],
                      stderr=STDOUT, universal_newlines=True)
     except FileNotFoundError as e:
