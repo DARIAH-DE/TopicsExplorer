@@ -147,12 +147,13 @@ def segmenter(doc_txt, length=1000):
             segment = doc[i : i + length]
             yield segment
 
-def tokenize(doc_txt, expression=regular_expression, simple=False):
+def tokenize(doc_txt, expression=regular_expression, lower=True, simple=False):
     """Tokenizes with Unicode Regular Expressions.
 
     Args:
         doc_txt (str): Document as string.
         expression (str): Regular expression to find tokens.
+        lower (boolean): If True, lowers all words. Defaults to True.
         simple (boolean): Uses simple regular expression (r'\w+'). Defaults to False.
             If set to True, argument `expression` will be ignored.
 
@@ -163,7 +164,10 @@ def tokenize(doc_txt, expression=regular_expression, simple=False):
         >>> list(tokenize("I am an example text."))
         ['i', 'am', 'an', 'example', 'text']
     """
-    doc_txt = regex.sub("\.", "", doc_txt.lower())
+    if lower:
+        doc_txt = regex.sub("\.", "", doc_txt.lower())
+    elif lower == False:
+        doc_txt = regex.sub("\.", "", doc_txt)
     if simple == False:
         pattern = regex.compile(expression)
     elif simple == True:
