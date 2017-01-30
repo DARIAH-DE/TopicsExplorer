@@ -298,7 +298,7 @@ def create_dictionaries(doc_labels, doc_tokens):
         
         tempdoc = list(doc)
         
-        tempset = set([token.lower() for token in tempdoc])
+        tempset = set([token for token in tempdoc])
 
         typeset.update(tempset)
 
@@ -327,7 +327,7 @@ def _create_large_counter(doc_labels, doc_tokens, type_dictionary):
 
     for doc, tokens in zip(doc_labels, doc_tokens):
         
-        largecounter[doc] = Counter([type_dictionary[token.lower()] for token in tokens])
+        largecounter[doc] = Counter([type_dictionary[token] for token in tokens])
 
     return largecounter
 
