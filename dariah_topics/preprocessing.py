@@ -386,7 +386,7 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
 
     index_iterator = sparse_index.groupby(sparse_index.get_level_values('doc_id'))
 
-    for doc_id in range(1, len(sparse_index.levels[0])):
+    for doc_id in range(1, len(sparse_index.levels[0])+1):
         for token_id in [val[1] for val in index_iterator[doc_id]]:
 
             sparse_df_filled.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
