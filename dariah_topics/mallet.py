@@ -19,8 +19,9 @@ __version__ = "0.1"
 __date__ = "2017-01-20"
 
 from subprocess import Popen, call, PIPE
-from gensim.corpora import MmCorpus, Dictionary
-from gensim.models import LdaModel
+import numpy as np
+import itertools
+import operator
 import logging
 from platform import system
 import os
@@ -31,7 +32,7 @@ logging.basicConfig(level = logging.DEBUG,
                     format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
                     datefmt = '%d-%b-%Y %H:%M:%S')
 
-def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "mallet_output", outfile = "malletBinary.mallet"):
+def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "tutorial_supplementals/mallet_output", outfile = "malletBinary.mallet"):
     """Create a mallet binary file
 
     Args:
@@ -67,25 +68,23 @@ def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "m
     param.append(output)
     param.append ("--keep-sequence")
     param.append("--remove-stopwords")
-    
-
-    print(param)
-        
+            
     try:
        log.info("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
        out = p.communicate()
        log.debug("Mallet file available.")
- 
-
-
+	   
     except KeyboardInterrupt:
        log.info("Ending mallet process ...")
        p.terminate()
        log.debug("Mallet terminated.")
        
+    return output
+
+     
        
-def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet", num_topics = "20", outfile = "malletBinary.mallet", doc_topics ="doc_topics.txt", topic_keys="topic_keys"):
+def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet",  num_topics = "20", doc_topics ="doc_topics.txt", topic_keys="topic_keys"):
     """Import a mallet model
 
     Args:
@@ -108,18 +107,26 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet", num_
     if sys == 'Windows':
         doc_topics = outfolder + "\\" + doc_topics
         topic_keys = outfolder + "\\" + topic_keys
+        state = outfolder + "\\" + "state.gz"
+        word_top = outfolder + "\\" + "word_top.txt"
         log.debug(outfolder)
         shell = True
     else:
         doc_topics = outfolder + "/" + doc_topics
         topic_keys = outfolder + "/" + topic_keys
+        state = outfolder + "/" + "state.gz"
+        word_top = outfolder + "/" + "word_top.txt"
         log.debug(outfolder)
         shell = False
         
     param.append("--output-doc-topics")
     param.append(doc_topics)
+    param.append("--output-state")
+    param.append(state)
     param.append("--output-topic-keys")
     param.append(topic_keys)
+    param.append("–word-topic-counts")
+    param.append(word_top)
     
     try:
        log.info("Accessing Mallet ...")
@@ -132,5 +139,71 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet", num_
        log.info("Ending mallet process ...")
        p.terminate()
        log.debug("Mallet terminated.")
+       
+
+def grouper(n, iterable, fillvalue=None):
+    """Collect data into fixed-length chunks or blocks
+
+    Args:
+        
+    Note: 
+        
+    ToDo: Args, From: DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
+    """
+
+    args = [iter(iterable)] * n
+    return itertools.zip_longest(*args, fillvalue=fillvalue)
     
+
+def create_MalletMatrix(doc_topics):
+    """Create Mallet matrix
+
+    Args:
+        
+    Note: Testversion
+        
+    ToDo: From: DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
+    """
+    
+    doctopic_triples = []
+    mallet_docnames = []
    
+    doctopic = np.zeros((16, 20))
+
+    with open(doc_topics) as f:
+        f.readline()
+        for line in f:
+            docnum, docname, *values = line.rstrip().split('\t')
+            mallet_docnames.append(docname)
+            for topic, share in grouper(2, values):
+                triple = (docname, int(topic), float(share))
+                doctopic_triples.append(triple)
+    
+    #print(doctopic_triples[0:5]
+    
+    # sort the triples
+    # triple is (docname, topicnum, share) so sort(key=operator.itemgetter(0,1))
+    # sorts on (docname, topicnum) which is what we want
+    doctopic_triples = sorted(doctopic_triples, key=operator.itemgetter(0,1))
+    #print(doctopic_triples[0:5])
+
+    # sort the document names rather than relying on MALLET's ordering
+    mallet_docnames = sorted(mallet_docnames)
+    #print(mallet_docnames[0:5])
+
+    # collect into a document-term matrix
+    num_docs = len(mallet_docnames)
+    #print(num_docs)
+
+    num_topics = 20
+    #print(num_topics)
+
+    # the following works because we know that the triples are in sequential order
+    doctopic = np.zeros((num_docs, num_topics))
+
+    for triple in doctopic_triples:
+        docname, topic, share = triple
+        row_num = mallet_docnames.index(docname)
+        doctopic[row_num, topic] = share
+        
+    print(doctopic)
