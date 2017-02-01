@@ -28,9 +28,8 @@ import os
 
 log = logging.getLogger('mallet')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level = logging.DEBUG,
-                    format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
-                    datefmt = '%d-%b-%Y %H:%M:%S')
+logging.basicConfig(level = logging.WARNING,
+                    format = '%(levelname)s %(name)s: %(message)s')
 
 def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "tutorial_supplementals/mallet_output", outfile = "malletBinary.mallet"):
     """Create a mallet binary file

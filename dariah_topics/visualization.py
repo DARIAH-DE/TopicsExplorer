@@ -18,6 +18,7 @@ __email__ = "pielstroem@biozentrum.uni-wuerzburg.de"
 __version__ = "0.1"
 __date__ = "2017-01-20"
 
+
 import logging
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,11 +29,11 @@ from gensim.models import LdaModel
 import pyLDAvis.gensim
 import sys
 
+
 log = logging.getLogger('visualization')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level = logging.DEBUG,
-                    format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
-                    datefmt = '%d-%b-%Y %H:%M:%S')
+logging.basicConfig(level = logging.WARNING,
+                    format = '%(levelname)s %(name)s: %(message)s')
 
 class Visualization:
     def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive=False):

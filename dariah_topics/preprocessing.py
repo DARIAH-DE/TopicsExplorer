@@ -28,9 +28,8 @@ import regex
 
 log = logging.getLogger('preprocessing')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level = logging.DEBUG,
-                    format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
-                    datefmt = '%d-%b-%Y %H:%M:%S')
+logging.basicConfig(level = logging.WARNING,
+                    format = '%(levelname)s %(name)s: %(message)s')
 
 regular_expression = r'\p{Letter}[\p{Letter}\p{Punctuation}]*\p{Letter}|\p{Letter}{1}'
 
