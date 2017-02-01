@@ -36,6 +36,7 @@ setup(
         ],
         'evaluation': [
             'wikipedia>=1.4.0',
+            'lxml>=3.6.4'
         ]
     }
 )
