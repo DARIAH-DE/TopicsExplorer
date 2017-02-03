@@ -21,6 +21,7 @@ import glob
 from collections import Counter, defaultdict
 import csv
 import logging
+from lxml import etree
 import numpy as np
 import pandas as pd
 import regex
@@ -31,7 +32,7 @@ log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.WARNING,
                     format = '%(levelname)s %(name)s: %(message)s')
 
-regular_expression = r'\p{Letter}[\p{Letter}\p{Punctuation}]*\p{Letter}|\p{Letter}{1}'
+regular_expression = r'\p{Letter}[\p{Letter}\p{Punctuation}?]*\p{Letter}|\p{Letter}{1}'
 
 def create_document_list(path, ext='txt'):
     """Creates a list of files with their full path.
@@ -48,6 +49,12 @@ def create_document_list(path, ext='txt'):
     log.debug("%s entries in document list.", len(doclist))
     return doclist
 
+def read_from_tei(doclist):
+    ns = dict(tei="http://www.tei-c.org/ns/1.0")
+    for file in doclist:
+        tree = etree.parse(file)
+        text_el = tree.xpath('//tei:text', namespaces=ns)[0]
+        yield "".join(text_el.ypath('.//text()'))
 
 def read_from_txt(doclist):
     """Opens files using a list of paths or one single path.

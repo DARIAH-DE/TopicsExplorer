@@ -62,11 +62,11 @@ class Visualization:
         """
         try:
             log.info("Accessing corpus ...")
-            self.corpus = MmCorpus(corpus)
+            self.corpus = corpus
             log.debug("Corpus available.")
 
             log.info("Accessing model ...")
-            self.model = LdaModel.load(lda_model)
+            self.model = lda_model
             log.debug("Model available.")
 
             if interactive == False:
@@ -74,15 +74,11 @@ class Visualization:
                 log.info("Accessing doc_labels ...")
                 self.doc_labels = doc_labels
                 log.debug("doc_labels accessed.")
-                with open(doc_labels, 'r', encoding='utf-8') as f:
-                    self.doc_labels = [line for line in f.read().split()]
-                    log.debug("%s doc_labels available.", len(doc_labels))
-                log.debug("Corpus, model and doc_labels available.")
 
             elif interactive == True:
                 log.debug(":param: interactive == True.")
                 log.info("Accessing dictionary ...")
-                self.dictionary = Dictionary.load(dictionary)
+                self.dictionary = dictionary
                 log.debug("Dictionary available.")
                 log.debug("Corpus, model and dictionary available.")
 

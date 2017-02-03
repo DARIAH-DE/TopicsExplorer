@@ -22,13 +22,8 @@ import pandas as pd
 import urllib.request as urllib
 import wikipedia
 
-# Temporary:
-import regex
 
-regular_expression = r'\p{Letter}[\p{Letter}\p{Punctuation}]*\p{Letter}|\p{Letter}{1}'
-
-
-def topic_segmenter(topics, regular_expression=regular_expression, permutation=False):
+def topic_segmenter(model, type2id, num_topics, permutation=False):
     """
     Combination:
     (W',W∗)|W' = {wi};
@@ -38,10 +33,10 @@ def topic_segmenter(topics, regular_expression=regular_expression, permutation=F
     (W',W*)|W' = {wi};
     W* = {wj};wi,wj ∈ W;i != j
     """
-    pattern = regex.compile(regular_expression)
     bigrams = []
-    for topic in topics:
-        tokens = pattern.findall(topic[1])
+    for topic in range(num_topics):
+        topic_nr_x = model.get_topic_terms(topic)
+        tokens = [type2id[i[0]] for i in topic_nr_x]
         if permutation:
             bigrams.append(list(itertools.permutations(tokens, 2)))
         else:
