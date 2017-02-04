@@ -32,7 +32,7 @@ log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.WARNING,
                     format = '%(levelname)s %(name)s: %(message)s')
 
-regular_expression = r'\p{Letter}[\p{Letter}\p{Punctuation}?]*\p{Letter}|\p{Letter}{1}'
+regular_expression = r'\p{Letter}+\p{Punctuation}?\p{Letter}+'
 
 def create_document_list(path, ext='txt'):
     """Creates a list of files with their full path.
@@ -171,13 +171,12 @@ def tokenize(doc_txt, expression=regular_expression, lower=True, simple=False):
         ['i', 'am', 'an', 'example', 'text']
     """
     if lower:
-        doc_txt = regex.sub("\.", "", doc_txt.lower())
-    elif lower == False:
-        doc_txt = regex.sub("\.", "", doc_txt)
-    if simple == False:
-        pattern = regex.compile(expression)
-    elif simple == True:
+        doc_txt = doc_txt.lower()
+    if simple:
         pattern = regex.compile(r'\w+')
+    else:
+        pattern = regex.compile(expression)
+    doc_txt = regex.sub("\.", "", doc_txt)
     tokens = pattern.finditer(doc_txt)
     for match in tokens:
         yield match.group()
