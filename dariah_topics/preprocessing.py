@@ -32,7 +32,7 @@ log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.WARNING,
                     format = '%(levelname)s %(name)s: %(message)s')
 
-regular_expression = r'\p{Letter}[\p{Letter}\p{Punctuation}?]*\p{Letter}|\p{Letter}{1}'
+regular_expression = r'\p{Letter}+\p{Punctuation}?\p{Letter}+'
 
 def create_document_list(path, ext='txt'):
     """Creates a list of files with their full path.
@@ -54,7 +54,7 @@ def read_from_tei(doclist):
     for file in doclist:
         tree = etree.parse(file)
         text_el = tree.xpath('//tei:text', namespaces=ns)[0]
-        yield "".join(text_el.ypath('.//text()'))
+        yield "".join(text_el.xpath('.//text()'))
 
 def read_from_txt(doclist):
     """Opens files using a list of paths or one single path.
@@ -167,17 +167,20 @@ def tokenize(doc_txt, expression=regular_expression, lower=True, simple=False):
         Tokens
 
     Example:
-        >>> list(tokenize("I am an example text."))
-        ['i', 'am', 'an', 'example', 'text']
+        >>> list(tokenize("This is one example text."))
+        ['this', 'is', 'one', 'example', 'text']
     """
     if lower:
-        doc_txt = regex.sub("\.", "", doc_txt.lower())
-    elif lower == False:
-        doc_txt = regex.sub("\.", "", doc_txt)
-    if simple == False:
-        pattern = regex.compile(expression)
-    elif simple == True:
+        doc_txt = doc_txt.lower()
+    if simple:
         pattern = regex.compile(r'\w+')
+    else:
+        pattern = regex.compile(expression)
+    doc_txt = regex.sub("\.", "", doc_txt)
+    doc_txt = regex.sub("‒", " ", doc_txt)
+    doc_txt = regex.sub("–", " ", doc_txt)
+    doc_txt = regex.sub("—", " ", doc_txt)
+    doc_txt = regex.sub("―", " ", doc_txt)
     tokens = pattern.finditer(doc_txt)
     for match in tokens:
         yield match.group()
