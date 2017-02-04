@@ -167,8 +167,8 @@ def tokenize(doc_txt, expression=regular_expression, lower=True, simple=False):
         Tokens
 
     Example:
-        >>> list(tokenize("I am an example text."))
-        ['i', 'am', 'an', 'example', 'text']
+        >>> list(tokenize("This is one example text."))
+        ['this', 'is', 'one', 'example', 'text']
     """
     if lower:
         doc_txt = doc_txt.lower()
