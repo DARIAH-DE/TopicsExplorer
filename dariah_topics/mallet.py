@@ -37,7 +37,7 @@ def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "t
     Args:
         path_to_corpus (str): Absolute path to corpus folder, e.g. '/home/workspace/corpus_txt'.
         path_to_mallet (str): If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
-        outfolder (str): Folder for Mallet output, default = 'mallet_output'
+        outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
         outfile (str): Name of the binary that will be generated, default = 'malletBinary.mallet'
                
     ToDo:
@@ -88,6 +88,7 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet",  num
 
     Args:
         path_to_binary (str): Path to mallet binary
+        outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
         
     Note: Use create_mallet_binary() to generate path_to_binary
         
@@ -167,7 +168,7 @@ def create_MalletMatrix(doc_topics):
     doctopic_triples = []
     mallet_docnames = []
    
-    doctopic = np.zeros((16, 20))
+    doctopicMatrix = np.zeros((16, 20))
 
     with open(doc_topics) as f:
         f.readline()
@@ -198,11 +199,11 @@ def create_MalletMatrix(doc_topics):
     #print(num_topics)
 
     # the following works because we know that the triples are in sequential order
-    doctopic = np.zeros((num_docs, num_topics))
+    doctopicMatrix = np.zeros((num_docs, num_topics))
 
     for triple in doctopic_triples:
         docname, topic, share = triple
         row_num = mallet_docnames.index(docname)
-        doctopic[row_num, topic] = share
+        doctopicMatrix[row_num, topic] = share
         
-    print(doctopic)
+    return doctopicMatrix
