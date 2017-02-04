@@ -169,8 +169,6 @@ def tokenize(doc_txt, expression=regular_expression, lower=True, simple=False):
     Example:
         >>> list(tokenize("This is one example text."))
         ['this', 'is', 'one', 'example', 'text']
-    Todo:
-        * More elegant way to exclude the dashes
     """
     if lower:
         doc_txt = doc_txt.lower()
