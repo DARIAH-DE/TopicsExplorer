@@ -79,7 +79,7 @@ def upload_file():
     type2id = {value : key for key, value in id_types.items()}
     
     models = []
-    for x in range(10): # todo: consider user input
+    for x in range(5): # todo: consider user input
         model = LdaModel(corpus=mm, id2word=type2id, iterations=200, num_topics=x+1, random_state=x)
         topics = model.show_topics(num_topics = x+1)
         segmented_topics = evaluation.topic_segmenter(model, type2id, x+1, permutation=True)
@@ -89,11 +89,21 @@ def upload_file():
 
     best_score, best_model = max(models)
     worst_score, worst_model = min(models)
-
+    
+    with open("./templates/result.html", 'r', encoding='utf-8') as f:
+        html = f.readlines()
+    
+    html[89] = str(best_model.show_topics())
+    
+    with open("./templates/result.html", 'w', encoding='utf-8') as f:
+        f.writelines(html)
+    
+    """
     vis = visualization.Visualization(best_model, mm, type2id, labels, interactive=False)   # todo: consider user input
     heatmap = vis.make_heatmap()
     vis.save_heatmap("./visualizations/heatmap")
-    return render_template('success.html')
+    """
+    return render_template('result.html')
 
 if __name__ == '__main__':
     threading.Timer(

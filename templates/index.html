@@ -14,12 +14,34 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-customization.css')}}" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-modal.css')}}" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{url_for('static', filename='css/font-awesome.css')}}">
+    <style>div#loading {
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: none;
+    margin: auto;
+    background: url(/static/pie.gif) no-repeat;
+    cursor: wait;
+    }
+    </style>
+
 
     <!-- JavaScript files at the end for faster loading of documents -->
 
     <script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2.js')}}"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/globalmenu.js')}}"></script>
+    <script type="text/javascript">
+        function loading(){
+            $("#loading").show();
+            $("#content").hide();       
+        }
+    </script>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -29,6 +51,8 @@
 </head>
 
 <body>
+    <div id="loading"></div>
+    <div id="content">
     <div class="navbar navbar-inverse navbar-static-top navbar-dariah" id="top">
         <div class="navbar-inner">
             <div class="container-fluid">
@@ -108,7 +132,7 @@
                             <input type="text" name="stopword_treshold">
                             <p>Or upload your own words-to-remove list here:</p>
                             <input type="file" name="stoplist">
-                            <h3>3. Training the Model</h3>
+                            <h3>3. Modeling</h3>
                             <p><a href="http://mallet.cs.umass.edu/index.php">MALLET</a>, as well as <a href="https://radimrehurek.com/gensim/">Gensim</a>, are two popular software packages to analyze text corpora. MALLET, whose development started in 2002 at University of Massachusets Amherst, delivers very reliable results. Since 2008, Gensim was used and cited in over 400 commercial and academic applications. It is up to you to which LDA implementation you choose. Basically both of them do the same thing, but there are always some minor differences, and so are user preferences.</p>
                             <select>
                                 <option value="mallet">MALLET</option>
@@ -131,7 +155,7 @@
                             </div>
                             <h3>6. Submitting the Data</h3>
                             <p>Finally, submit your data and explore the model.</p>
-                            <input type="submit" value="Send">
+                            <input type="submit" value="Send" onclick="loading();">
                         </form>
                         <hr>
                         <h2>Contact</h2>
@@ -155,6 +179,7 @@
     <noscript>
         <div>Enable JavaScript!</div>
     </noscript>
+    </div>
 </body>
 
 </html>
