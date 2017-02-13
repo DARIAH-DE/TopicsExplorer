@@ -241,11 +241,11 @@ def find_hapax(sparse_bow, id_types):
         Hapax legomena in Series.
     """
     log.info("Find hapax legomena ...")
-    
+
     type2id = {value : key for key, value in id_types.items()}
     sparse_bow_hapax = sparse_bow[sparse_bow[0] == 1]
     hapax = set([type2id[key] for key in sparse_bow_hapax.index.get_level_values('token_id')])
-    
+
     log.debug("%s hapax legomena found.", len(hapax))
     return hapax
 
@@ -262,16 +262,16 @@ def remove_features(mm, id_types, features):
 
     Returns:
         Clean corpus.
-        
+
     ToDo:
         Adapt function to work with mm-corpus format.
     """
     log.info("Removing features ...")
 
     if type(features) == set:
-        
+
         stoplist_applied = [word for word in set(id_types.keys()) if word in features]
-        
+
         clean_term_frequency = mm.drop([id_types[word] for word in stoplist_applied], level="token_id")
 
     total = len(features)
@@ -304,9 +304,9 @@ def create_dictionaries(doc_labels, doc_tokens):
     doc_dictionary = defaultdict(list)
 
     for label, doc in zip(doc_labels, doc_tokens):
-        
+
         tempdoc = list(doc)
-        
+
         tempset = set([token for token in tempdoc])
 
         typeset.update(tempset)
@@ -335,7 +335,7 @@ def _create_large_counter(doc_labels, doc_tokens, type_dictionary):
     largecounter = defaultdict(dict)
 
     for doc, tokens in zip(doc_labels, doc_tokens):
-        
+
         largecounter[doc] = Counter([type_dictionary[token] for token in tokens])
 
     return largecounter
@@ -356,13 +356,13 @@ def _create_sparse_index(largecounter):
 
     #tuples = list(zip(largecounter.keys(), largecounter.values().keys()))
     tuples = []
-    
+
     for key in range(1, len(largecounter)):
 
         for value in largecounter[key]:
 
             tuples.append((key, value))
-            
+
     sparse_index = pd.MultiIndex.from_tuples(tuples, names = ["doc_id", "token_id"])
 
     #sparse_df = pd.DataFrame(largecounter.values(), index= largecounter.keys(), columns = ["token_id", "count"])
@@ -385,11 +385,11 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
     """
 
     temp_counter = _create_large_counter(doc_labels, doc_tokens, type_dictionary)
-    
+
     largecounter = {doc_ids[key] : value for key, value in temp_counter.items()}
-    
+
     sparse_index = _create_sparse_index(largecounter)
-    
+
     sparse_df_filled = pd.DataFrame(np.zeros((len(sparse_index), 1), dtype = int), index = sparse_index)
 
 
@@ -401,3 +401,30 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
             sparse_df_filled.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
 
     return sparse_df_filled
+
+def save_bow_mm(sparse_bow):
+    """Save bag-of-word model as market matrix
+
+    Note:
+
+
+    Args:
+
+
+    Returns:
+
+    ToDo:
+    """
+    num_docs = max(sparse_bow.index.get_level_values("doc_id"))
+    num_types = max(sparse_bow.index.get_level_values("token_id"))
+    sum_counts = sum(sparse_bow[0])
+
+    header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
+
+    with open("gb_plain.mm", 'w', encoding = "utf-8") as f:
+        pass
+
+    with open("gb_plain.mm", 'a', encoding = "utf-8") as f:
+        f.write("%%MatrixMarket matrix coordinate real general\n")
+        f.write(header_string)
+        sparse_bow.to_csv( f, sep = ' ', header = None)

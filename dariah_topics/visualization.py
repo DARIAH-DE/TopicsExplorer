@@ -253,12 +253,10 @@ class Visualization:
 
     def doc_topic_heatmap(data_frame):
         # Adapted from code by Stefan Pernes and Allen Riddell
-        """Creates a document-topic data frame.
+        """Plot documnet-topic distribution in a heat map.
 
         Args:
-            Gensim corpus.
-            Gensim model object.
-            List of document labels.
+            Document-topic data frame.
 
         Returns:
 
@@ -280,12 +278,11 @@ class Visualization:
 
 
     def plot_doc_topics(doc_topic, document_index):
-        """Creates a document-topic data frame.
+        """Plot topic disctribution in a document.
 
         Args:
-            Gensim corpus.
-            Gensim model object.
-            List of document labels.
+            Document-topic data frame.
+            Index of the document to be shown.
 
         Returns:
 
