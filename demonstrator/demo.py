@@ -56,11 +56,12 @@ def upload_file():
         stopwords = set(preprocessing.tokenize(stopwords))
         clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, stopwords)
     else:
-        stopwords = preprocessing.find_stopwords(sparse_bow, id_types, 200) # todo: consider user input
+        threshold = int(request.form['mfws'])
+        stopwords = preprocessing.find_stopwords(sparse_bow, id_types, threshold)
         hapax = preprocessing.find_hapax(sparse_bow, id_types)
         feature_list = set(stopwords).union(hapax)
         clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, feature_list)
-
+    """
     num_docs = max(clean_term_frequency.index.get_level_values("doc_id"))+1 # todo: '+1' correct?
     num_types = max(clean_term_frequency.index.get_level_values("token_id"))+1  # todo: dito
     sum_counts = sum(clean_term_frequency[0])
@@ -77,33 +78,40 @@ def upload_file():
     mm = MmCorpus("gb_plain.mm")
     doc2id = {value : key for key, value in doc_ids.items()}
     type2id = {value : key for key, value in id_types.items()}
-    
+
     models = []
-    for x in range(5): # todo: consider user input
-        model = LdaModel(corpus=mm, id2word=type2id, iterations=200, num_topics=x+1, random_state=x)
-        topics = model.show_topics(num_topics = x+1)
-        segmented_topics = evaluation.topic_segmenter(model, type2id, x+1, permutation=True)
+    for x in range(1, int(request.form['evaluation'])):
+        model = LdaModel(corpus=mm, id2word=type2id, iterations=200, num_topics=x, random_state=x)
+        topics = model.show_topics(num_topics = x)
+        segmented_topics = evaluation.topic_segmenter(model, type2id, x, permutation=True)
         score = evaluation.token_probability(corpus, segmented_topics)
-        umass = evaluation.calculate_umass(segmented_topics, score, corpus, x+1)
+        umass = evaluation.calculate_umass(segmented_topics, score, corpus, x)
         models.append((umass, model))
 
     best_score, best_model = max(models)
     worst_score, worst_model = min(models)
-    
+
     with open("./templates/result.html", 'r', encoding='utf-8') as f:
         html = f.readlines()
-    
-    html[89] = str(best_model.show_topics())
-    
+
+    #html.insert(89, ) = str(best_model.show_topics())
+
     with open("./templates/result.html", 'w', encoding='utf-8') as f:
-        f.writelines(html)
-    
+        f.writelines(html)"""
     """
-    vis = visualization.Visualization(best_model, mm, type2id, labels, interactive=False)   # todo: consider user input
-    heatmap = vis.make_heatmap()
+    heat = bool('heatmap' in request.form)
+    inter = bool('interactive' in request.form)
+
+    if heat:
+        vis = visualization.Visualization(best_model, mm, type2id, labels, interactive=False)   # todo: consider user input
+        heatmap = vis.make_heatmap()
+    if inter:
+        print("interactive")
     vis.save_heatmap("./visualizations/heatmap")
     """
-    return render_template('result.html')
+    print(bool('mallet' in request.form))
+    #return render_template('result.html')
+    return "ok"
 
 if __name__ == '__main__':
     threading.Timer(
