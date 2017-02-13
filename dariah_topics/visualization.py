@@ -229,14 +229,6 @@ class Visualization:
         Returns:
 
         """
-        # TODO: remove dependecies!!!
-        from gensim.corpora import MmCorpus
-        from gensim.models import LdaModel
-        import numpy as np
-        import pandas as pd
-        import matplotlib.pyplot as plt
-        import sys, os
-
         no_of_topics = model.num_topics
         no_of_docs = len(doc_labels)
         doc_topic = np.zeros((no_of_docs, no_of_topics))
@@ -261,7 +253,16 @@ class Visualization:
 
     def doc_topic_heatmap(data_frame):
         # Adapted from code by Stefan Pernes and Allen Riddell
+        """Creates a document-topic data frame.
 
+        Args:
+            Gensim corpus.
+            Gensim model object.
+            List of document labels.
+
+        Returns:
+
+        """
         data_frame = data_frame.transpose()
         doc_labels = list(data_frame.index)
         topic_labels = list(data_frame)
@@ -279,10 +280,16 @@ class Visualization:
 
 
     def plot_doc_topics(doc_topic, document_index):
+        """Creates a document-topic data frame.
 
-        import matplotlib.pyplot as plt
-        # TODO: get rid of dependencies within the function
+        Args:
+            Gensim corpus.
+            Gensim model object.
+            List of document labels.
 
+        Returns:
+
+        """
         data = doc_topic[list(doc_topic)[document_index]].copy()
         #data.sort()
         values = list(data)
