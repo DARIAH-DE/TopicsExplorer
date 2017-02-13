@@ -227,7 +227,7 @@ class Visualization:
             List of document labels.
 
         Returns:
-            
+
         """
         # TODO: remove dependecies!!!
         from gensim.corpora import MmCorpus
@@ -255,5 +255,42 @@ class Visualization:
         doc_topic = doc_topic.transpose()
         # TODO: Stupid construction grown out of quick code adaptations: rewrite the first loop to
         # get rid of the necessity to transpose the data frame!!!
+        # TODO: 'visualization' is not the proper place for this function!
 
         return doc_topic
+
+    def doc_topic_heatmap(data_frame):
+        # Adapted from code by Stefan Pernes and Allen Riddell
+
+        data_frame = data_frame.transpose()
+        doc_labels = list(data_frame.index)
+        topic_labels = list(data_frame)
+        if no_of_docs > 20 or no_of_topics > 20: plt.figure(figsize=(20,20))    # if many items, enlarge figure
+        plt.pcolor(data_frame, norm=None, cmap='Reds')
+        plt.yticks(np.arange(df.shape[0])+1.0, doc_labels)
+        plt.xticks(np.arange(df.shape[1])+0.5, topic_labels, rotation='90')
+        plt.gca().invert_yaxis()
+        plt.tight_layout()
+
+        #plt.savefig(path+"/"+corpusname+"_heatmap.png") #, dpi=80)
+        plt.show()
+
+        # TODO: recode to get rid of transpose in the beginning
+
+
+    def plot_doc_topics(doc_topic, document_index):
+
+        import matplotlib.pyplot as plt
+        # TODO: get rid of dependencies within the function
+
+        data = doc_topic[list(doc_topic)[document_index]].copy()
+        #data.sort()
+        values = list(data)
+        labels = list(data.index)
+
+        plt.barh(range(len(values)), values, align = 'center')
+        plt.yticks(range(len(values)), labels)
+        plt.xlabel('Proportion')
+        plt.ylabel('Topic')
+        plt.tight_layout()
+        plt.show()
