@@ -134,9 +134,9 @@
                             <input type="file" name="stoplist">
                             <h3>3. Modeling</h3>
                             <p><a href="http://mallet.cs.umass.edu/index.php">MALLET</a>, as well as <a href="https://radimrehurek.com/gensim/">Gensim</a>, are two popular software packages to analyze text corpora. MALLET, whose development started in 2002 at University of Massachusets Amherst, delivers very reliable results. Since 2008, Gensim was used and cited in over 400 commercial and academic applications. It is up to you to which LDA implementation you choose. Basically both of them do the same thing, but there are always some minor differences, and so are user preferences.</p>
-                            <select>
-                                <option value="mallet">MALLET</option>
-                                <option value="gensim">Gensim</option>
+                            <select name="lda">
+                                <option value="MALLET">MALLET</option>
+                                <option value="Gensim">Gensim</option>
                             </select>
                             <h3>4. Evaluating the Topics</h3>
                             <p>One difficulty in Topic Modeling is to choose the appropriate number of topics for a model. Topic coherence measures the degree of semantic similarity between high scoring words in a topic. This measure helps you to rate the model's quality automatically and choose the best in a range of e.g. ten models with different numbers of topics.</p>

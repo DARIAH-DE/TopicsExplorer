@@ -14,44 +14,54 @@ web application provided by `DARIAH-DE`_.
 from dariah_topics import preprocessing
 from dariah_topics import evaluation
 from dariah_topics import visualization
-import threading
-import webbrowser
-import matplotlib.pyplot as plt
+from dariah_topics import mallet
 from flask import Flask, request, render_template, send_file
-from werkzeug.utils import secure_filename
 from gensim.models import LdaModel
 from gensim.corpora import MmCorpus
-
+from lxml import etree
+import matplotlib.pyplot as plt
+import pandas as pd
+import threading
+import webbrowser
+from werkzeug.utils import secure_filename
 
 __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
-__date__ = "2017-02-03"
+__date__ = "2017-02-13"
 
 app = Flask(__name__)
-
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    # Open all files, tokenize, and save in pd.Series():
     files = request.files.getlist('files')
-    corpus = []
-    labels = []
+    corpus = pd.Series()
     for file in files:
-        text = file.read().decode('utf-8')
+        filename = secure_filename(file.filename).split('.')
+        if filename[1] == 'txt':
+            text = file.read().decode('utf-8')
+        elif filename[1] == 'xml':
+            ns = dict(tei="http://www.tei-c.org/ns/1.0")
+            text = etree.parse(file)
+            text = text.xpath('//tei:text', namespaces=ns)[0]
+            text = "".join(text.xpath('.//text()'))
+        elif filename[1] == 'csv':
+            print("Todo...")
         tokens = list(preprocessing.tokenize(text))
-        label = secure_filename(file.filename).split('.')[0]
-        corpus.append(tokens)
-        labels.append(label)
+        label = filename[0]
+        corpus[label] = tokens
+    
+    # Create bag-of-words:
+    id_types, doc_ids = preprocessing.create_dictionaries(corpus.index.tolist(), corpus.tolist())
+    sparse_bow = preprocessing.create_mm(corpus.index.tolist(), corpus.tolist(), id_types, doc_ids)
 
-    id_types, doc_ids = preprocessing.create_dictionaries(labels, corpus)
-    sparse_bow = preprocessing.create_mm(labels, corpus, id_types, doc_ids)
-
+    # Remove stopwords and hapax legomena:
     stopwords = request.files['stoplist']
-    if len(str(stopwords)) > 46:    # todo: improve this condition
+    if 'stoplist' in request.form:
         stopwords = stopwords.read().decode('utf-8')
         stopwords = set(preprocessing.tokenize(stopwords))
         clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, stopwords)
@@ -61,9 +71,12 @@ def upload_file():
         hapax = preprocessing.find_hapax(sparse_bow, id_types)
         feature_list = set(stopwords).union(hapax)
         clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, feature_list)
-    """
-    num_docs = max(clean_term_frequency.index.get_level_values("doc_id"))+1 # todo: '+1' correct?
-    num_types = max(clean_term_frequency.index.get_level_values("token_id"))+1  # todo: dito
+    
+    print(stopwords)
+    
+    # Create Matrix Market:
+    num_docs = max(clean_term_frequency.index.get_level_values("doc_id"))
+    num_types = max(clean_term_frequency.index.get_level_values("token_id"))
     sum_counts = sum(clean_term_frequency[0])
     header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
 
@@ -79,9 +92,17 @@ def upload_file():
     doc2id = {value : key for key, value in doc_ids.items()}
     type2id = {value : key for key, value in id_types.items()}
 
+    # Evaluate models and choose best:
     models = []
     for x in range(1, int(request.form['evaluation'])):
-        model = LdaModel(corpus=mm, id2word=type2id, iterations=200, num_topics=x, random_state=x)
+        if request.form.get('lda') == 'Gensim':
+            model = LdaModel(corpus=mm, id2word=type2id, iterations=200, num_topics=x)
+        elif request.form.get('lda') == 'MALLET':
+            print(files)
+            import gensim
+            doc2id = {value : key for key, value in doc_ids.items()}
+            print(doc2id)
+            model = gensim.models.wrappers.LdaMallet('mallet/bin/mallet', corpus=files, num_topics=x, id2word=doc2id)
         topics = model.show_topics(num_topics = x)
         segmented_topics = evaluation.topic_segmenter(model, type2id, x, permutation=True)
         score = evaluation.token_probability(corpus, segmented_topics)
@@ -91,13 +112,6 @@ def upload_file():
     best_score, best_model = max(models)
     worst_score, worst_model = min(models)
 
-    with open("./templates/result.html", 'r', encoding='utf-8') as f:
-        html = f.readlines()
-
-    #html.insert(89, ) = str(best_model.show_topics())
-
-    with open("./templates/result.html", 'w', encoding='utf-8') as f:
-        f.writelines(html)"""
     """
     heat = bool('heatmap' in request.form)
     inter = bool('interactive' in request.form)
@@ -109,9 +123,8 @@ def upload_file():
         print("interactive")
     vis.save_heatmap("./visualizations/heatmap")
     """
-    print(bool('mallet' in request.form))
-    #return render_template('result.html')
-    return "ok"
+    return render_template('result.html', software=request.form.get('lda'), evaluation=request.form['evaluation'], best_score=round(best_score, 2), worst_score=round(worst_score, 2),
+    best_topic_number=len(best_model.show_topics()), worst_topic_number=len(worst_model.show_topics()), stopwords=stopwords)
 
 if __name__ == '__main__':
     threading.Timer(
