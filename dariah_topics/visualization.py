@@ -217,84 +217,84 @@ class Visualization:
         except FileNotFoundError:
             pass
 
-    def create_doc_topic(corpus, model, doc_labels):
-        # Adapted from cody by Stefan Pernes
-        """Creates a document-topic data frame.
+def create_doc_topic(corpus, model, doc_labels):
+    # Adapted from cody by Stefan Pernes
+    """Creates a document-topic data frame.
 
-        Args:
-            Gensim corpus.
-            Gensim model object.
-            List of document labels.
+    Args:
+        Gensim corpus.
+        Gensim model object.
+        List of document labels.
 
-        Returns:
+    Returns:
 
-        """
-        no_of_topics = model.num_topics
-        no_of_docs = len(doc_labels)
-        doc_topic = np.zeros((no_of_docs, no_of_topics))
+    """
+    no_of_topics = model.num_topics
+    no_of_docs = len(doc_labels)
+    doc_topic = np.zeros((no_of_docs, no_of_topics))
 
-        for doc, i in zip(corpus, range(no_of_docs)):       # use document bow from corpus
-            topic_dist = model.__getitem__(doc)             # to get topic distribution froom model
-            for topic in topic_dist:                        # topic_dist is a list of tuples
-                doc_topic[i][topic[0]] = topic[1]           # save topic probability
+    for doc, i in zip(corpus, range(no_of_docs)):       # use document bow from corpus
+        topic_dist = model.__getitem__(doc)             # to get topic distribution froom model
+        for topic in topic_dist:                        # topic_dist is a list of tuples
+            doc_topic[i][topic[0]] = topic[1]           # save topic probability
 
-        topic_labels = []
-        for i in range(no_of_topics):
-            topic_terms = [x[0] for x in model.show_topic(i, topn=3)]  # show_topic() returns tuples (word_prob, word)
-            topic_labels.append(" ".join(topic_terms))
+    topic_labels = []
+    for i in range(no_of_topics):
+        topic_terms = [x[0] for x in model.show_topic(i, topn=3)]  # show_topic() returns tuples (word_prob, word)
+        topic_labels.append(" ".join(topic_terms))
 
-        doc_topic = pd.DataFrame(doc_topic, index = doc_labels, columns = topic_labels)
-        doc_topic = doc_topic.transpose()
-        # TODO: Stupid construction grown out of quick code adaptations: rewrite the first loop to
-        # get rid of the necessity to transpose the data frame!!!
-        # TODO: 'visualization' is not the proper place for this function!
+    doc_topic = pd.DataFrame(doc_topic, index = doc_labels, columns = topic_labels)
+    doc_topic = doc_topic.transpose()
+    # TODO: Stupid construction grown out of quick code adaptations: rewrite the first loop to
+    # get rid of the necessity to transpose the data frame!!!
+    # TODO: 'visualization' is not the proper place for this function!
 
-        return doc_topic
+    return doc_topic
 
-    def doc_topic_heatmap(data_frame):
-        # Adapted from code by Stefan Pernes and Allen Riddell
-        """Plot documnet-topic distribution in a heat map.
+def doc_topic_heatmap(data_frame):
+    # Adapted from code by Stefan Pernes and Allen Riddell
+    """Plot documnet-topic distribution in a heat map.
 
-        Args:
-            Document-topic data frame.
+    Args:
+        Document-topic data frame.
 
-        Returns:
+    Returns:
 
-        """
-        data_frame = data_frame.transpose()
-        doc_labels = list(data_frame.index)
-        topic_labels = list(data_frame)
-        if no_of_docs > 20 or no_of_topics > 20: plt.figure(figsize=(20,20))    # if many items, enlarge figure
-        plt.pcolor(data_frame, norm=None, cmap='Reds')
-        plt.yticks(np.arange(df.shape[0])+1.0, doc_labels)
-        plt.xticks(np.arange(df.shape[1])+0.5, topic_labels, rotation='90')
-        plt.gca().invert_yaxis()
-        plt.tight_layout()
+    """
+    data_frame = data_frame.transpose()
+    doc_labels = list(data_frame.index)
+    topic_labels = list(data_frame)
+    if len(doc_labels) > 20 or len(topic_labels) > 20: plt.figure(figsize=(20,20))    # if many items, enlarge figure
+    plt.pcolor(data_frame, norm=None, cmap='Reds')
+    plt.yticks(np.arange(data_frame.shape[0])+1.0, doc_labels)
+    plt.xticks(np.arange(data_frame.shape[1])+0.5, topic_labels, rotation='90')
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
 
-        #plt.savefig(path+"/"+corpusname+"_heatmap.png") #, dpi=80)
-        plt.show()
+    #plt.savefig(path+"/"+corpusname+"_heatmap.png") #, dpi=80)
+    plt.show()
 
-        # TODO: recode to get rid of transpose in the beginning
+    # TODO: recode to get rid of transpose in the beginning
 
 
-    def plot_doc_topics(doc_topic, document_index):
-        """Plot topic disctribution in a document.
+def plot_doc_topics(doc_topic, document_index):
+    """Plot topic disctribution in a document.
 
-        Args:
-            Document-topic data frame.
-            Index of the document to be shown.
+    Args:
+        Document-topic data frame.
+        Index of the document to be shown.
 
-        Returns:
+    Returns:
 
-        """
-        data = doc_topic[list(doc_topic)[document_index]].copy()
-        #data.sort()
-        values = list(data)
-        labels = list(data.index)
+    """
+    data = doc_topic[list(doc_topic)[document_index]].copy()
+    data.sort_values()
+    values = list(data)
+    labels = list(data.index)
 
-        plt.barh(range(len(values)), values, align = 'center')
-        plt.yticks(range(len(values)), labels)
-        plt.xlabel('Proportion')
-        plt.ylabel('Topic')
-        plt.tight_layout()
-        plt.show()
+    plt.barh(range(len(values)), values, align = 'center')
+    plt.yticks(range(len(values)), labels)
+    plt.xlabel('Proportion')
+    plt.ylabel('Topic')
+    plt.tight_layout()
+    plt.show()
