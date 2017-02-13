@@ -216,3 +216,44 @@ class Visualization:
             raise
         except FileNotFoundError:
             pass
+
+    def create_doc_topic(corpus, model, doc_labels):
+        # Adapted from cody by Stefan Pernes
+        """Creates a document-topic data frame.
+
+        Args:
+            Gensim corpus.
+            Gensim model object.
+            List of document labels.
+
+        Returns:
+            
+        """
+        # TODO: remove dependecies!!!
+        from gensim.corpora import MmCorpus
+        from gensim.models import LdaModel
+        import numpy as np
+        import pandas as pd
+        import matplotlib.pyplot as plt
+        import sys, os
+
+        no_of_topics = model.num_topics
+        no_of_docs = len(doc_labels)
+        doc_topic = np.zeros((no_of_docs, no_of_topics))
+
+        for doc, i in zip(corpus, range(no_of_docs)):       # use document bow from corpus
+            topic_dist = model.__getitem__(doc)             # to get topic distribution froom model
+            for topic in topic_dist:                        # topic_dist is a list of tuples
+                doc_topic[i][topic[0]] = topic[1]           # save topic probability
+
+        topic_labels = []
+        for i in range(no_of_topics):
+            topic_terms = [x[0] for x in model.show_topic(i, topn=3)]  # show_topic() returns tuples (word_prob, word)
+            topic_labels.append(" ".join(topic_terms))
+
+        doc_topic = pd.DataFrame(doc_topic, index = doc_labels, columns = topic_labels)
+        doc_topic = doc_topic.transpose()
+        # TODO: Stupid construction grown out of quick code adaptations: rewrite the first loop to
+        # get rid of the necessity to transpose the data frame!!!
+
+        return doc_topic
