@@ -61,7 +61,7 @@ def upload_file():
 
     # Remove stopwords and hapax legomena:
     stopwords = request.files['stoplist']
-    if 'stoplist' in request.form:
+    if request.files.get('stoplist', None):
         stopwords = stopwords.read().decode('utf-8')
         stopwords = set(preprocessing.tokenize(stopwords))
         clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, stopwords)
@@ -71,8 +71,6 @@ def upload_file():
         hapax = preprocessing.find_hapax(sparse_bow, id_types)
         feature_list = set(stopwords).union(hapax)
         clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, feature_list)
-    
-    print(stopwords)
     
     # Create Matrix Market:
     num_docs = max(clean_term_frequency.index.get_level_values("doc_id"))
@@ -111,6 +109,9 @@ def upload_file():
 
     best_score, best_model = max(models)
     worst_score, worst_model = min(models)
+    
+    print(best_model.show_topics())
+    print(worst_model.show_topics())
 
     """
     heat = bool('heatmap' in request.form)
