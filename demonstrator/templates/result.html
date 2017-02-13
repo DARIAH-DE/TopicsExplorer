@@ -29,6 +29,8 @@
 </head>
 
 <body>
+    <div id="loading"></div>
+    <div id="content">
     <div class="navbar navbar-inverse navbar-static-top navbar-dariah" id="top">
         <div class="navbar-inner">
             <div class="container-fluid">
@@ -86,16 +88,24 @@
                 <div id="content" class="primary-area">
                     <h1>Demonstrator: Topic Modeling</h1>
                     <div id="contentInner" style="text-align:justify">
-
-
-
-
-
-
-
-
-<hr><h2>Contact</h2>
-<p><a href="mailto:pielstroem@biozentrum.uni-wuerzburg.de">Dr. Steffen Pielström</a>, University of Würzburg</p>
+                        <p><b>It worked!</b></p>
+                        <h3>1. Results</h3>
+                        <p><b>{{software}}</b> was used.<br>
+                        {{evaluation}} models have been trained and evaluated.<br>
+                        The best model has {{best_topic_number}} topics and the coherence score {{best_score}},<br>
+                        the worst model has {{worst_topic_number}} topic and the coherence score {{worst_score}}.<br>
+                        Removed stopwords:
+                        </p>
+                        <table>
+                            {% for word in stopwords %}
+                            <tr>
+                                <td>{{ word }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        <hr>
+                        <h2>Contact</h2>
+                        <p><a href="mailto:pielstroem@biozentrum.uni-wuerzburg.de">Dr. Steffen Pielström</a>, University of Würzburg</p>
                     </div>
                 </div>
             </div>
@@ -115,6 +125,7 @@
     <noscript>
         <div>Enable JavaScript!</div>
     </noscript>
+    </div>
 </body>
 
 </html>
