@@ -41,15 +41,15 @@ def upload_file():
     files = request.files.getlist('files')
     corpus = pd.Series()
     for file in files:
-        filename = secure_filename(file.filename).split('.')
-        if filename[1] == 'txt':
+        filename, extension = os.path.splitext(secure_filename(file.filename))
+        if extension == '.txt':
             text = file.read().decode('utf-8')
-        elif filename[1] == 'xml':
+        elif extension == '.xml':
             ns = dict(tei="http://www.tei-c.org/ns/1.0")
             text = etree.parse(file)
             text = text.xpath('//tei:text', namespaces=ns)[0]
             text = "".join(text.xpath('.//text()'))
-        elif filename[1] == 'csv':
+        elif extension == '.csv':
             print("Todo...")
         tokens = list(preprocessing.tokenize(text))
         label = filename[0]
