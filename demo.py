@@ -45,11 +45,13 @@ def upload_file():
         filename, extension = os.path.splitext(secure_filename(file.filename))
         if extension == '.txt':
             text = file.read().decode('utf-8')
+            file.flush()
         elif extension == '.xml':
             ns = dict(tei="http://www.tei-c.org/ns/1.0")
             text = etree.parse(file)
             text = text.xpath('//tei:text', namespaces=ns)[0]
             text = "".join(text.xpath('.//text()'))
+            file.flush()
         elif extension == '.csv':
             print("Todo...")
         tokens = list(preprocessing.tokenize(text))
@@ -66,6 +68,7 @@ def upload_file():
         stopwords = stopwords.read().decode('utf-8')
         stopwords = set(preprocessing.tokenize(stopwords))
         clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, stopwords)
+        stopwords.flush()
     else:
         threshold = int(request.form['mfws'])
         stopwords = preprocessing.find_stopwords(sparse_bow, id_types, threshold)
@@ -79,15 +82,13 @@ def upload_file():
     sum_counts = sum(clean_term_frequency[0])
     header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
 
-    with open("gb_plain.mm", 'w', encoding = "utf-8") as f:
-        pass
-
-    with open("gb_plain.mm", 'a', encoding = "utf-8") as f:
+    with open("plain.mm", 'w+', encoding = "utf-8") as f:
         f.write("%%MatrixMarket matrix coordinate real general\n")
         f.write(header_string)
         sparse_bow.to_csv( f, sep = ' ', header = None)
+        f.flush()
 
-    mm = MmCorpus("gb_plain.mm")
+    mm = MmCorpus("plain.mm")
     doc2id = {value : key for key, value in doc_ids.items()}
     type2id = {value : key for key, value in id_types.items()}
 
@@ -110,6 +111,18 @@ def upload_file():
 
     best_score, best_model = max(models)
     worst_score, worst_model = min(models)
+    
+        umass = []
+    for score in models:
+        umass.append(score[0])
+    
+    score = pd.Series(umass).plot(title="Model quality", alpha=0.5)
+    score.set_xlabel("Topic number")
+    score.set_ylabel("Coherence score")
+    fig = score.get_figure()
+    fig.savefig("./static/coherence_measure.png")
+    fig.flush()
+    
     
     print(best_model.show_topics())
     print(worst_model.show_topics())
