@@ -112,18 +112,6 @@ def upload_file():
     best_score, best_model = max(models)
     worst_score, worst_model = min(models)
     
-        umass = []
-    for score in models:
-        umass.append(score[0])
-    
-    score = pd.Series(umass).plot(title="Model quality", alpha=0.5)
-    score.set_xlabel("Topic number")
-    score.set_ylabel("Coherence score")
-    fig = score.get_figure()
-    fig.savefig("./static/coherence_measure.png")
-    fig.flush()
-    
-    
     print(best_model.show_topics())
     print(worst_model.show_topics())
 
