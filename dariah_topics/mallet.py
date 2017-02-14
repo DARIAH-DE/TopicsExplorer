@@ -31,7 +31,7 @@ log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.WARNING,
                     format = '%(levelname)s %(name)s: %(message)s')
 
-def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "tutorial_supplementals/mallet_output", outfile = "malletBinary.mallet"):
+def create_mallet_model(path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'), path_to_mallet="mallet", outfolder = "tutorial_supplementals/mallet_output", outfile = "malletBinary.mallet"):
     """Create a mallet binary file
 
     Args:
@@ -42,7 +42,7 @@ def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "t
                
     ToDo:
     """
-    
+
     if not os.path.exists(outfolder):
         log.info("Creating output folder ...")
         os.makedirs(outfolder)
@@ -83,7 +83,7 @@ def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "t
 
      
        
-def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet",  num_topics = "20", doc_topics ="doc_topics.txt", topic_keys="topic_keys"):
+def create_mallet_output(path_to_binary, outfolder = os.path.join(os.path.abspath('.'), "tutorial_supplementals/mallet_output"), path_to_mallet="mallet",  num_topics = "20", doc_topics ="doc_topics.txt", topic_keys="topic_keys"):
     """Import a mallet model
 
     Args:
@@ -94,7 +94,7 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet",  num
         
     ToDo:
     """
-    
+
     param = []
     param.append(path_to_mallet)
     param.append("train-topics")
@@ -139,6 +139,8 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet",  num
        log.info("Ending mallet process ...")
        p.terminate()
        log.debug("Mallet terminated.")
+
+    return outfolder
        
 
 def grouper(n, iterable, fillvalue=None):
@@ -155,7 +157,7 @@ def grouper(n, iterable, fillvalue=None):
     return itertools.zip_longest(*args, fillvalue=fillvalue)
     
 
-def create_MalletMatrix(doc_topics):
+def create_docTopicMatrix(output_folder):
     """Create Mallet matrix
 
     Args:
@@ -164,6 +166,9 @@ def create_MalletMatrix(doc_topics):
         
     ToDo: From: DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
     """
+    
+    doc_topics = os.path.join(output_folder, "doc_topics.txt")
+    assert doc_topics
     
     doctopic_triples = []
     mallet_docnames = []

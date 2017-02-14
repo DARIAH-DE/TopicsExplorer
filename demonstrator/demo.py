@@ -20,6 +20,7 @@ from gensim.models import LdaModel
 from gensim.corpora import MmCorpus
 from lxml import etree
 import matplotlib.pyplot as plt
+import os
 import pandas as pd
 import threading
 import webbrowser
@@ -41,15 +42,17 @@ def upload_file():
     files = request.files.getlist('files')
     corpus = pd.Series()
     for file in files:
-        filename = secure_filename(file.filename).split('.')
-        if filename[1] == 'txt':
+        filename, extension = os.path.splitext(secure_filename(file.filename))
+        if extension == '.txt':
             text = file.read().decode('utf-8')
-        elif filename[1] == 'xml':
+            file.flush()
+        elif extension == '.xml':
             ns = dict(tei="http://www.tei-c.org/ns/1.0")
             text = etree.parse(file)
             text = text.xpath('//tei:text', namespaces=ns)[0]
             text = "".join(text.xpath('.//text()'))
-        elif filename[1] == 'csv':
+            file.flush()
+        elif extension == '.csv':
             print("Todo...")
         tokens = list(preprocessing.tokenize(text))
         label = filename[0]
@@ -65,6 +68,7 @@ def upload_file():
         stopwords = stopwords.read().decode('utf-8')
         stopwords = set(preprocessing.tokenize(stopwords))
         clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, stopwords)
+        stopwords.flush()
     else:
         threshold = int(request.form['mfws'])
         stopwords = preprocessing.find_stopwords(sparse_bow, id_types, threshold)
@@ -78,15 +82,13 @@ def upload_file():
     sum_counts = sum(clean_term_frequency[0])
     header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
 
-    with open("gb_plain.mm", 'w', encoding = "utf-8") as f:
-        pass
-
-    with open("gb_plain.mm", 'a', encoding = "utf-8") as f:
+    with open("plain.mm", 'w+', encoding = "utf-8") as f:
         f.write("%%MatrixMarket matrix coordinate real general\n")
         f.write(header_string)
         sparse_bow.to_csv( f, sep = ' ', header = None)
+        f.flush()
 
-    mm = MmCorpus("gb_plain.mm")
+    mm = MmCorpus("plain.mm")
     doc2id = {value : key for key, value in doc_ids.items()}
     type2id = {value : key for key, value in id_types.items()}
 
@@ -102,16 +104,13 @@ def upload_file():
             print(doc2id)
             model = gensim.models.wrappers.LdaMallet('mallet/bin/mallet', corpus=files, num_topics=x, id2word=doc2id)
         topics = model.show_topics(num_topics = x)
-        segmented_topics = evaluation.topic_segmenter(model, type2id, x, permutation=True)
+        segmented_topics = evaluation.topic_segmenter(model, type2id, x)
         score = evaluation.token_probability(corpus, segmented_topics)
         umass = evaluation.calculate_umass(segmented_topics, score, corpus, x)
         models.append((umass, model))
 
     best_score, best_model = max(models)
     worst_score, worst_model = min(models)
-    
-    print(best_model.show_topics())
-    print(worst_model.show_topics())
 
     """
     heat = bool('heatmap' in request.form)
@@ -125,7 +124,7 @@ def upload_file():
     vis.save_heatmap("./visualizations/heatmap")
     """
     return render_template('result.html', software=request.form.get('lda'), evaluation=request.form['evaluation'], best_score=round(best_score, 2), worst_score=round(worst_score, 2),
-    best_topic_number=len(best_model.show_topics()), worst_topic_number=len(worst_model.show_topics()), stopwords=stopwords)
+    best_topic_number=len(best_model.show_topics()), worst_topic_number=len(worst_model.show_topics()), topics=best_model.show_topics())
 
 if __name__ == '__main__':
     threading.Timer(
