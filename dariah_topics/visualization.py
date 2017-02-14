@@ -288,7 +288,7 @@ def plot_doc_topics(doc_topic, document_index):
 
     """
     data = doc_topic[list(doc_topic)[document_index]].copy()
-    data.sort_values()
+    data = data.sort_values()
     values = list(data)
     labels = list(data.index)
 
