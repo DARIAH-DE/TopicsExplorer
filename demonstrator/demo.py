@@ -104,16 +104,13 @@ def upload_file():
             print(doc2id)
             model = gensim.models.wrappers.LdaMallet('mallet/bin/mallet', corpus=files, num_topics=x, id2word=doc2id)
         topics = model.show_topics(num_topics = x)
-        segmented_topics = evaluation.topic_segmenter(model, type2id, x, permutation=True)
+        segmented_topics = evaluation.topic_segmenter(model, type2id, x)
         score = evaluation.token_probability(corpus, segmented_topics)
         umass = evaluation.calculate_umass(segmented_topics, score, corpus, x)
         models.append((umass, model))
 
     best_score, best_model = max(models)
     worst_score, worst_model = min(models)
-    
-    print(best_model.show_topics())
-    print(worst_model.show_topics())
 
     """
     heat = bool('heatmap' in request.form)
@@ -127,7 +124,7 @@ def upload_file():
     vis.save_heatmap("./visualizations/heatmap")
     """
     return render_template('result.html', software=request.form.get('lda'), evaluation=request.form['evaluation'], best_score=round(best_score, 2), worst_score=round(worst_score, 2),
-    best_topic_number=len(best_model.show_topics()), worst_topic_number=len(worst_model.show_topics()), stopwords=stopwords)
+    best_topic_number=len(best_model.show_topics()), worst_topic_number=len(worst_model.show_topics()), topics=best_model.show_topics())
 
 if __name__ == '__main__':
     threading.Timer(
