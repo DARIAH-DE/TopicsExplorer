@@ -85,10 +85,10 @@ def create_mallet_model(path_to_corpus = os.path.join(os.path.abspath('.'), 'cor
      
        
 def create_mallet_output(path_to_binary, outfolder = os.path.join(os.path.abspath('.'), "tutorial_supplementals/mallet_output"), path_to_mallet="mallet",  num_topics = "20", doc_topics ="doc_topics.txt", topic_keys="topic_keys"):
-    """Import a mallet model
+    """Create mallet model
 
     Args:
-        path_to_binary (str): Path to mallet binary
+        path_to_binary (str): Path to mallet 
         outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
         
     Note: Use create_mallet_binary() to generate path_to_binary
@@ -158,14 +158,16 @@ def grouper(n, iterable, fillvalue=None):
     return itertools.zip_longest(*args, fillvalue=fillvalue)
     
 
-def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
-    """Create document-topic-matrix
+def show_docTopicMatrix(output_folder = 'tutorial_supplementals/mallet_output', docTopicsFile = "doc_topics.txt"):
+    """Show document-topic-mapping
 
     Args:
+        outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
+        docTopicsFile (str): Name of Mallets' doc_topic file, default doc_topics.txt
         
-    Note: Testversion
+    Note: Based on DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
         
-    ToDo: From: DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
+    ToDo: Prettify docnames
     """
     
     doc_topics = os.path.join(output_folder, docTopicsFile)
@@ -174,10 +176,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
     doctopic_triples = []
     mallet_docnames = []
     topics = []
-    #docmatrix = pd.DataFrame(segs)
-    #docmatrix["idno"] = idnos
-    #docmatrix.rename(columns={0:"segmentID"}, inplace=True)
-   
+ 
 
     with open(doc_topics) as f:
         f.readline()
@@ -218,13 +217,15 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
     return docTopicMatrix
 
 def show_topics_keys(output_folder, topicsKeyFile = "topic_keys"):
-    """Create topic key matrix
+    """Show topic-key-mapping
 
     Args:
+        outfolder (str): Folder for Mallet output,
+        topicsKeyFile (str): Name of Mallets' topic_key file, default "topic_keys"
         
-    Note: Testversion
+    Note: FBased on DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
         
-    ToDo: From: DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
+    ToDo: Prettify index
     """
     
     path_to_topic_keys = os.path.join(output_folder, topicsKeyFile)
@@ -241,5 +242,7 @@ def show_topics_keys(output_folder, topicsKeyFile = "topic_keys"):
         _, _, words = line.split('\t')  # tab-separated
         words = words.rstrip().split(' ')  # remove the trailing '\n'
         topic_keys.append(words) 
+        
+    topicKeysMatrix = pd.DataFrame(topic_keys)
 
-    return topic_keys
+    return topicKeysMatrix
