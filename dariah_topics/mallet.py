@@ -25,6 +25,7 @@ import operator
 import logging
 from platform import system
 import os
+import pandas as pd
 
 log = logging.getLogger('mallet')
 log.addHandler(logging.NullHandler())
@@ -157,8 +158,8 @@ def grouper(n, iterable, fillvalue=None):
     return itertools.zip_longest(*args, fillvalue=fillvalue)
     
 
-def create_docTopicMatrix(output_folder):
-    """Create Mallet matrix
+def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
+    """Create document-topic-matrix
 
     Args:
         
@@ -167,7 +168,7 @@ def create_docTopicMatrix(output_folder):
     ToDo: From: DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
     """
     
-    doc_topics = os.path.join(output_folder, "doc_topics.txt")
+    doc_topics = os.path.join(output_folder, docTopicsFile)
     assert doc_topics
     
     doctopic_triples = []
@@ -212,3 +213,30 @@ def create_docTopicMatrix(output_folder):
         doctopicMatrix[row_num, topic] = share
         
     return doctopicMatrix
+
+def show_topics_keys(output_folder, topicsKeyFile = "topic_keys"):
+    """Create topic key matrix
+
+    Args:
+        
+    Note: Testversion
+        
+    ToDo: From: DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
+    """
+    
+    path_to_topic_keys = os.path.join(output_folder, topicsKeyFile)
+    assert path_to_topic_keys
+
+    with open(path_to_topic_keys) as input:
+        topic_keys_lines = input.readlines()
+
+
+    topic_keys = []
+
+
+    for line in topic_keys_lines:
+        _, _, words = line.split('\t')  # tab-separated
+        words = words.rstrip().split(' ')  # remove the trailing '\n'
+        topic_keys.append(words) 
+
+    return topic_keys
