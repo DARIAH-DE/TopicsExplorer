@@ -173,8 +173,11 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
     
     doctopic_triples = []
     mallet_docnames = []
+    topics = []
+    #docmatrix = pd.DataFrame(segs)
+    #docmatrix["idno"] = idnos
+    #docmatrix.rename(columns={0:"segmentID"}, inplace=True)
    
-    doctopicMatrix = np.zeros((16, 20))
 
     with open(doc_topics) as f:
         f.readline()
@@ -183,36 +186,36 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
             mallet_docnames.append(docname)
             for topic, share in grouper(2, values):
                 triple = (docname, int(topic), float(share))
+                topics.append(int(topic))
                 doctopic_triples.append(triple)
-    
-    #print(doctopic_triples[0:5]
-    
+       
     # sort the triples
     # triple is (docname, topicnum, share) so sort(key=operator.itemgetter(0,1))
     # sorts on (docname, topicnum) which is what we want
     doctopic_triples = sorted(doctopic_triples, key=operator.itemgetter(0,1))
-    #print(doctopic_triples[0:5])
+
 
     # sort the document names rather than relying on MALLET's ordering
     mallet_docnames = sorted(mallet_docnames)
-    #print(mallet_docnames[0:5])
 
     # collect into a document-term matrix
-    num_docs = len(mallet_docnames)
-    #print(num_docs)
+    num_docs = len(mallet_docnames) 
 
-    num_topics = 20
-    #print(num_topics)
+    num_topics = max(topics) + 1
 
     # the following works because we know that the triples are in sequential order
-    doctopicMatrix = np.zeros((num_docs, num_topics))
+    data = np.zeros((num_docs, num_topics))
 
     for triple in doctopic_triples:
         docname, topic, share = triple
         row_num = mallet_docnames.index(docname)
-        doctopicMatrix[row_num, topic] = share
+        data[row_num, topic] = share
+                       
+    docTopicMatrix = pd.DataFrame(data=data[0:,0:],
+                  index=mallet_docnames[0:],
+                  columns=range(num_topics))
         
-    return doctopicMatrix
+    return docTopicMatrix
 
 def show_topics_keys(output_folder, topicsKeyFile = "topic_keys"):
     """Create topic key matrix
