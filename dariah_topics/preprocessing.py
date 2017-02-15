@@ -402,7 +402,7 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
 
     return sparse_df_filled
 
-def save_bow_mm(sparse_bow):
+def save_bow_mm(sparse_bow, output_path):
     """Save bag-of-word model as market matrix
 
     Note:
@@ -421,10 +421,10 @@ def save_bow_mm(sparse_bow):
 
     header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
 
-    with open("gb_plain.mm", 'w', encoding = "utf-8") as f:
+    with open('.'.join([output_path, 'mm']), 'w', encoding = "utf-8") as f:
         pass
 
-    with open("gb_plain.mm", 'a', encoding = "utf-8") as f:
+    with open('.'.join([output_path, 'mm']), 'a', encoding = "utf-8") as f:
         f.write("%%MatrixMarket matrix coordinate real general\n")
         f.write(header_string)
         sparse_bow.to_csv( f, sep = ' ', header = None)
