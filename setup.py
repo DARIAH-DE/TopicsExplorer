@@ -25,7 +25,7 @@ setup(
         'numpy>=1.3',
         'scipy>=0.7',
     ],
-    # pip install -e .[demonstrator,vis]
+    # pip install -e .[demonstrator,vis,evaluation]
     extras_require={
         'demonstrator': [
             'werkzeug>=0.11.15',
@@ -33,6 +33,10 @@ setup(
         ],
         'vis': [
             'pyLDAvis>=2.0.0',    # to feature 'pyldavis'
+        ],
+        'evaluation': [
+            'wikipedia>=1.4.0',
+            'lxml>=3.6.4'
         ]
     }
 )

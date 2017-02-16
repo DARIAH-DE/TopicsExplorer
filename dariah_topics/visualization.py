@@ -18,6 +18,7 @@ __email__ = "pielstroem@biozentrum.uni-wuerzburg.de"
 __version__ = "0.1"
 __date__ = "2017-01-20"
 
+
 import logging
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,11 +29,11 @@ from gensim.models import LdaModel
 import pyLDAvis.gensim
 import sys
 
+
 log = logging.getLogger('visualization')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level = logging.DEBUG,
-                    format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
-                    datefmt = '%d-%b-%Y %H:%M:%S')
+logging.basicConfig(level = logging.WARNING,
+                    format = '%(levelname)s %(name)s: %(message)s')
 
 class Visualization:
     def __init__(self, lda_model, corpus, dictionary, doc_labels, interactive=False):
@@ -61,11 +62,11 @@ class Visualization:
         """
         try:
             log.info("Accessing corpus ...")
-            self.corpus = MmCorpus(corpus)
+            self.corpus = corpus
             log.debug("Corpus available.")
 
             log.info("Accessing model ...")
-            self.model = LdaModel.load(lda_model)
+            self.model = lda_model
             log.debug("Model available.")
 
             if interactive == False:
@@ -73,15 +74,11 @@ class Visualization:
                 log.info("Accessing doc_labels ...")
                 self.doc_labels = doc_labels
                 log.debug("doc_labels accessed.")
-                with open(doc_labels, 'r', encoding='utf-8') as f:
-                    self.doc_labels = [line for line in f.read().split()]
-                    log.debug("%s doc_labels available.", len(doc_labels))
-                log.debug("Corpus, model and doc_labels available.")
 
             elif interactive == True:
                 log.debug(":param: interactive == True.")
                 log.info("Accessing dictionary ...")
-                self.dictionary = Dictionary.load(dictionary)
+                self.dictionary = dictionary
                 log.debug("Dictionary available.")
                 log.debug("Corpus, model and dictionary available.")
 
@@ -219,3 +216,85 @@ class Visualization:
             raise
         except FileNotFoundError:
             pass
+
+def create_doc_topic(corpus, model, doc_labels):
+    # Adapted from cody by Stefan Pernes
+    """Creates a document-topic data frame.
+
+    Args:
+        Gensim corpus.
+        Gensim model object.
+        List of document labels.
+
+    Returns:
+
+    """
+    no_of_topics = model.num_topics
+    no_of_docs = len(doc_labels)
+    doc_topic = np.zeros((no_of_docs, no_of_topics))
+
+    for doc, i in zip(corpus, range(no_of_docs)):       # use document bow from corpus
+        topic_dist = model.__getitem__(doc)             # to get topic distribution froom model
+        for topic in topic_dist:                        # topic_dist is a list of tuples
+            doc_topic[i][topic[0]] = topic[1]           # save topic probability
+
+    topic_labels = []
+    for i in range(no_of_topics):
+        topic_terms = [x[0] for x in model.show_topic(i, topn=3)]  # show_topic() returns tuples (word_prob, word)
+        topic_labels.append(" ".join(topic_terms))
+
+    doc_topic = pd.DataFrame(doc_topic, index = doc_labels, columns = topic_labels)
+    doc_topic = doc_topic.transpose()
+    # TODO: Stupid construction grown out of quick code adaptations: rewrite the first loop to
+    # get rid of the necessity to transpose the data frame!!!
+    # TODO: 'visualization' is not the proper place for this function!
+
+    return doc_topic
+
+def doc_topic_heatmap(data_frame):
+    # Adapted from code by Stefan Pernes and Allen Riddell
+    """Plot documnet-topic distribution in a heat map.
+
+    Args:
+        Document-topic data frame.
+
+    Returns:
+
+    """
+    data_frame = data_frame.transpose()
+    doc_labels = list(data_frame.index)
+    topic_labels = list(data_frame)
+    if len(doc_labels) > 20 or len(topic_labels) > 20: plt.figure(figsize=(20,20))    # if many items, enlarge figure
+    plt.pcolor(data_frame, norm=None, cmap='Reds')
+    plt.yticks(np.arange(data_frame.shape[0])+1.0, doc_labels)
+    plt.xticks(np.arange(data_frame.shape[1])+0.5, topic_labels, rotation='90')
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+
+    #plt.savefig(path+"/"+corpusname+"_heatmap.png") #, dpi=80)
+    plt.show()
+
+    # TODO: recode to get rid of transpose in the beginning
+
+
+def plot_doc_topics(doc_topic, document_index):
+    """Plot topic disctribution in a document.
+
+    Args:
+        Document-topic data frame.
+        Index of the document to be shown.
+
+    Returns:
+
+    """
+    data = doc_topic[list(doc_topic)[document_index]].copy()
+    data = data.sort_values()
+    values = list(data)
+    labels = list(data.index)
+
+    plt.barh(range(len(values)), values, align = 'center')
+    plt.yticks(range(len(values)), labels)
+    plt.xlabel('Proportion')
+    plt.ylabel('Topic')
+    plt.tight_layout()
+    plt.show()

@@ -1,257 +1,132 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Demonstrator.
+"""Demonstrator: Topic Modeling.
 
-This module contains pre-processing functions, various `Gensim`_ related functions for
-topic modeling and LDA visualization provided by `DARIAH-DE`_.
+This module demonstrates the joy of Topic Modeling, wrapped in an user-friendly
+web application provided by `DARIAH-DE`_.
 
-.. _Gensim:
-    https://radimrehurek.com/gensim/index.html
 .. _DARIAH-DE:
     https://de.dariah.eu
     https://github.com/DARIAH-DE
 """
 
-import threading
-import collection
-import webbrowser
-import matplotlib.pyplot as plt
+from dariah_topics import preprocessing
+from dariah_topics import evaluation
+from dariah_topics import visualization
+from dariah_topics import mallet
 from flask import Flask, request, render_template, send_file
+from gensim.models import LdaModel
+from gensim.corpora import MmCorpus
+from lxml import etree
+import matplotlib.pyplot as plt
+import os
+import pandas as pd
+import threading
+import webbrowser
 from werkzeug.utils import secure_filename
-from gensim import corpora, models, similarities
-from gensim.corpora import MmCorpus, Dictionary
-from gensim.models import LdaMulticore, LdaModel
 
-__author__ = "DARIAH-DE"
+__author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
-__version__ = "0.2"
-__date__ = "2017-01-16"
+__date__ = "2017-02-13"
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def index():
-    """
-    Render template ~/static/index.html
-    """
     return render_template('index.html')
-
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    """
-    Upload csv files and create:
-        * ~/out/corpus.dict
-        * ~/out/corpus.lda
-        * ~/out/corpus.lda.state
-        * ~/out/corpus.mm
-        * ~/out/corpus.mm.index
-        * ~/out/corpus_doclabels.txt
-        * ~/out/corpus_topics.txt
-        * ~/mycorpus.txt
-
-    As well as (for example):
-        * ~/swcorp/Doyle_AStudyinScarlet.txt
-        * ~/swcorp/Lovecraft_AttheMountainofMadness.txt
-        * etc.
-    """
-
-    # stopwords
-    stopwords = request.files['stoplist']
-
-    # PREPROCESSING
+    # Open all files, tokenize, and save in pd.Series():
     files = request.files.getlist('files')
-    docs = []
-    doc_labels = []
-
-    print("\n reading files ...\n")
-
+    corpus = pd.Series()
     for file in files:
-        file_label = secure_filename(file.filename).split('.')[0]
-        text_file = file.read().decode('utf-8')
-        # tokenize
-        tokens = list(collection.tokenize(text_file))
-        print(request.data['segments'])
-        segments = collection.segmenter(text_file, int(request.data['segments']))
-        print(segments)
-        doc = pd.DataFrame()
-        for p in pos_tags:  # collect only the specified parts-of-speech
-            doc = doc.append(df.get_group(p))
-            # construct documents
-            if doc_split:  # size according to paragraph id
-                doc = doc.groupby('ParagraphId')
-                for para_id, para in doc:
-                    docs.append(para['Lemma'].values.astype(str))
-                    doc_labels.append(
-                        ''.join([file_label, " #", str(para_id)]))
-            else:  # size according to doc_size
-                doc = doc.sort_values(by='TokenId')
-                i = 1
-                while(doc_size < doc.shape[0]):
-                    docs.append(
-                        doc[:doc_size]['Lemma'].values.astype(str))
-                    doc_labels.append(
-                        ''.join([file_label, " #", str(i)]))
-                    doc = doc.drop(doc.index[:doc_size])
-                    i += 1
-                docs.append(doc['Lemma'].values.astype(str))
-                doc_labels.append(''.join([file_label, " #", str(i)]))
+        filename, extension = os.path.splitext(secure_filename(file.filename))
+        if extension == '.txt':
+            text = file.read().decode('utf-8')
+            file.flush()
+        elif extension == '.xml':
+            ns = dict(tei="http://www.tei-c.org/ns/1.0")
+            text = etree.parse(file)
+            text = text.xpath('//tei:text', namespaces=ns)[0]
+            text = "".join(text.xpath('.//text()'))
+            file.flush()
+        elif extension == '.csv':
+            print("Todo...")
+        tokens = list(preprocessing.tokenize(text))
+        label = filename[0]
+        corpus[label] = tokens
+    
+    # Create bag-of-words:
+    id_types, doc_ids = preprocessing.create_dictionaries(corpus.index.tolist(), corpus.tolist())
+    sparse_bow = preprocessing.create_mm(corpus.index.tolist(), corpus.tolist(), id_types, doc_ids)
 
-            if not os.path.exists(os.path.join(os.getcwd(), "swcorp")):
-                os.makedirs(os.path.join(os.getcwd(), "swcorp"))
+    # Remove stopwords and hapax legomena:
+    stopwords = request.files['stoplist']
+    if request.files.get('stoplist', None):
+        stopwords = stopwords.read().decode('utf-8')
+        stopwords = set(preprocessing.tokenize(stopwords))
+        clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, stopwords)
+        stopwords.flush()
+    else:
+        threshold = int(request.form['mfws'])
+        stopwords = preprocessing.find_stopwords(sparse_bow, id_types, threshold)
+        hapax = preprocessing.find_hapax(sparse_bow, id_types)
+        feature_list = set(stopwords).union(hapax)
+        clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, feature_list)
+    
+    # Create Matrix Market:
+    num_docs = max(clean_term_frequency.index.get_level_values("doc_id"))
+    num_types = max(clean_term_frequency.index.get_level_values("token_id"))
+    sum_counts = sum(clean_term_frequency[0])
+    header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
 
-            swpath = os.path.join('swcorp', "".join(file_label))
+    with open("plain.mm", 'w+', encoding = "utf-8") as f:
+        f.write("%%MatrixMarket matrix coordinate real general\n")
+        f.write(header_string)
+        sparse_bow.to_csv( f, sep = ' ', header = None)
+        f.flush()
 
-            with open(swpath + ".txt", 'w', encoding="utf-8") as text:
-                text.write(" ".join(
-                    word for word in doc['Lemma'].values.astype(str)
-                    if word not in stopwords))
+    mm = MmCorpus("plain.mm")
+    doc2id = {value : key for key, value in doc_ids.items()}
+    type2id = {value : key for key, value in id_types.items()}
 
-    print("\n normalizing and vectorizing ...\n")
+    # Evaluate models and choose best:
+    models = []
+    for x in range(1, int(request.form['evaluation'])):
+        if request.form.get('lda') == 'Gensim':
+            model = LdaModel(corpus=mm, id2word=type2id, iterations=200, num_topics=x)
+        elif request.form.get('lda') == 'MALLET':
+            print(files)
+            import gensim
+            doc2id = {value : key for key, value in doc_ids.items()}
+            print(doc2id)
+            model = gensim.models.wrappers.LdaMallet('mallet/bin/mallet', corpus=files, num_topics=x, id2word=doc2id)
+        topics = model.show_topics(num_topics = x)
+        segmented_topics = evaluation.topic_segmenter(model, type2id, x)
+        score = evaluation.token_probability(corpus, segmented_topics)
+        umass = evaluation.calculate_umass(segmented_topics, score, corpus, x)
+        models.append((umass, model))
 
-    # texts = [
-    #   [word for word in doc if word not in stopwords] for doc in docs]
+    best_score, best_model = max(models)
+    worst_score, worst_model = min(models)
 
-    print("\n stopwords removed ...\n")
+    """
+    heat = bool('heatmap' in request.form)
+    inter = bool('interactive' in request.form)
 
-    print("\n writing mastercorpus ...\n")
-
-    mastercorpus = os.path.join(os.getcwd(), 'mycorpus.txt')
-
-    with open(mastercorpus, 'w', encoding="utf-8") as data:
-        folder = glob.glob("swcorp/*")
-        for text in folder:
-            with open(text, 'r', encoding="utf-8") as text:
-                textline = [re.sub(
-                    r'\\n\\r', '', document) for document in ' '.join(
-                        text.read().split())]
-                if text != folder[-1]:
-                    data.write("".join(textline) + "\n")
-                else:
-                    data.write("".join(textline))
-
-    # MAIN PART
-    mastercorpus = os.path.join(os.getcwd(), 'mycorpus.txt')
-
-    dictionary = corpora.Dictionary(
-        line.lower().split() for line in open(
-            mastercorpus, encoding="utf-8"))
-
-    class MyCorpus(object):
-        def __iter__(self):
-            for line in open('mycorpus.txt'):
-                # assume there's one document per line, tokens
-                # separated by whitespace
-                yield dictionary.doc2bow(line.lower().split())
-
-    # corpus = buildCorpus(mastercorpus, dictionary)
-
-    corpus = MyCorpus()
-
-    # corpus = glob.glob("swcorpus/*")
-
-    if not os.path.exists("out"):
-        os.makedirs("out")
-    # if not os.path.exists(os.path.join(os.path.join(os.getcwd(),
-    # 'out'), foldername)): os.makedirs(os.path.join
-    # (os.path.join(os.getcwd(), 'out'), foldername))
-
-    MmCorpus.serialize(
-        os.path.join(os.path.join(os.getcwd(), "out"), '.'.join(
-            ['corpus.mm'])), corpus)
-    mm = MmCorpus('out/corpus.mm')
-
-    print(mm)
-
-    # doc_labels = glob.glob("corpus/*")
-
-    print("fitting the model ...\n")
-
-    model = LdaModel(
-        corpus=mm, id2word=dictionary, num_topics=no_of_topics,
-        passes=no_of_passes, eval_every=eval, chunksize=chunk,
-        alpha=alpha, eta=eta)
-
-    # model = LdaMulticore(corpus=corpus, id2word=dictionary,
-    # num_topics=no_of_topics, passes=no_of_passes,
-    # eval_every=eval, chunksize=chunk, alpha=alpha, eta=eta)
-
-    print(model, "\n")
-
-    topics = model.show_topics(num_topics=no_of_topics)
-
-    for item, i in zip(topics, enumerate(topics)):
-        print("topic #"+str(i[0])+": "+str(item)+"\n")
-
-    print("saving ...\n")
-
-    if not os.path.exists("out"):
-        os.makedirs("out")
-    # if not os.path.exists(os.path.join(os.path.join(os.getcwd(),
-    # 'out'), foldername)):
-    # os.makedirs(os.path.join(os.path.join(os.getcwd(), 'out'),
-    # foldername))
-
-    with open(
-        os.path.join(os.path.join(os.getcwd(), "out"), ''.join(
-            ["corpus_doclabels.txt"])), "w", encoding="utf-8") as f:
-            for item in doc_labels:
-                f.write(item + "\n")
-
-    with open(
-        os.path.join(os.path.join(os.getcwd(), "out"), ''.join(
-            ["corpus_topics.txt"])), "w", encoding="utf-8") as f:
-        for item, i in zip(topics, enumerate(topics)):
-            f.write(
-                "".join(["topic #", str(i[0]), ": ", str(item), "\n"]))
-
-    dictionary.save(
-        os.path.join(os.path.join(os.getcwd(), "out"), '.'.join(
-            ['corpus', 'dict'])))
-    # MmCorpus.serialize(
-    # os.path.join(os.path.join(os.getcwd(), "out"), '.'.join(
-    # [foldername, 'mm'])), corpus)
-    model.save(
-        os.path.join(os.path.join(os.getcwd(), "out"), '.'.join(
-            ['corpus', 'lda'])))
-
-    print("\n ta-daaaa ...\n")
-
-    # VISUALIZATION
-    no_of_topics = model.num_topics
-    no_of_docs = len(doc_labels)
-    doc_topic = np.zeros((no_of_docs, no_of_topics))
-
-    for doc, i in zip(corpus, range(no_of_docs)):
-        # topic_dist is a list of tuples (topic_id, topic_prob)
-        topic_dist = model.__getitem__(doc)
-        for topic in topic_dist:
-            doc_topic[i][topic[0]] = topic[1]
-
-    # get plot labels
-    topic_labels = []
-    for i in range(no_of_topics):
-        # show_topic() returns tuples (word_prob, word)
-        topic_terms = [x[0] for x in model.show_topic(i, topn=3)]
-        topic_labels.append(" ".join(topic_terms))
-
-    # cf. https://de.dariah.eu/tatom/topic_model_visualization.html
-
-    if no_of_docs > 20 or no_of_topics > 20:
-        plt.figure(figsize=(20, 20)) # if many items, enlarge figure
-    plt.pcolor(doc_topic, norm=None, cmap='Reds')
-    plt.yticks(np.arange(doc_topic.shape[0])+1.0, doc_labels)
-    plt.xticks(
-        np.arange(doc_topic.shape[1])+0.5, topic_labels, rotation='90')
-    plt.gca().invert_yaxis()
-    plt.colorbar(cmap='Reds')
-    plt.tight_layout()
-    plt.savefig("./static/corpus_heatmap.svg")
-    return render_template('success.html')
+    if heat:
+        vis = visualization.Visualization(best_model, mm, type2id, labels, interactive=False)   # todo: consider user input
+        heatmap = vis.make_heatmap()
+    if inter:
+        print("interactive")
+    vis.save_heatmap("./visualizations/heatmap")
+    """
+    return render_template('result.html', software=request.form.get('lda'), evaluation=request.form['evaluation'], best_score=round(best_score, 2), worst_score=round(worst_score, 2),
+    best_topic_number=len(best_model.show_topics()), worst_topic_number=len(worst_model.show_topics()), topics=best_model.show_topics())
 
 if __name__ == '__main__':
     threading.Timer(
         1.25, lambda: webbrowser.open('http://127.0.0.1:5000')).start()
-    app.run(debug=True)
+    app.run()

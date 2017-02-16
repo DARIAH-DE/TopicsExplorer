@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:tns="http://textgrid.info/namespaces/metadata/core/2010" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" n="/Literatur/M/Schnitzler, Arthur/Erzählungen/Geschichte eines Genies" xml:id="tg296">
+            <teiHeader type="work">
+               <fileDesc>
+                  <titleStmt>
+                     <title>Geschichte eines Genies</title>
+                     <author key="pnd:118609807">Schnitzler, Arthur</author>
+                  </titleStmt>
+                  <publicationStmt>
+                     <authority>www.textGrid.de</authority>
+                     <availability>
+                        <p> Der annotierte Datenbestand der Digitalen Bibliothek inklusive Metadaten
+                            sowie davon einzeln zugängliche Teile sind eine Abwandlung des
+                            Datenbestandes von www.editura.de durch TextGrid und werden unter der
+                            Lizenz Creative Commons Namensnennung 3.0 Deutschland Lizenz (by-Nennung
+                            TextGrid, www.editura.de) veröffentlicht. Die Lizenz bezieht sich nicht
+                            auf die der Annotation zu Grunde liegenden allgemeinfreien Texte (Siehe
+                            auch Punkt 2 der Lizenzbestimmungen). </p>
+                        <p>
+                           <ref target="http://creativecommons.org/licenses/by/3.0/de/legalcode">Lizenzvertrag</ref>
+                        </p>
+                        <p>
+                           <ref target="http://creativecommons.org/licenses/by/3.0/de/"> Eine
+                                vereinfachte Zusammenfassung des rechtsverbindlichen Lizenzvertrages
+                                in allgemeinverständlicher Sprache </ref>
+                        </p>
+                        <p>
+                           <ref target="http://www.textgrid.de/Digitale-Bibliothek">Hinweise zur
+                                Lizenz und zur Digitalen Bibliothek</ref>
+                        </p>
+                     </availability>
+                  </publicationStmt>
+                  <notesStmt>
+                     <note>Erstdruck: Arena, II. Jahrgang, 12. Heft, März 1907.</note>
+                  </notesStmt>
+                  <sourceDesc>
+                     <biblFull>
+                        <titleStmt>
+                           <title>Arthur Schnitzler: Gesammelte Werke. Die erzählenden Schriften, 2 Bände, Band 1, Frankfurt a.M. 1961</title>
+                           <title>Arthur Schnitzler: Gesammelte Werke. Die erzählenden Schriften, 2 Bände, Frankfurt a.M.: S. Fischer Verlag, 1961.</title>
+                           <author>Schnitzler, Arthur</author>
+                        </titleStmt>
+                        <publicationStmt>
+                           <authority>www.textGrid.de</authority>
+                           <date>1961</date>
+                           <pubPlace>a.M.</pubPlace>
+                        </publicationStmt>
+                     </biblFull>
+                  </sourceDesc>
+               </fileDesc>
+               <profileDesc>
+                  <creation>
+                     <date notBefore="1862" notAfter="1931"/>
+                  </creation>
+                  <textClass>
+                     <keywords scheme="http://textgrid.info/namespaces/metadata/core/2010#genre">
+                        <term>prose</term>
+                     </keywords>
+                  </textClass>
+               </profileDesc>
+            </teiHeader>
+            <text>
+               <body>
+                  <div>
+                     <div type="text">
+
+
+
+                        <div type="h3">
+                           <tei:head type="h3" xml:id="tg296.3.1">
+                              <pb n="634" xml:id="tg296.3.1.1"/>
+                              <pb n="959" xml:id="tg296.3.1.2"/>Arthur Schnitzler</tei:head>
+
+
+                           <tei:head type="h2" xml:id="tg296.3.2">Geschichte eines Genies</tei:head>
+
+
+                           <p xml:id="tg296.3.3">»So wär' ich denn auf die Welt gekommen«, sagte der Schmetterling, schwebte über einem braunen Zweig hin und her und betrachtete die Gegend. Milde Märzsonne war über dem Park, drüben auf den Hängen lag noch einiger Schnee, und feucht glänzend zog die Landstraße zu Tal. Zwischen zwei Gitterstäben flog er ins Freie. »Dieses also ist das Universum«, dachte der Schmetterling, fand es im ganzen bemerkenswert und machte sich auf die Reise. Es fror ihn ein wenig, aber da er so rasch als möglich weiterflog und die Sonne immer höher stieg, wurde ihm allmählich wärmer.</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.4">Anfangs begegnete er keinem lebenden Wesen. Später kamen ihm zwei kleine Mädchen entgegen, die sehr erstaunt waren, als sie ihn gewahrten, und in die Hände klatschten.</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.5">»Ei«, dachte der Schmetterling, »ich werde mit Beifall begrüßt, offenbar seh' ich nicht übel aus.« Dann begegnete er Reitern, Maurergesellen, Rauchfangkehrern, einer Schafherde, Schuljungen, Bummlern, Hunden, Kindermädchen, Offizieren, jungen Damen; und über ihm in der Luft kreisten Vögel aller Art.</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.6">»Daß es nicht viel meinesgleichen gibt«, dachte der Schmetterling, »das hab' ich vermutet, aber daß ich der Einzige meiner Art bin, das übertrifft immerhin meine Erwartungen.«</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.7">Er segelte weiter, wurde etwas müde, bekam Appetit und ließ sich zum Erdboden nieder; aber nirgends fand er Nahrung.</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.8">»Wie wahr ist es doch«, dachte er, »daß es das Los des Genies ist, Kälte und Entbehrungen zu leiden. Aber nur Geduld, ich werde mich durchringen.«</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.9">Indes stieg die Sonne immer höher, dem Schmetterling wurde wärmer, und mit neuen Kräften flog er weiter. Nun erhob sich die Stadt vor ihm, er schwebte durchs Tor, über Plätze und Straßen, wo sich viele Menschen ergingen; und alle, die ihn bemerkten, waren erstaunt, lächelten einander vergnügt zu und sagten: »Nun will es doch Frühling werden.« Der Schmetterling setzte sich auf den Hut eines jungen Mädchens, wo eine Rose aus <pb n="959" xml:id="tg296.3.9.1"/>
+Samt ihn anlockte, aber die seidenen Staubfäden schmeckten ihm durchaus nicht. »Daran sollen es sich andre genügen lassen«, dachte er, »ich für meinen Teil will weiter hungern, bis ich einen Bissen finde, der meines Gaumens würdig ist.«</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.10">Er erhob sich aus dem Kelch, und durch ein offenes Fenster schwebte er in ein Zimmer, wo Vater, Mutter und drei Kinder bei Tische saßen.</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.11">Die Kinder sprangen auf, als der Schmetterling über den Suppentopf geflattert kam, der große Junge haschte nach ihm und hatte ihn gleich bei den Flügeln.</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.12">»Also auch das muß ich an mir erfahren«, dachte der Schmetterling nicht ohne Bitterkeit und Stolz, »daß ein Genie Verfolgungen preisgegeben ist.« Diese Tatsache war ihm ebenso bekannt wie alle übrigen, denn da er ein Genie war, hatte er die Welt antizipiert.</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.13">Da der Vater dem Jungen einen Schlag auf die Hand gab, ließ er den Schmetterling los, und dieser flog eiligst wieder ins Freie, nicht ohne den Vorsatz, seinen Retter bei nächster Gelegenheit fürstlich zu belohnen.</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.14">Durch das Stadttor flatterte er wieder auf die Landstraße hinaus. »Nun wäre es wohl genug für heute«, dachte er. »Meine Jugend war so reich an Erlebnissen, daß ich daran denken muß, meine Memoiren zu diktieren.«</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.15">Ganz in der Ferne winkten die Bäume des heimatlichen Gartens. Immer heftiger wurde die Sehnsucht des Schmetterlings nach einem warmen Plätzchen und nach Blütenstaub. Da gewahrte er mit einem Mal irgend etwas, das ihm entgegengeflattert kam und im übrigen genau so aussah wie er selbst. Einen Augenblick lang stutzte er, gleich aber besann er sich und sagte: »Über diese höchst sonderbare Begegnung hätte sich ein anderer wahrscheinlich gar keine Gedanken gemacht. Für mich aber ist sie der Anlaß zu der Entdeckung, daß man in gewissen durch Hunger und Kälte erzeugten Erregungszuständen sein eigenes Spiegelbild in der Luft zu gewahren vermag.«</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.16">Ein Junge kam gelaufen und fing den neuen Schmetterling mit der Hand. Da lächelte der erste und dachte: »Wie dumm die Menschen sind. Nun denkt er, er hat mich, und er hat doch nur mein Spiegelbild gefangen.«</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.17">Es flimmerte ihm vor den Augen, und er wurde immer matter. Und als er gar nicht mehr weiterkonnte, legte er sich an den Rand des Wegs, um zu schlummern. Die Kühle, der Abend kam, <pb n="960" xml:id="tg296.3.17.1"/>
+der Schmetterling schlief ein. Die Nacht zog über ihn hin, der Frost hüllte ihn ein. Beim ersten Sonnenstrahl wachte er noch einmal auf. Und da sah er vom heimatlichen Garten her Wesen herbeigaukeln, eines ... zwei ... drei ... immer mehr, die alle so aussahen wie er und über ihn hinwegflogen, als bemerkten sie ihn nicht. Müde sah der Schmetterling zu ihnen auf und versank in tiefes Sinnen. »Ich bin groß genug«, dachte er endlich, »meinen Irrtum einzusehen. Gut denn, es gibt im Universum Wesen, die mir ähnlich sind, wenigstens äußerlich.«</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.18">Auf der Wiese blühten die Blumen, die Falter ruhten auf den Kelchen aus, nahmen herrliche Mahlzeiten ein und flatterten weiter.</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.19">Der alte Schmetterling blieb auf dem Boden liegen. Er fühlte eine gewisse Verbitterung in sich aufsteigen. »Ihr habt es leicht«, dachte er. »Nun ist es freilich keine Kunst, zur Stadt zu fliegen, da ich euch den Weg gesucht habe und mein Duft euch auf der Straße voranzieht. Aber das tut nichts. Bleib' ich nicht der einzige, so war ich doch der erste. Und morgen werdet ihr am Rande des Weges liegen, gleich mir.«</p>
+                           <p rendition="#zenoPLm4n0" xml:id="tg296.3.20">Da kam ein Wind über ihn geweht, und seine armen Flügel bewegten sich noch einmal sanft hin und her. »Oh, ich beginne mich zu erholen«, dachte er erfreut. »Nun wartet nur, morgen flattere ich so über euch hin, wie ihr heut über mich geflogen seid.« Da sah er etwas Riesiges, Dunkles immer näher an sich herankommen. »Was ist das?« dachte er erschrocken. »Oh, ich ahne es. So erfüllt sich mein Los. Ein ungeheures Schicksal naht sich, um mich zu zermalmen.« Und während das Rad eines Bierwagens über ihn hinwegging, dachte er mit einer letzten Regung seiner verscheidenden Seele: »Wo werden sie wohl mein Denkmal hinsetzen?«</p>
+                        </div>
+                     </div>
+                  </div>
+               </body>
+            </text>
+         </TEI>

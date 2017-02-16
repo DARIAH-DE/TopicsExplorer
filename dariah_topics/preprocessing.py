@@ -21,6 +21,7 @@ import glob
 from collections import Counter, defaultdict
 import csv
 import logging
+from lxml import etree
 import numpy as np
 import pandas as pd
 import regex
@@ -28,11 +29,10 @@ import regex
 
 log = logging.getLogger('preprocessing')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level = logging.DEBUG,
-                    format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
-                    datefmt = '%d-%b-%Y %H:%M:%S')
+logging.basicConfig(level = logging.WARNING,
+                    format = '%(levelname)s %(name)s: %(message)s')
 
-regular_expression = r'\p{Letter}[\p{Letter}\p{Punctuation}]*\p{Letter}|\p{Letter}{1}'
+regular_expression = r'\p{Letter}+\p{Punctuation}?\p{Letter}+'
 
 def create_document_list(path, ext='txt'):
     """Creates a list of files with their full path.
@@ -49,6 +49,12 @@ def create_document_list(path, ext='txt'):
     log.debug("%s entries in document list.", len(doclist))
     return doclist
 
+def read_from_tei(doclist):
+    ns = dict(tei="http://www.tei-c.org/ns/1.0")
+    for file in doclist:
+        tree = etree.parse(file)
+        text_el = tree.xpath('//tei:text', namespaces=ns)[0]
+        yield "".join(text_el.xpath('.//text()'))
 
 def read_from_txt(doclist):
     """Opens files using a list of paths or one single path.
@@ -161,17 +167,20 @@ def tokenize(doc_txt, expression=regular_expression, lower=True, simple=False):
         Tokens
 
     Example:
-        >>> list(tokenize("I am an example text."))
-        ['i', 'am', 'an', 'example', 'text']
+        >>> list(tokenize("This is one example text."))
+        ['this', 'is', 'one', 'example', 'text']
     """
     if lower:
-        doc_txt = regex.sub("\.", "", doc_txt.lower())
-    elif lower == False:
-        doc_txt = regex.sub("\.", "", doc_txt)
-    if simple == False:
-        pattern = regex.compile(expression)
-    elif simple == True:
+        doc_txt = doc_txt.lower()
+    if simple:
         pattern = regex.compile(r'\w+')
+    else:
+        pattern = regex.compile(expression)
+    doc_txt = regex.sub("\.", "", doc_txt)
+    doc_txt = regex.sub("‒", " ", doc_txt)
+    doc_txt = regex.sub("–", " ", doc_txt)
+    doc_txt = regex.sub("—", " ", doc_txt)
+    doc_txt = regex.sub("―", " ", doc_txt)
     tokens = pattern.finditer(doc_txt)
     for match in tokens:
         yield match.group()
@@ -232,11 +241,11 @@ def find_hapax(sparse_bow, id_types):
         Hapax legomena in Series.
     """
     log.info("Find hapax legomena ...")
-    
+
     type2id = {value : key for key, value in id_types.items()}
     sparse_bow_hapax = sparse_bow[sparse_bow[0] == 1]
     hapax = set([type2id[key] for key in sparse_bow_hapax.index.get_level_values('token_id')])
-    
+
     log.debug("%s hapax legomena found.", len(hapax))
     return hapax
 
@@ -253,16 +262,16 @@ def remove_features(mm, id_types, features):
 
     Returns:
         Clean corpus.
-        
+
     ToDo:
         Adapt function to work with mm-corpus format.
     """
     log.info("Removing features ...")
 
     if type(features) == set:
-        
+
         stoplist_applied = [word for word in set(id_types.keys()) if word in features]
-        
+
         clean_term_frequency = mm.drop([id_types[word] for word in stoplist_applied], level="token_id")
 
     total = len(features)
@@ -295,9 +304,9 @@ def create_dictionaries(doc_labels, doc_tokens):
     doc_dictionary = defaultdict(list)
 
     for label, doc in zip(doc_labels, doc_tokens):
-        
+
         tempdoc = list(doc)
-        
+
         tempset = set([token for token in tempdoc])
 
         typeset.update(tempset)
@@ -326,7 +335,7 @@ def _create_large_counter(doc_labels, doc_tokens, type_dictionary):
     largecounter = defaultdict(dict)
 
     for doc, tokens in zip(doc_labels, doc_tokens):
-        
+
         largecounter[doc] = Counter([type_dictionary[token] for token in tokens])
 
     return largecounter
@@ -347,13 +356,13 @@ def _create_sparse_index(largecounter):
 
     #tuples = list(zip(largecounter.keys(), largecounter.values().keys()))
     tuples = []
-    
+
     for key in range(1, len(largecounter)):
 
         for value in largecounter[key]:
 
             tuples.append((key, value))
-            
+
     sparse_index = pd.MultiIndex.from_tuples(tuples, names = ["doc_id", "token_id"])
 
     #sparse_df = pd.DataFrame(largecounter.values(), index= largecounter.keys(), columns = ["token_id", "count"])
@@ -376,11 +385,11 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
     """
 
     temp_counter = _create_large_counter(doc_labels, doc_tokens, type_dictionary)
-    
+
     largecounter = {doc_ids[key] : value for key, value in temp_counter.items()}
-    
+
     sparse_index = _create_sparse_index(largecounter)
-    
+
     sparse_df_filled = pd.DataFrame(np.zeros((len(sparse_index), 1), dtype = int), index = sparse_index)
 
 
@@ -392,3 +401,30 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
             sparse_df_filled.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
 
     return sparse_df_filled
+
+def save_bow_mm(sparse_bow, output_path):
+    """Save bag-of-word model as market matrix
+
+    Note:
+
+
+    Args:
+
+
+    Returns:
+
+    ToDo:
+    """
+    num_docs = max(sparse_bow.index.get_level_values("doc_id"))
+    num_types = max(sparse_bow.index.get_level_values("token_id"))
+    sum_counts = sum(sparse_bow[0])
+
+    header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
+
+    with open('.'.join([output_path, 'mm']), 'w', encoding = "utf-8") as f:
+        pass
+
+    with open('.'.join([output_path, 'mm']), 'a', encoding = "utf-8") as f:
+        f.write("%%MatrixMarket matrix coordinate real general\n")
+        f.write(header_string)
+        sparse_bow.to_csv( f, sep = ' ', header = None)

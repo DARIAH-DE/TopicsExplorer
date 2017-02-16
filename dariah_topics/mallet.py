@@ -25,25 +25,25 @@ import operator
 import logging
 from platform import system
 import os
+import pandas as pd
 
 log = logging.getLogger('mallet')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level = logging.DEBUG,
-                    format = '%(asctime)s %(levelname)s %(name)s: %(message)s',
-                    datefmt = '%d-%b-%Y %H:%M:%S')
+logging.basicConfig(level = logging.WARNING,
+                    format = '%(levelname)s %(name)s: %(message)s')
 
-def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "tutorial_supplementals/mallet_output", outfile = "malletBinary.mallet"):
+def create_mallet_model(path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'), path_to_mallet="mallet", outfolder = "tutorial_supplementals/mallet_output", outfile = "malletBinary.mallet"):
     """Create a mallet binary file
 
     Args:
         path_to_corpus (str): Absolute path to corpus folder, e.g. '/home/workspace/corpus_txt'.
         path_to_mallet (str): If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
-        outfolder (str): Folder for Mallet output, default = 'mallet_output'
+        outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
         outfile (str): Name of the binary that will be generated, default = 'malletBinary.mallet'
                
     ToDo:
     """
-    
+
     if not os.path.exists(outfolder):
         log.info("Creating output folder ...")
         os.makedirs(outfolder)
@@ -84,17 +84,18 @@ def create_mallet_binary(path_to_corpus, path_to_mallet="mallet", outfolder = "t
 
      
        
-def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet",  num_topics = "20", doc_topics ="doc_topics.txt", topic_keys="topic_keys"):
-    """Import a mallet model
+def create_mallet_output(path_to_binary, outfolder = os.path.join(os.path.abspath('.'), "tutorial_supplementals/mallet_output"), path_to_mallet="mallet",  num_topics = "20", doc_topics ="doc_topics.txt", topic_keys="topic_keys"):
+    """Create mallet model
 
     Args:
-        path_to_binary (str): Path to mallet binary
+        path_to_binary (str): Path to mallet 
+        outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
         
     Note: Use create_mallet_binary() to generate path_to_binary
         
     ToDo:
     """
-    
+
     param = []
     param.append(path_to_mallet)
     param.append("train-topics")
@@ -139,6 +140,8 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet="mallet",  num
        log.info("Ending mallet process ...")
        p.terminate()
        log.debug("Mallet terminated.")
+
+    return outfolder
        
 
 def grouper(n, iterable, fillvalue=None):
@@ -155,20 +158,25 @@ def grouper(n, iterable, fillvalue=None):
     return itertools.zip_longest(*args, fillvalue=fillvalue)
     
 
-def create_MalletMatrix(doc_topics):
-    """Create Mallet matrix
+def show_docTopicMatrix(output_folder = 'tutorial_supplementals/mallet_output', docTopicsFile = "doc_topics.txt"):
+    """Show document-topic-mapping
 
     Args:
+        outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
+        docTopicsFile (str): Name of Mallets' doc_topic file, default doc_topics.txt
         
-    Note: Testversion
+    Note: Based on DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
         
-    ToDo: From: DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
+    ToDo: Prettify docnames
     """
+    
+    doc_topics = os.path.join(output_folder, docTopicsFile)
+    assert doc_topics
     
     doctopic_triples = []
     mallet_docnames = []
-   
-    doctopic = np.zeros((16, 20))
+    topics = []
+ 
 
     with open(doc_topics) as f:
         f.readline()
@@ -177,33 +185,64 @@ def create_MalletMatrix(doc_topics):
             mallet_docnames.append(docname)
             for topic, share in grouper(2, values):
                 triple = (docname, int(topic), float(share))
+                topics.append(int(topic))
                 doctopic_triples.append(triple)
-    
-    #print(doctopic_triples[0:5]
-    
+       
     # sort the triples
     # triple is (docname, topicnum, share) so sort(key=operator.itemgetter(0,1))
     # sorts on (docname, topicnum) which is what we want
     doctopic_triples = sorted(doctopic_triples, key=operator.itemgetter(0,1))
-    #print(doctopic_triples[0:5])
+
 
     # sort the document names rather than relying on MALLET's ordering
     mallet_docnames = sorted(mallet_docnames)
-    #print(mallet_docnames[0:5])
 
     # collect into a document-term matrix
-    num_docs = len(mallet_docnames)
-    #print(num_docs)
+    num_docs = len(mallet_docnames) 
 
-    num_topics = 20
-    #print(num_topics)
+    num_topics = max(topics) + 1
 
     # the following works because we know that the triples are in sequential order
-    doctopic = np.zeros((num_docs, num_topics))
+    data = np.zeros((num_docs, num_topics))
 
     for triple in doctopic_triples:
         docname, topic, share = triple
         row_num = mallet_docnames.index(docname)
-        doctopic[row_num, topic] = share
+        data[row_num, topic] = share
+                       
+    docTopicMatrix = pd.DataFrame(data=data[0:,0:],
+                  index=mallet_docnames[0:],
+                  columns=range(num_topics))
         
-    print(doctopic)
+    return docTopicMatrix
+
+def show_topics_keys(output_folder, topicsKeyFile = "topic_keys"):
+    """Show topic-key-mapping
+
+    Args:
+        outfolder (str): Folder for Mallet output,
+        topicsKeyFile (str): Name of Mallets' topic_key file, default "topic_keys"
+        
+    Note: FBased on DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html#topic-model-mallet
+        
+    ToDo: Prettify index
+    """
+    
+    path_to_topic_keys = os.path.join(output_folder, topicsKeyFile)
+    assert path_to_topic_keys
+
+    with open(path_to_topic_keys) as input:
+        topic_keys_lines = input.readlines()
+
+
+    topic_keys = []
+
+
+    for line in topic_keys_lines:
+        _, _, words = line.split('\t')  # tab-separated
+        words = words.rstrip().split(' ')  # remove the trailing '\n'
+        topic_keys.append(words) 
+        
+    topicKeysMatrix = pd.DataFrame(topic_keys)
+
+    return topicKeysMatrix

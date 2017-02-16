@@ -1,127 +1,185 @@
 <!DOCTYPE html>
 <html lang="de">
-	<head>
-		<meta charset="utf-8">
-		<title>DARIAH-DE :: Demonstrator</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="author" content="DARIAH-DE">
-		<meta name="description" content="DARIAH-DE :: Demonstrator">
-		<!-- CSS Imports -->
-		<link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}" type="text/css" media="screen, projection" />
-		<link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-responsive.css')}}" type="text/css" media="screen, projection" />
-		<link rel="stylesheet" href="{{url_for('static', filename='css/application.css')}}" type="text/css" media="screen, projection" />
-		<link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-customization.css')}}" type="text/css" media="screen, projection" />
-		<link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-modal.css')}}" type="text/css" media="screen, projection" />
-		<link rel="stylesheet" href="{{url_for('static', filename='css/font-awesome.css')}}">
 
-		<!-- JavaScript files at the end for faster loading of documents -->
+<head>
+    <meta charset="utf-8">
+    <title>DARIAH-DE :: Demonstrator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="DARIAH-DE">
+    <meta name="description" content="DARIAH-DE :: Demonstrator">
+    <!-- CSS Imports -->
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-responsive.css')}}" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/application.css')}}" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-customization.css')}}" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-modal.css')}}" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/font-awesome.css')}}">
+    <style>div#loading {
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: none;
+    margin: auto;
+    background: url(/static/pie.gif) no-repeat;
+    cursor: wait;
+    }
+    </style>
 
-		<script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2.js')}}"></script>
-		<script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
-		<script type="text/javascript" src="{{url_for('static', filename='js/globalmenu.js')}}"></script>
 
-		<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-		<!--[if lt IE 9]>
+    <!-- JavaScript files at the end for faster loading of documents -->
+
+    <script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/globalmenu.js')}}"></script>
+    <script type="text/javascript">
+        function loading(){
+            $("#loading").show();
+            $("#content").hide();
+        }
+    </script>
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
 		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
-		<link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='img/page_icon.png')}}" />
-	</head>
-	<body>
-		<div class="navbar navbar-inverse navbar-static-top navbar-dariah" id="top">
-			<div class="navbar-inner">
-				<div class="container-fluid">
-					<div class="row-fluid">
-						<div class="span1"></div>
-						<div class="span10">
-							<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-							</a>
-							<div class="nav-collapse collapse">
-								<ul class="nav pull-right">
-								</ul>
-								<ul class="nav">
-									<!--
+    <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='img/page_icon.png')}}" />
+</head>
+
+<body>
+    <div id="loading"></div>
+    <div id="content">
+    <div class="navbar navbar-inverse navbar-static-top navbar-dariah" id="top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right">
+                            </ul>
+                            <ul class="nav">
+                                <!--
 									Don't change this section!
 									-->
-									<li id="home_button" class="dropdown">
-										<a class="brand dropdown-toggle" data-toggle="dropdown" href="#">
-											<span class="caret"></span>
-											DARIAH-DE
-										</a>
-										<ul id="home_dropdown_menu" class="dropdown-menu">
-											<li class="dropdown-submenu">
-											    <a tabindex="-1" href="#">DARIAH-DE</a>
-											    <ul class="dropdown-menu">
-											      <li><a href="http://de.dariah.eu">DARIAH-DE Home</a></li>
-											      <li class="divider"></li>
-											      <li><a href="http://textgrid.de/ ">TextGrid</a></li>
-											    </ul>
-											  </li>
-											<li class="divider"></li>
-											<li class="dropdown-submenu">
-											    <a tabindex="-1" href="#">DARIAH-EU</a>
-											    <ul class="dropdown-menu">
-											      <li><a href="http://www.dariah.eu/">DARIAH-EU Home</a></li>
-											    </ul>
-											  </li>
-										</ul>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div id="content_layout" class="container-fluid">
-			<div style="height: 70px;"></div>
-			<div class="row-fluid">
-				<div class="span10 offset1 main-content-wrapper no-margin">
-					<div id="content" class="primary-area">
-						<h1>Demonstrator: Topic Modeling</h1>
-						<div id="contentInner">
-							<form action="/upload" method="POST" enctype="multipart/form-data">
-								<p>This web application introduces a workflow using the text mining technique <b>Topic Modeling</b>.</p>
-								<h3>1. Selecting a Corpus</h3>
-								<p>Choose some text files using the following button:</p>
-								<input type="file" name="files" multiple>
-								<br><br><h3>2. Data Preprocessing</h3>
-								<h4>Segmenting large text files</h4>
-								<p>If you have large text files (e.g. novels), it is recommended to segment the whole text into smaller parts, e.g. 1000 characters per segment. Type a number into the following field. If you don't want to segment your files, leave the field blank.</p>
-								<input type="text" name="segments">
-								<h4>Tokenizing text into words</h4>
-								<p>Regular expressions are one more or less reliable way to split a text into words. You can tokenize your text files with an integrated (and proved) regular expression for English, German, French, Spanish and Portuguese. If you want to submit your own regular expression, type it in the following text field.</p>
-								<input type="text" name="tokenizer">
-								<h4>Stopwords and Hapax Legomena</h4>
-								<p>You can determine stopwords and hapax legomena individually based on your corpus or upload your own words-to-remove-list. </p>
-								<p>How much stopwords?</p>
-								<input type="text" name="number_stopwords">
-								<input type="file" name="own_stopwords" multiple>
-								<h3>3. Visualization Options</h3>
-								<h3>4. Building the Model</h3>
-								<input type="submit" value="Send">
-							</form>
-							<hr>
-							<h2>Contact</h2>
-							<a href="mailto:pielstroem@biozentrum.uni-wuerzburg.de">Dr. Steffen Pielström</a>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row-fluid">
-				<div id="footer" class="span10 offset1 no-margin footer">
-					<span>&copy; 2017 DARIAH-DE</span>
-					<ul class="pull-right inline">
-						<li><a href="https://de.dariah.eu/impressum">Impressum</a></li>
-						<li><a href="https://wiki.de.dariah.eu/display/publicde/Cluster+5%3A+Quantitative+Datenanalyse">Contact</a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
-		<noscript>
-			<div>Enable JavaScript!</div>
-		</noscript>
-		</body>
+                                <li id="home_button" class="dropdown">
+                                    <a class="brand dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <span class="caret"></span> DARIAH-DE
+                                    </a>
+                                    <ul id="home_dropdown_menu" class="dropdown-menu">
+                                        <li class="dropdown-submenu">
+                                            <a tabindex="-1" href="#">DARIAH-DE</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="http://de.dariah.eu">DARIAH-DE Home</a>
+                                                </li>
+                                                <li class="divider"></li>
+                                                <li><a href="http://textgrid.de/ ">TextGrid</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li class="dropdown-submenu">
+                                            <a tabindex="-1" href="#">DARIAH-EU</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="http://www.dariah.eu/">DARIAH-EU Home</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="content_layout" class="container-fluid">
+        <div style="height: 70px;"></div>
+        <div class="row-fluid">
+            <div class="span10 offset1 main-content-wrapper no-margin">
+                <div id="content" class="primary-area">
+                    <h1>Demonstrator: Topic Modeling</h1>
+                    <div id="contentInner" style="text-align:justify">
+                        <form action="/upload" method="POST" enctype="multipart/form-data">
+                            <p>The text mining technique <b>Topic Modeling</b> has become a popular statistical method for clustering documents. This web application introduces an user-friendly workflow, basically containing data pre-processing, an implementation of the prototypic topic model <b>Latent Dirichlet Allocation</b> (LDA) which learns the relationships between words, topics, and documents, as well as an evaluation measure and visualization options to explore the trained LDA model.</p>
+                            <h3>1. Selecting a Corpus</h3>
+                            <p>Upload some plain text or TEI encoded XML files.</p>
+                            <div class="alert alert-info">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <b>Tip:</b> As a very first step, generate linguistic annotations for your text files using the NLP pipeline <b>DARIAH-DKPro-Wrapper</b> and upload the CSV files here. Your text files will be tokenized and lemmatized as well. For more details click <a href="https://github.com/DARIAH-DE/DARIAH-DKPro-Wrapper">here</a>.
+                            </div>
+                            <input type="file" name="files" multiple>
+                            <br>
+                            <br>
+                            <h3>2. Data Pre-Processing</h3>
+                            <h4>Tokenization, Stopwords and Hapax Legomena</h4>
+                            <p>In this step, your text files will be prepared. Tokenization is the task of cutting a stream of characters into linguistic units, simply words or, more precisely, <i>tokens</i>. Without identifying tokens, it is difficult to extract important information, such as most frequent words, also known as <i>stopwords</i>, or words that occure only once in a document, called <i>hapax legomena</i>. Stopwords and hapax legomena are harmful for the LDA model and have to be removed from the corpus.</p>
+                            <p>In case you want to determine stopwords individually based on your text files, define a threshold in the following line.</p>
+                            <div class="alert alert-info">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <b>Tip:</b> If your text corpus contains more than ten documents (e.g. short stories), try removing the top 100 most frequent words. If you are unsure about the threshold, better use an external stopwords list, e.g. <a href="../tutorial_supplementals/stopwords/en.txt">this one</a> for English text.
+                            </div>
+                            <input type="text" name="mfws" value="100">
+                            <p>Or upload your own words-to-remove list here:</p>
+                            <input type="file" name="stoplist">
+                            <h3>3. Modeling</h3>
+                            <p><a href="http://mallet.cs.umass.edu/index.php">MALLET</a>, as well as <a href="https://radimrehurek.com/gensim/">Gensim</a>, are two popular software packages to analyze text corpora. MALLET, whose development started in 2002 at University of Massachusets Amherst, delivers very reliable results. Since 2008, Gensim was used and cited in over 400 commercial and academic applications. It is up to you to which LDA implementation you choose. Basically both of them do the same thing, but there are always some minor differences, and so are user preferences.</p>
+                            <select name="lda">
+                                <option value="Gensim">Gensim</option>
+                                <option value="MALLET">MALLET</option>
+                            </select>
+                            <h3>4. Evaluating the Topics</h3>
+                            <p>One difficulty in Topic Modeling is to choose the appropriate number of topics for a model. Topic coherence measures the degree of semantic similarity between high scoring words in a topic. This measure helps you to rate the model's quality automatically and choose the best in a range of e.g. ten models with different numbers of topics.</p>
+                            <p>Type in the following line the number of models you want to train and compare. Each time a model is done, the number of topics will be incremented for the next one.</p>
+                            <input type="text" name="evaluation" value="10">
+                            <h3>5. Visualization</h3>
+                            <p>The heatmap option displays the kind of information that is probably most useful to literary scholars. Going beyond pure exploration, this visualization can be used to show thematic developments over a set of texts as well as a single text, akin to a dynamic topic model. To create a heatmap, tag the box:
+                                <input type="checkbox" name="heatmap">
+                            </p>
+                            <p>To explore the model more interactively, choose this visualization. You will be able to access inter-topic distances onto two dimensions. Basically, it allows for an interactive reranking and thus exploration of all terms connected to the topic, also those, which the model might have placed at the bottom. To create an interactive visualization, tag the box:
+                                <input type="checkbox" name="interactive">
+                            </p>
+                            <div class="alert alert-info">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <b>Tip:</b> Select both visualization options at the same time.
+                            </div>
+                            <h3>6. Submitting the Data</h3>
+                            <p>Finally, submit your data and explore the model.</p>
+                            <input type="submit" value="Send" onclick="loading();">
+                        </form>
+                        <hr>
+                        <h2>Contact</h2>
+                        <p><a href="mailto:pielstroem@biozentrum.uni-wuerzburg.de">Dr. Steffen Pielström</a>, University of Würzburg</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div id="footer" class="span10 offset1 no-margin footer">
+                <span>&copy; 2017 DARIAH-DE</span>
+                <ul class="pull-right inline">
+                    <li><a href="https://de.dariah.eu/impressum">Impressum</a>
+                    </li>
+                    <li><a href="https://wiki.de.dariah.eu/display/publicde/Cluster+5%3A+Quantitative+Datenanalyse">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <noscript>
+        <div>Enable JavaScript!</div>
+    </noscript>
+    </div>
+</body>
+
 </html>
