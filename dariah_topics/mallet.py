@@ -32,14 +32,14 @@ log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.WARNING,
                     format = '%(levelname)s %(name)s: %(message)s')
 
-def create_mallet_model(path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'), path_to_mallet="mallet", outfolder = "tutorial_supplementals/mallet_output", outfile = "malletBinary.mallet"):
+def create_mallet_model(path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'), path_to_mallet="mallet", outfolder = "tutorial_supplementals/mallet_output", outfile = "malletModel.mallet"):
     """Create a mallet binary file
 
     Args:
         path_to_corpus (str): Absolute path to corpus folder, e.g. '/home/workspace/corpus_txt'.
         path_to_mallet (str): If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
         outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
-        outfile (str): Name of the binary that will be generated, default = 'malletBinary.mallet'
+        outfile (str): Name of the mallet file that will be generated, default = 'malletModel.mallet'
                
     ToDo:
     """
@@ -84,23 +84,23 @@ def create_mallet_model(path_to_corpus = os.path.join(os.path.abspath('.'), 'cor
 
      
        
-def create_mallet_output(path_to_binary, outfolder = os.path.join(os.path.abspath('.'), "tutorial_supplementals/mallet_output"), path_to_mallet="mallet",  num_topics = "20", doc_topics ="doc_topics.txt", topic_keys="topic_keys"):
+def create_mallet_output(path_to_malletModel, outfolder = os.path.join(os.path.abspath('.'), "tutorial_supplementals/mallet_output"), path_to_mallet="mallet",  num_topics = "10", doc_topics ="doc_topics.txt", topic_keys="topic_keys", **kwargs):
     """Create mallet model
 
     Args:
-        path_to_binary (str): Path to mallet 
+        path_to_malletModel(str): Path to mallet model
         outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
         
-    Note: Use create_mallet_binary() to generate path_to_binary
+    Note: Use create_mallet_model() to generate path_to_malletModel
         
-    ToDo:
+    ToDo: **kwargs()
     """
 
     param = []
     param.append(path_to_mallet)
     param.append("train-topics")
     param.append("--input")
-    param.append(path_to_binary)
+    param.append(path_to_malletModel)
     param.append("--num-topics")
     param.append(num_topics)
     
@@ -209,10 +209,16 @@ def show_docTopicMatrix(output_folder = 'tutorial_supplementals/mallet_output', 
         docname, topic, share = triple
         row_num = mallet_docnames.index(docname)
         data[row_num, topic] = share
+        
+    topicLabels = []
+    
+    
+    for topic in range(max(topics)+1):
+        topicLabels.append("Topic_" + str(topic))
                        
     docTopicMatrix = pd.DataFrame(data=data[0:,0:],
                   index=mallet_docnames[0:],
-                  columns=range(num_topics))
+                  columns=topicLabels[0:])
         
     return docTopicMatrix
 
