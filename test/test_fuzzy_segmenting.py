@@ -1,6 +1,47 @@
-from dariah_topics.preprocessing import segment_fuzzy
+from dariah_topics.preprocessing import segment_fuzzy, split_paragraphs
 from nose.tools import eq_
 from itertools import chain
+import re
+
+_DEMO_DPAR = """
+"Wedlock suits you," he remarked. "I think Watson, that you have put on
+seven and a half pounds since I saw you."
+
+"Seven," I answered.
+
+"Indeed, I should have thought a little more. Just a trifle more, I
+fancy, Watson. And in practice again, I observe. You did not tell me
+that you intended to go into harness."
+
+"Then how do you know?"
+"""
+
+_DEMO_SPAR = '''"Wedlock suits you," he remarked. "I think Watson, that you have put on seven and a half pounds since I saw you."
+"Seven," I answered.
+"Indeed, I should have thought a little more. Just a trifle more, I fancy, Watson. And in practice again, I observe. You did not tell me that you intended to go into harness."
+"Then how do you know?"'''
+
+
+def test_split_paragraphs_spar():
+    chunked = split_paragraphs(_DEMO_SPAR)
+    eq_(len(chunked), 4, msg='not 4 chunks: ' + str(chunked))
+
+
+def test_split_paragraphs_dpar():
+    chunked = split_paragraphs(_DEMO_DPAR, sep=r'\n\n')
+    eq_(len(chunked), 4, msg='not 4 chunks: ' + str(chunked))
+
+
+def test_split_paragraphs_dpar_re():
+    chunked = split_paragraphs(_DEMO_DPAR, sep=re.compile(r'\n\n'))
+    eq_(len(chunked), 4, msg='not 4 chunks: ' + str(chunked))
+
+
+
+
+
+
+
 
 
 def test_plain_segments():

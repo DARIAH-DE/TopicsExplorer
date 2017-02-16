@@ -165,7 +165,7 @@ def split_paragraphs(doc_txt, sep=regex.compile('\n')):
     Returns:
         List of paragraphs
     """
-    if not hasattr(sep.match):
+    if not hasattr(sep, 'match'):
         sep = regex.compile(sep)
     return sep.split(doc_txt)
 
