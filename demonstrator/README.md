@@ -1,3 +1,0 @@
-# Demonstrator
-
-Run `demo.py`

@@ -52,10 +52,8 @@ def upload_file():
             text = text.xpath('//tei:text', namespaces=ns)[0]
             text = "".join(text.xpath('.//text()'))
             file.flush()
-        elif extension == '.csv':
-            print("Todo...")
         tokens = list(preprocessing.tokenize(text))
-        label = filename[0]
+        label = filename
         corpus[label] = tokens
     
     # Create bag-of-words:
@@ -87,44 +85,28 @@ def upload_file():
         f.write(header_string)
         sparse_bow.to_csv( f, sep = ' ', header = None)
         f.flush()
-
+    
     mm = MmCorpus("plain.mm")
     doc2id = {value : key for key, value in doc_ids.items()}
     type2id = {value : key for key, value in id_types.items()}
 
     # Evaluate models and choose best:
-    models = []
-    for x in range(1, int(request.form['evaluation'])):
-        if request.form.get('lda') == 'Gensim':
-            model = LdaModel(corpus=mm, id2word=type2id, iterations=200, num_topics=x)
-        elif request.form.get('lda') == 'MALLET':
-            print(files)
-            import gensim
-            doc2id = {value : key for key, value in doc_ids.items()}
-            print(doc2id)
-            model = gensim.models.wrappers.LdaMallet('mallet/bin/mallet', corpus=files, num_topics=x, id2word=doc2id)
-        topics = model.show_topics(num_topics = x)
-        segmented_topics = evaluation.topic_segmenter(model, type2id, x)
-        score = evaluation.token_probability(corpus, segmented_topics)
-        umass = evaluation.calculate_umass(segmented_topics, score, corpus, x)
-        models.append((umass, model))
-
-    best_score, best_model = max(models)
-    worst_score, worst_model = min(models)
-
-    """
-    heat = bool('heatmap' in request.form)
-    inter = bool('interactive' in request.form)
-
-    if heat:
-        vis = visualization.Visualization(best_model, mm, type2id, labels, interactive=False)   # todo: consider user input
-        heatmap = vis.make_heatmap()
-    if inter:
-        print("interactive")
-    vis.save_heatmap("./visualizations/heatmap")
-    """
-    return render_template('result.html', software=request.form.get('lda'), evaluation=request.form['evaluation'], best_score=round(best_score, 2), worst_score=round(worst_score, 2),
-    best_topic_number=len(best_model.show_topics()), worst_topic_number=len(worst_model.show_topics()), topics=best_model.show_topics())
+    num_topics = int(request.form['number_topics'])
+    passes = int(request.form['passes'])
+    model = LdaModel(corpus=mm, id2word=type2id, num_topics=num_topics, passes=passes)
+    
+    print(corpus)
+    doc_topic = visualization.create_doc_topic(mm, model, corpus.index.tolist())
+    heatmap = visualization.doc_topic_heatmap(doc_topic)
+    heatmap.savefig("./static/heatmap.png")
+    
+    import regex
+    pattern = regex.compile(r'\p{Letter}+\p{Punctuation}?\p{Letter}+')
+    topics = []
+    for n, topic in enumerate(model.show_topics()):
+        topics.append((n+1, pattern.findall(topic[1])))
+    
+    return render_template('result.html', topics=topics, documents=corpus.index.tolist())
 
 if __name__ == '__main__':
     threading.Timer(
