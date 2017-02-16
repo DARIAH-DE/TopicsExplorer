@@ -196,31 +196,31 @@ def segment_fuzzy(document, segment_size=5000, tolerance=0.05):
 
     current_segment = []
     current_size = 0
+    carry = None
+    doc_iter = iter(document)
 
-    for orig_chunk in document:
-        chunk = list(orig_chunk)
-        current_segment.append(chunk)
-        current_size += len(chunk)
+    try:
+        while True:
+            chunk = list(carry if carry else next(doc_iter))
+            carry = None
+            current_segment.append(chunk)
+            current_size += len(chunk)
 
-        if current_size >= segment_size:
-            too_long = current_size - segment_size
-            too_short = segment_size - (current_size - len(chunk))
+            if current_size >= segment_size:
+                too_long = current_size - segment_size
+                too_short = segment_size - (current_size - len(chunk))
 
-            if tolerance >= 0 and min(too_long, too_short) > tolerance:
-                chunk_part0 = chunk[:-too_long]
-                chunk_part1 = chunk[-too_long:]
-                current_segment[-1] = chunk_part0
-                yield current_segment
-                current_segment = [chunk_part1]
-                current_size = len(chunk_part1)
-            elif too_long < too_short:
+                if tolerance >= 0 and min(too_long, too_short) > tolerance:
+                    chunk_part0 = chunk[:-too_long]
+                    carry = chunk[-too_long:]
+                    current_segment[-1] = chunk_part0
+                elif too_long >= too_short:
+                    carry = current_segment.pop()
                 yield current_segment
                 current_segment = []
                 current_size = 0
-            else:
-                yield current_segment[:-1]
-                current_segment = [chunk]
-                current_size = len(chunk)
+    except StopIteration:
+        pass
 
     # handle leftovers
     if current_segment:
