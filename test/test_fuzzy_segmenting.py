@@ -1,7 +1,13 @@
-from dariah_topics.preprocessing import segment_fuzzy, split_paragraphs
+from dariah_topics.preprocessing import segment_fuzzy, split_paragraphs, \
+    segment, tokenize
+from functools import partial
 from nose.tools import eq_
 from itertools import chain
+from pathlib import Path
 import re
+
+
+project_path = Path(__file__).absolute().parent.parent
 
 _DEMO_DPAR = """
 "Wedlock suits you," he remarked. "I think Watson, that you have put on
@@ -35,12 +41,6 @@ def test_split_paragraphs_dpar():
 def test_split_paragraphs_dpar_re():
     chunked = split_paragraphs(_DEMO_DPAR, sep=re.compile(r'\n\n'))
     eq_(len(chunked), 4, msg='not 4 chunks: ' + str(chunked))
-
-
-
-
-
-
 
 
 
@@ -93,3 +93,16 @@ def test_overlong_chunk():
     lengths = list(map(len, flattened))
     assert min(lengths[:-1]) >= 3, "a segment is too short in " + str(segments)
     assert max(lengths) <= 5, "a segment is too long in " + str(segments)
+
+
+def test_segment():
+    """segment convenience wrapper"""
+    path = project_path.joinpath('corpus_txt', 'Doyle_AStudyinScarlet.txt')
+    text = path.read_text(encoding='utf-8')
+    segments = segment(text, segment_size=1000, tolerance=0.05,
+                       chunker=partial(split_paragraphs, sep=re.compile(r'\n\n')),
+                       tokenizer=tokenize,
+                       flatten_chunks=True)
+    lengths = list(map(len, segments))
+    assert min(lengths[:-1]) >= 950, "a segment is too short in " + str(segments)
+    assert max(lengths) <= 1050, "a segment is too long in " + str(segments)
