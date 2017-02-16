@@ -1,15 +1,13 @@
+#!/usr/bin/env python 3
+# -*- coding: utf-8 -*-
+
 from dariah_topics import preprocessing as pre
 import glob
 import os.path
 import pandas as pd
 import regex as re
-import logging
 
-log = logging.getLogger('testing')
-log.addHandler(logging.NullHandler())
-logging.basicConfig(level = logging.WARNING,
-			format = '%(levelname)s %(name)s: %(message)s')
-regular_expression = r'\p{Letter}+\p{Punctuation}?\{Letter}+'
+
 
 def gensim2dataframe(model):
     num_topics = model.num_topics
@@ -24,7 +22,7 @@ def gensim2dataframe(model):
     
     return topics_df
 
-path_txt = "/mnt/data/dariah/grenzbote_plain"
+path_txt = "/mnt/data/corpora/grenzboten/txt/*.txt"
 
 doclist_txt = pre.create_document_list(path_txt)
 doc_labels = list(pre.get_labels(doclist_txt))
@@ -32,8 +30,6 @@ doc_labels = list(pre.get_labels(doclist_txt))
 corpus_txt = pre.read_from_txt(doclist_txt)
 doc_tokens = [list(pre.tokenize(txt)) for txt in list(corpus_txt)]
 id_types, doc_ids = pre.create_dictionaries(doc_labels, doc_tokens)
-log.info("Length of id_types: %s", len(id_types))
-log.info("Length of doc_ids: %s", len(doc_ids))
 sparse_bow = pre.create_mm(doc_labels, doc_tokens, id_types, doc_ids)
 doc2id = {value : key for key, value in doc_ids.items()}
 type2id = {value : key for key, value in id_types.items()}
