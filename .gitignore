@@ -15,6 +15,7 @@ coverage.xml
 nosetests.xml
 gb_plain.dictionary
 gb_plain.mm
+heatmap.png
 TestingGensim.ipynb
 grenzbote_plain/
 **/IntegrationTest_v01.html
