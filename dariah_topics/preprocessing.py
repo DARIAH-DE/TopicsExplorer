@@ -275,6 +275,20 @@ def remove_features(mm, id_types, features):
 
         clean_term_frequency = mm.drop([id_types[word] for word in stoplist_applied], level="token_id")
 
+    else:
+        
+        try:
+            
+            features = set(features)
+            
+        except:
+            
+            log.debug("features must be set or convertible to set")
+            
+        stoplist_applied = [word for word in set(id_types.keys()) if word in features]
+
+        clean_term_frequency = mm.drop([id_types[word] for word in stoplist_applied], level="token_id")
+        
     total = len(features)
 
     log.debug("%s features removed.", total)
