@@ -272,7 +272,7 @@ def doc_topic_heatmap(data_frame):
     plt.tight_layout()
 
     #plt.savefig(path+"/"+corpusname+"_heatmap.png") #, dpi=80)
-    plt.show()
+    return plt
 
     # TODO: recode to get rid of transpose in the beginning
 
