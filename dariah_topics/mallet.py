@@ -32,13 +32,13 @@ log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.WARNING,
                     format = '%(levelname)s %(name)s: %(message)s')
 
-def create_mallet_model(path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'), path_to_mallet="mallet", outfolder = "tutorial_supplementals/mallet_output", outfile = "malletModel.mallet"):
+def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'), path_to_mallet="mallet", outfile = "malletModel.mallet"):
     """Create a mallet binary file
 
     Args:
         path_to_corpus (str): Absolute path to corpus folder, e.g. '/home/workspace/corpus_txt'.
         path_to_mallet (str): If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
-        outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
+        outfolder (str): Folder for Mallet output
         outfile (str): Name of the mallet file that will be generated, default = 'malletModel.mallet'
                
     ToDo:
@@ -84,12 +84,12 @@ def create_mallet_model(path_to_corpus = os.path.join(os.path.abspath('.'), 'cor
 
      
        
-def create_mallet_output(path_to_malletModel, outfolder = os.path.join(os.path.abspath('.'), "tutorial_supplementals/mallet_output"), path_to_mallet="mallet",  num_topics = "10", doc_topics ="doc_topics.txt", topic_keys="topic_keys", **kwargs):
+def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet",  num_topics = "10", doc_topics ="doc_topics.txt", topic_keys="topic_keys", **kwargs):
     """Create mallet model
 
     Args:
         path_to_malletModel(str): Path to mallet model
-        outfolder (str): Folder for Mallet output, default = 'tutorial_supplementals/mallet_output'
+        outfolder (str): Folder for Mallet output
         
     Note: Use create_mallet_model() to generate path_to_malletModel
         
@@ -158,7 +158,7 @@ def grouper(n, iterable, fillvalue=None):
     return itertools.zip_longest(*args, fillvalue=fillvalue)
     
 
-def show_docTopicMatrix(output_folder = 'tutorial_supplementals/mallet_output', docTopicsFile = "doc_topics.txt"):
+def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
     """Show document-topic-mapping
 
     Args:
@@ -242,6 +242,7 @@ def show_topics_keys(output_folder, topicsKeyFile = "topic_keys"):
 
 
     topic_keys = []
+    topicLabels = []
 
 
     for line in topic_keys_lines:
