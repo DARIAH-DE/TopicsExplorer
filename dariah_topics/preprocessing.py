@@ -243,8 +243,9 @@ def find_hapax(sparse_bow, id_types):
     log.info("Find hapax legomena ...")
 
     type2id = {value : key for key, value in id_types.items()}
-    sparse_bow_hapax = sparse_bow[sparse_bow[0] == 1]
-    hapax = set([type2id[key] for key in sparse_bow_hapax.index.get_level_values('token_id')])
+    sparse_bow_collapsed = sparse_bow.groupby(sparse_bow.index.get_level_values('token_id')).sum()
+    sparse_bow_hapax = sparse_bow_collapsed.loc[sparse_bow_collapsed[0] == 1]
+    hapax = [type2id[key] for key in sparse_bow_hapax.index.get_level_values('token_id')]
 
     log.debug("%s hapax legomena found.", len(hapax))
     return hapax
