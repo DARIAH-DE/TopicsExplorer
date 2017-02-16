@@ -56,18 +56,20 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
     
     sys = system()
     if sys == 'Windows':
-        output = outfolder + "\\" + outfile
+        #output = outfolder + "\\" + outfile
+        output = os.path.join(outfolder, outfile)
         log.debug(output)
         shell=True
     else:
-        output = outfolder + "/" + outfile
+        #output = outfolder + "/" + outfile
+        output = os.path.join(outfolder, outfile)
         log.debug(output)
         shell=False
         
     param.append("--output")
     param.append(output)
     param.append ("--keep-sequence")
-    param.append("--remove-stopwords")
+    #param.append("--remove-stopwords")
             
     try:
        log.info("Accessing Mallet ...")
@@ -81,10 +83,9 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
        log.debug("Mallet terminated.")
        
     return output
-
      
        
-def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet",  num_topics = "10", doc_topics ="doc_topics.txt", topic_keys="topic_keys", **kwargs):
+def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet",  num_topics = "10", doc_topics ="doc_topics.txt", topic_keys="topic_keys.txt", **kwargs):
     """Create mallet model
 
     Args:
@@ -95,7 +96,8 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
         
     ToDo: **kwargs()
     """
-
+    outfolder = doc_topics = os.path.join(os.path.abspath('.'), outfolder)
+    
     param = []
     param.append(path_to_mallet)
     param.append("train-topics")
@@ -106,14 +108,14 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     
     sys = system()
     if sys == 'Windows':
-        doc_topics = outfolder + "\\" + doc_topics
+        doc_topics = outfolder + "\\" + "doc_topics.txt"
         topic_keys = outfolder + "\\" + topic_keys
         state = outfolder + "\\" + "state.gz"
         word_top = outfolder + "\\" + "word_top.txt"
         log.debug(outfolder)
         shell = True
     else:
-        doc_topics = outfolder + "/" + doc_topics
+        doc_topics = outfolder + "/" + "doc_topics.txt"
         topic_keys = outfolder + "/" + topic_keys
         state = outfolder + "/" + "state.gz"
         word_top = outfolder + "/" + "word_top.txt"
@@ -126,9 +128,7 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     param.append(state)
     param.append("--output-topic-keys")
     param.append(topic_keys)
-    param.append("–word-topic-counts")
-    param.append(word_top)
-    
+
     try:
        log.info("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
@@ -222,7 +222,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
         
     return docTopicMatrix
 
-def show_topics_keys(output_folder, topicsKeyFile = "topic_keys"):
+def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
     """Show topic-key-mapping
 
     Args:
