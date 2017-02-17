@@ -26,7 +26,7 @@ from werkzeug.utils import secure_filename
 
 __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
-__date__ = "2017-02-13"
+__date__ = "2017-02-17"
 
 app = Flask(__name__)
 
