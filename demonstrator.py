@@ -63,9 +63,9 @@ def upload_file():
     # Remove stopwords and hapax legomena:
     stopwords = request.files['stoplist']
     if request.files.get('stoplist', None):
-        stopwords = stopwords.read().decode('utf-8')
-        stopwords = set(preprocessing.tokenize(stopwords))
-        clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, stopwords)
+        words = stopwords.read().decode('utf-8')
+        words = set(preprocessing.tokenize(words))
+        clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, words)
         stopwords.flush()
     else:
         threshold = int(request.form['mfws'])
