@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """Topic Modeling.
@@ -128,6 +128,7 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     param.append(state)
     param.append("--output-topic-keys")
     param.append(topic_keys)
+    print(param)
 
     try:
        log.info("Accessing Mallet ...")

@@ -25,6 +25,7 @@ from lxml import etree
 import numpy as np
 import pandas as pd
 import regex
+from itertools import chain
 
 
 log = logging.getLogger('preprocessing')
@@ -152,6 +153,117 @@ def segmenter(doc_txt, length=1000):
             log.debug("Segment has a length of %s characters.", length)
             segment = doc[i : i + length]
             yield segment
+
+def split_paragraphs(doc_txt, sep=regex.compile('\n')):
+    """
+    Split the given document by paragraphs.
+
+    Args:
+        doc_txt (str): Document text
+        sep (regex.Regex): separator indicating a paragraph
+
+    Returns:
+        List of paragraphs
+    """
+    if not hasattr(sep, 'match'):
+        sep = regex.compile(sep)
+    return sep.split(doc_txt)
+
+def segment_fuzzy(document, segment_size=5000, tolerance=0.05):
+    """
+    Segments a document, tolerating existing chunks (like paragraphs).
+
+    Description:
+        Consider you have a document. You wish to split the document into
+        segments of about 1000 tokens, but you prefer to keep paragraphs together
+        if this does not increase or decrease the token size by more than 5%.
+
+    Args:
+        document: The document to process. This is an Iterable of chunks, each
+            of which is an iterable of tokens.
+        segment_size (int): The target length of each segment in tokens.
+        tolerance (Number): How much may the actual segment size differ from
+            the segment_size? If 0 < tolerance < 1, this is interpreted as a
+            fraction of the segment_size, otherwise it is interpreted as an
+            absolute number. If tolerance < 0, chunks are never split apart.
+
+    Yields:
+        Segments. Each segment is a list of chunks, each chunk is a list of
+        tokens.
+    """
+    if tolerance > 0 and tolerance < 1:
+        tolerance = round(segment_size * tolerance)
+
+    current_segment = []
+    current_size = 0
+    carry = None
+    doc_iter = iter(document)
+
+    try:
+        while True:
+            chunk = list(carry if carry else next(doc_iter))
+            carry = None
+            current_segment.append(chunk)
+            current_size += len(chunk)
+
+            if current_size >= segment_size:
+                too_long = current_size - segment_size
+                too_short = segment_size - (current_size - len(chunk))
+
+                if tolerance >= 0 and min(too_long, too_short) > tolerance:
+                    chunk_part0 = chunk[:-too_long]
+                    carry = chunk[-too_long:]
+                    current_segment[-1] = chunk_part0
+                elif too_long >= too_short:
+                    carry = current_segment.pop()
+                yield current_segment
+                current_segment = []
+                current_size = 0
+    except StopIteration:
+        pass
+
+    # handle leftovers
+    if current_segment:
+        yield current_segment
+
+
+def segment(document, segment_size=1000, tolerance=0, chunker=None,
+            tokenizer=None, flatten_chunks=False, materialize=False):
+    """
+    Segments a document into segments of about `segment_size` tokens, respecting
+    existing chunks.
+
+    This is a convenience wrapper around segment_fuzzy.
+
+    Args:
+        segment_size (int): The target size of each segment, in tokens.
+        tolerance (Number): see `segment_fuzzy`
+        chunker (callable): a one-argument function that cuts the document into
+            chunks. If this is present, it is called on the given document.
+        tokenizer (callable): a one-argument function that tokenizes each chunk.
+        flatten_chunks (bool): if True, undo the effect of the chunker by
+            chaining the chunks in each segment, thus each segment consists of
+            tokens. This can also be a one-argument function in order to
+            customize the un-chunking.
+    """
+    if chunker is not None:
+        document = chunker(document)
+    if tokenizer is not None:
+        document = map(tokenizer, document)
+
+    segments = segment_fuzzy(document, segment_size, tolerance)
+
+    if flatten_chunks:
+        if not callable(flatten_chunks):
+            def flatten_chunks(segment):
+                return list(chain.from_iterable(segment))
+        segments = map(flatten_chunks, segments)
+    if materialize:
+        segments = list(segments)
+
+    return segments
+
+
 
 def tokenize(doc_txt, expression=regular_expression, lower=True, simple=False):
     """Tokenizes with Unicode Regular Expressions.
