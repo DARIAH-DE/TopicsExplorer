@@ -111,17 +111,17 @@
                     <h1>Demonstrator: Topic Modeling</h1>
                     <div id="contentInner" style="text-align:justify">
                         <form action="/upload" method="POST" enctype="multipart/form-data">
-                            <p>The text mining technique <b>Topic Modeling</b> has become a popular statistical method for clustering documents. This web application introduces an user-friendly workflow, basically containing data pre-processing, an implementation of the prototypic topic model <b>Latent Dirichlet Allocation</b> (LDA) which learns the relationships between words, topics, and documents, as well as an evaluation measure and visualization options to explore the trained LDA model.</p>
+                            <p>The text mining technique <b>Topic Modeling</b> has become a popular statistical method for clustering documents. This web application introduces an user-friendly workflow, basically containing data pre-processing, an implementation of the prototypic topic model <b>Latent Dirichlet Allocation</b> (LDA) which learns the relationships between words, topics, and documents, as well as one visualization to explore the trained LDA model.</p>
                             <h2>1. Preprocessing</h2>
-                            <h3>1.1 Reading a Corpus of Documents</h3>
-                            <p>Upload some plain text or TEI encoded XML files.</p>
+                            <h3>1.1 Reading a corpus of documents</h3>
+                            <p>Select plain text (<b>.txt</b>) or TEI encoded XML files (<b>.xml</b>).</p>
                             <input type="file" name="files" multiple>
                             <br>
                             <br>
-                            <h3>1.2 Tokenize Corpus</h3>
-                            <p>Tokenization is the task of cutting a stream of characters into linguistic units, simply words or, more precisely, <i>tokens</i>. Without identifying tokens, it is difficult to extract important information, such as most frequent words, also known as <i>stopwords</i>, or words that occure only once in a document, called <i>hapax legomena</i>.
-                            <h3>1.3 Feature Selection and/or Removal</h3>
-                            Stopwords and hapax legomena are harmful for the LDA model and have to be removed from the corpus. In case you want to determine stopwords individually based on your text files, define a threshold in the following line.</p>
+                            <h3>1.2 Tokenize corpus</h3>
+                            <p>Your text files will be tokenized. Tokenization is the task of cutting a stream of characters into linguistic units, simply words or, more precisely, <i>tokens</i>. Without identifying tokens, it is difficult to extract important information, such as most frequent words, also known as <i>stopwords</i>, or words that occur only once in a document, called <i>hapax legomena</i>.
+                            <h3>1.3 Feature selection and/or removal</h3>
+                            Stopwords and hapax legomena are harmful for the LDA model and have to be removed from the corpus. In case you want to determine stopwords individually based on your corpus, define a threshold in the following line.</p>
                             <div class="alert alert-info">
                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                                 <b>Tip:</b> If your corpus is large enough (at least about 10 documents, e.g. short stories), try removing the top 100 most frequent words. If you are unsure about the threshold, better use an external stopwords list, e.g. <a href="https://raw.githubusercontent.com/DARIAH-DE/Topics/testing/tutorial_supplementals/stopwords/en.txt">this one</a> for English text.
@@ -130,21 +130,25 @@
                             <p>Alternatively, upload your own words-to-remove list here:</p>
                             <input type="file" name="stoplist">
                             <br>
-                            <h2>2. Model Creation</h2>
-                            <p>This workflow contains the LDA implementation of the open-source toolkit <a href="https://radimrehurek.com/gensim/">Gensim</a>. Since 2008, Gensim was used and cited in over 400 commercial and academic applications.</p>
-                            <h3>2.1 Generate LDA Model</h3>
+                            <br>
+                            <h2>2. Model creation</h2>
+                            <p>The actual topic modeling is done with external state-of-the art LDA implementations. In this example, we are relying on the open-source toolkit <a href="https://radimrehurek.com/gensim/">Gensim</a> which was used and cited in over 400 commercial and academic applications since 2008.</p>
+                            <h3>2.1 Generate LDA model</h3>
                             <div class="alert alert-block">
 								<button type="button" class="close" data-dismiss="alert">&times;</button>
 								<i class="fa fa-exclamation-circle"></i> This step can take quite a while! Meaning something between some seconds and some hours depending on corpus size and the number of passes. Our example short stories corpus should be done within a minute or two.</div>
-								<p>Set the number of topics in the following line.</p>
+								<p>Set the total number of topics in the following line.</p>
                                 <input type="text" name="number_topics" value="10">
-                                <p>Now, define the number of passes: The higher, the better.</p>
+                                <p>Now, define the number of passes (the higher, the better, but increases also time).</p>
                                 <input type="text" name="passes" value="10">
-                            <h2>3. Model Visualization</h3>
-                            <h3>3.1 The Document-Topic-Matrix in a Heatmap</h3>
-                            <p>This visualization displays the kind of information that is probably most useful to literary scholars. Going beyond pure exploration, this visualization can be used to show thematic developments over a set of texts as well as a single text, akin to a dynamic topic model.
-                            <h2>4. Submitting</h2>
+                            <h2>3. Model visualization</h2>
+                            <h3>3.1 The document-topic matrix in a heatmap</h3>
+                            <p>The generated model object can now be translated into a human-readable document-topic matrix. In this workflow, the matrix is visualized as a heatmap which displays the kind of information that is probably most useful to literary scholars. Going beyond pure exploration, this visualization can be used to show thematic developments over a set of texts as well as a single text, akin to a dynamic topic model.
+                            <h2>4. Coming to an end</h2>
                             <p>Finally, submit your data and explore the model.</p>
+                            <div class="alert alert-block">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+								<i class="fa fa-exclamation-circle"></i> This application is still in development, so errors may occur. Please contact us, if you have any problems, improvements or wishes.</div>
                             <input type="submit" value="Send" onclick="loading();">
                         </form>
                         <hr>

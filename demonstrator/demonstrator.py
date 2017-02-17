@@ -12,9 +12,7 @@ web application provided by `DARIAH-DE`_.
 """
 
 from dariah_topics import preprocessing
-from dariah_topics import evaluation
 from dariah_topics import visualization
-from dariah_topics import mallet
 from flask import Flask, request, render_template, send_file
 from gensim.models import LdaModel
 from gensim.corpora import MmCorpus
@@ -52,10 +50,12 @@ def upload_file():
             text = text.xpath('//tei:text', namespaces=ns)[0]
             text = "".join(text.xpath('.//text()'))
             file.flush()
+        else:
+            print("File format is not supported.") # Todo: Replace with Flask flash
         tokens = list(preprocessing.tokenize(text))
         label = filename
         corpus[label] = tokens
-    
+
     # Create bag-of-words:
     id_types, doc_ids = preprocessing.create_dictionaries(corpus.index.tolist(), corpus.tolist())
     sparse_bow = preprocessing.create_mm(corpus.index.tolist(), corpus.tolist(), id_types, doc_ids)
@@ -80,32 +80,33 @@ def upload_file():
     sum_counts = sum(clean_term_frequency[0])
     header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
 
-    with open("plain.mm", 'w+', encoding = "utf-8") as f:
+    with open("matrixmarket.mm", 'w+', encoding = "utf-8") as f:
         f.write("%%MatrixMarket matrix coordinate real general\n")
         f.write(header_string)
-        sparse_bow.to_csv( f, sep = ' ', header = None)
+        sparse_bow.to_csv(f, sep = ' ', header = None)
         f.flush()
-    
-    mm = MmCorpus("plain.mm")
+
+    mm = MmCorpus("matrixmarket.mm")
     doc2id = {value : key for key, value in doc_ids.items()}
     type2id = {value : key for key, value in id_types.items()}
 
-    # Evaluate models and choose best:
+    # LDA:
     num_topics = int(request.form['number_topics'])
     passes = int(request.form['passes'])
     model = LdaModel(corpus=mm, id2word=type2id, num_topics=num_topics, passes=passes)
-    
-    print(corpus)
+
+    # Visualization:
     doc_topic = visualization.create_doc_topic(mm, model, corpus.index.tolist())
     heatmap = visualization.doc_topic_heatmap(doc_topic)
     heatmap.savefig("./static/heatmap.png")
-    
+
+    # Topic-Term-Matrix for HTML (todo: replace by DataFrame.to_html()):
     import regex
-    pattern = regex.compile(r'\p{Letter}+\p{Punctuation}?\p{Letter}+')
+    pattern = regex.compile(r'\p{L}+\p{P}?\p{L}+')
     topics = []
     for n, topic in enumerate(model.show_topics()):
         topics.append((n+1, pattern.findall(topic[1])))
-    
+
     return render_template('result.html', topics=topics, documents=corpus.index.tolist())
 
 if __name__ == '__main__':

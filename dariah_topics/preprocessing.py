@@ -484,7 +484,7 @@ def _create_sparse_index(largecounter):
     #tuples = list(zip(largecounter.keys(), largecounter.values().keys()))
     tuples = []
 
-    for key in range(1, len(largecounter)):
+    for key in range(1, len(largecounter)+1):
 
         for value in largecounter[key]:
 

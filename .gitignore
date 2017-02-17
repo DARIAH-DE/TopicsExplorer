@@ -15,6 +15,7 @@ coverage.xml
 nosetests.xml
 gb_plain.dictionary
 gb_plain.mm
+matrixmarket.mm
 plain.mm
 heatmap.png
 TestingGensim.ipynb
