@@ -23,6 +23,7 @@ Segments
 from pathlib import Path
 from itertools import zip_longest
 from abc import abstractmethod, abstractproperty
+from copy import deepcopy
 
 class BaseDocList:
     """
@@ -32,6 +33,9 @@ class BaseDocList:
     def __init__(self, basepath):
         self.basepath = Path(basepath)
         self._segment_counts = None
+
+    def copy(self):
+        return deepcopy(self)
 
     def full_path(self, document, as_str=False):
         """
@@ -197,14 +201,14 @@ class PathDocList(BaseDocList):
                 basepath. If `None`, look for files on the file system.
         """
         self.basepath = Path(basepath)
-        self.segments = None
+        self._segment_counts = None
         if filenames is None:
             self._files = [p.relative_to(self.basepath)
                            for p in self.basepath.glob(glob_pattern)]
         else:
             paths = (Path(name) for name in filenames)
             if glob_pattern is not None:
-                paths = (path for path in paths if path.matches(glob_pattern))
+                paths = (path for path in paths if path.match(glob_pattern))
             self._files = list(paths)
 
     def get_docs(self):
