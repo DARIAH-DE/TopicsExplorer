@@ -177,7 +177,13 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
     doctopic_triples = []
     mallet_docnames = []
     topics = []
- 
+    df = pd.read_csv('tutorial_supplementals/mallet_output/topic_keys.txt', sep='\t', header=None)
+    labels=[]
+    for index, item in df.iterrows():
+
+        label= ' '.join(item[2].split()[:3])
+        print(label)
+        return label 
 
     with open(doc_topics) as f:
         f.readline()
@@ -188,6 +194,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
                 triple = (docname, int(topic), float(share))
                 topics.append(int(topic))
                 doctopic_triples.append(triple)
+    
        
     # sort the triples
     # triple is (docname, topicnum, share) so sort(key=operator.itemgetter(0,1))
@@ -213,10 +220,19 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
         
     topicLabels = []
     
+    #creates list of topic lables consisting of the 3 most weighed topics
+    df = pd.read_csv('tutorial_supplementals/mallet_output/topic_keys.txt', sep='\t', header=None)
+    labels=[]
+    for index, item in df.iterrows():
+
+        topicLabel= ' '.join(item[2].split()[:3])
+        topicLabels.append(topicLabel)
+   
     
+    '''
     for topic in range(max(topics)+1):
         topicLabels.append("Topic_" + str(topic))
-                       
+    '''                   
     docTopicMatrix = pd.DataFrame(data=data[0:,0:],
                   index=mallet_docnames[0:],
                   columns=topicLabels[0:])
