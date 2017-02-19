@@ -32,7 +32,8 @@ log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.WARNING,
                     format = '%(levelname)s %(name)s: %(message)s')
 
-def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'), path_to_mallet="mallet", outfile = "malletModel.mallet"):
+def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'), path_to_mallet="mallet", outfile = "malletModel.mallet",
+                        remove_stopwords="False", stoplist = None):
     """Create a mallet binary file
 
     Args:
@@ -67,8 +68,19 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
     param.append("--output")
     param.append(output)
     param.append ("--keep-sequence")
-    #param.append("--remove-stopwords")
-            
+    
+    if(remove_stopwords=="TRUE"):
+            param.append("--remove-stopwords")
+            param.append(remove_stopwords)
+            #param.append("--token-regex")
+            #token_regex = "'\p{L}[\p{L}\p{P}]*\p{L}'"
+            #param.append(token_regex)
+    if(stoplist != None):
+            param.append("--stoplist-file")
+            param.append(stoplist)
+    print(param)
+
+         
     try:
        log.info("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
@@ -83,8 +95,9 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
     return output
      
        
-def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet",  num_topics = "10", num_iterations = "10",
-                         num_top_words = "10"):
+def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet",  num_topics = "10", 
+                         #num_iterations = "10", num_top_words = "10"
+                         ):
     """Create mallet model
 
     Args:
@@ -108,10 +121,10 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     param.append(path_to_malletModel)
     param.append("--num-topics")
     param.append(num_topics)
-    param.append("--num-iterations")
-    param.append(num_iterations)
-    param.append("--num-top-words")
-    param.append(num_top_words)
+    #param.append("--num-iterations")
+    #param.append(num_iterations)
+    #param.append("--num-top-words")
+    #param.append(num_top_words)
     
     sys = system()
     if sys == 'Windows':
@@ -186,20 +199,25 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
     doc_topics = os.path.join(output_folder, docTopicsFile)
     assert doc_topics
     
+    topic_keys = os.path.join(outfolder, "topic_keys.txt")
+    assert topic_keys
+    
     doctopic_triples = []
     mallet_docnames = []
     topics = []
-    df = pd.read_csv('tutorial_supplementals/mallet_output/topic_keys.txt', sep='\t', header=None)
+    
+    df = pd.read_csv(topic_keys, sep='\t', header=None)
     labels=[]
     for index, item in df.iterrows():
-
         label= ' '.join(item[2].split()[:3])
-        print(label)
-        return label 
+        labels.append(label)
 
     with open(doc_topics) as f:
         f.readline()
         for line in f:
+            li=line.lstrip()
+            if not li.startswith("#"):
+                return df = pd.read_csv(doc_topics, sep='\t', names=labels[0:])
             docnum, docname, *values = line.rstrip().split('\t')
             mallet_docnames.append(docname)
             for topic, share in grouper(2, values):
