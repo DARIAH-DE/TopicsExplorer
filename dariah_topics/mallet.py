@@ -232,7 +232,12 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
 
 
     if(easy_file_format == True):
+        newindex=[]
         docTopicMatrix = pd.read_csv(doc_topics, sep='\t', names=labels[0:])
+        #print(list(docTopicMatrix.index))
+        for eins, zwei in docTopicMatrix.index:
+            newindex.append(os.path.basename(zwei))
+        docTopicMatrix.index = newindex
         
     else:
         # sort the triples
@@ -265,13 +270,19 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
 
             topicLabel= ' '.join(item[2].split()[:3])
             topicLabels.append(topicLabel)
+        
+        shortened_docnames=[]
+        for item in mallet_docnames:
+            shortened_docnames.append(os.path.basename(item))
+
+            
      
         '''
         for topic in range(max(topics)+1):
         topicLabels.append("Topic_" + str(topic))
         '''                   
         docTopicMatrix = pd.DataFrame(data=data[0:,0:],
-                  index=mallet_docnames[0:],
+                  index=shortened_docnames[0:],
                   columns=topicLabels[0:])
         
     return docTopicMatrix
@@ -307,3 +318,5 @@ def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
     topicKeysMatrix = pd.DataFrame(topic_keys)
 
     return topicKeysMatrix
+
+
