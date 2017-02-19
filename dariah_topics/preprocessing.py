@@ -18,6 +18,7 @@ __date__ = "2017-01-20"
 
 
 import glob
+import os
 from collections import Counter, defaultdict
 import csv
 import logging
@@ -46,8 +47,11 @@ def create_document_list(path, ext='txt'):
         list[str]: List of files with full path.
     """
     log.info("Creating document list from %s files ...", ext.upper())
-    doclist = glob.glob(path + "/*." + ext)
+    pattern = os.path.join(path, "*." + ext)
+    doclist = glob.glob(pattern)
     log.debug("%s entries in document list.", len(doclist))
+    if not doclist:
+        raise FileNotFoundError("The pattern %s does not match any files." % pattern)
     return doclist
 
 def read_from_tei(doclist):
@@ -388,19 +392,19 @@ def remove_features(mm, id_types, features):
         clean_term_frequency = mm.drop([id_types[word] for word in stoplist_applied], level="token_id")
 
     else:
-        
+
         try:
-            
+
             features = set(features)
-            
+
         except:
-            
+
             log.debug("features must be set or convertible to set")
-            
+
         stoplist_applied = [word for word in set(id_types.keys()) if word in features]
 
         clean_term_frequency = mm.drop([id_types[word] for word in stoplist_applied], level="token_id")
-        
+
     total = len(features)
 
     log.debug("%s features removed.", total)
