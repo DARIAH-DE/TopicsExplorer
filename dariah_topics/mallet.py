@@ -227,7 +227,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
                     topics.append(int(topic))
                     doctopic_triples.append(triple)
             else:
-                easy_file_format = False
+                easy_file_format = True
                 break
 
 
