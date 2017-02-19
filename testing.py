@@ -1,12 +1,17 @@
-#!/usr/bin/env python 3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+
+import logging
+logging.basicConfig(level=logging.INFO)
 
 from dariah_topics import preprocessing as pre
 import glob
 import os.path
 import pandas as pd
 import regex as re
-
+from gensim.corpora import MmCorpus
+from gensim.models import LdaModel
 
 
 def gensim2dataframe(model):
@@ -14,15 +19,15 @@ def gensim2dataframe(model):
     topics_df = pd.DataFrame(index = range(num_topics), columns= range(10))
 
     topics = model.show_topics(num_topics)
-    
-    for topic_dist in topics:    
+
+    for topic_dist in topics:
         idx = topic_dist[0]
         temp = re.findall(r"\"(.+?)\"", topics[idx][1])
         topics_df.loc[idx] = temp
-    
+
     return topics_df
 
-path_txt = "/mnt/data/corpora/grenzboten/txt/*.txt"
+path_txt = "/mnt/data/corpora/grenzboten/txt"
 
 doclist_txt = pre.create_document_list(path_txt)
 doc_labels = list(pre.get_labels(doclist_txt))
