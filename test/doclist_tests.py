@@ -6,10 +6,17 @@ project_path = Path(__file__).absolute().parent.parent
 
 
 def setup():
-    global corpus_txt, docs, testfilenames
+    global corpus_txt, docs, testfilenames, segments
     testfilenames = ['file1.txt', 'file2.txt', 'subdir/file3.txt']
     corpus_txt = PathDocList(str(project_path.joinpath('corpus_txt')))
     docs = PathDocList('test', filenames=testfilenames)
+    segments = [
+        # file1:
+        ["First segment", "second segment"],
+        # file2:
+        ["second file, only one segment"],
+        # file3:
+        ["lots", "of", "segments"]]
 
 
 def test_pdl_glob():
@@ -48,12 +55,22 @@ def test_copy():
 
 def test_flatten_segments():
     recorder = docs.copy()
-    flattened = list(recorder.flatten_segments([
-        # file1:
-        ["First segment", "second segment"],
-        # file2:
-        ["second file, only one segment"],
-        # file3:
-        ["lots", "of", "segments"]]))
+    flattened = list(recorder.flatten_segments(segments))
     eq_(len(flattened), 6)
     eq_(len(list(recorder.segments())), 6)
+
+
+def test_segment_filenames():
+    recorder = docs.copy()
+    list(recorder.flatten_segments(segments))
+    eq_(list(recorder.segment_filenames(as_str=True)),
+        ['test/file1.0.txt', 'test/file1.1.txt', 'test/file2.0.txt',
+         'test/file3.0.txt', 'test/file3.1.txt', 'test/file3.2.txt'])
+
+def test_with_segments():
+    recorder = docs.copy()
+    list(recorder.flatten_segments(segments))
+    segmented = recorder.with_segment_files()
+    eq_(list(segmented),
+        ['test/file1.0.txt', 'test/file1.1.txt', 'test/file2.0.txt',
+         'test/file3.0.txt', 'test/file3.1.txt', 'test/file3.2.txt'])

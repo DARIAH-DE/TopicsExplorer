@@ -182,6 +182,43 @@ class BaseDocList:
                 for segment_no in range(segment_count):
                     yield (document, segment_no)
 
+    def segment_filenames(self,
+                          format="{path.stem}.{segment:0{maxwidth}d}{path.suffix}",
+                          basepath=None,
+                          as_str=False):
+        """
+
+        Args:
+            pattern (str): A `strings.Formatter` pattern that describes how
+                to form each filename. The following formatter variables are
+                available:
+
+                    path (Path): original file path
+                    segment (int): current segment number
+                    maxwidth (int): number of digits required for the largest
+                        segment number overall
+        Raises:
+            ValueError: if no segments
+        """
+        segment_counts = self.segment_counts()
+        if segment_counts is None:
+            raise ValueError("No segments recorded.")
+        maxwidth = len(str(max(segment_counts)))
+        if basepath is None:
+            basepath = self.basepath
+
+        for document, segment_no in self.segments():
+            filename = format.format(path=document, maxwidth=maxwidth,
+                                     segment=segment_no)
+            segment_path = Path(basepath, filename)
+            if as_str:
+                yield str(segment_path)
+            else:
+                yield segment_path
+
+
+
+
 
 class PathDocList(BaseDocList):
     """
@@ -216,3 +253,32 @@ class PathDocList(BaseDocList):
 
     def label(self, document):
         return document.stem
+
+    def with_segment_files(self, basepath=None, **kwargs):
+        """
+        Returns a copy of this list which has the recorded segment numbers
+        incorporated into the file names. I.e., this version does not know
+        anymore about segments but rather has a file name for each segment.
+
+        Args:
+            pattern (str): A `strings.Formatter` pattern that describes how
+                to form each filename. The following formatter variables are
+                available:
+
+                    path (Path): original file path
+                    segment (int): current segment number
+                    maxwidth (int): number of digits required for the largest
+                        segment number overall
+        Raises:
+            ValueError: if no segments
+        """
+        segment_counts = self.segment_counts()
+        if segment_counts is None:
+            raise ValueError("No segments recorded.")
+        if basepath is None:
+            basepath = self.basepath
+        result = self.copy()
+        result._segment_counts = 0
+        result.basepath = basepath
+        result._files = list(self.segment_filenames(basepath='', **kwargs))
+        return result
