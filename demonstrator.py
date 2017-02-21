@@ -70,9 +70,10 @@ def upload_file():
         print("Creating MALLET binary ...")
         mallet.create_mallet_model("./mallet_output", "./tmp_files", './mallet/bin/mallet')
         print("Training MALLET LDA model ...")
-        mallet.create_mallet_output('./mallet_output/malletModel.mallet', './mallet_output', './mallet/bin/mallet')
+        num_topics = str(request.form['number_topics'])
+        mallet.create_mallet_output('./mallet_output/malletModel.mallet', './mallet_output', './mallet/bin/mallet', num_topics=num_topics)
         shutil.rmtree('./tmp_files')
-        df = mallet.show_topics_keys('./mallet_output')
+        df = mallet.show_topics_keys('./mallet_output', topic_num=int(num_topics))
         doc_topic = mallet.show_docTopicMatrix('./mallet_output')
         heatmap = visualization.doc_topic_heatmap(doc_topic)
         heatmap.savefig('./static/heatmap.png')
@@ -127,11 +128,6 @@ def upload_file():
         # Todo: replace by DataFrame.to_html():
         print("Accessing topics for HTML table ...")
         df = visualization.topicwords_in_df(model)
-        import regex
-        pattern = regex.compile(r'\p{L}+\p{P}?\p{L}+')
-        topics = []
-        for n, topic in enumerate(model.show_topics()):
-            topics.append((n+1, pattern.findall(topic[1])))
         print("Rendering result.html ...")
 
         return render_template('result.html', tables=[df.to_html(classes='df')])
