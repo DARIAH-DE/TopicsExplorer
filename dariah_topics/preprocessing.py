@@ -126,11 +126,13 @@ def get_labels(doclist):
 
     ToDo:
         Replace this function with function from Toolbox
+        Replace label = os.path.basename(doc) with something more sophsticated??
     """
     log.info("Creating document labels ...")
     for doc in doclist:
         #label = os.path.basename(doc)
-        label = doc
+        label, suffix = os.path.splitext(os.path.basename(doc))
+        #label = doc
         yield label
     log.debug("Document labels available")
 
