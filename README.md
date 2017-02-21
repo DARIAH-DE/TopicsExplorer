@@ -7,5 +7,5 @@ Topics is a gently introduction to Topic Modeling. It provides a convientient, m
 2. Open the [command-line interface](https://en.wikipedia.org/wiki/Command-line_interface), type `git clone https://github.com/DARIAH-DE/Topics.git` and press Enter
 4. To install the required packages, simply run `setup.py`
 5. Install [Jupyter](http://jupyter.readthedocs.io/en/latest/install.html) and run it by typing `jupyter notebook` in the command-line
-5. Access the folder **Topics** through Jupyter in your browser, open [Mallet notebook](Mallet.ipynb) and follow the instructions
+5. Access the folder **Topics** through Jupyter in your browser, open the [Introduction.ipynb](Introduction.ipynb) and follow the instructions
 
