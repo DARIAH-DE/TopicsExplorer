@@ -284,9 +284,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
                   index=shortened_docnames[0:],
                   columns=topicLabels[0:])
 
-        docTopicMatrix = docTopicMatrix.transpose()
-
-    return docTopicMatrix
+    return docTopicMatrix.T
 
 def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt", topic_num=10, num_top_words=10):
 
