@@ -296,6 +296,7 @@ def plot_doc_topics(doc_topic, document_index):
 
     plt.barh(range(len(values)), values, align = 'center')
     plt.yticks(range(len(values)), labels)
+    plt.title(list(doc_topic)[document_index])
     plt.xlabel('Proportion')
     plt.ylabel('Topic')
     plt.tight_layout()
