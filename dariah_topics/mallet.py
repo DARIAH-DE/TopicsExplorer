@@ -33,7 +33,7 @@ logging.basicConfig(level = logging.WARNING,
                     format = '%(levelname)s %(name)s: %(message)s')
 
 def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'), path_to_mallet="mallet", outfile = "malletModel.mallet",
-                        remove_stopwords="False", stoplist = None):
+                        stoplist = None):
     """Create a mallet binary file
 
     Args:
@@ -68,18 +68,16 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
     param.append("--output")
     param.append(output)
     param.append ("--keep-sequence")
+    param.append("--remove-stopwords")
     
-    if(remove_stopwords=="TRUE"):
-            param.append("--remove-stopwords")
-            param.append(remove_stopwords)
+    #if(tokens == "True"):
             #param.append("--token-regex")
             #token_regex = "'\p{L}[\p{L}\p{P}]*\p{L}'"
             #param.append(token_regex)
+    
     if(stoplist != None):
             param.append("--stoplist-file")
             param.append(stoplist)
-    print(param)
-
          
     try:
        log.info("Accessing Mallet ...")
@@ -132,7 +130,7 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
         topic_keys = outfolder + "\\" + "topic_keys.txt"
         state = outfolder + "\\" + "state.gz"
         word_topics_counts = outfolder + "\\" + "word_topic_counts.txt"
-        word_topics_weights = outfolder + "/" + "word_topic_weights.txt"
+        word_topics_weights = outfolder + "\\" + "word_topic_weights.txt"
         log.debug(outfolder)
         shell = True
     else:
@@ -167,7 +165,7 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
        p.terminate()
        log.debug("Mallet terminated.")
 
-    return outfolder
+    #return outfolder
        
 
 def grouper(n, iterable, fillvalue=None):
@@ -222,10 +220,10 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
                 for line in lines:
                     docnum, docname, *values = line.rstrip().split('\t')
                     mallet_docnames.append(docname)
-                for topic, share in grouper(2, values):
-                    triple = (docname, int(topic), float(share))
-                    topics.append(int(topic))
-                    doctopic_triples.append(triple)
+                    for topic, share in grouper(2, values):
+                        triple = (docname, int(topic), float(share))
+                        topics.append(int(topic))
+                        doctopic_triples.append(triple)
             else:
                 easy_file_format = True
                 break
@@ -275,8 +273,6 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
         for item in mallet_docnames:
             shortened_docnames.append(os.path.basename(item))
 
-            
-     
         '''
         for topic in range(max(topics)+1):
         topicLabels.append("Topic_" + str(topic))
@@ -285,7 +281,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
                   index=shortened_docnames[0:],
                   columns=topicLabels[0:])
         
-    return docTopicMatrix
+    return docTopicMatrix.T
 
 def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
     """Show topic-key-mapping
