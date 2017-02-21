@@ -83,9 +83,7 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
     try:
        print("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
-       print(p)
        out = p.communicate()
-       print(out)
        log.debug("Mallet file available.")
 	   
     except KeyboardInterrupt:
@@ -286,9 +284,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
                   index=shortened_docnames[0:],
                   columns=topicLabels[0:])
 
-        docTopicMatrix = docTopicMatrix.transpose()
-
-    return docTopicMatrix
+    return docTopicMatrix.T
 
 def show_topics_keys(output_folder, topic_num=10, num_top_words=10, topicsKeyFile = "topic_keys.txt"):
     """Show topic-key-mapping
