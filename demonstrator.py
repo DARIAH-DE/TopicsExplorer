@@ -68,12 +68,11 @@ def upload_file():
             corpus[label] = tokens
     if 'mallet' in lda:
         print("Creating MALLET binary ...")
-        mallet.create_mallet_model("./mallet_output", "./tmp_files", './mallet/bin/mallet')
+        mallet.create_mallet_model("./mallet_output", "./tmp_files", 'mallet')
         print("Training MALLET LDA model ...")
-        num_topics = str(request.form['number_topics'])
-        mallet.create_mallet_output('./mallet_output/malletModel.mallet', './mallet_output', './mallet/bin/mallet', num_topics=num_topics)
+        mallet.create_mallet_output('./mallet_output/malletModel.mallet', './mallet_output', 'mallet')
         shutil.rmtree('./tmp_files')
-        df = mallet.show_topics_keys('./mallet_output', topic_num=int(num_topics))
+        df = mallet.show_topics_keys('./mallet_output')
         doc_topic = mallet.show_docTopicMatrix('./mallet_output')
         heatmap = visualization.doc_topic_heatmap(doc_topic)
         heatmap.savefig('./static/heatmap.png')
