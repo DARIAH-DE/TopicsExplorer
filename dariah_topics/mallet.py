@@ -288,7 +288,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
                   index=shortened_docnames[0:],
                   columns=topicLabels[0:])
 
-        docTopicMatrix = docTopicMatrix.transpose()          
+        docTopicMatrix = docTopicMatrix.transpose()
 
     return docTopicMatrix
 
