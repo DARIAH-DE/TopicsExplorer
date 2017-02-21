@@ -32,11 +32,8 @@ log.addHandler(logging.NullHandler())
 logging.basicConfig(level = logging.WARNING,
                     format = '%(levelname)s %(name)s: %(message)s')
 
-def create_mallet_model(outfolder = "tutorial_supplementals/mallet_output",
-                        path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'),
-                        path_to_mallet = "mallet",
-                        outfile = "malletModel.mallet",
-                        remove_stopwords="False", stoplist = None):
+def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath('.'), 'corpus_txt'), path_to_mallet="mallet", outfile = "malletModel.mallet",
+                        remove_stopwords=True, stoplist = None):
     """Create a mallet binary file
 
     Args:
@@ -44,20 +41,20 @@ def create_mallet_model(outfolder = "tutorial_supplementals/mallet_output",
         path_to_mallet (str): If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
         outfolder (str): Folder for Mallet output
         outfile (str): Name of the mallet file that will be generated, default = 'malletModel.mallet'
-
+               
     ToDo:
     """
 
     if not os.path.exists(outfolder):
         log.info("Creating output folder ...")
         os.makedirs(outfolder)
-
+        
     param = []
     param.append(path_to_mallet)
     param.append("import-dir")
     param.append("--input")
     param.append(path_to_corpus)
-
+    
     sys = system()
     if sys == 'Windows':
         output = os.path.join(outfolder, outfile)
@@ -67,14 +64,13 @@ def create_mallet_model(outfolder = "tutorial_supplementals/mallet_output",
         output = os.path.join(outfolder, outfile)
         log.debug(output)
         shell=False
-
+        
     param.append("--output")
     param.append(output)
     param.append ("--keep-sequence")
-
-    if(remove_stopwords=="TRUE"):
+    
+    if remove_stopwords:
             param.append("--remove-stopwords")
-            param.append(remove_stopwords)
             #param.append("--token-regex")
             #token_regex = "'\p{L}[\p{L}\p{P}]*\p{L}'"
             #param.append(token_regex)
@@ -83,23 +79,23 @@ def create_mallet_model(outfolder = "tutorial_supplementals/mallet_output",
             param.append(stoplist)
     print(param)
 
-
+         
     try:
-       log.info("Accessing Mallet ...")
+       print("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
        out = p.communicate()
        log.debug("Mallet file available.")
-
+	   
     except KeyboardInterrupt:
        log.info("Ending mallet process ...")
        p.terminate()
        log.debug("Mallet terminated.")
-
+       
     return output
-
-
-def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet",  num_topics = "10",
-                         #num_iterations = "10", num_top_words = "10"
+     
+       
+def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet",  num_topics = "10", 
+                         num_top_words = "10", #num_iterations = 10
                          ):
     """Create mallet model
 
@@ -110,13 +106,13 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
         num_topics(str): Number of Topics that should be created
         num_interations(str): Number of Iterations
         num_top_words(str): Number of keywords for each topic
-
+        
     Note: Use create_mallet_model() to generate path_to_malletModel
-
+        
     ToDo: **kwargs() for individual params
     """
     outfolder = doc_topics = os.path.join(os.path.abspath('.'), outfolder)
-
+    
     param = []
     param.append(path_to_mallet)
     param.append("train-topics")
@@ -126,9 +122,9 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     param.append(num_topics)
     #param.append("--num-iterations")
     #param.append(num_iterations)
-    #param.append("--num-top-words")
-    #param.append(num_top_words)
-
+    param.append("--num-top-words")
+    param.append(num_top_words)
+    
     sys = system()
     if sys == 'Windows':
         doc_topics = outfolder + "\\" + "doc_topics.txt"
@@ -146,7 +142,7 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
         word_topics_weights = outfolder + "/" + "word_topic_weights.txt"
         log.debug(outfolder)
         shell = False
-
+        
     param.append("--output-doc-topics")
     param.append(doc_topics)
     param.append("--output-state")
@@ -321,6 +317,6 @@ def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
         words = words.rstrip().split(' ')  # remove the trailing '\n'
         topic_keys.append(words)
 
-    topicKeysMatrix = pd.DataFrame(topic_keys)
+    topicKeysMatrix = pd.DataFrame(topic_keys, index=["Topic " + str(x+1) for x in range(topic_num)], columns=["Key " + str(x+1) for x in range(num_top_words)])
 
     return topicKeysMatrix
