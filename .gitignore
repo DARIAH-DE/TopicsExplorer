@@ -25,5 +25,6 @@ grenzbote_plain/
 .tox
 wiki/
 tutorial-supplementals/mallet/
+tutorial-supplementals/mallet_output/
 .ropeproject
 gensim_txt.mm
