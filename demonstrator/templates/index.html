@@ -134,6 +134,11 @@
                             <h2>2. Model creation</h2>
                             <p>The actual topic modeling is done with external state-of-the-art LDA implementations. In this example, we are relying on the open-source toolkit <a href="https://radimrehurek.com/gensim/">Gensim</a> which was used and cited in over 400 commercial and academic applications since 2008.</p>
                             <h3>2.1 Generate LDA model</h3>
+                            <select name="lda">
+                                <option value="mallet">MALLET</option>
+                                <option value="gensim">Gensim</option>
+                            </select>
+                            
                             <div class="alert alert-block">
 								<button type="button" class="close" data-dismiss="alert">&times;</button>
 								<i class="fa fa-exclamation-circle"></i> This step can take quite a while! Meaning something between some seconds and some hours depending on corpus size and the number of passes. Our example short stories corpus should be done within a minute or two.</div>
