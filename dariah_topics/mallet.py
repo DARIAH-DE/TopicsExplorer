@@ -321,6 +321,6 @@ def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
         words = words.rstrip().split(' ')  # remove the trailing '\n'
         topic_keys.append(words)
 
-    topicKeysMatrix = pd.DataFrame(topic_keys)
+    topicKeysMatrix = pd.DataFrame(topic_keys, index=["Topic " + str(x+1) for x in range(topic_num)], columns=["Key " + str(x+1) for x in range(num_top_words)])
 
     return topicKeysMatrix
