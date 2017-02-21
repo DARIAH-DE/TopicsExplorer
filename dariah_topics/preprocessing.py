@@ -130,7 +130,8 @@ def get_labels(doclist):
     """
     log.info("Creating document labels ...")
     for doc in doclist:
-        label = os.path.basename(doc)
+        #label = os.path.basename(doc)
+        label, suffix = os.path.splitext(os.path.basename(doc))
         #label = doc
         yield label
     log.debug("Document labels available")
