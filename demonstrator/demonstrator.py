@@ -13,6 +13,8 @@ Todo: Replace print statements with logging (which is currently not working).
     https://github.com/DARIAH-DE
 """
 
+import matplotlib
+matplotlib.use('Agg')
 from dariah_topics import preprocessing
 from dariah_topics import visualization
 from dariah_topics import mallet
