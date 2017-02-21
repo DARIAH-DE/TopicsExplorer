@@ -288,7 +288,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
 
     return docTopicMatrix
 
-def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
+def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt", topic_num=10, num_top_words=10):
 
     """Show topic-key-mapping
 
