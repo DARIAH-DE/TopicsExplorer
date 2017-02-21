@@ -27,6 +27,7 @@ import pandas as pd
 from gensim.corpora import MmCorpus, Dictionary
 from gensim.models import LdaModel
 import pyLDAvis.gensim
+import regex
 import sys
 
 
@@ -298,3 +299,13 @@ def plot_doc_topics(doc_topic, document_index):
     plt.ylabel('Topic')
     plt.tight_layout()
     plt.show()
+
+def topicwords_in_df(model):
+    pattern = regex.compile(r'\p{L}+\p{P}?\p{L}+')
+    topics = []
+    index = []
+    for n, topic in enumerate(model.show_topics()):
+        topics.append(pattern.findall(topic[1]))
+        index.append("Topic " + str(n+1))
+    df = pd.DataFrame(topics, index=index, columns=["Word " + str(x+1) for x in range(len(topics))])
+    return df
