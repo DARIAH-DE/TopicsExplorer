@@ -309,5 +309,5 @@ def topicwords_in_df(model):
     for n, topic in enumerate(model.show_topics()):
         topics.append(pattern.findall(topic[1]))
         index.append("Topic " + str(n+1))
-    df = pd.DataFrame(topics, index=index, columns=["Word " + str(x+1) for x in range(len(topics))])
+    df = pd.DataFrame(topics, index=index, columns=["Key " + str(x+1) for x in range(len(topics))])
     return df
