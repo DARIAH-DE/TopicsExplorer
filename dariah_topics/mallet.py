@@ -291,7 +291,8 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
         docTopicMatrix = docTopicMatrix.transpose()
 
     return docTopicMatrix
-    def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
+
+def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
 
     """Show topic-key-mapping
 
