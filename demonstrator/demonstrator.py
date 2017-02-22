@@ -13,9 +13,11 @@ Todo: Replace print statements with logging (which is currently not working).
     https://github.com/DARIAH-DE
 """
 
+import matplotlib
+matplotlib.use('Agg')
 from dariah_topics import preprocessing
-from dariahs_topics import visualization
-from dariahs_topics import mallet
+from dariah_topics import visualization
+from dariah_topics import mallet
 from flask import Flask, request, render_template, send_file
 from gensim.models import LdaModel
 from gensim.corpora import MmCorpus
@@ -68,9 +70,9 @@ def upload_file():
             corpus[label] = tokens
     if 'mallet' in lda:
         print("Creating MALLET binary ...")
-        mallet.create_mallet_model("./mallet_output", "./tmp_files", './mallet/bin/mallet')
+        mallet.create_mallet_model("./mallet_output", "./tmp_files", 'mallet')
         print("Training MALLET LDA model ...")
-        mallet.create_mallet_output('./mallet_output/malletModel.mallet', './mallet_output', './mallet/bin/mallet')
+        mallet.create_mallet_output('./mallet_output/malletModel.mallet', './mallet_output', 'mallet')
         shutil.rmtree('./tmp_files')
         df = mallet.show_topics_keys('./mallet_output')
         doc_topic = mallet.show_docTopicMatrix('./mallet_output')
@@ -127,11 +129,6 @@ def upload_file():
         # Todo: replace by DataFrame.to_html():
         print("Accessing topics for HTML table ...")
         df = visualization.topicwords_in_df(model)
-        import regex
-        pattern = regex.compile(r'\p{L}+\p{P}?\p{L}+')
-        topics = []
-        for n, topic in enumerate(model.show_topics()):
-            topics.append((n+1, pattern.findall(topic[1])))
         print("Rendering result.html ...")
 
         return render_template('result.html', tables=[df.to_html(classes='df')])

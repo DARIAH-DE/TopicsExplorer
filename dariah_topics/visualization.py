@@ -262,7 +262,7 @@ def doc_topic_heatmap(data_frame):
     Returns:
 
     """
-    data_frame = data_frame.transpose()
+    data_frame = data_frame.transpose().sort_index()
     doc_labels = list(data_frame.index)
     topic_labels = list(data_frame)
     if len(doc_labels) > 20 or len(topic_labels) > 20: plt.figure(figsize=(20,20))    # if many items, enlarge figure
