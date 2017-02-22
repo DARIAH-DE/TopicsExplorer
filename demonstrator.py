@@ -32,7 +32,7 @@ from werkzeug.utils import secure_filename
 
 __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
-__date__ = "2017-02-20"
+__date__ = "2017-02-22"
 
 app = Flask(__name__)
 
@@ -70,14 +70,15 @@ def upload_file():
             corpus[label] = tokens
     if 'mallet' in lda:
         print("Creating MALLET binary ...")
-        mallet.create_mallet_model("./mallet_output", "./tmp_files", 'mallet')
+        mallet.create_mallet_model("./mallet_output", "./tmp_files", './mallet/bin/mallet')
         print("Training MALLET LDA model ...")
-        mallet.create_mallet_output('./mallet_output/malletModel.mallet', './mallet_output', 'mallet')
+        mallet.create_mallet_output('./mallet_output/malletModel.mallet', './mallet_output', './mallet/bin/mallet')
         shutil.rmtree('./tmp_files')
         df = mallet.show_topics_keys('./mallet_output')
         doc_topic = mallet.show_docTopicMatrix('./mallet_output')
         heatmap = visualization.doc_topic_heatmap(doc_topic)
         heatmap.savefig('./static/heatmap.png')
+        print("Rendering result.hml ...")
         return render_template('result.html', tables=[df.to_html(classes='df')])
     else:
         print("Creating bag-of-words model ...")
