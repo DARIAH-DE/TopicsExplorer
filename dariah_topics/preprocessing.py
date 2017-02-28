@@ -447,7 +447,6 @@ def create_dictionaries(doc_labels, doc_tokens):
 
         typeset.update(tempset)
 
-    type_dictionary = { id_num : token for id_num, token in enumerate(typeset, 1) }
     type_dictionary = { v : k for k, v in enumerate(typeset, 1) }
     doc_ids = { doc : id_num for id_num, doc in enumerate(doc_labels, 1) }
 
@@ -458,12 +457,17 @@ def _create_large_counter(doc_labels, doc_tokens, type_dictionary):
     """create_large_TF_matrix
 
     Note:
-
+        The main function is create_mm(). This creates a dictionary of dictionaries.
+        The first level consitst of key = document label : value = dictionary of counts pairs.
+        The second level consists of key = token id : value = count of tokens in document pairs.
 
     Args:
-
+        doc_labels(list): List of doc labels as string.
+        doc_tokens(list): List of tokens as string.
+        type_dictionary(dict): Dictionary with key = token : value = id paris.
 
     Returns:
+        Dictionary of document : counter pairs. With counter being token id : count pairs.
 
     ToDo:
     """
