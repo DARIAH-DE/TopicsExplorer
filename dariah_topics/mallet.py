@@ -79,7 +79,7 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
             param.append(stoplist)
             
     log.debug(print(param))
-         
+       
     try:
        log.info("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)

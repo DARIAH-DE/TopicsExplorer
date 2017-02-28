@@ -417,12 +417,16 @@ def create_dictionaries(doc_labels, doc_tokens):
     """create_large_TF_matrix
 
     Note:
-
+        Use get_labels to create doc_labels and use tokenize to create doc_tokens.
+        Creates two dictionaries. One with keys = token : value = id pairs. And one with
+        keys = document label : value = id pairs.
 
     Args:
-
+        doc_labels(list): List of doc labels as string.
+        doc_tokens(list): List of tokens as string.
 
     Returns:
+        Two dictionaries, one with token : id pairs and one with doc_label : id pairs.
 
     ToDo:
     """
@@ -443,7 +447,6 @@ def create_dictionaries(doc_labels, doc_tokens):
 
         typeset.update(tempset)
 
-    type_dictionary = { id_num : token for id_num, token in enumerate(typeset, 1) }
     type_dictionary = { v : k for k, v in enumerate(typeset, 1) }
     doc_ids = { doc : id_num for id_num, doc in enumerate(doc_labels, 1) }
 
@@ -454,12 +457,17 @@ def _create_large_counter(doc_labels, doc_tokens, type_dictionary):
     """create_large_TF_matrix
 
     Note:
-
+        The main function is create_mm(). This creates a dictionary of dictionaries.
+        The first level consitst of key = document label : value = dictionary of counts pairs.
+        The second level consists of key = token id : value = count of tokens in document pairs.
 
     Args:
-
+        doc_labels(list): List of doc labels as string.
+        doc_tokens(list): List of tokens as string.
+        type_dictionary(dict): Dictionary with key = token : value = id paris.
 
     Returns:
+        Dictionary of document : counter pairs. With counter being token id : count pairs.
 
     ToDo:
     """
@@ -476,17 +484,18 @@ def _create_sparse_index(largecounter):
     """create_large_TF_matrix
 
     Note:
-
+        The main function is create_mm(). This creates a pandas multiindex out of tuples.
+        The Multiindex represents document id to token ids relations.
 
     Args:
-
+        largecounter(dict of counters): Dictionary of document : counter pairs. With counter
+                                        being token id : count pairs.
 
     Returns:
-
+        Pandas Multiindex with document id to token id relations.
     ToDo:
     """
-
-    #tuples = list(zip(largecounter.keys(), largecounter.values().keys()))
+    
     tuples = []
 
     for key in range(1, len(largecounter)+1):
@@ -497,8 +506,6 @@ def _create_sparse_index(largecounter):
 
     sparse_index = pd.MultiIndex.from_tuples(tuples, names = ["doc_id", "token_id"])
 
-    #sparse_df = pd.DataFrame(largecounter.values(), index= largecounter.keys(), columns = ["token_id", "count"])
-
     return sparse_index
 
 
@@ -506,14 +513,21 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
     """create_large_TF_matrix
 
     Note:
-
+        Main funktion that incorporates _create_large_counter() and _create_sparse_index().
+        Creates Pandas DataFrame out of Pandas Multiindex with document id - token id - count data.
+        The output has one column representing the counts of tokens for each token in each document.
 
     Args:
-
+        doc_labels(list): List of doc labels as string.
+        doc_tokens(list): List of tokens as string.
+        type_dictionary(dict): Dictionary with key = token : value = id paris.
+        doc_ids(dict): Dictionary with keys = document label : value = id pairs.
 
     Returns:
+        Multiindexed Pandas DataFrame with document id - token id - count data.
 
     ToDo:
+        Test if it's necessary to build sparse_df_filled with int8 zeroes instead of int64.
     """
 
     temp_counter = _create_large_counter(doc_labels, doc_tokens, type_dictionary)
@@ -538,12 +552,15 @@ def save_bow_mm(sparse_bow, output_path):
     """Save bag-of-word model as market matrix
 
     Note:
-
+        Create sparse_bow with create_mm() or take output from remove_features().
+        Ouput Path gives name of new local file.
 
     Args:
-
-
+        sparse_bow(Pandas DataFrame):  Multiindexed Pandas DataFrame with 
+                                        document id - token id - count data.
+        output_path(str): Path to output file.
     Returns:
+        None. Creates file with sparse_bow in market matrix format.
 
     ToDo:
     """
