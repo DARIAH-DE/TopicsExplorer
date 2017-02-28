@@ -417,12 +417,16 @@ def create_dictionaries(doc_labels, doc_tokens):
     """create_large_TF_matrix
 
     Note:
-
+        Use get_labels to create doc_labels and use tokenize to create doc_tokens.
+        Creates two dictionaries. One with keys = token : value = id pairs. And one with
+        keys = document label : value = id pairs.
 
     Args:
-
+        doc_labels(list): List of doc labels as string.
+        doc_tokens(list): List of tokens as string.
 
     Returns:
+        Two dictionaries, one with token : id pairs and one with doc_label : id pairs.
 
     ToDo:
     """
