@@ -57,14 +57,12 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
     
     sys = system()
     if sys == 'Windows':
-        output = os.path.join(outfolder, outfile)
-        log.debug(output)
         shell=True
-    else:
-        output = os.path.join(outfolder, outfile)
-        log.debug(output)
+    else:       
         shell=False
         
+    output = os.path.join(outfolder, outfile)
+    log.debug(output)    
     param.append("--output")
     param.append(output)
     param.append ("--keep-sequence")
@@ -78,11 +76,14 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
     if(stoplist != None):
             param.append("--stoplist-file")
             param.append(stoplist)
-         
+            
+    log.debug(print(param))
+       
     try:
        log.info("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
        out = p.communicate()
+       log.info(out)
        log.debug("Mallet file available.")
 	   
     except KeyboardInterrupt:
@@ -137,8 +138,8 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
         doc_topics = outfolder + "/" + "doc_topics.txt"
         topic_keys = outfolder + "/" + "topic_keys.txt"
         state = outfolder + "/" + "state.gz"
-        word_topic_counts = outfolder + "/" + "word_topic_counts.txt"
-        word_topics_weights = outfolder + "/" + "word_topic_weights.txt"
+#        word_topic_counts = outfolder + "/" + "word_topic_counts.txt"
+#        word_topics_weights = outfolder + "/" + "word_topic_weights.txt"
         log.debug(outfolder)
         shell = False
         
@@ -148,10 +149,11 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     param.append(state)
     param.append("--output-topic-keys")
     param.append(topic_keys)
-    param.append("--word-topic-counts-file")
-    param.append(word_topic_counts)
-    param.append("--topic-word-weights-file")
-    param.append(word_topics_weights)
+#    param.append("--word-topic-counts-file")
+#    param.append(word_topic_counts)
+#    param.append("--topic-word-weights-file")
+#    param.append(word_topics_weights)
+    #print(param)
 
     try:
        log.info("Accessing Mallet ...")

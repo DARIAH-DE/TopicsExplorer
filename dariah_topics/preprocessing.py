@@ -130,10 +130,10 @@ def get_labels(doclist):
     """
     log.info("Creating document labels ...")
     for doc in doclist:
-        label = os.path.basename(doc)
-        #label = doc
+        label, ext = os.path.splitext(os.path.basename(doc))
         yield label
     log.debug("Document labels available")
+
 
 def segmenter(doc_txt, length=1000):
     """Segments documents.

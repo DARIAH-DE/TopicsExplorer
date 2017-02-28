@@ -115,9 +115,10 @@
                             <h2>1. Preprocessing</h2>
                             <h3>1.1 Reading a corpus of documents</h3>
                             <p>Select plain text (<b>.txt</b>) or TEI encoded XML files (<b>.xml</b>).</p>
-                            <input type="file" name="files" multiple>
-                            <br>
-                            <br>
+                            <input type="file" name="files" multiple><br><br>
+                            <div class="alert alert-block">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+								<i class="fa fa-exclamation-circle"></i> Gensim supports XML processing, MALLET does not.</div>
                             <h3>1.2 Tokenize corpus</h3>
                             <p>Your text files will be tokenized. Tokenization is the task of cutting a stream of characters into linguistic units, simply words or, more precisely, <i>tokens</i>. Without identifying tokens, it is difficult to extract important information, such as most frequent words, also known as <i>stopwords</i>, or words that occur only once in a document, called <i>hapax legomena</i>.
                             <h3>1.3 Feature selection and/or removal</h3>
@@ -132,13 +133,14 @@
                             <br>
                             <br>
                             <h2>2. Model creation</h2>
-                            <p>The actual topic modeling is done with external state-of-the-art LDA implementations. In this example, we are relying on the open-source toolkit <a href="https://radimrehurek.com/gensim/">Gensim</a> which was used and cited in over 400 commercial and academic applications since 2008.</p>
+                            <p>The actual topic modeling is done with external state-of-the-art LDA implementations. In this example, we are relying on the open-source toolkits <a href="https://radimrehurek.com/gensim/">Gensim</a> or <a href="http://mallet.cs.umass.edu/topics.php">MALLET</a>.</p>
                             <h3>2.1 Generate LDA model</h3>
+                            <p>It is up to you which LDA implementation you choose. Basically both of them do the same thing.<br>
                             <select name="lda">
                                 <option value="mallet">MALLET</option>
                                 <option value="gensim">Gensim</option>
                             </select>
-                            
+        
                             <div class="alert alert-block">
 								<button type="button" class="close" data-dismiss="alert">&times;</button>
 								<i class="fa fa-exclamation-circle"></i> This step can take quite a while! Meaning something between some seconds and some hours depending on corpus size and the number of passes. Our example short stories corpus should be done within a minute or two.</div>
