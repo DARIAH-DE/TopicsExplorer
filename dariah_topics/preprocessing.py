@@ -513,12 +513,18 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
     """create_large_TF_matrix
 
     Note:
-
+        Main funktion that incorporates _create_large_counter() and _create_sparse_index().
+        Creates Pandas DataFrame out of Pandas Multiindex with document id - token id - count data.
+        The output has one column representing the counts of tokens for each token in each document.
 
     Args:
-
+        doc_labels(list): List of doc labels as string.
+        doc_tokens(list): List of tokens as string.
+        type_dictionary(dict): Dictionary with key = token : value = id paris.
+        doc_ids(dict): Dictionary with keys = document label : value = id pairs.
 
     Returns:
+        Multiindexed Pandas DataFrame with documen id - token id - count data.
 
     ToDo:
         Test if it's necessary to build sparse_df_filled with int8 zeroes instead of int64.
