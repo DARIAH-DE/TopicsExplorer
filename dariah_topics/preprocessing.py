@@ -524,7 +524,7 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
         doc_ids(dict): Dictionary with keys = document label : value = id pairs.
 
     Returns:
-        Multiindexed Pandas DataFrame with documen id - token id - count data.
+        Multiindexed Pandas DataFrame with document id - token id - count data.
 
     ToDo:
         Test if it's necessary to build sparse_df_filled with int8 zeroes instead of int64.
@@ -552,12 +552,15 @@ def save_bow_mm(sparse_bow, output_path):
     """Save bag-of-word model as market matrix
 
     Note:
-
+        Create sparse_bow with create_mm() or take output from remove_features().
+        Ouput Path gives name of new local file.
 
     Args:
-
-
+        sparse_bow(Pandas DataFrame):  Multiindexed Pandas DataFrame with 
+                                        document id - token id - count data.
+        output_path(str): Path to output file.
     Returns:
+        None. Creates file with sparse_bow in market matrix format.
 
     ToDo:
     """
