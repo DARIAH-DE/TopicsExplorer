@@ -38,9 +38,10 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
 
     Args:
         path_to_corpus (str): Absolute path to corpus folder, e.g. '/home/workspace/corpus_txt'.
-        path_to_mallet (str): If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
+        path_to_mallet (str): Path to mallet; default = mallet. 
+                              If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
         outfolder (str): Folder for Mallet output
-        outfile (str): Name of the mallet file that will be generated, default = 'malletModel.mallet'
+        outfile (str): Name of the allet file that will be generated, default = 'malletModel.mallet'
                
     ToDo:
     """
@@ -83,7 +84,7 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
        log.info("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
        out = p.communicate()
-       log.info(out)
+       log.debug(out)
        log.debug("Mallet file available.")
 	   
     except KeyboardInterrupt:
@@ -102,7 +103,8 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     Args:
         path_to_malletModel(str): Path to mallet model
         outfolder (str): Folder for Mallet output
-        path_to_mallet(str): Path to mallet; default = mallet
+        path_to_mallet(str): Path to mallet; default = mallet. 
+                             Note: If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
         num_topics(str): Number of Topics that should be created
         num_interations(str): Number of Iterations
         num_top_words(str): Number of keywords for each topic
@@ -127,21 +129,17 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     
     sys = system()
     if sys == 'Windows':
-        doc_topics = outfolder + "\\" + "doc_topics.txt"
-        topic_keys = outfolder + "\\" + "topic_keys.txt"
-        state = outfolder + "\\" + "state.gz"
-        word_topics_counts = outfolder + "\\" + "word_topic_counts.txt"
-        word_topics_weights = outfolder + "\\" + "word_topic_weights.txt"
         log.debug(outfolder)
         shell = True
     else:
-        doc_topics = outfolder + "/" + "doc_topics.txt"
-        topic_keys = outfolder + "/" + "topic_keys.txt"
-        state = outfolder + "/" + "state.gz"
-#        word_topic_counts = outfolder + "/" + "word_topic_counts.txt"
-#        word_topics_weights = outfolder + "/" + "word_topic_weights.txt"
         log.debug(outfolder)
         shell = False
+        
+    doc_topics = os.path.join(outfolder, "doc_topics.txt")
+    topic_keys = os.path.join(outfolder, "topic_keys.txt") 
+    state = os.path.join(outfolder, "state.gz")
+    word_topics_counts = os.path.join(outfolder, "word_topic_counts.txt") 
+    word_topics_weights = os.path.join(outfolder, "word_topic_weights.txt")
         
     param.append("--output-doc-topics")
     param.append(doc_topics)
@@ -153,12 +151,14 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
 #    param.append(word_topic_counts)
 #    param.append("--topic-word-weights-file")
 #    param.append(word_topics_weights)
-    #print(param)
+    
+    log.debug(print(param))
 
     try:
        log.info("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
        out = p.communicate()
+       #log.debug(out)
        log.debug("Mallet file available.")
 
 
@@ -167,7 +167,6 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
        p.terminate()
        log.debug("Mallet terminated.")
 
-    #return outfolder
        
 
 def grouper(n, iterable, fillvalue=None):
