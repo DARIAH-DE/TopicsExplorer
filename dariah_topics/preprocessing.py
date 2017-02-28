@@ -484,17 +484,18 @@ def _create_sparse_index(largecounter):
     """create_large_TF_matrix
 
     Note:
-
+        The main function is create_mm(). This creates a pandas multiindex out of tuples.
+        The Multiindex represents document id to token ids relations.
 
     Args:
-
+        largecounter(dict of counters): Dictionary of document : counter pairs. With counter
+                                        being token id : count pairs.
 
     Returns:
-
+        Pandas Multiindex with document id to token id relations.
     ToDo:
     """
-
-    #tuples = list(zip(largecounter.keys(), largecounter.values().keys()))
+    
     tuples = []
 
     for key in range(1, len(largecounter)+1):
@@ -504,8 +505,6 @@ def _create_sparse_index(largecounter):
             tuples.append((key, value))
 
     sparse_index = pd.MultiIndex.from_tuples(tuples, names = ["doc_id", "token_id"])
-
-    #sparse_df = pd.DataFrame(largecounter.values(), index= largecounter.keys(), columns = ["token_id", "count"])
 
     return sparse_index
 
@@ -522,6 +521,7 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
     Returns:
 
     ToDo:
+        Test if it's necessary to build sparse_df_filled with int8 zeroes instead of int64.
     """
 
     temp_counter = _create_large_counter(doc_labels, doc_tokens, type_dictionary)
