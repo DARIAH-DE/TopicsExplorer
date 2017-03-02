@@ -500,6 +500,9 @@ def _create_sparse_index(largecounter):
 
     for key in range(1, len(largecounter)+1):
 
+        if len(largecounter[key]) == 0:
+            tuples.append((key, 0))
+    
         for value in largecounter[key]:
 
             tuples.append((key, value))
