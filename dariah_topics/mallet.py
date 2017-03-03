@@ -205,7 +205,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
     mallet_docnames = []
     topics = []
     
-    df = pd.read_csv(topic_keys, sep='\t', header=None)
+    df = pd.read_csv(topic_keys, sep='\t', header=None, encoding='utf-8')
     labels=[]
     for index, item in df.iterrows():
         label= ' '.join(item[2].split()[:3])
@@ -213,7 +213,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
         
     easy_file_format = False
 
-    with open(doc_topics) as f:
+    with open(doc_topics, encoding='utf-8') as f:
         for line in f:
             li=line.lstrip()
             if li.startswith("#"):
@@ -232,7 +232,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
 
     if(easy_file_format == True):
         newindex=[]
-        docTopicMatrix = pd.read_csv(doc_topics, sep='\t', names=labels[0:])
+        docTopicMatrix = pd.read_csv(doc_topics, sep='\t', names=labels[0:], encoding='utf-8')
         #print(list(docTopicMatrix.index))
         for eins, zwei in docTopicMatrix.index:
             newindex.append(os.path.basename(zwei))
@@ -263,7 +263,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
         topicLabels = []
     
         #creates list of topic lables consisting of the 3 most weighed topics
-        df = pd.read_csv('tutorial_supplementals/mallet_output/topic_keys.txt', sep='\t', header=None)
+        df = pd.read_csv('tutorial_supplementals/mallet_output/topic_keys.txt', sep='\t', header=None, encoding='utf-8')
         labels=[]
         for index, item in df.iterrows():
 
@@ -299,7 +299,7 @@ def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
     path_to_topic_keys = os.path.join(output_folder, topicsKeyFile)
     assert path_to_topic_keys
 
-    with open(path_to_topic_keys) as input:
+    with open(path_to_topic_keys, encoding='utf-8') as input:
         topic_keys_lines = input.readlines()
 
     topic_keys = []
