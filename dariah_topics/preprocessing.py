@@ -560,7 +560,7 @@ def make_doc2bow_list(sparse_bow):
     
     Returns:
     
-    ToDo: make it work
+    ToDo:
     """
     doc2bow_list = []
 
@@ -585,6 +585,29 @@ def make_doc_topic_matrix(model, doc2bow_list, doc2id):
     for idx, doc in enumerate(doc2bow_list, 1):
         df[doc2id[idx]] = pd.Series([value[1] for value in model.get_document_topics(doc)])
     return df.fillna(0)
+    
+def gensim2dataframe(model):
+    """Creates DataFrame out of gensim model (topic keys)
+
+    Note:
+    
+    Args:
+    
+    Returns:
+    
+    ToDo:
+    """
+    num_topics = model.num_topics
+    topics_df = pd.DataFrame(index = range(num_topics), columns= range(10))
+
+    topics = model.show_topics(num_topics)
+    
+    for topic_dist in topics:    
+        idx = topic_dist[0]
+        temp = regex.findall(r'\"(.+?)\"', topics[idx][1])
+        topics_df.loc[idx] = temp
+    
+    return topics_df
     
 def save_bow_mm(sparse_bow, output_path):
     """Save bag-of-word model as market matrix
