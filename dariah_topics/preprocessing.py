@@ -550,7 +550,16 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
             sparse_df_filled.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
 
     return sparse_df_filled
+    
+def make_doc2bow_list(sparse_bow):
+    doc2bow_list = []
 
+    for doc in sparse_bow.index.groupby(sparse_bow.index.get_level_values('doc_id')):
+        temp = [(token, count) for token, count in zip(sparse_bow.loc[doc].index, sparse_bow.loc[doc][0])]
+        doc2bow_list.append(temp)
+
+    return doc2bow_list
+    
 def save_bow_mm(sparse_bow, output_path):
     """Save bag-of-word model as market matrix
 
