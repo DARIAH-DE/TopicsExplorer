@@ -28,3 +28,6 @@ tutorial-supplementals/mallet/
 tutorial-supplementals/mallet_output/*
 .ropeproject
 gensim_txt.mm
+gb_all_model.lda.expElogbeta.npy
+gb_all_model.lda.state.sstats.npy
+gensim_txt_gb.mm
