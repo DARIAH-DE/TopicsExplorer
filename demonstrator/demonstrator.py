@@ -90,7 +90,7 @@ def upload_file():
             print("Accessing external stopword list and cleaning corpus ...")
             words = stopwords.read().decode('utf-8')
             words = set(preprocessing.tokenize(words))
-            clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, words)
+            sparse_bow = preprocessing.remove_features(sparse_bow, id_types, words)
             stopwords.flush()
         else:
             threshold = int(request.form['mfws'])
@@ -98,29 +98,19 @@ def upload_file():
             stopwords = preprocessing.find_stopwords(sparse_bow, id_types, threshold)
             hapax = preprocessing.find_hapax(sparse_bow, id_types)
             feature_list = set(stopwords).union(hapax)
-            clean_term_frequency = preprocessing.remove_features(sparse_bow, id_types, feature_list)
+            sparse_bow = preprocessing.remove_features(sparse_bow, id_types, feature_list)
     
         print("Creating matrix market model ...")
-        num_docs = max(clean_term_frequency.index.get_level_values("doc_id"))
-        num_types = max(clean_term_frequency.index.get_level_values("token_id"))
-        sum_counts = sum(clean_term_frequency[0])
-        header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
+        preprocessing.save_bow_mm(sparse_bow, 'matrixmarket')
 
-        print("Saving matrix market model to matrixmarket.mm ...")
-        with open("matrixmarket.mm", 'w+', encoding = "utf-8") as f:
-            f.write("%%MatrixMarket matrix coordinate real general\n")
-            f.write(header_string)
-            sparse_bow.to_csv(f, sep = ' ', header = None)
-            f.flush()
-
-        mm = MmCorpus("matrixmarket.mm")
+        mm = MmCorpus('matrixmarket.mm')
         doc2id = {value : key for key, value in doc_ids.items()}
         type2id = {value : key for key, value in id_types.items()}
 
         num_topics = int(request.form['number_topics'])
         passes = int(request.form['passes'])
-        print("Training Gensim LDA with", num_topics, "topics and", passes, "passes ...")
-        model = LdaModel(corpus=mm, id2word=type2id, num_topics=num_topics, passes=passes)
+        print("Training Gensim LDA with", num_topics, "topics ...")
+        model = LdaModel(corpus=mm, id2word=type2id, num_topics=num_topics, passes=10, iterations=20)
 
         print("Visualizing document-topic matrix and saving as heatmap.png ...")
         doc_topic = visualization.create_doc_topic(mm, model, corpus.index.tolist())
