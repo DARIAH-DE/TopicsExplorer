@@ -606,7 +606,8 @@ def gensim2dataframe(model):
         idx = topic_dist[0]
         temp = regex.findall(r'\"(.+?)\"', topics[idx][1])
         topics_df.loc[idx] = temp
-    
+    topics_df.index=['Topic ' + str(x+1) for x in range(num_topics)]
+    topics_df.columns=['Key ' + str(x+1) for x in range(10)]
     return topics_df
     
 def save_bow_mm(sparse_bow, output_path):
