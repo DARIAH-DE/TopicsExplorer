@@ -311,3 +311,25 @@ def topicwords_in_df(model):
         index.append("Topic " + str(n+1))
     df = pd.DataFrame(topics, index=index, columns=["Key " + str(x+1) for x in range(len(topics))])
     return df
+
+def show_wordle_for_topic(model, topic_nr):
+    """Plot wordle for a specific topic
+
+    Args:
+        model: Gensim LDA model
+        topic_nr(int): Choose topic
+    
+    Note: Function does use wordcloud package -> https://pypi.python.org/pypi/wordcloud
+         pip install wordcloud
+    
+    ToDo: Check if this function should be implemented
+
+    """
+    import matplotlib.pyplot as plt
+    from wordcloud import WordCloud
+
+    plt.figure()
+    plt.imshow(WordCloud().fit_words(model.show_topic(topic_nr, 200)))
+    plt.axis("off")
+    plt.title("Topic #" + str(topic_nr + 1))
+    plt.show()
