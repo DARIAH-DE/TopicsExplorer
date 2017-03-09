@@ -15,9 +15,9 @@ Todo: Replace print statements with logging (which is currently not working).
 
 import matplotlib
 matplotlib.use('Agg')
-from dariahs_topics import preprocessing
-from dariahs_topics import visualization
-from dariahs_topics import mallet
+from dariah_topics import preprocessing
+from dariah_topics import visualization
+from dariah_topics import mallet
 from flask import Flask, request, render_template, send_file
 from gensim.models import LdaModel
 from gensim.corpora import MmCorpus
