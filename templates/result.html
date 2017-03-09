@@ -14,7 +14,9 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-customization.css')}}" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-modal.css')}}" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="{{url_for('static', filename='css/font-awesome.css')}}">
-    <style>.df * {margin: 0 auto; border: 1px solid #ddd; border-collapse: collapse; padding:2px 2px 2px 2px; text-align:center;}</style>
+    <style>.df * {margin: 0 auto; border: 1px solid #ddd; border-collapse: collapse; padding:2px 2px 2px 2px; text-align:center;}
+    .dataframe{margin:0 auto;}
+    </style>
 
     <!-- JavaScript files at the end for faster loading of documents -->
 
@@ -92,7 +94,7 @@
                         {% for table in tables %}
                             {{ table|safe }}
                         {% endfor %}
-                        <br><br>
+                        <img style="display:block; margin-left: auto; margin-right: auto;" src={{url_for('static', filename='cloud.png')}}>
                         <img style="display:block; margin-left: auto; margin-right: auto;" src={{url_for('static', filename='heatmap.png')}}>
                         <hr>
                         <h2>Contact</h2>
