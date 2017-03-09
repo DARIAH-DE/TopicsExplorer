@@ -96,8 +96,7 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
      
        
 def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet",  num_topics = "10", 
-                         #num_iterations = "10", num_top_words = "10"
-                         ):
+                         num_top_words = "10", num_iterations="20"):
     """Create mallet model
 
     Args:
@@ -122,10 +121,10 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     param.append(path_to_malletModel)
     param.append("--num-topics")
     param.append(num_topics)
-    #param.append("--num-iterations")
-    #param.append(num_iterations)
-    #param.append("--num-top-words")
-    #param.append(num_top_words)
+    param.append("--num-iterations")
+    param.append(num_iterations)
+    param.append("--num-top-words")
+    param.append(num_top_words)
     
     sys = system()
     if sys == 'Windows':
@@ -284,7 +283,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
         
     return docTopicMatrix.T
 
-def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
+def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt", num_topics=10):
     """Show topic-key-mapping
 
     Args:
@@ -312,7 +311,8 @@ def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
         topic_keys.append(words) 
         
     topicKeysMatrix = pd.DataFrame(topic_keys)
-
+    topicKeysMatrix.index=['Topic ' + str(x+1) for x in range(num_topics)]
+    topicKeysMatrix.columns=['Key ' + str(x+1) for x in range(10)]
     return topicKeysMatrix
 
 
