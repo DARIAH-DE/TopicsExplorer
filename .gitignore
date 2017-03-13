@@ -32,3 +32,5 @@ gb_all_model.lda.expElogbeta.npy
 gb_all_model.lda.state.sstats.npy
 gensim_txt_gb.mm
 gensim_gb_txt.mm
+demonstrator/dariah_topics/
+demonstrator/static/*.png
