@@ -130,10 +130,10 @@ def get_labels(doclist):
     """
     log.info("Creating document labels ...")
     for doc in doclist:
-        label = os.path.basename(doc)
-        #label = doc
+        label, ext = os.path.splitext(os.path.basename(doc))
         yield label
     log.debug("Document labels available")
+
 
 def segmenter(doc_txt, length=1000):
     """Segments documents.
@@ -500,6 +500,9 @@ def _create_sparse_index(largecounter):
 
     for key in range(1, len(largecounter)+1):
 
+        if len(largecounter[key]) == 0:
+            tuples.append((key, 0))
+    
         for value in largecounter[key]:
 
             tuples.append((key, value))
@@ -547,7 +550,66 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
             sparse_df_filled.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
 
     return sparse_df_filled
+    
+def make_doc2bow_list(sparse_bow):
+    """Creates doc2bow_list as input for gensim model.get_document_topics(doc2bow_list[idx])
 
+    Note:
+    
+    Args:
+    
+    Returns:
+    
+    ToDo:
+    """
+    doc2bow_list = []
+
+    for doc in sparse_bow.index.groupby(sparse_bow.index.get_level_values('doc_id')):
+        temp = [(token, count) for token, count in zip(sparse_bow.loc[doc].index, sparse_bow.loc[doc][0])]
+        doc2bow_list.append(temp)
+
+    return doc2bow_list
+    
+def make_doc_topic_matrix(model, doc2bow_list, doc2id):
+    """Use only for testing purposes, not working properly
+
+    Note:
+    
+    Args:
+    
+    Returns:
+    
+    ToDo: make it work
+    """
+    df = pd.DataFrame()
+    for idx, doc in enumerate(doc2bow_list, 1):
+        df[doc2id[idx]] = pd.Series([value[1] for value in model.get_document_topics(doc)])
+    return df.fillna(0)
+    
+def gensim2dataframe(model):
+    """Creates DataFrame out of gensim model (topic keys)
+
+    Note:
+    
+    Args:
+    
+    Returns:
+    
+    ToDo:
+    """
+    num_topics = model.num_topics
+    topics_df = pd.DataFrame(index = range(num_topics), columns= range(10))
+
+    topics = model.show_topics(num_topics)
+    
+    for topic_dist in topics:    
+        idx = topic_dist[0]
+        temp = regex.findall(r'\"(.+?)\"', topics[idx][1])
+        topics_df.loc[idx] = temp
+    topics_df.index=['Topic ' + str(x+1) for x in range(num_topics)]
+    topics_df.columns=['Key ' + str(x+1) for x in range(10)]
+    return topics_df
+    
 def save_bow_mm(sparse_bow, output_path):
     """Save bag-of-word model as market matrix
 

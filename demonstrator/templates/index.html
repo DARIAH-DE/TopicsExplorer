@@ -114,10 +114,8 @@
                             <p>The text mining technique <b>Topic Modeling</b> has become a popular statistical method for clustering documents. This web application introduces an user-friendly workflow, basically containing data preprocessing, an implementation of the prototypic topic model <b>Latent Dirichlet Allocation</b> (LDA) which learns the relationships between words, topics, and documents, as well as one visualization to explore the trained LDA model.</p>
                             <h2>1. Preprocessing</h2>
                             <h3>1.1 Reading a corpus of documents</h3>
-                            <p>Select plain text (<b>.txt</b>) or TEI encoded XML files (<b>.xml</b>).</p>
-                            <input type="file" name="files" multiple>
-                            <br>
-                            <br>
+                            <p>Select plain text (<b>.txt</b>) or <a href="http://www.tei-c.org/index.xml">TEI XML</a> files (<b>.xml</b>).</p>
+                            <input type="file" name="files" multiple><br><br>
                             <h3>1.2 Tokenize corpus</h3>
                             <p>Your text files will be tokenized. Tokenization is the task of cutting a stream of characters into linguistic units, simply words or, more precisely, <i>tokens</i>. Without identifying tokens, it is difficult to extract important information, such as most frequent words, also known as <i>stopwords</i>, or words that occur only once in a document, called <i>hapax legomena</i>.
                             <h3>1.3 Feature selection and/or removal</h3>
@@ -131,25 +129,29 @@
                             <input type="file" name="stoplist">
                             <br>
                             <br>
+                            <div class="alert alert-block">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+								<i class="fa fa-exclamation-circle"></i> If you continue with MALLET and do not have an English corpus, select an appropriate stopwords list. Individual corpus-based stopwords not available yet.</div>
                             <h2>2. Model creation</h2>
-                            <p>The actual topic modeling is done with external state-of-the-art LDA implementations. In this example, we are relying on the open-source toolkit <a href="https://radimrehurek.com/gensim/">Gensim</a> which was used and cited in over 400 commercial and academic applications since 2008.</p>
+                            <p>The actual topic modeling is done with external state-of-the-art LDA implementations. In this workflow, we are relying on the open-source toolkits <a href="https://radimrehurek.com/gensim/">Gensim</a> or <a href="http://mallet.cs.umass.edu/topics.php">MALLET</a>.</p>
                             <h3>2.1 Generate LDA model</h3>
+                            <p>It is up to you which LDA implementation you choose.<br>
                             <select name="lda">
                                 <option value="mallet">MALLET</option>
                                 <option value="gensim">Gensim</option>
                             </select>
-                            
+        
                             <div class="alert alert-block">
 								<button type="button" class="close" data-dismiss="alert">&times;</button>
-								<i class="fa fa-exclamation-circle"></i> This step can take quite a while! Meaning something between some seconds and some hours depending on corpus size and the number of passes. Our example short stories corpus should be done within a minute or two.</div>
+								<i class="fa fa-exclamation-circle"></i> This step can take quite a while! Meaning something between some seconds and some hours depending on corpus size and the number of iterations. Our example short stories corpus should be done within a minute or two.</div>
 								<p>Set the total number of topics in the following line.</p>
                                 <input type="text" name="number_topics" value="10">
-                                <p>Now, define the number of passes (the higher, the better, but increases also time).</p>
-                                <input type="text" name="passes" value="10">
+                                <p>Choose the number of iterations.</p>
+                                <input type="text" name="number_iterations" value="300">
                             <h2>3. Model visualization</h2>
                             <h3>3.1 The document-topic matrix in a heatmap</h3>
                             <p>The generated model object can now be translated into a human-readable document-topic matrix. In this workflow, the matrix is visualized as a heatmap which displays the kind of information that is probably most useful to literary scholars. Going beyond pure exploration, this visualization can be used to show thematic developments over a set of texts as well as a single text, akin to a dynamic topic model.
-                            <h2>4. Coming to an end</h2>
+                            <h2>4. Submitting Data</h2>
                             <p>Finally, submit your data and explore the model.</p>
                             <div class="alert alert-block">
                             <button type="button" class="close" data-dismiss="alert">&times;</button>

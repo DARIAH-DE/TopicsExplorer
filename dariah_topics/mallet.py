@@ -38,9 +38,10 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
 
     Args:
         path_to_corpus (str): Absolute path to corpus folder, e.g. '/home/workspace/corpus_txt'.
-        path_to_mallet (str): If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
+        path_to_mallet (str): Path to mallet; default = mallet. 
+                              If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
         outfolder (str): Folder for Mallet output
-        outfile (str): Name of the mallet file that will be generated, default = 'malletModel.mallet'
+        outfile (str): Name of the allet file that will be generated, default = 'malletModel.mallet'
                
     ToDo:
     """
@@ -57,14 +58,12 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
     
     sys = system()
     if sys == 'Windows':
-        output = os.path.join(outfolder, outfile)
-        log.debug(output)
         shell=True
-    else:
-        output = os.path.join(outfolder, outfile)
-        log.debug(output)
+    else:       
         shell=False
         
+    output = os.path.join(outfolder, outfile)
+    log.debug(output)    
     param.append("--output")
     param.append(output)
     param.append ("--keep-sequence")
@@ -78,11 +77,14 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
     if(stoplist != None):
             param.append("--stoplist-file")
             param.append(stoplist)
-         
+            
+    log.debug(print(param))
+       
     try:
        log.info("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
        out = p.communicate()
+       log.debug(out)
        log.debug("Mallet file available.")
 	   
     except KeyboardInterrupt:
@@ -94,14 +96,14 @@ def create_mallet_model(outfolder, path_to_corpus = os.path.join(os.path.abspath
      
        
 def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet",  num_topics = "10", 
-                         #num_iterations = "10", num_top_words = "10"
-                         ):
+                         num_top_words = "10", num_iterations="20"):
     """Create mallet model
 
     Args:
         path_to_malletModel(str): Path to mallet model
         outfolder (str): Folder for Mallet output
-        path_to_mallet(str): Path to mallet; default = mallet
+        path_to_mallet(str): Path to mallet; default = mallet. 
+                             Note: If Mallet is not properly installed use absolute path to mallet folder, e.g. '/home/workspace/mallet/bin/mallet'.
         num_topics(str): Number of Topics that should be created
         num_interations(str): Number of Iterations
         num_top_words(str): Number of keywords for each topic
@@ -119,28 +121,24 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     param.append(path_to_malletModel)
     param.append("--num-topics")
     param.append(num_topics)
-    #param.append("--num-iterations")
-    #param.append(num_iterations)
-    #param.append("--num-top-words")
-    #param.append(num_top_words)
+    param.append("--num-iterations")
+    param.append(num_iterations)
+    param.append("--num-top-words")
+    param.append(num_top_words)
     
     sys = system()
     if sys == 'Windows':
-        doc_topics = outfolder + "\\" + "doc_topics.txt"
-        topic_keys = outfolder + "\\" + "topic_keys.txt"
-        state = outfolder + "\\" + "state.gz"
-        word_topics_counts = outfolder + "\\" + "word_topic_counts.txt"
-        word_topics_weights = outfolder + "\\" + "word_topic_weights.txt"
         log.debug(outfolder)
         shell = True
     else:
-        doc_topics = outfolder + "/" + "doc_topics.txt"
-        topic_keys = outfolder + "/" + "topic_keys.txt"
-        state = outfolder + "/" + "state.gz"
-        word_topic_counts = outfolder + "/" + "word_topic_counts.txt"
-        word_topics_weights = outfolder + "/" + "word_topic_weights.txt"
         log.debug(outfolder)
         shell = False
+        
+    doc_topics = os.path.join(outfolder, "doc_topics.txt")
+    topic_keys = os.path.join(outfolder, "topic_keys.txt") 
+    state = os.path.join(outfolder, "state.gz")
+    word_topics_counts = os.path.join(outfolder, "word_topic_counts.txt") 
+    word_topics_weights = os.path.join(outfolder, "word_topic_weights.txt")
         
     param.append("--output-doc-topics")
     param.append(doc_topics)
@@ -148,15 +146,18 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
     param.append(state)
     param.append("--output-topic-keys")
     param.append(topic_keys)
-    param.append("--word-topic-counts-file")
-    param.append(word_topic_counts)
-    param.append("--topic-word-weights-file")
-    param.append(word_topics_weights)
+#    param.append("--word-topic-counts-file")
+#    param.append(word_topic_counts)
+#    param.append("--topic-word-weights-file")
+#    param.append(word_topics_weights)
+    
+    log.debug(print(param))
 
     try:
        log.info("Accessing Mallet ...")
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
        out = p.communicate()
+       #log.debug(out)
        log.debug("Mallet file available.")
 
 
@@ -165,7 +166,6 @@ def create_mallet_output(path_to_malletModel, outfolder, path_to_mallet="mallet"
        p.terminate()
        log.debug("Mallet terminated.")
 
-    #return outfolder
        
 
 def grouper(n, iterable, fillvalue=None):
@@ -204,7 +204,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
     mallet_docnames = []
     topics = []
     
-    df = pd.read_csv(topic_keys, sep='\t', header=None)
+    df = pd.read_csv(topic_keys, sep='\t', header=None, encoding='utf-8')
     labels=[]
     for index, item in df.iterrows():
         label= ' '.join(item[2].split()[:3])
@@ -212,7 +212,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
         
     easy_file_format = False
 
-    with open(doc_topics) as f:
+    with open(doc_topics, encoding='utf-8') as f:
         for line in f:
             li=line.lstrip()
             if li.startswith("#"):
@@ -231,7 +231,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
 
     if(easy_file_format == True):
         newindex=[]
-        docTopicMatrix = pd.read_csv(doc_topics, sep='\t', names=labels[0:])
+        docTopicMatrix = pd.read_csv(doc_topics, sep='\t', names=labels[0:], encoding='utf-8')
         #print(list(docTopicMatrix.index))
         for eins, zwei in docTopicMatrix.index:
             newindex.append(os.path.basename(zwei))
@@ -262,7 +262,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
         topicLabels = []
     
         #creates list of topic lables consisting of the 3 most weighed topics
-        df = pd.read_csv('tutorial_supplementals/mallet_output/topic_keys.txt', sep='\t', header=None)
+        df = pd.read_csv('tutorial_supplementals/mallet_output/topic_keys.txt', sep='\t', header=None, encoding='utf-8')
         labels=[]
         for index, item in df.iterrows():
 
@@ -283,7 +283,7 @@ def show_docTopicMatrix(output_folder, docTopicsFile = "doc_topics.txt"):
         
     return docTopicMatrix.T
 
-def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
+def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt", num_topics=10):
     """Show topic-key-mapping
 
     Args:
@@ -298,7 +298,7 @@ def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
     path_to_topic_keys = os.path.join(output_folder, topicsKeyFile)
     assert path_to_topic_keys
 
-    with open(path_to_topic_keys) as input:
+    with open(path_to_topic_keys, encoding='utf-8') as input:
         topic_keys_lines = input.readlines()
 
     topic_keys = []
@@ -311,7 +311,8 @@ def show_topics_keys(output_folder, topicsKeyFile = "topic_keys.txt"):
         topic_keys.append(words) 
         
     topicKeysMatrix = pd.DataFrame(topic_keys)
-
+    topicKeysMatrix.index=['Topic ' + str(x+1) for x in range(num_topics)]
+    topicKeysMatrix.columns=['Key ' + str(x+1) for x in range(10)]
     return topicKeysMatrix
 
 
