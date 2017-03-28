@@ -59,10 +59,6 @@ def create_mallet_binary(outfile='binary.mallet', outfolder='mallet_output',
 
     Returns:
         String. Absolute path to created MALLET binary file.
-
-    Example:
-        >>> create_mallet_binary(path_to_file='testfile.txt')
-        "binary.mallet"
     """
     if system() == 'Windows':
         shell = True
@@ -162,9 +158,6 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet='mallet', num_
 
     Returns:
         None
-
-    Example:
-        >>> create_mallet_model(path_to_binary=binary.mallet)
     """
     if system() == 'Windows':
         log.debug(outfolder)
