@@ -592,8 +592,10 @@ def gensim2dataframe(model):
     Note:
 
     Args:
+        model: Gensim LDA model
 
     Returns:
+        Pandas DataFrame with topics
 
     ToDo:
     """
@@ -626,9 +628,10 @@ def save_bow_mm(sparse_bow, output_path):
 
     ToDo:
     """
-    num_docs = max(sparse_bow.index.get_level_values("doc_id"))
-    num_types = max(sparse_bow.index.get_level_values("token_id"))
-    sum_counts = sum(sparse_bow[0])
+    num_docs = sparse_bow.index.get_level_values("doc_id").max()
+    num_types = sparse_bow.index.get_level_values("token_id").max()
+    sum_counts = sparse_bow[0].sum()
+    
 
     header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
 
