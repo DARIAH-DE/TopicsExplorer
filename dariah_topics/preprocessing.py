@@ -590,6 +590,7 @@ def gensim2dataframe(model):
     """Creates DataFrame out of gensim model (topic keys)
 
     Note:
+        If you want to save Gensim's topic output set log = True
 
     Args:
         model: Gensim LDA model
@@ -598,18 +599,18 @@ def gensim2dataframe(model):
         Pandas DataFrame with topics
 
     ToDo:
+        Format input for DataFrame
     """
     num_topics = model.num_topics
     topics_df = pd.DataFrame(index = range(num_topics), columns= range(10))
 
-    topics = model.show_topics(num_topics)
+    topics = model.show_topics(num_topics = num_topics, log=False, formatted=False)
 
-    for topic_dist in topics:
-        idx = topic_dist[0]
-        temp = regex.findall(r'\"(.+?)\"', topics[idx][1])
+    for topic in topics:
+        idx = topic[0]
+        temp = topic[1]
         topics_df.loc[idx] = temp
-    topics_df.index=['Topic ' + str(x+1) for x in range(num_topics)]
-    topics_df.columns=['Key ' + str(x+1) for x in range(10)]
+
     return topics_df
 
 def save_bow_mm(sparse_bow, output_path):
