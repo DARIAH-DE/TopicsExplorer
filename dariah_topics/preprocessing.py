@@ -52,24 +52,8 @@ def create_document_list(path, ext='txt'):
         List of files with full path.
 
     Example:
-        >>> create_document_list('corpus_txt') # doctest: +NORMALIZE_WHITESPACE
-        ['corpus_txt/Doyle_AScandalinBohemia.txt',\
-         'corpus_txt/Doyle_AStudyinScarlet.txt',\
-         'corpus_txt/Doyle_TheHoundoftheBaskervilles.txt',\
-         'corpus_txt/Doyle_TheSignoftheFour.txt',\
-         'corpus_txt/Howard_GodsoftheNorth.txt',\
-         'corpus_txt/Howard_SchadowsinZamboula.txt',\
-         'corpus_txt/Howard_ShadowsintheMoonlight.txt',\
-         'corpus_txt/Howard_TheDevilinIron.txt',\
-         'corpus_txt/Kipling_TheEndofthePassage.txt',\
-         'corpus_txt/Kipling_TheJungleBook.txt',\
-         'corpus_txt/Kipling_ThyServantaDog.txt',\
-         'corpus_txt/Lovecraft_AttheMountainofMadness.txt',\
-         'corpus_txt/Lovecraft_TheShunnedHouse.txt',\
-         'corpus_txt/Poe_EurekaAProsePoem.txt',\
-         'corpus_txt/Poe_TheCaskofAmontillado.txt',\
-         'corpus_txt/Poe_TheMasqueoftheRedDeath.txt',\
-         'corpus_txt/Poe_ThePurloinedLetter.txt']
+        >>> create_document_list('corpus_txt')[0]
+        'corpus_txt/Doyle_AScandalinBohemia.txt'
     """
     log.info("Creating document list from %s files ...", ext.upper())
     pattern = os.path.join(path, '*.' + ext)
@@ -133,7 +117,7 @@ def read_from_tei(doclist):
         * Seperate metadata (author, header)?
 
     Example:
-        >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][142:159]
+        >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][143:160]
         'Arthur Schnitzler'
         >>> doclist = create_document_list('corpus_tei', ext='xml')
         >>> list(read_from_tei(doclist))[0][142:159]
@@ -428,8 +412,8 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     """
     log.info("Accessing %s ...", pos_tags)
     for pos in pos_tags:
-        doc_csv = doc_csv.loc[df['CPOS'] == pos]
-        yield doc_csv.loc[df['CPOS'] == pos]['Lemma']
+        doc_csv = doc_csv.loc[doc_csv['CPOS'] == pos]
+        yield doc_csv.loc[doc_csv['CPOS'] == pos]['Lemma']
 
 
 def find_stopwords(sparse_bow, id_types, mfw=200):
