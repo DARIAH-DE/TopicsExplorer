@@ -403,7 +403,7 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
 
     Example:
         >>> df = pd.DataFrame({'type': ['one', 'more', 'example', 'text'],
-        ...                    'CPOS': ['CARD', 'ADJ', 'NN', 'NN']
+        ...                    'CPOS': ['CARD', 'ADJ', 'NN', 'NN'],
         ...                    'Lemma': ['one', 'more', 'example', 'text']})
         >>> list(filter_pos_tags(df))[0] # doctest: +NORMALIZE_WHITESPACE
            CPOS     type
