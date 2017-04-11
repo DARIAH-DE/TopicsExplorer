@@ -102,9 +102,6 @@ def read_from_txt(doclist):
     Example:
         >>> list(read_from_txt('corpus_txt/Doyle_AScandalinBohemia.txt'))[0][:20]
         'A SCANDAL IN BOHEMIA'
-        >>> doclist = create_document_list('corpus_txt')
-        >>> list(read_from_txt(doclist))[0][:20]
-        'A SCANDAL IN BOHEMIA'
     """
     log.info("Accessing TXT documents ...")
     if isinstance(doclist, str):
@@ -136,7 +133,7 @@ def read_from_tei(doclist):
         * Seperate metadata (author, header)?
 
     Example:
-        >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][146:163]
+        >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][142:159]
         'Arthur Schnitzler'
         >>> doclist = create_document_list('corpus_tei', ext='xml')
         >>> list(read_from_tei(doclist))[0][142:159]
@@ -179,13 +176,6 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
 
     Example:
         >>> list(read_from_csv('corpus_csv/Doyle_AScandalinBohemia.txt.csv'))[0][:4] # doctest: +NORMALIZE_WHITESPACE
-                   ParagraphId  TokenId    Lemma CPOS NamedEntity
-        0            0        0        a  ART           _
-        1            0        1  scandal   NP           _
-        2            0        2       in   PP           _
-        3            0        3  bohemia   NP           _
-        >>> doclist = create_document_list('corpus_csv', 'csv')
-        >>> list(read_from_csv(doclist))[0][:4] # doctest: +NORMALIZE_WHITESPACE
                    ParagraphId  TokenId    Lemma CPOS NamedEntity
         0            0        0        a  ART           _
         1            0        1  scandal   NP           _
@@ -438,9 +428,8 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     """
     log.info("Accessing %s ...", pos_tags)
     for pos in pos_tags:
-        df = df.loc[df['CPOS'] == pos]
-        lemma = df.loc[df['CPOS'] == pos]['Lemma']
-        yield lemma
+        doc_csv = doc_csv.loc[df['CPOS'] == pos]
+        yield doc_csv.loc[df['CPOS'] == pos]['Lemma']
 
 
 def find_stopwords(sparse_bow, id_types, mfw=200):
