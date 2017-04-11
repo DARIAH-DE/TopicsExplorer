@@ -488,7 +488,7 @@ def find_stopwords(sparse_bow, id_types, mfw=200):
         >>> doc_tokens = [['short', 'short', 'example', 'text']]
         >>> id_types = {'short': 1, 'example': 2, 'text': 3}
         >>> doc_ids = {'exampletext': 1}
-        >>> sparse_bow = create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids)
+        >>> sparse_bow = create_sparse_matrix(doc_labels, doc_tokens, id_types, doc_ids)
         >>> find_stopwords(sparse_bow, id_types, 1)
         ['short']
     """
@@ -523,7 +523,7 @@ def find_hapax(sparse_bow, id_types):
         >>> doc_tokens = [['short', 'example', 'example', 'text', 'text']]
         >>> id_types = {'short': 1, 'example': 2, 'text': 3}
         >>> doc_ids = {'exampletext': 1}
-        >>> sparse_bow = create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids)
+        >>> sparse_bow = create_sparse_matrix(doc_labels, doc_tokens, id_types, doc_ids)
         >>> find_hapax(sparse_bow, id_types)
         ['short']
     """
