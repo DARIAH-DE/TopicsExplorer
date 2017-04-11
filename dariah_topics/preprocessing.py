@@ -533,7 +533,7 @@ def remove_features(mm, id_types, features):
     """
     log.info("Removing features ...")
 
-    if type(features) == set:
+    if isinstance(features, set):
 
         stoplist_applied = [word for word in set(
             id_types.keys()) if word in features]
