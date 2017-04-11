@@ -117,10 +117,7 @@ def read_from_tei(doclist):
         * Seperate metadata (author, header)?
 
     Example:
-        >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][143:160]
-        'Arthur Schnitzler'
-        >>> doclist = create_document_list('corpus_tei', ext='xml')
-        >>> list(read_from_tei(doclist))[0][142:159]
+        >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][146:163]
         'Arthur Schnitzler'
     """
     log.info("Accessing TEI XML documents ...")
@@ -406,10 +403,10 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
         ...                    'CPOS': ['CARD', 'ADJ', 'NN', 'NN'],
         ...                    'Lemma': ['one', 'more', 'example', 'text']})
         >>> list(filter_pos_tags(df))[0] # doctest: +NORMALIZE_WHITESPACE
-           CPOS     type
-        1   ADJ     more
-        2    NN  example
-        3    NN     text
+        1    more
+        2    example
+        3    text
+        Name: Lemma, dtype: object
     """
     log.info("Accessing %s ...", pos_tags)
     for pos in pos_tags:
