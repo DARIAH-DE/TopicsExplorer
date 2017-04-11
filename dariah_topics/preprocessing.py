@@ -448,7 +448,6 @@ def create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids):
         1      1         1
                2         1
                3         1
-        [3 rows x 1 columns]
     """
     temp_counter = _create_large_counter(doc_labels, doc_tokens, type_dictionary)
     largecounter = {doc_ids[key]: value for key, value in temp_counter.items()}
