@@ -439,10 +439,10 @@ def create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids):
 
     Example:
         >>> doc_labels = ['exampletext']
-        >>> doc_tokens = ['short', 'example', 'text']
+        >>> doc_tokens = [['short', 'example', 'text']]
         >>> type_dictionary = {'short': 1, 'example': 2, 'text': 3}
         >>> doc_ids = {'exampletext': 1}
-        >>> create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids)
+        >>> create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids) # doctest: +NORMALIZE_WHITESPACE
                          0
         doc_id token_id
         1      1         1
