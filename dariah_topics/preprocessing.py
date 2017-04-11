@@ -570,13 +570,9 @@ def remove_features(mm, id_types, features):
 
     else:
 
-        try:
 
-            features = set(features)
+        features = set(features)
 
-        except:
-
-            log.debug("features must be set or convertible to set")
 
         stoplist_applied = [word for word in set(
             id_types.keys()) if word in features]
