@@ -401,7 +401,7 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     Example:
         >>> df = pd.DataFrame({'CPOS': ['CARD', 'ADJ', 'NN', 'NN'],
         ...                    'Lemma': ['one', 'more', 'example', 'text']})
-        >>> list(filter_pos_tags(df)) # doctest: +NORMALIZE_WHITESPACE
+        >>> list(filter_pos_tags(df))[0] # doctest: +NORMALIZE_WHITESPACE
         1    more
         2    example
         3    text
@@ -410,7 +410,7 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     log.info("Accessing %s ...", pos_tags)
     for pos in pos_tags:
         doc_csv = doc_csv.loc[doc_csv['CPOS'] == pos]
-        yield doc_csv.loc[doc_csv['CPOS'] == pos]['Lemma']
+    yield doc_csv.loc[doc_csv['CPOS'] == pos]['Lemma']
 
 
 def find_stopwords(sparse_bow, id_types, mfw=200):
