@@ -52,7 +52,7 @@ def create_document_list(path, ext='txt'):
         List of files with full path.
 
     Example:
-        >>> create_document_list('corpus_txt')
+        >>> create_document_list('corpus_txt') # doctest: +NORMALIZE_WHITESPACE
         ['corpus_txt/Doyle_AScandalinBohemia.txt',
          'corpus_txt/Doyle_AStudyinScarlet.txt',
          'corpus_txt/Doyle_TheHoundoftheBaskervilles.txt',
@@ -136,7 +136,7 @@ def read_from_tei(doclist):
         * Seperate metadata (author, header)?
 
     Example:
-        >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][142:159]
+        >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][146:163]
         'Arthur Schnitzler'
         >>> doclist = create_document_list('corpus_tei', ext='xml')
         >>> list(read_from_tei(doclist))[0][142:159]
@@ -184,7 +184,7 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
         1            0        1  scandal   NP           _
         2            0        2       in   PP           _
         3            0        3  bohemia   NP           _
-        >>> doclist = create_document_list('corpus_csv')
+        >>> doclist = create_document_list('corpus_csv', 'csv')
         >>> list(read_from_csv(doclist))[0][:4] # doctest: +NORMALIZE_WHITESPACE
                    ParagraphId  TokenId    Lemma CPOS NamedEntity
         0            0        0        a  ART           _
@@ -218,7 +218,7 @@ def get_labels(doclist):
 
     Example:
         >>> list(get_labels(['corpus_txt/author_title.txt']))
-        'author_title'
+        ['author_title']
     """
     log.info("Creating document labels ...")
     for doc in doclist:
@@ -274,7 +274,7 @@ def segment_fuzzy(document, segment_size=5000, tolerance=0.05):
 
     Example:
         >>> list(segment_fuzzy([['This', 'test', 'is', 'very', 'clear'],
-        ...                     ['and', 'contains', 'chunks']], 2))
+        ...                     ['and', 'contains', 'chunks']], 2)) # doctest: +NORMALIZE_WHITESPACE
         [[['This', 'test']],
         [['is', 'very']],
         [['clear'], ['and']],
@@ -339,7 +339,7 @@ def segment(document, segment_size=1000, tolerance=0, chunker=None,
 
     Example:
         >>> list(segment([['This', 'test', 'is', 'very', 'clear'],
-                          ['and', 'contains', 'chunks']], 2))
+        ...               ['and', 'contains', 'chunks']], 2)) # doctest: +NORMALIZE_WHITESPACE
         [[['This', 'test']],
         [['is', 'very']],
         [['clear'], ['and']],
@@ -430,7 +430,7 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     Example:
         >>> df = pd.DataFrame({'type' : ['one', 'more', 'example', 'text'],
         ...                    'CPOS' : ['CARD', 'ADJ', 'NN', 'NN']})
-        ...                    # doctest: +NORMALIZE_WHITESPACE
+        >>> list(filter_pos_tags(df))[0] # doctest: +NORMALIZE_WHITESPACE
            CPOS     type
         1   ADJ     more
         2    NN  example
