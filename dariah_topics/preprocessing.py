@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """Preprocessing.
@@ -13,9 +13,6 @@ This module contains functions for various preprocessing steps provided by `DARI
 __author__ = "DARIAH-DE"
 __authors__ = "Steffen Pielstroem, Philip Duerholt, Sina Bock, Severin Simmler"
 __email__ = "pielstroem@biozentrum.uni-wuerzburg.de"
-__version__ = "0.1"
-__date__ = "2017-01-20"
-
 
 import glob
 import os
@@ -31,7 +28,7 @@ from itertools import chain
 
 log = logging.getLogger('preprocessing')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level = logging.WARNING,
+logging.basicConfig(level = logging.INFO,
                     format = '%(levelname)s %(name)s: %(message)s')
 
 regular_expression = r'\p{Letter}+\p{Punctuation}?\p{Letter}+'
@@ -44,59 +41,105 @@ def create_document_list(path, ext='txt'):
         ext (str): File extension, e.g. 'csv'. Defaults to 'txt'.
 
     Returns:
-        list[str]: List of files with full path.
+        List of files with full path.
+
+    Example:
+        >>> create_document_list('corpus_txt')
+        ['corpus_txt/Doyle_AScandalinBohemia.txt',
+         'corpus_txt/Doyle_AStudyinScarlet.txt',
+         'corpus_txt/Doyle_TheHoundoftheBaskervilles.txt',
+         'corpus_txt/Doyle_TheSignoftheFour.txt',
+         'corpus_txt/Howard_GodsoftheNorth.txt',
+         'corpus_txt/Howard_SchadowsinZamboula.txt',
+         'corpus_txt/Howard_ShadowsintheMoonlight.txt',
+         'corpus_txt/Howard_TheDevilinIron.txt',
+         'corpus_txt/Kipling_TheEndofthePassage.txt',
+         'corpus_txt/Kipling_TheJungleBook.txt',
+         'corpus_txt/Kipling_ThyServantaDog.txt',
+         'corpus_txt/Lovecraft_AttheMountainofMadness.txt',
+         'corpus_txt/Lovecraft_TheShunnedHouse.txt',
+         'corpus_txt/Poe_EurekaAProsePoem.txt',
+         'corpus_txt/Poe_TheCaskofAmontillado.txt',
+         'corpus_txt/Poe_TheMasqueoftheRedDeath.txt',
+         'corpus_txt/Poe_ThePurloinedLetter.txt']
     """
     log.info("Creating document list from %s files ...", ext.upper())
-    pattern = os.path.join(path, "*." + ext)
+    pattern = os.path.join(path, '*.' + ext)
     doclist = glob.glob(pattern)
-    log.debug("%s entries in document list.", len(doclist))
     if not doclist:
-        raise FileNotFoundError("The pattern %s does not match any files." % pattern)
+        raise FileNotFoundError("The pattern %s does not match any files.", pattern)
     return doclist
 
 def read_from_tei(doclist):
-    ns = dict(tei="http://www.tei-c.org/ns/1.0")
+    """Opens TEI XML files using a list of paths or one single path.
+
+        Note:
+            Use `create_document_list()` to create `doclist`.
+
+        Args:
+            doclist Union(list[str], str): List of all documents in the corpus
+                or single path to TEI XML file.
+
+        Yields:
+            Document.
+
+        Example:
+            >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][:5]
+            '\n    '
+            >>> doclist = create_document_list('corpus_tei', ext='xml')
+            >>> list(read_from_tei(doclist))[0][:5]
+            '\n    '
+    """
+    log.info("Accessing TEI XML documents ...")
+    if not isinstance(doclist, list):
+        doclist = [doclist]
+    ns = dict(tei='http://www.tei-c.org/ns/1.0')
     for file in doclist:
         tree = etree.parse(file)
         text_el = tree.xpath('//tei:text', namespaces=ns)[0]
         yield "".join(text_el.xpath('.//text()'))
 
 def read_from_txt(doclist):
-    """Opens files using a list of paths or one single path.
+    """Opens TXT files using a list of paths or one single path.
 
     Note:
         Use `create_document_list()` to create `doclist`.
 
     Args:
-        doclist (list[str]): List of all documents in the corpus.
-        doclist (str): Path to TXT file.
+        doclist Union(list[str], str): List of all documents in the corpus
+            or single path to TXT file.
 
     Yields:
-        Iterable: Document.
+        Document.
 
     Todo:
         * Seperate metadata (author, header)?
+
+    Example:
+        >>> list(read_from_txt('corpus_txt/Doyle_AScandalinBohemia.txt'))[0][:5]
+        'A SCAN'
+        >>> doclist = create_document_list('corpus_txt')
+        >>> list(read_from_txt(doclist))[0][:5]
+        'A SCAN'
     """
-    if type(doclist) == str:
+    log.info("Accessing TXT documents ...")
+    if isinstance(doclist, str):
         with open(doclist, 'r', encoding='utf-8') as f:
-            log.debug("Accessing TXT document ...")
-            doc = f.read()
-            yield doc
-    else:
+            yield f.read()
+    elif isinstance(doclist, list):
         for file in doclist:
             with open(file, 'r', encoding='utf-8') as f:
-                log.debug("Accessing TXT document %s ...", file)
-                doc_txt = f.read()
-                yield doc_txt
+                yield f.read()
 
 def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']):
-    """Opens files using a list of paths.
+    """Opens CSV files using a list of paths or one single path.
 
     Note:
         Use `create_document_list()` to create `doclist`.
 
     Args:
         doclist (list[str]): List of all documents in the corpus.
+        doclist (str): Path to CSV file.
         columns (list[str]): List of CSV column names.
             Defaults to '['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']'.
 
@@ -105,12 +148,30 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
 
     Todo:
         * Seperate metadata (author, header)?
+
+    Example:
+        >>> list(read_from_csv('corpus_csv/Doyle_AScandalinBohemia.txt.csv'))[0][:5] # doctest: +NORMALIZE_WHITESPACE
+                   ParagraphId  TokenId    Lemma CPOS NamedEntity
+        0            0        0        a  ART           _
+        1            0        1  scandal   NP           _
+        2            0        2       in   PP           _
+        3            0        3  bohemia   NP           _
+        4            1        4       a.   NP           _
+        >>> doclist = create_document_list('corpus_csv')
+        >>> list(read_from_csv(doclist))[0][:5] # doctest: +NORMALIZE_WHITESPACE
+                   ParagraphId  TokenId    Lemma CPOS NamedEntity
+        0            0        0        a  ART           _
+        1            0        1  scandal   NP           _
+        2            0        2       in   PP           _
+        3            0        3  bohemia   NP           _
+        4            1        4       a.   NP           _
     """
+    log.info("Accessing CSV documents ...")
+    if isinstance(doclist, str):
+        doclist = [doclist]
     for file in doclist:
-        df = pd.read_csv(file, sep="\t", quoting=csv.QUOTE_NONE)
-        log.info("Accessing CSV documents ...")
-        doc_csv = df[columns]
-        yield doc_csv
+        df = pd.read_csv(file, sep='\t', quoting=csv.QUOTE_NONE)
+        yield df[columns]
 
 def get_labels(doclist):
     """Creates a list of document labels.
@@ -124,51 +185,29 @@ def get_labels(doclist):
     Yields:
         Iterable: Document labels.
 
-    ToDo:
-        Replace this function with function from Toolbox
-        Replace label = os.path.basename(doc) with something more sophsticated??
+    Example:
+        >>> list(get_labels(['corpus_txt/author_title.txt']))
+        'author_title'
     """
     log.info("Creating document labels ...")
     for doc in doclist:
         label, ext = os.path.splitext(os.path.basename(doc))
         yield label
-    log.debug("Document labels available")
-
-
-def segmenter(doc_txt, length=1000):
-    """Segments documents.
-
-    Note:
-        Use `read_from_txt()` to create `doc_txt`.
-
-    Args:
-        doc_txt (str): Document as iterable.
-        length (int): Target size of segments. Defaults to '1000'.
-
-    Yields:
-        Document slizes with length words.
-
-    Todo:
-        * Implement fuzzy option to consider paragraph breaks.
-    """
-    doc = next(doc_txt)
-    log.info("Segmenting document ...")
-    for i, word in enumerate(doc):
-        if i % length == 0:
-            log.debug("Segment has a length of %s characters.", length)
-            segment = doc[i : i + length]
-            yield segment
 
 def split_paragraphs(doc_txt, sep=regex.compile('\n')):
     """
     Split the given document by paragraphs.
 
     Args:
-        doc_txt (str): Document text
-        sep (regex.Regex): separator indicating a paragraph
+        doc_txt (str): Document text.
+        sep (regex.Regex): Separator indicating a paragraph.
 
     Returns:
         List of paragraphs
+
+    Example:
+        >>> split_paragraphs("This test contains \n paragraphs.")
+        ['This test contains ', ' paragraphs.']
     """
     if not hasattr(sep, 'match'):
         sep = regex.compile(sep)
@@ -195,6 +234,14 @@ def segment_fuzzy(document, segment_size=5000, tolerance=0.05):
     Yields:
         Segments. Each segment is a list of chunks, each chunk is a list of
         tokens.
+
+    Example:
+        >>> list(segment_fuzzy([['This', 'test', 'is', 'very', 'clear'],
+                                ['and', 'contains', 'chunks']], 2))
+        [[['This', 'test']],
+        [['is', 'very']],
+        [['clear'], ['and']],
+        [['contains', 'chunks']]]
     """
     if tolerance > 0 and tolerance < 1:
         tolerance = round(segment_size * tolerance)
@@ -250,6 +297,14 @@ def segment(document, segment_size=1000, tolerance=0, chunker=None,
             chaining the chunks in each segment, thus each segment consists of
             tokens. This can also be a one-argument function in order to
             customize the un-chunking.
+
+    Example:
+        >>> list(segment([['This', 'test', 'is', 'very', 'clear'],
+                          ['and', 'contains', 'chunks']], 2))
+        [[['This', 'test']],
+        [['is', 'very']],
+        [['clear'], ['and']],
+        [['contains', 'chunks']]]
     """
     if chunker is not None:
         document = chunker(document)
@@ -302,8 +357,8 @@ def tokenize(doc_txt, expression=regular_expression, lower=True, simple=False):
     for match in tokens:
         yield match.group()
 
-def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
-    """Gets lemmas by selected POS-tags from DKPro-Wrapper output.
+def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
+    """Gets lemmas by selected POS-tags from DARIAH-DKPro-Wrapper output.
 
     Note:
         Use `read_from_csv()` to create `doc_csv`.
@@ -314,13 +369,20 @@ def filter_POS_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
             Defaults to '['ADJ', 'V', 'NN']'.
 
     Yields:
-        Lemma.'''
+        Lemma.
+
+    Example:
+        >>> df = pd.DataFrame({'type' : ['one', 'more', 'example', 'text'],
+                               'CPOS' : ['CARD', 'ADJ', 'NN', 'NN']}) # doctest: +NORMALIZE_WHITESPACE
+           CPOS     type
+        1   ADJ     more
+        2    NN  example
+        3    NN     text
     """
-    df = next(doc_csv)
-    log.info("Accessing %s lemmas ...", pos_tags)
-    for p in pos_tags:
-        df = df.loc[df['CPOS'] == p]
-        lemma = df.loc[df['CPOS'] == p]['Lemma']
+    log.info("Accessing %s ...", pos_tags)
+    for pos in pos_tags:
+        df = df.loc[df['CPOS'] == pos]
+        lemma = df.loc[df['CPOS'] == pos]['Lemma']
         yield lemma
 
 
@@ -413,45 +475,22 @@ def remove_features(mm, id_types, features):
 
 
 
-def create_dictionaries(doc_labels, doc_tokens):
-    """create_large_TF_matrix
-
-    Note:
-        Use get_labels to create doc_labels and use tokenize to create doc_tokens.
-        Creates two dictionaries. One with keys = token : value = id pairs. And one with
-        keys = document label : value = id pairs.
+def create_dictionary(list_of_strings):
+    """Creates a dictionary of unique strings with identifier.
 
     Args:
-        doc_labels(list): List of doc labels as string.
-        doc_tokens(list): List of tokens as string.
+        list_of_strings(list): List of strings.
 
     Returns:
-        Two dictionaries, one with token : id pairs and one with doc_label : id pairs.
+        Dictionary.
 
-    ToDo:
+    Example:
+        >>> create_dictionary(['example'])
+        {'example': 1}
     """
-
-    typeset = set()
-
-    temp_tokens = doc_tokens
-
-    temp_labels = doc_labels
-
-    doc_dictionary = defaultdict(list)
-
-    for label, doc in zip(doc_labels, doc_tokens):
-
-        tempdoc = list(doc)
-
-        tempset = set([token for token in tempdoc])
-
-        typeset.update(tempset)
-
-    type_dictionary = { v : k for k, v in enumerate(typeset, 1) }
-    doc_ids = { doc : id_num for id_num, doc in enumerate(doc_labels, 1) }
-
-
-    return type_dictionary, doc_ids
+    if all(isinstance(element, list) for element in list_of_strings):
+            list_of_strings = {string for element in list_of_strings for string in element}
+    return {string: id_ for id_, string in enumerate(set(list_of_strings), 1)}
 
 def _create_large_counter(doc_labels, doc_tokens, type_dictionary):
     """create_large_TF_matrix
