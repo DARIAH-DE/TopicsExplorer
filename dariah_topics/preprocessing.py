@@ -53,7 +53,7 @@ def create_document_list(path, ext='txt'):
 
     Example:
         >>> create_document_list('corpus_txt')[0]
-        'corpus_txt/Doyle_AScandalinBohemia.txt'
+        'corpus_txt/Poe_EurekaAProsePoem.txt'
     """
     log.info("Creating document list from %s files ...", ext.upper())
     pattern = os.path.join(path, '*.' + ext)
@@ -402,8 +402,9 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
         Lemma.
 
     Example:
-        >>> df = pd.DataFrame({'type' : ['one', 'more', 'example', 'text'],
-        ...                    'CPOS' : ['CARD', 'ADJ', 'NN', 'NN']})
+        >>> df = pd.DataFrame({'type': ['one', 'more', 'example', 'text'],
+        ...                    'CPOS': ['CARD', 'ADJ', 'NN', 'NN']
+        ...                    'Lemma': ['one', 'more', 'example', 'text']})
         >>> list(filter_pos_tags(df))[0] # doctest: +NORMALIZE_WHITESPACE
            CPOS     type
         1   ADJ     more
