@@ -28,13 +28,21 @@ from itertools import chain
 
 log = logging.getLogger('preprocessing')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level = logging.INFO,
-                    format = '%(levelname)s %(name)s: %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(levelname)s %(name)s: %(message)s')
 
 regular_expression = r'\p{Letter}+\p{Punctuation}?\p{Letter}+'
 
+
 def create_document_list(path, ext='txt'):
     """Creates a list of files with their full path.
+
+    Description:
+        Consider you have a collection of text files in one directory and wish to
+        read all files at once, use this function to create a list of their full paths.
+        Use the list as argument for the functions `read_from_txt()`, `read_from_tei()`
+        or `read_from_csv()` to read the files.
+        You have to specify the file format, which defaults to plain text.
 
     Args:
         path (str): Path to folder, e.g. '/tmp/corpus'.
@@ -67,43 +75,18 @@ def create_document_list(path, ext='txt'):
     pattern = os.path.join(path, '*.' + ext)
     doclist = glob.glob(pattern)
     if not doclist:
-        raise FileNotFoundError("The pattern %s does not match any files.", pattern)
+        raise FileNotFoundError(
+            "The pattern %s does not match any files.", pattern)
     return doclist
 
-def read_from_tei(doclist):
-    """Opens TEI XML files using a list of paths or one single path.
-
-        Note:
-            Use `create_document_list()` to create `doclist`.
-
-        Args:
-            doclist Union(list[str], str): List of all documents in the corpus
-                or single path to TEI XML file.
-
-        Yields:
-            Document.
-
-        Example:
-            >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][:5]
-            '\n    '
-            >>> doclist = create_document_list('corpus_tei', ext='xml')
-            >>> list(read_from_tei(doclist))[0][:5]
-            '\n    '
-    """
-    log.info("Accessing TEI XML documents ...")
-    if not isinstance(doclist, list):
-        doclist = [doclist]
-    ns = dict(tei='http://www.tei-c.org/ns/1.0')
-    for file in doclist:
-        tree = etree.parse(file)
-        text_el = tree.xpath('//tei:text', namespaces=ns)[0]
-        yield "".join(text_el.xpath('.//text()'))
-
 def read_from_txt(doclist):
-    """Opens TXT files using a list of paths or one single path.
+    """Opens TXT files using file paths.
 
-    Note:
-        Use `create_document_list()` to create `doclist`.
+    Description:
+        With this function you can read plain text files. Commit a list of
+        full paths or one single path as an argument.
+        Use the function `create_document_list()` to create a list of your text
+        files.
 
     Args:
         doclist Union(list[str], str): List of all documents in the corpus
@@ -113,14 +96,14 @@ def read_from_txt(doclist):
         Document.
 
     Todo:
-        * Seperate metadata (author, header)?
+        * Separate metadata (author, header)?
 
     Example:
-        >>> list(read_from_txt('corpus_txt/Doyle_AScandalinBohemia.txt'))[0][:5]
-        'A SCAN'
+        >>> list(read_from_txt('corpus_txt/Doyle_AScandalinBohemia.txt'))[0][:20]
+        'A SCANDAL IN BOHEMIA'
         >>> doclist = create_document_list('corpus_txt')
-        >>> list(read_from_txt(doclist))[0][:5]
-        'A SCAN'
+        >>> list(read_from_txt(doclist))[0][:20]
+        'A SCANDAL IN BOHEMIA'
     """
     log.info("Accessing TXT documents ...")
     if isinstance(doclist, str):
@@ -131,15 +114,58 @@ def read_from_txt(doclist):
             with open(file, 'r', encoding='utf-8') as f:
                 yield f.read()
 
-def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']):
-    """Opens CSV files using a list of paths or one single path.
 
-    Note:
-        Use `create_document_list()` to create `doclist`.
+def read_from_tei(doclist):
+    """Opens TEI XML files using file paths.
+
+    Description:
+        With this function you can read TEI encoded XML files. Commit a list of
+        full paths or one single path as an argument.
+        Use the function `create_document_list()` to create a list of your XML
+        files.
 
     Args:
-        doclist (list[str]): List of all documents in the corpus.
-        doclist (str): Path to CSV file.
+        doclist Union(list[str], str): List of all documents in the corpus
+            or single path to TEI XML file.
+
+    Yields:
+        Document.
+
+    Todo:
+        * Seperate metadata (author, header)?
+
+    Example:
+        >>> list(read_from_tei('corpus_tei/Schnitzler_Amerika.xml'))[0][142:159]
+        'Arthur Schnitzler'
+        >>> doclist = create_document_list('corpus_tei', ext='xml')
+        >>> list(read_from_tei(doclist))[0][142:159]
+        'Arthur Schnitzler'
+    """
+    log.info("Accessing TEI XML documents ...")
+    if not isinstance(doclist, list):
+        doclist = [doclist]
+    ns = dict(tei='http://www.tei-c.org/ns/1.0')
+    for file in doclist:
+        tree = etree.parse(file)
+        text_el = tree.xpath('//tei:text', namespaces=ns)[0]
+        yield "".join(text_el.xpath('.//text()'))
+
+def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']):
+    """Opens CSV files using file paths.
+
+    Description:
+        With this function you can read CSV files generated by `DARIAH-DKPro-Wrapper`_,
+        a tool for natural language processing. Commit a list of full paths or
+        one single path as an argument. You also have the ability to select certain
+        columns.
+        Use the function `create_document_list()` to create a list of your CSV
+        files.
+        .. _DARIAH-DKPro-Wrapper:
+            https://github.com/DARIAH-DE/DARIAH-DKPro-Wrapper
+
+    Args:
+        doclist Union(list[str], str): List of all documents in the corpus
+            or single path to CSV file.
         columns (list[str]): List of CSV column names.
             Defaults to '['ParagraphId', 'TokenId', 'Lemma', 'CPOS', 'NamedEntity']'.
 
@@ -150,21 +176,19 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
         * Seperate metadata (author, header)?
 
     Example:
-        >>> list(read_from_csv('corpus_csv/Doyle_AScandalinBohemia.txt.csv'))[0][:5] # doctest: +NORMALIZE_WHITESPACE
+        >>> list(read_from_csv('corpus_csv/Doyle_AScandalinBohemia.txt.csv'))[0][:4] # doctest: +NORMALIZE_WHITESPACE
                    ParagraphId  TokenId    Lemma CPOS NamedEntity
         0            0        0        a  ART           _
         1            0        1  scandal   NP           _
         2            0        2       in   PP           _
         3            0        3  bohemia   NP           _
-        4            1        4       a.   NP           _
         >>> doclist = create_document_list('corpus_csv')
-        >>> list(read_from_csv(doclist))[0][:5] # doctest: +NORMALIZE_WHITESPACE
+        >>> list(read_from_csv(doclist))[0][:4] # doctest: +NORMALIZE_WHITESPACE
                    ParagraphId  TokenId    Lemma CPOS NamedEntity
         0            0        0        a  ART           _
         1            0        1  scandal   NP           _
         2            0        2       in   PP           _
         3            0        3  bohemia   NP           _
-        4            1        4       a.   NP           _
     """
     log.info("Accessing CSV documents ...")
     if isinstance(doclist, str):
@@ -173,17 +197,22 @@ def read_from_csv(doclist, columns=['ParagraphId', 'TokenId', 'Lemma', 'CPOS', '
         df = pd.read_csv(file, sep='\t', quoting=csv.QUOTE_NONE)
         yield df[columns]
 
+
 def get_labels(doclist):
     """Creates a list of document labels.
 
-    Note:
-        Use `create_document_list()` to create `doclist`.
+    Description:
+        Consider you have a list of text files and wish to access their raw name
+        without any extensions or parts of the path. With this function you
+        can save document labels in a list.
+        Use the function `create_document_list()` to create a list of your text
+        files.
 
     Args:
         doclist (list[str]): List of file paths.
 
     Yields:
-        Iterable: Document labels.
+        Document labels.
 
     Example:
         >>> list(get_labels(['corpus_txt/author_title.txt']))
@@ -194,16 +223,22 @@ def get_labels(doclist):
         label, ext = os.path.splitext(os.path.basename(doc))
         yield label
 
+
 def split_paragraphs(doc_txt, sep=regex.compile('\n')):
-    """
-    Split the given document by paragraphs.
+    """Splits the given document by paragraphs.
+
+    Description:
+        With this function you can split a document by paragraphs. You also have
+        the ability to select a certain regular expression to split the document.
+        Use the functions `read_from_txt()`, `read_from_tei()` or `read_from_csv()`
+        to read your text files.
 
     Args:
         doc_txt (str): Document text.
         sep (regex.Regex): Separator indicating a paragraph.
 
     Returns:
-        List of paragraphs
+        List of paragraphs.
 
     Example:
         >>> split_paragraphs("This test contains \n paragraphs.")
@@ -212,6 +247,7 @@ def split_paragraphs(doc_txt, sep=regex.compile('\n')):
     if not hasattr(sep, 'match'):
         sep = regex.compile(sep)
     return sep.split(doc_txt)
+
 
 def segment_fuzzy(document, segment_size=5000, tolerance=0.05):
     """
@@ -237,7 +273,7 @@ def segment_fuzzy(document, segment_size=5000, tolerance=0.05):
 
     Example:
         >>> list(segment_fuzzy([['This', 'test', 'is', 'very', 'clear'],
-                                ['and', 'contains', 'chunks']], 2))
+        ...                     ['and', 'contains', 'chunks']], 2))
         [[['This', 'test']],
         [['is', 'very']],
         [['clear'], ['and']],
@@ -324,7 +360,6 @@ def segment(document, segment_size=1000, tolerance=0, chunker=None,
     return segments
 
 
-
 def tokenize(doc_txt, expression=regular_expression, lower=True, simple=False):
     """Tokenizes with Unicode Regular Expressions.
 
@@ -357,6 +392,7 @@ def tokenize(doc_txt, expression=regular_expression, lower=True, simple=False):
     for match in tokens:
         yield match.group()
 
+
 def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     """Gets lemmas by selected POS-tags from DARIAH-DKPro-Wrapper output.
 
@@ -386,7 +422,7 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
         yield lemma
 
 
-def find_stopwords(sparse_bow, id_types, mfw = 200):
+def find_stopwords(sparse_bow, id_types, mfw=200):
     """Creates a stopword list.
 
     Note:
@@ -400,12 +436,15 @@ def find_stopwords(sparse_bow, id_types, mfw = 200):
         Most frequent words in DataFrame.
     """
     log.info("Finding stopwords ...")
-    type2id = {value : key for key, value in id_types.items()}
-    sparse_bow_collapsed = sparse_bow.groupby(sparse_bow.index.get_level_values('token_id')).sum()
+    type2id = {value: key for key, value in id_types.items()}
+    sparse_bow_collapsed = sparse_bow.groupby(
+        sparse_bow.index.get_level_values('token_id')).sum()
     sparse_bow_stopwords = sparse_bow_collapsed[0].nlargest(mfw)
-    stopwords = [type2id[key] for key in sparse_bow_stopwords.index.get_level_values('token_id')]
+    stopwords = [type2id[key]
+                 for key in sparse_bow_stopwords.index.get_level_values('token_id')]
     log.debug("%s stopwords found.", len(stopwords))
     return stopwords
+
 
 def find_hapax(sparse_bow, id_types):
     """Creates list with hapax legommena.
@@ -421,13 +460,16 @@ def find_hapax(sparse_bow, id_types):
     """
     log.info("Find hapax legomena ...")
 
-    type2id = {value : key for key, value in id_types.items()}
-    sparse_bow_collapsed = sparse_bow.groupby(sparse_bow.index.get_level_values('token_id')).sum()
+    type2id = {value: key for key, value in id_types.items()}
+    sparse_bow_collapsed = sparse_bow.groupby(
+        sparse_bow.index.get_level_values('token_id')).sum()
     sparse_bow_hapax = sparse_bow_collapsed.loc[sparse_bow_collapsed[0] == 1]
-    hapax = [type2id[key] for key in sparse_bow_hapax.index.get_level_values('token_id')]
+    hapax = [type2id[key]
+             for key in sparse_bow_hapax.index.get_level_values('token_id')]
 
     log.debug("%s hapax legomena found.", len(hapax))
     return hapax
+
 
 def remove_features(mm, id_types, features):
     """Removes features.
@@ -450,9 +492,11 @@ def remove_features(mm, id_types, features):
 
     if type(features) == set:
 
-        stoplist_applied = [word for word in set(id_types.keys()) if word in features]
+        stoplist_applied = [word for word in set(
+            id_types.keys()) if word in features]
 
-        clean_term_frequency = mm.drop([id_types[word] for word in stoplist_applied], level="token_id")
+        clean_term_frequency = mm.drop(
+            [id_types[word] for word in stoplist_applied], level="token_id")
 
     else:
 
@@ -464,15 +508,16 @@ def remove_features(mm, id_types, features):
 
             log.debug("features must be set or convertible to set")
 
-        stoplist_applied = [word for word in set(id_types.keys()) if word in features]
+        stoplist_applied = [word for word in set(
+            id_types.keys()) if word in features]
 
-        clean_term_frequency = mm.drop([id_types[word] for word in stoplist_applied], level="token_id")
+        clean_term_frequency = mm.drop(
+            [id_types[word] for word in stoplist_applied], level="token_id")
 
     total = len(features)
 
     log.debug("%s features removed.", total)
     return clean_term_frequency
-
 
 
 def create_dictionary(list_of_strings):
@@ -489,8 +534,10 @@ def create_dictionary(list_of_strings):
         {'example': 1}
     """
     if all(isinstance(element, list) for element in list_of_strings):
-            list_of_strings = {string for element in list_of_strings for string in element}
+        list_of_strings = {
+            string for element in list_of_strings for string in element}
     return {string: id_ for id_, string in enumerate(set(list_of_strings), 1)}
+
 
 def _create_large_counter(doc_labels, doc_tokens, type_dictionary):
     """create_large_TF_matrix
@@ -515,9 +562,11 @@ def _create_large_counter(doc_labels, doc_tokens, type_dictionary):
 
     for doc, tokens in zip(doc_labels, doc_tokens):
 
-        largecounter[doc] = Counter([type_dictionary[token] for token in tokens])
+        largecounter[doc] = Counter(
+            [type_dictionary[token] for token in tokens])
 
     return largecounter
+
 
 def _create_sparse_index(largecounter):
     """create_large_TF_matrix
@@ -537,7 +586,7 @@ def _create_sparse_index(largecounter):
 
     tuples = []
 
-    for key in range(1, len(largecounter)+1):
+    for key in range(1, len(largecounter) + 1):
 
         if len(largecounter[key]) == 0:
             tuples.append((key, 0))
@@ -546,7 +595,8 @@ def _create_sparse_index(largecounter):
 
             tuples.append((key, value))
 
-    sparse_index = pd.MultiIndex.from_tuples(tuples, names = ["doc_id", "token_id"])
+    sparse_index = pd.MultiIndex.from_tuples(
+        tuples, names=["doc_id", "token_id"])
 
     return sparse_index
 
@@ -572,23 +622,27 @@ def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
         Test if it's necessary to build sparse_df_filled with int8 zeroes instead of int64.
     """
 
-    temp_counter = _create_large_counter(doc_labels, doc_tokens, type_dictionary)
+    temp_counter = _create_large_counter(
+        doc_labels, doc_tokens, type_dictionary)
 
-    largecounter = {doc_ids[key] : value for key, value in temp_counter.items()}
+    largecounter = {doc_ids[key]: value for key, value in temp_counter.items()}
 
     sparse_index = _create_sparse_index(largecounter)
 
-    sparse_df_filled = pd.DataFrame(np.zeros((len(sparse_index), 1), dtype = int), index = sparse_index)
+    sparse_df_filled = pd.DataFrame(
+        np.zeros((len(sparse_index), 1), dtype=int), index=sparse_index)
 
+    index_iterator = sparse_index.groupby(
+        sparse_index.get_level_values('doc_id'))
 
-    index_iterator = sparse_index.groupby(sparse_index.get_level_values('doc_id'))
-
-    for doc_id in range(1, len(sparse_index.levels[0])+1):
+    for doc_id in range(1, len(sparse_index.levels[0]) + 1):
         for token_id in [val[1] for val in index_iterator[doc_id]]:
 
-            sparse_df_filled.set_value((doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
+            sparse_df_filled.set_value(
+                (doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
 
     return sparse_df_filled
+
 
 def make_doc2bow_list(sparse_bow):
     """Creates doc2bow_list as input for gensim model.get_document_topics(doc2bow_list[idx])
@@ -604,10 +658,12 @@ def make_doc2bow_list(sparse_bow):
     doc2bow_list = []
 
     for doc in sparse_bow.index.groupby(sparse_bow.index.get_level_values('doc_id')):
-        temp = [(token, count) for token, count in zip(sparse_bow.loc[doc].index, sparse_bow.loc[doc][0])]
+        temp = [(token, count) for token, count in zip(
+            sparse_bow.loc[doc].index, sparse_bow.loc[doc][0])]
         doc2bow_list.append(temp)
 
     return doc2bow_list
+
 
 def make_doc_topic_matrix(model, doc2bow_list, doc2id):
     """Use only for testing purposes, not working properly
@@ -622,8 +678,10 @@ def make_doc_topic_matrix(model, doc2bow_list, doc2id):
     """
     df = pd.DataFrame()
     for idx, doc in enumerate(doc2bow_list, 1):
-        df[doc2id[idx]] = pd.Series([value[1] for value in model.get_document_topics(doc)])
+        df[doc2id[idx]] = pd.Series(
+            [value[1] for value in model.get_document_topics(doc)])
     return df.fillna(0)
+
 
 def gensim2dataframe(model):
     """Creates DataFrame out of gensim model (topic keys)
@@ -641,9 +699,10 @@ def gensim2dataframe(model):
         Format input for DataFrame
     """
     num_topics = model.num_topics
-    topics_df = pd.DataFrame(index = range(num_topics), columns= range(10))
+    topics_df = pd.DataFrame(index=range(num_topics), columns=range(10))
 
-    topics = model.show_topics(num_topics = num_topics, log=False, formatted=False)
+    topics = model.show_topics(
+        num_topics=num_topics, log=False, formatted=False)
 
     for topic in topics:
         idx = topic[0]
@@ -651,6 +710,7 @@ def gensim2dataframe(model):
         topics_df.loc[idx] = temp
 
     return topics_df
+
 
 def save_bow_mm(sparse_bow, output_path):
     """Save bag-of-word model as market matrix
@@ -671,11 +731,11 @@ def save_bow_mm(sparse_bow, output_path):
     num_docs = sparse_bow.index.get_level_values("doc_id").max()
     num_types = sparse_bow.index.get_level_values("token_id").max()
     sum_counts = sparse_bow[0].sum()
-    
 
-    header_string = str(num_docs) + " " + str(num_types) + " " + str(sum_counts) + "\n"
+    header_string = str(num_docs) + " " + str(num_types) + \
+        " " + str(sum_counts) + "\n"
 
-    with open('.'.join([output_path, 'mm']), 'w', encoding = "utf-8") as f:
+    with open('.'.join([output_path, 'mm']), 'w', encoding="utf-8") as f:
         f.write("%%MatrixMarket matrix coordinate real general\n")
         f.write(header_string)
-        sparse_bow.to_csv(f, sep = ' ', header = None)
+        sparse_bow.to_csv(f, sep=' ', header=None)
