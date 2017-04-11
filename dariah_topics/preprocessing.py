@@ -412,6 +412,7 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     doc_csv = doc_csv[doc_csv['CPOS'].isin(pos_tags)]
     yield doc_csv['Lemma']
 
+
 def create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids):
     """Creates sparse matrix for bag-of-words model.
 
@@ -449,7 +450,8 @@ def create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids):
                2         1
                3         1
     """
-    temp_counter = _create_large_counter(doc_labels, doc_tokens, type_dictionary)
+    temp_counter = _create_large_counter(
+        doc_labels, doc_tokens, type_dictionary)
     largecounter = {doc_ids[key]: value for key, value in temp_counter.items()}
     sparse_index = _create_sparse_index(largecounter)
     sparse_df_filled = pd.DataFrame(
@@ -469,14 +471,26 @@ def find_stopwords(sparse_bow, id_types, mfw=200):
 
     Description:
         With this function you can determine most frequent words, also known as
-        stopwords.
+        stopwords. First, you have to translate your corpus into the bag-of-words
+        model using the function `create_sparse_matrix()` and create an dictionary
+        containing types and identifier using `create_dictionary()`.
 
     Args:
         docterm_matrix (DataFrame): DataFrame with term and term frequency by document.
+        id_types (dict[str]): Dictionary with {token: id}.
         mfw (int): Target size of most frequent words to be considered.
 
     Returns:
-        Most frequent words in DataFrame.
+        Most frequent words in a list.
+
+    Example:
+        >>> doc_labels = ['exampletext']
+        >>> doc_tokens = [['short', 'short', 'example', 'text']]
+        >>> id_types = {'short': 1, 'example': 2, 'text': 3}
+        >>> doc_ids = {'exampletext': 1}
+        >>> sparse_bow = create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids)
+        >>> find_stopwords(sparse_bow, id_types, 1)
+        ['short']
     """
     log.info("Finding stopwords ...")
     type2id = {value: key for key, value in id_types.items()}
@@ -485,40 +499,53 @@ def find_stopwords(sparse_bow, id_types, mfw=200):
     sparse_bow_stopwords = sparse_bow_collapsed[0].nlargest(mfw)
     stopwords = [type2id[key]
                  for key in sparse_bow_stopwords.index.get_level_values('token_id')]
-    log.debug("%s stopwords found.", len(stopwords))
     return stopwords
 
 
 def find_hapax(sparse_bow, id_types):
-    """Creates list with hapax legommena.
+    """Creates a list with hapax legommena.
 
-    Note:
-        Use `create_TF_matrix` to create `docterm_matrix`.
+    Description:
+        With this function you can determine hapax legomena for each document.
+        First, you have to translate your corpus into the bag-of-words
+        model using the function `create_sparse_matrix()` and create an dictionary
+        containing types and identifier using `create_dictionary()`.
 
     Args:
-        docterm_matrix (DataFrame): DataFrame with term and term frequency by document.
+        sparse_bow (DataFrame): DataFrame with term and term frequency by document.
+        id_types (dict[str]): Dictionary with {token: id}.
 
     Returns:
-        Hapax legomena in Series.
-    """
-    log.info("Find hapax legomena ...")
+        Hapax legomena in a list.
 
+    Example:
+        >>> doc_labels = ['exampletext']
+        >>> doc_tokens = [['short', 'example', 'example', 'text', 'text']]
+        >>> id_types = {'short': 1, 'example': 2, 'text': 3}
+        >>> doc_ids = {'exampletext': 1}
+        >>> sparse_bow = create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids)
+        >>> find_hapax(sparse_bow, id_types)
+        ['short']
+    """
+    log.info("Finding hapax legomena ...")
     type2id = {value: key for key, value in id_types.items()}
     sparse_bow_collapsed = sparse_bow.groupby(
         sparse_bow.index.get_level_values('token_id')).sum()
     sparse_bow_hapax = sparse_bow_collapsed.loc[sparse_bow_collapsed[0] == 1]
     hapax = [type2id[key]
              for key in sparse_bow_hapax.index.get_level_values('token_id')]
-
-    log.debug("%s hapax legomena found.", len(hapax))
     return hapax
 
 
 def remove_features(mm, id_types, features):
     """Removes features.
 
-    Note:
-        Use `find_stopwords()` or `find_hapax()` to create `features`.
+    Description:
+        With this function you can clean your corpus from stopwords and hapax
+        legomena.
+        First, you have to translate your corpus into the bag-of-words
+        model using the function `create_sparse_matrix()` and create an dictionary
+        containing types and identifier using `create_dictionary()`.
 
     Args:
         docterm_matrix (DataFrame): DataFrame with term and term frequency by document.
