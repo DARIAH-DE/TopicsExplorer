@@ -52,8 +52,9 @@ def create_document_list(path, ext='txt'):
         List of files with full path.
 
     Example:
-        >>> create_document_list('corpus_txt')[0]
-        'corpus_txt/Poe_EurekaAProsePoem.txt'
+        >>> doclist = create_document_list('corpus_txt')
+        >>> 'corpus_txt/Doyle_AScandalinBohemia.txt' in doclist
+        True
     """
     log.info("Creating document list from %s files ...", ext.upper())
     pattern = os.path.join(path, '*.' + ext)
@@ -408,9 +409,8 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
         Name: Lemma, dtype: object
     """
     log.info("Accessing %s ...", pos_tags)
-    for pos in pos_tags:
-        doc_csv = doc_csv.loc[doc_csv['CPOS'] == pos]
-    yield doc_csv.loc[doc_csv['CPOS'] == pos]['Lemma']
+    doc_csv = doc_csv[doc_csv['CPOS'].isin(pos_tags)]
+    yield doc_csv['Lemma']
 
 
 def find_stopwords(sparse_bow, id_types, mfw=200):
