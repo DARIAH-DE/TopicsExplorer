@@ -412,12 +412,65 @@ def filter_pos_tags(doc_csv, pos_tags=['ADJ', 'V', 'NN']):
     doc_csv = doc_csv[doc_csv['CPOS'].isin(pos_tags)]
     yield doc_csv['Lemma']
 
+def create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids):
+    """Creates sparse matrix for bag-of-words model.
+
+    Description:
+        This function creates a sparse DataFrame containing document and type
+        identifier as multiindex and type frequencies as values representing the
+        counts of tokens for each token in each document.
+        It is also the main function that incorporates the private functions
+        `_create_large_counter()` and `_create_sparse_index()``.
+        Use the function `get_labels()` for `doc_labels`, `tokenize()` for
+        `doc_tokens`, and `create_dictionary()` for `type_dictionary` as well
+        as for `doc_ids`.
+
+    Args:
+        doc_labels (list[str]): List of doc labels as string.
+        doc_tokens (list[str]): List of tokens as string.
+        type_dictionary (dict[str]): Dictionary with {token: id}.
+        doc_ids (dict[str]): Dictionary with {document label: id}.
+
+    Returns:
+        Multiindexed Pandas DataFrame.
+
+    ToDo:
+        Test if it's necessary to build sparse_df_filled with int8 zeroes instead of int64.
+
+    Example:
+        >>> doc_labels = ['exampletext']
+        >>> doc_tokens = ['short', 'example', 'text']
+        >>> type_dictionary = {'short': 1, 'example': 2, 'text': 3}
+        >>> doc_ids = {'exampletext': 1}
+        >>> create_sparse_matrix(doc_labels, doc_tokens, type_dictionary, doc_ids)
+                         0
+        doc_id token_id
+        1      1         1
+               2         1
+               3         1
+        [3 rows x 1 columns]
+    """
+    temp_counter = _create_large_counter(doc_labels, doc_tokens, type_dictionary)
+    largecounter = {doc_ids[key]: value for key, value in temp_counter.items()}
+    sparse_index = _create_sparse_index(largecounter)
+    sparse_df_filled = pd.DataFrame(
+        np.zeros((len(sparse_index), 1), dtype=int), index=sparse_index)
+    index_iterator = sparse_index.groupby(
+        sparse_index.get_level_values('doc_id'))
+
+    for doc_id in range(1, len(sparse_index.levels[0]) + 1):
+        for token_id in [val[1] for val in index_iterator[doc_id]]:
+            sparse_df_filled.set_value(
+                (doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
+    return sparse_df_filled
+
 
 def find_stopwords(sparse_bow, id_types, mfw=200):
     """Creates a stopword list.
 
-    Note:
-        Use `create_TF_matrix` to create `docterm_matrix`.
+    Description:
+        With this function you can determine most frequent words, also known as
+        stopwords.
 
     Args:
         docterm_matrix (DataFrame): DataFrame with term and term frequency by document.
@@ -590,49 +643,6 @@ def _create_sparse_index(largecounter):
         tuples, names=["doc_id", "token_id"])
 
     return sparse_index
-
-
-def create_mm(doc_labels, doc_tokens, type_dictionary, doc_ids):
-    """create_large_TF_matrix
-
-    Note:
-        Main funktion that incorporates _create_large_counter() and _create_sparse_index().
-        Creates Pandas DataFrame out of Pandas Multiindex with document id - token id - count data.
-        The output has one column representing the counts of tokens for each token in each document.
-
-    Args:
-        doc_labels(list): List of doc labels as string.
-        doc_tokens(list): List of tokens as string.
-        type_dictionary(dict): Dictionary with key = token : value = id paris.
-        doc_ids(dict): Dictionary with keys = document label : value = id pairs.
-
-    Returns:
-        Multiindexed Pandas DataFrame with document id - token id - count data.
-
-    ToDo:
-        Test if it's necessary to build sparse_df_filled with int8 zeroes instead of int64.
-    """
-
-    temp_counter = _create_large_counter(
-        doc_labels, doc_tokens, type_dictionary)
-
-    largecounter = {doc_ids[key]: value for key, value in temp_counter.items()}
-
-    sparse_index = _create_sparse_index(largecounter)
-
-    sparse_df_filled = pd.DataFrame(
-        np.zeros((len(sparse_index), 1), dtype=int), index=sparse_index)
-
-    index_iterator = sparse_index.groupby(
-        sparse_index.get_level_values('doc_id'))
-
-    for doc_id in range(1, len(sparse_index.levels[0]) + 1):
-        for token_id in [val[1] for val in index_iterator[doc_id]]:
-
-            sparse_df_filled.set_value(
-                (doc_id, token_id), 0, int(largecounter[doc_id][token_id]))
-
-    return sparse_df_filled
 
 
 def make_doc2bow_list(sparse_bow):
