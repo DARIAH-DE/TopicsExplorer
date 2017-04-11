@@ -53,22 +53,22 @@ def create_document_list(path, ext='txt'):
 
     Example:
         >>> create_document_list('corpus_txt') # doctest: +NORMALIZE_WHITESPACE
-        ['corpus_txt/Doyle_AScandalinBohemia.txt',
-         'corpus_txt/Doyle_AStudyinScarlet.txt',
-         'corpus_txt/Doyle_TheHoundoftheBaskervilles.txt',
-         'corpus_txt/Doyle_TheSignoftheFour.txt',
-         'corpus_txt/Howard_GodsoftheNorth.txt',
-         'corpus_txt/Howard_SchadowsinZamboula.txt',
-         'corpus_txt/Howard_ShadowsintheMoonlight.txt',
-         'corpus_txt/Howard_TheDevilinIron.txt',
-         'corpus_txt/Kipling_TheEndofthePassage.txt',
-         'corpus_txt/Kipling_TheJungleBook.txt',
-         'corpus_txt/Kipling_ThyServantaDog.txt',
-         'corpus_txt/Lovecraft_AttheMountainofMadness.txt',
-         'corpus_txt/Lovecraft_TheShunnedHouse.txt',
-         'corpus_txt/Poe_EurekaAProsePoem.txt',
-         'corpus_txt/Poe_TheCaskofAmontillado.txt',
-         'corpus_txt/Poe_TheMasqueoftheRedDeath.txt',
+        ['corpus_txt/Doyle_AScandalinBohemia.txt',\
+         'corpus_txt/Doyle_AStudyinScarlet.txt',\
+         'corpus_txt/Doyle_TheHoundoftheBaskervilles.txt',\
+         'corpus_txt/Doyle_TheSignoftheFour.txt',\
+         'corpus_txt/Howard_GodsoftheNorth.txt',\
+         'corpus_txt/Howard_SchadowsinZamboula.txt',\
+         'corpus_txt/Howard_ShadowsintheMoonlight.txt',\
+         'corpus_txt/Howard_TheDevilinIron.txt',\
+         'corpus_txt/Kipling_TheEndofthePassage.txt',\
+         'corpus_txt/Kipling_TheJungleBook.txt',\
+         'corpus_txt/Kipling_ThyServantaDog.txt',\
+         'corpus_txt/Lovecraft_AttheMountainofMadness.txt',\
+         'corpus_txt/Lovecraft_TheShunnedHouse.txt',\
+         'corpus_txt/Poe_EurekaAProsePoem.txt',\
+         'corpus_txt/Poe_TheCaskofAmontillado.txt',\
+         'corpus_txt/Poe_TheMasqueoftheRedDeath.txt',\
          'corpus_txt/Poe_ThePurloinedLetter.txt']
     """
     log.info("Creating document list from %s files ...", ext.upper())
