@@ -559,17 +559,16 @@ def remove_features(mm, id_types, features):
         Adapt function to work with mm-corpus format.
     """
     log.info("Removing features ...")
-
-    if isinstance(features, set):
+    if isinstance(features[0], list):
+        features = set(chain.from_iterable(features))
 
         stoplist_applied = [word for word in set(
             id_types.keys()) if word in features]
 
         clean_term_frequency = mm.drop(
             [id_types[word] for word in stoplist_applied], level="token_id")
-
+        
     else:
-
 
         features = set(features)
 
