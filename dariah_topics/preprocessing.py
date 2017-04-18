@@ -752,7 +752,7 @@ def make_doc2bow_list(sparse_bow):
     return doc2bow_list
 
 
-def gensim2dataframe(model):
+def gensim2dataframe(model, num_keys=10):
     """Converts gensim output to DataFrame.
 
     Description:
@@ -761,6 +761,7 @@ def gensim2dataframe(model):
 
     Args:
         model: Gensim LDA model.
+        num_keys (int): Number of top keywords for topic.
 
     Returns:
         DataFrame.
@@ -775,11 +776,11 @@ def gensim2dataframe(model):
         >>> dictionary = Dictionary(corpus)
         >>> documents = [dictionary.doc2bow(document) for document in corpus]
         >>> model = LdaModel(corpus=documents, id2word=dictionary, iterations=1, passes=1, num_topics=1)
-        >>> isinstance(gensim2dataframe(model), pd.DataFrame)
+        >>> isinstance(gensim2dataframe(model, 2), pd.DataFrame)
         True
     """
     num_topics = model.num_topics
-    topics_df = pd.DataFrame(index=range(num_topics), columns=range(10))
+    topics_df = pd.DataFrame(index=range(num_topics), columns=range(num_keys))
     topics = model.show_topics(
         num_topics=num_topics, log=False, formatted=False)
     for topic in topics:
