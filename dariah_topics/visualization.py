@@ -26,7 +26,7 @@ import os
 import pandas as pd
 from gensim.corpora import MmCorpus, Dictionary
 from gensim.models import LdaModel
-import pyLDAvis.gensim
+#import pyLDAvis.gensim
 import regex
 import sys
 
