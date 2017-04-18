@@ -589,7 +589,7 @@ def save_sparse_bow(sparse_bow, output):
     header_string = str(num_docs) + " " + str(num_types) + \
         " " + str(sum_counts) + "\n"
 
-    with open('.'.join([output_path, 'mm']), 'w', encoding="utf-8") as f:
+    with open('.'.join([output, 'mm']), 'w', encoding="utf-8") as f:
         f.write("%%MatrixMarket matrix coordinate real general\n")
         f.write(header_string)
         sparse_bow.to_csv(f, sep=' ', header=None)
