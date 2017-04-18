@@ -557,6 +557,44 @@ def create_sparse_bow(doc_labels, doc_tokens, type_dictionary, doc_dictionary):
     return sparse_bow_filled
 
 
+def save_sparse_bow(sparse_bow, output):
+    """Saves sparse matrix for bag-of-words model.
+
+    Description:
+        With this function you can save the sparse matrix as `.mm file`_.
+        .. _.mm file: http://math.nist.gov/MatrixMarket/formats.html#MMformat
+
+    Args:
+        sparse_bow (DataFrame): DataFrame with term and term frequency by document. 
+        output (str): Path to output file without extension, e.g. /tmp/sparsebow.
+
+    Returns:
+        None.
+
+    Example:
+        >>> doc_labels = ['exampletext']
+        >>> doc_tokens = [['short', 'example', 'text']]
+        >>> type_dictionary = {'short': 1, 'example': 2, 'text': 3}
+        >>> doc_ids = {'exampletext': 1}
+        >>> sparse_bow = create_sparse_bow(doc_labels, doc_tokens, type_dictionary, doc_ids)
+        >>> save_sparse_bow(sparse_bow, 'sparsebow')
+        >>> import os.path
+        >>> os.path.isfile('sparsebow.mm')
+        True
+    """
+    num_docs = sparse_bow.index.get_level_values("doc_id").max()
+    num_types = sparse_bow.index.get_level_values("token_id").max()
+    sum_counts = sparse_bow[0].sum()
+
+    header_string = str(num_docs) + " " + str(num_types) + \
+        " " + str(sum_counts) + "\n"
+
+    with open('.'.join([output_path, 'mm']), 'w', encoding="utf-8") as f:
+        f.write("%%MatrixMarket matrix coordinate real general\n")
+        f.write(header_string)
+        sparse_bow.to_csv(f, sep=' ', header=None)
+
+
 def find_stopwords(sparse_bow, id_types, mfw=200):
     """Creates a stopword list.
 
@@ -714,7 +752,44 @@ def make_doc2bow_list(sparse_bow):
     return doc2bow_list
 
 
-def make_doc_topic_matrix(model, doc2bow_list, doc2id):
+def gensim2dataframe(model):
+    """Converts gensim output to DataFrame.
+
+    Description:
+        With this function you can convert gensim output (usually a list of
+        tuples) to a DataFrame, a more convenient datastructure.
+
+    Args:
+        model: Gensim LDA model.
+
+    Returns:
+        DataFrame.
+
+    ToDo:
+        * Format input for DataFrame
+
+    Example:
+        >>> from gensim.models import LdaModel
+        >>> from gensim.corpora import Dictionary
+        >>> corpus = [['test', 'corpus'], ['for', 'testing']]
+        >>> dictionary = Dictionary(corpus)
+        >>> documents = [dictionary.doc2bow(document) for document in corpus]
+        >>> model = LdaModel(corpus=documents, id2word=dictionary, iterations=1, passes=1, num_topics=1)
+        >>> isinstance(gensim2dataframe(model), pd.DataFrame)
+        True
+    """
+    num_topics = model.num_topics
+    topics_df = pd.DataFrame(index=range(num_topics), columns=range(10))
+    topics = model.show_topics(
+        num_topics=num_topics, log=False, formatted=False)
+    for topic in topics:
+        idx = topic[0]
+        temp = topic[1]
+        topics_df.loc[idx] = temp
+    return topics_df
+
+
+def doctopic2dataframe(model, doc2bow_list, doc2id):
     """Use only for testing purposes, not working properly
 
     Note:
@@ -730,61 +805,3 @@ def make_doc_topic_matrix(model, doc2bow_list, doc2id):
         df[doc2id[idx]] = pd.Series(
             [value[1] for value in model.get_document_topics(doc)])
     return df.fillna(0)
-
-
-def gensim2dataframe(model):
-    """Creates DataFrame out of gensim model (topic keys)
-
-    Note:
-        If you want to save Gensim's topic output set log = True
-
-    Args:
-        model: Gensim LDA model
-
-    Returns:
-        Pandas DataFrame with topics
-
-    ToDo:
-        Format input for DataFrame
-    """
-    num_topics = model.num_topics
-    topics_df = pd.DataFrame(index=range(num_topics), columns=range(10))
-
-    topics = model.show_topics(
-        num_topics=num_topics, log=False, formatted=False)
-
-    for topic in topics:
-        idx = topic[0]
-        temp = topic[1]
-        topics_df.loc[idx] = temp
-
-    return topics_df
-
-
-def save_bow_mm(sparse_bow, output_path):
-    """Save bag-of-word model as market matrix
-
-    Note:
-        Create sparse_bow with create_mm() or take output from remove_features().
-        Ouput Path gives name of new local file.
-
-    Args:
-        sparse_bow(Pandas DataFrame):  Multiindexed Pandas DataFrame with
-                                        document id - token id - count data.
-        output_path(str): Path to output file.
-    Returns:
-        None. Creates file with sparse_bow in market matrix format.
-
-    ToDo:
-    """
-    num_docs = sparse_bow.index.get_level_values("doc_id").max()
-    num_types = sparse_bow.index.get_level_values("token_id").max()
-    sum_counts = sparse_bow[0].sum()
-
-    header_string = str(num_docs) + " " + str(num_types) + \
-        " " + str(sum_counts) + "\n"
-
-    with open('.'.join([output_path, 'mm']), 'w', encoding="utf-8") as f:
-        f.write("%%MatrixMarket matrix coordinate real general\n")
-        f.write(header_string)
-        sparse_bow.to_csv(f, sep=' ', header=None)
