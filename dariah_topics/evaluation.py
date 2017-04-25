@@ -14,7 +14,6 @@ __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 import itertools
 import math
-import pandas as pd
 
 
 def _segment_topics(topics, permutation=False):
