@@ -11,16 +11,10 @@ This module contains functions to calculate topic coherence provided by `DARIAH-
 __author__ = "DARIAH-DE"
 __authors__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
-__version__ = "0.1"
-__date__ = "2017-01-31"
 
-from bs4 import BeautifulSoup
-from dariah_topics import preprocessing as pre
 import itertools
 import math
 import pandas as pd
-import urllib.request as urllib
-import wikipedia
 
 
 def _segment_topics(topics, permutation=False):
