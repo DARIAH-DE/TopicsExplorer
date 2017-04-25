@@ -23,107 +23,80 @@ import urllib.request as urllib
 import wikipedia
 
 
-def topic_segmenter(model, type2id, num_topics, permutation=False):
-    """
-    Combination:
-    (W',W∗)|W' = {wi};
-    W∗ = {wj};wi,wj ∈ W;i > j
-    
-    Permutation:
-    (W',W*)|W' = {wi};
-    W* = {wj};wi,wj ∈ W;i != j
-    """
+def _segment_topics(topics, permutation=False):
     bigrams = []
-    for topic in range(num_topics):
-        topic_nr_x = model.get_topic_terms(topic)
-        tokens = [type2id[i[0]] for i in topic_nr_x]
+    for n in range(len(topics)):
         if permutation:
-            bigrams.append(list(itertools.permutations(tokens, 2)))
+            bigrams.append(
+                list(itertools.permutations(topics.T[n].tolist(), 2)))
         else:
-            bigrams.append(list(itertools.combinations(tokens, 2)))
-    return bigrams
+            bigrams.append(
+                list(itertools.combinations(topics.T[n].tolist(), 2)))
+    return pd.Series(bigrams)
 
-def token_probability(corpus, segmented_topics):
-    score = pd.Series()
-    tokens = set()
+
+def _calculate_occurences(corpus, segmented_topics):
+    occurences = pd.Series()
+    keys = set()
     for topic in segmented_topics:
-        for t1, t2 in topic:
-            tokens.add(t1)
-            tokens.add(t2)
-    for token in tokens:
-        temp_score = set()
+        for k1, k2 in topic:
+            keys.add(k1)
+            keys.add(k2)
+    for key in keys:
+        key_occurence = set()
         for n, document in enumerate(corpus):
-            if token in document:
-                temp_score.add(n)
-        score[token] = temp_score
-    return score
+            if key in document:
+                key_occurence.add(n)
+        occurences[key] = key_occurence
+    return occurences
 
-def calculate_umass(segmented_topics, token_probability, corpus, num_topics, top_words=10, e=0.1):
-    pre_umass = []
-    n = len(corpus)
-    N = top_words*num_topics
+
+def calculate_umass(corpus, topics, e=0.1):
+    scores = []
+    N = len(topics.T)
+    n_corpus = len(corpus)
+    segmented_topics = _segment_topics(topics, permutation=True)
+    occurences = _calculate_occurences(corpus, segmented_topics)
     for topic in segmented_topics:
-        for topic_bigram in topic:
-            t1 = token_probability[topic_bigram[0]]
-            t2 = token_probability[topic_bigram[1]]
-            collocation = t1.intersection(t2)
-            numerator = len(collocation)/n + e
-            denominator = len(t2)/n
-            pre_umass.append(math.log(numerator/denominator))
-    return (2/(N*(N-1)))*sum(pre_umass)
+        log = []
+        for bigram in topic:
+            k1 = occurences[bigram[0]]
+            k2 = occurences[bigram[1]]
+            collocation = k1.intersection(k2)
+            try:
+                numerator = len(collocation) / n_corpus + e
+                denominator = len(k2) / n_corpus
+                log.append(math.log(numerator / denominator))
+            except ZeroDivisionError:
+                log.append(0)
+        scores.append(log)
+    return [(2 / (N * (N - 1))) * sum(umass) for umass in scores]
 
-def wikipedia_table_crawler(wiki_url='https://en.wikipedia.org/wiki/Wikipedia:5000', total_columns=15, select_cell=1):
-    page_list = []
-    page = urllib.urlopen(wiki_url)
-    soup = BeautifulSoup(page, "lxml")
-    table = soup.find("table", {"class": "wikitable sortable"})
-    for row in table.findAll("tr"):
-        cells = row.findAll("td")
-        if len(cells) == total_columns:
-            page_title = str(cells[select_cell].findAll(text=True))
-            page_list.append(page_title)
-    return page_list
 
-def wikipedia_crawler(wiki_list, size=5000):
-    wiki_corpus = []
-    for site in wiki_list[:size]:
-        try:
-            full_site = wikipedia.page(site)
-            tokens = list(pre.tokenize(full_site.content))
-            wiki_corpus.append(tokens)
-        except wikipedia.exceptions.DisambiguationError:
-            pass
-        except wikipedia.exceptions.HTTPTimeoutError:
-            pass
-        except wikipedia.exceptions.RedirectError:
-            pass
-        except wikipedia.exceptions.PageError:
-            pass
-        except wikipedia.exceptions.ConnectionError:
-            pass
-    return wiki_corpus
-
-def calculate_pointwise_mutual_information(segmented_topics, corpus, score, e=0.1, normalize=False):
-    PMI = []
-    n = len(corpus)
-    try:
-        for topic in segmented_topics:
-            for topic_bigram in topic:
-                t1 = score[topic_bigram[0]]
-                t2 = score[topic_bigram[1]]
-                collocation = t1.intersection(t2)
-                numerator = len(collocation)/n + e
-                denominator = (len(t1)/n) * (len(t2)/n)
+def calculate_pmi(corpus, topics, normalize=False, e=0.1):
+    pmi = []
+    segmented_topics = _segment_topics(topics, permutation=False)
+    occurences = _calculate_occurences(corpus, segmented_topics)
+    for topic in segmented_topics:
+        scores = []
+        for bigram in topic:
+            k1 = occurences[bigram[0]]
+            k2 = occurences[bigram[1]]
+            collocation = k1.intersection(k2)
+            try:
+                numerator = len(collocation) / len(corpus) + e
+                denominator = (len(k1) / len(corpus) * (len(k2) / len(corpus)))
                 if normalize:
-                    PMI.append(math.log(numerator/denominator)/-math.log(numerator))
+                    scores.append(
+                        math.log(numerator / denominator) / -math.log(numerator))
                 else:
-                    PMI.append(math.log(numerator/denominator))
-    except ZeroDivisionError:
-        PMI.append(0)
-    return PMI
+                    scores.append(math.log(numerator / denominator))
+            except ZeroDivisionError:
+                scores.append(0)
+        pmi.append(scores)
+    return pmi
 
-def calculate_uci(PMI, corpus, num_topics, top_words=10):
-    n = len(corpus)
-    N = num_topics*top_words
-    score = (2/(N*(N-1)))*sum(PMI)
-    return score
+
+def calculate_uci(corpus, topics, pmi):
+    N = len(topics.T)
+    return [(2 / (N * (N - 1))) * sum(scores) for scores in pmi]
