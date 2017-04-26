@@ -14,9 +14,10 @@ __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 import itertools
 import math
+import numpy as np
 
 
-def _segment_topics(topics, permutation=False):
+def segment_topics(topics, permutation=False):
     bigrams = []
     for n in range(len(topics)):
         if permutation:
@@ -28,7 +29,7 @@ def _segment_topics(topics, permutation=False):
     return pd.Series(bigrams)
 
 
-def _calculate_occurences(corpus, segmented_topics):
+def calculate_occurences(corpus, segmented_topics):
     occurences = pd.Series()
     keys = set()
     for topic in segmented_topics:
@@ -44,52 +45,47 @@ def _calculate_occurences(corpus, segmented_topics):
     return occurences
 
 
+def calculate_umass_log(pair, occurences, corpus, e=0.1):
+    k1 = occurences[pair[0]]
+    k2 = occurences[pair[1]]
+    k1k2 = k1.intersection(k2)
+    numerator = len(k1k2) / len(corpus) + e
+    denominator = len(k2) / len(corpus)
+    return math.log(numerator / denominator)
+
 def calculate_umass(corpus, topics, e=0.1):
     scores = []
     N = len(topics.T)
-    n_corpus = len(corpus)
-    segmented_topics = _segment_topics(topics, permutation=True)
-    occurences = _calculate_occurences(corpus, segmented_topics)
+    segmented_topics = segment_topics(topics)
+    occurences = calculate_occurences(corpus, segmented_topics)
     for topic in segmented_topics:
-        log = []
-        for bigram in topic:
-            k1 = occurences[bigram[0]]
-            k2 = occurences[bigram[1]]
-            collocation = k1.intersection(k2)
-            try:
-                numerator = len(collocation) / n_corpus + e
-                denominator = len(k2) / n_corpus
-                log.append(math.log(numerator / denominator))
-            except ZeroDivisionError:
-                log.append(0)
-        scores.append(log)
-    return [(2 / (N * (N - 1))) * sum(umass) for umass in scores]
+        logs = []
+        for pair in topic:
+            logs.append(calculate_umass_log(pair, occurences, corpus, e=e))
+        scores.append((2 / (N * (N - 1))) * np.mean(logs))
+    return scores
 
 
-def calculate_pmi(corpus, topics, normalize=False, e=0.1):
-    pmi = []
-    segmented_topics = _segment_topics(topics, permutation=False)
-    occurences = _calculate_occurences(corpus, segmented_topics)
-    for topic in segmented_topics:
-        scores = []
-        for bigram in topic:
-            k1 = occurences[bigram[0]]
-            k2 = occurences[bigram[1]]
-            collocation = k1.intersection(k2)
-            try:
-                numerator = len(collocation) / len(corpus) + e
-                denominator = (len(k1) / len(corpus) * (len(k2) / len(corpus)))
-                if normalize:
-                    scores.append(
-                        math.log(numerator / denominator) / -math.log(numerator))
-                else:
-                    scores.append(math.log(numerator / denominator))
-            except ZeroDivisionError:
-                scores.append(0)
-        pmi.append(scores)
-    return pmi
+def calculate_pmi(pair, occurences, corpus, normalize=False, e=0.1):
+    k1 = occurences[pair[0]]
+    k2 = occurences[pair[1]]
+    k1k2 = k1.intersection(k2)
+    numerator = len(k1k2) / len(corpus) + e
+    denominator = (len(k1) / len(corpus)) * ((len(k2) / len(corpus)))
+    if normalize:
+        return math.log(numerator / denominator) / -math.log(numerator)
+    else:
+        return math.log(numerator / denominator)
 
 
-def calculate_uci(corpus, topics, pmi):
+def calculate_uci(corpus, topics, normalize=False, e=0.1):
+    scores = []
     N = len(topics.T)
-    return [(2 / (N * (N - 1))) * sum(scores) for scores in pmi]
+    segmented_topics = segment_topics(topics)
+    occurences = calculate_occurences(corpus, segmented_topics)
+    for topic in segmented_topics:
+        pmi = []
+        for pair in topic:
+            pmi.append(calculate_pmi(pair, occurences, corpus, normalize=normalize, e=e))
+        scores.append((2 / (N * (N - 1))) * np.mean(pmi))
+    return scores
