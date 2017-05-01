@@ -1,6 +1,6 @@
 # Topics - Easy Topic Modeling in Python #
 
-Topics is a gently introduction to Topic Modeling. It provides a convientient, modular workflow that can be entirely controlled from within and which comes with a well documented [Jupyter notebook](http://jupyter.org/), integreating the two of the most popular LDA implementations: [Gensim](https://radimrehurek.com/gensim/) and [Mallet](http://mallet.cs.umass.edu/). Users not yet familiar with working with Python scripts can test basic topic modeling in a [Flask](http://flask.pocoo.org/)-based [GUI demonstrator](/demonstrator/README.md).
+Topics is a gentle introduction to Topic Modeling. It provides a convenient, modular workflow that can be entirely controlled from within and which comes with a well documented [Jupyter notebook](http://jupyter.org/), integrating two of the most popular LDA implementations: [Gensim](https://radimrehurek.com/gensim/) and [Mallet](http://mallet.cs.umass.edu/). Users not yet familiar with working with Python scripts can test basic topic modeling in a [Flask](http://flask.pocoo.org/)-based [GUI demonstrator](/demonstrator/README.md).
 
 ### Getting Started
 
@@ -25,11 +25,11 @@ http://mallet.cs.umass.edu/
 
 download and unzip mallet
 
-set enviroment variable
+set environment variable
 
 Mallet_Home -> Path - no whitespace
 
-Open the Winpython powershel
+Open the Winpython powershell
 
 PS W:\mallet\bin> .\mallet
 
