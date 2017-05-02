@@ -164,13 +164,11 @@ def upload_file():
         heatmap = visualization.doc_topic_heatmap(doc_topic)
         heatmap.savefig('./static/heatmap.png')
         heatmap.close()
-        """
-        wordcloud = WordCloud(width=800, height=600, background_color='white').fit_words(model.show_topic(1,100))
+        wordcloud = WordCloud(width=800, height=600, background_color='white').fit_words(dict(model.show_topic(1,100)))
         plt.imshow(wordcloud)
         plt.axis('off')
         plt.savefig('static/cloud.png')
         plt.close()
-        """
         # Todo: replace by DataFrame.to_html():
         print("Accessing topics for HTML table ...")
         df = preprocessing.gensim2dataframe(model)
