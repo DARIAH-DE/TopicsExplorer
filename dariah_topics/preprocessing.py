@@ -767,7 +767,6 @@ def gensim2dataframe(model, num_keys=10):
         DataFrame.
 
     ToDo:
-        * Format input for DataFrame
 
     Example:
         >>> from gensim.models import LdaModel
@@ -779,14 +778,25 @@ def gensim2dataframe(model, num_keys=10):
         >>> isinstance(gensim2dataframe(model, 4), pd.DataFrame)
         True
     """
-    num_topics = model.num_topics
-    topics_df = pd.DataFrame(index=range(num_topics), columns=range(num_keys))
-    topics = model.show_topics(
-        num_topics=num_topics, log=False, formatted=False)
-    for topic in topics:
-        idx = topic[0]
-        temp = topic[1]
-        topics_df.loc[idx] = temp
+#    num_topics = model.num_topics
+#    topics_df = pd.DataFrame(index=range(num_topics), columns=range(num_keys))
+#    topics = model.show_topics(
+#        num_topics=num_topics, log=False, formatted=False)
+#    for topic in topics:
+#        idx = topic[0]
+#        temp = topic[1]
+#        topics_df.loc[idx] = temp
+          
+    num_topics = model.num_topics 
+    topics_df = pd.DataFrame(index = range(num_topics), 
+                                 columns= range(num_keys))
+    
+    topics = model.show_topics(num_topics = model.num_topics, formatted=False)
+
+    for topic, values in topics:
+        keyword = [value[0] for value in values]
+        topics_df.loc[topic] = keyword
+
     return topics_df
 
 
