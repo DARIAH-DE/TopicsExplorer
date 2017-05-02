@@ -21,6 +21,7 @@ __date__ = "2017-01-20"
 
 import logging
 import matplotlib.pyplot as plt
+from wordcloud import WordCloud
 import numpy as np
 import os
 import pandas as pd
@@ -312,12 +313,13 @@ def topicwords_in_df(model):
     df = pd.DataFrame(topics, index=index, columns=["Key " + str(x+1) for x in range(len(topics))])
     return df
 
-def show_wordle_for_topic(model, topic_nr):
+def show_wordle_for_topic(model, topic_nr, words):
     """Plot wordle for a specific topic
 
     Args:
         model: Gensim LDA model
         topic_nr(int): Choose topic
+        words (int): Number of words to show
     
     Note: Function does use wordcloud package -> https://pypi.python.org/pypi/wordcloud
          pip install wordcloud
@@ -325,11 +327,8 @@ def show_wordle_for_topic(model, topic_nr):
     ToDo: Check if this function should be implemented
 
     """
-    import matplotlib.pyplot as plt
-    from wordcloud import WordCloud
-
     plt.figure()
-    plt.imshow(WordCloud().fit_words(model.show_topic(topic_nr, 200)))
+    plt.imshow(WordCloud().fit_words(dict(model.show_topic(topic_nr, words))))
     plt.axis("off")
     plt.title("Topic #" + str(topic_nr + 1))
-    plt.show()
+    return plt
