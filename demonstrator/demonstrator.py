@@ -16,7 +16,7 @@ Todo: Replace print statements with logging (which is currently not working).
 from dariah_topics import preprocessing
 from dariah_topics import visualization
 from dariah_topics import mallet
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template
 from gensim.models import LdaModel
 from gensim.corpora import MmCorpus
 from lxml import etree
@@ -95,27 +95,26 @@ def upload_file():
             os.makedirs('stopwordlist', exist_ok=True)
             stopwords.save('stopwordlist/' + secure_filename(stopwords.filename))
             try:
-                mallet.create_mallet_model('mallet_output', 'tmp_files', 'mallet', stoplist='stopwordlist/'+secure_filename(stopwords.filename))
-            except:
-                mallet.create_mallet_model('mallet_output', 'tmp_files', 'mallet/bin/mallet', stoplist='stopwordlist/'+secure_filename(stopwords.filename))
+                mallet.create_mallet_binary(outfolder='mallet_output', path_to_corpus='tmp_files', path_to_mallet='mallet', stoplist='stopwordlist/'+secure_filename(stopwords.filename))
+            except FileNotFoundError:
+                mallet.create_mallet_binary(outfolder='mallet_output', path_to_corpus='tmp_files', path_to_mallet='mallet/bin/mallet', stoplist='stopwordlist/'+secure_filename(stopwords.filename))
             shutil.rmtree('stopwordlist')
         else:
             try:
-                mallet.create_mallet_model('mallet_output', 'tmp_files', 'mallet')
+                mallet.create_mallet_binary(outfolder='mallet_output', path_to_corpus='tmp_files', path_to_mallet='mallet')
             except:
-                mallet.create_mallet_model('mallet_output', 'tmp_files', 'mallet/bin/mallet')
+                mallet.create_mallet_binary(outfolder='mallet_output', path_to_corpus='tmp_files', path_to_mallet='mallet/bin/mallet')
 
         print("Training MALLET LDA model ...")
         try:
-            mallet.create_mallet_output('mallet_output/malletModel.mallet', 'mallet_output', 'mallet', num_topics=str(num_topics), num_iterations=str(num_iterations))
-        except:
-            mallet.create_mallet_output('mallet_output/malletModel.mallet', 'mallet_output', 'mallet/bin/mallet', num_topics=str(num_topics), num_iterations=str(num_iterations))
+            mallet.create_mallet_model('mallet_output/binary.mallet', 'mallet_output', 'mallet', num_topics=str(num_topics), num_iterations=str(num_iterations), num_top_words=10)
+        except FileNotFoundError:
+            mallet.create_mallet_model('mallet_output/binary.mallet', 'mallet_output', 'mallet/bin/mallet', num_topics=str(num_topics), num_iterations=str(num_iterations), num_top_words=10)
         df = mallet.show_topics_keys('mallet_output', num_topics=num_topics)
-        doc_topic = mallet.show_docTopicMatrix('mallet_output')
+        doc_topic = mallet.show_doc_topic_matrix('mallet_output')
         heatmap = visualization.doc_topic_heatmap(doc_topic)
         heatmap.savefig('static/heatmap.png')
         heatmap.close()
-
         with open ('mallet_output/topic_keys.txt', 'r', encoding='utf-8') as f:
             text = f.read()
             wordcloud = WordCloud(width=800, height=600, background_color='white').generate(text)
@@ -132,8 +131,9 @@ def upload_file():
         labels = corpus.index.tolist()
         tokens = corpus.tolist()
         print("Creating bag-of-words model ...")
-        id_types, doc_ids = preprocessing.create_dictionaries(labels, tokens)
-        sparse_bow = preprocessing.create_mm(labels, tokens, id_types, doc_ids)
+        id_types = preprocessing.create_dictionary(tokens)
+        doc_ids = preprocessing.create_dictionary(labels)
+        sparse_bow = preprocessing.create_sparse_bow(labels, tokens, id_types, doc_ids)
 
         if request.files.get('stoplist', None):
             print("Accessing external stopword list and cleaning corpus ...")
@@ -151,10 +151,9 @@ def upload_file():
             sparse_bow = preprocessing.remove_features(sparse_bow, id_types, feature_list)
 
         print("Creating matrix market model ...")
-        preprocessing.save_bow_mm(sparse_bow, 'matrixmarket')
+        preprocessing.save_sparse_bow(sparse_bow, 'matrixmarket')
 
         mm = MmCorpus('matrixmarket.mm')
-        doc2id = {value : key for key, value in doc_ids.items()}
         type2id = {value : key for key, value in id_types.items()}
 
         print("Training Gensim LDA with", num_topics, "topics ...")
@@ -165,13 +164,13 @@ def upload_file():
         heatmap = visualization.doc_topic_heatmap(doc_topic)
         heatmap.savefig('./static/heatmap.png')
         heatmap.close()
-
+        """
         wordcloud = WordCloud(width=800, height=600, background_color='white').fit_words(model.show_topic(1,100))
         plt.imshow(wordcloud)
         plt.axis('off')
         plt.savefig('static/cloud.png')
         plt.close()
-
+        """
         # Todo: replace by DataFrame.to_html():
         print("Accessing topics for HTML table ...")
         df = preprocessing.gensim2dataframe(model)

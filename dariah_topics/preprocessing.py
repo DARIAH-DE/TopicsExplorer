@@ -700,7 +700,7 @@ def remove_features(sparse_bow, id_types, features):
         2
     """
     log.info("Removing features ...")
-    if isinstance(features[0], list):
+    if isinstance(features, list):
         features = set(chain.from_iterable(features))
         stoplist_applied = [word for word in set(
             id_types.keys()) if word in features]
