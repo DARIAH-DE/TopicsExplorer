@@ -110,9 +110,9 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet='mallet', num_
                         num_top_words=False, num_iterations=False, num_threads=False,
                         num_icm_iterations=False, no_inference=False, random_seed=False,
                         optimize_interval=False, optimize_burn_in=False, use_symmetric_alpha=False,
-                        alpha=False, beta=False, output_topic_keys=True, topic_word_weights_file=False,
-                        word_topic_counts_file=False, diagnostics_file=False, xml_topic_report=False,
-                        xml_topic_phrase_report=False, output_topic_docs=False, num_top_docs=False,
+                        alpha=False, beta=False, output_topic_keys=True, topic_word_weights_file=True,
+                        word_topic_counts_file=True, diagnostics_file=True, xml_topic_report=False,
+                        xml_topic_phrase_report=False, output_topic_docs=True, num_top_docs=False,
                         output_doc_topics=True, doc_topics_threshold=False, output_model=False,
                         output_state=True, doc_topics_max=False):
     """Creates MALLET model.
