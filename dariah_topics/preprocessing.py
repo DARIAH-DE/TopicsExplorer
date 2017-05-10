@@ -701,17 +701,9 @@ def remove_features(sparse_bow, id_types, features):
     """
     log.info("Removing features ...")
     if isinstance(features, list):
-        features = set(chain.from_iterable(features))
-        stoplist_applied = [word for word in set(
-            id_types.keys()) if word in features]
-        clean_term_frequency = sparse_bow.drop(
-            [id_types[word] for word in stoplist_applied], level="token_id")
-    else:
         features = set(features)
-        stoplist_applied = [word for word in set(
-            id_types.keys()) if word in features]
-        clean_term_frequency = sparse_bow.drop(
-            [id_types[word] for word in stoplist_applied], level="token_id")
+    stoplist_applied = [word for word in set(id_types.keys()) if word in features]
+    clean_term_frequency = sparse_bow.drop([id_types[word] for word in stoplist_applied], level="token_id")
     log.debug("%s features removed.", len(features))
     return clean_term_frequency
 
