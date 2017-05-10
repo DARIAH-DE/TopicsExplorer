@@ -28,10 +28,10 @@ setup(
     # pip install -e .[demonstrator,vis,evaluation]
     extras_require={
         'demonstrator': [
-            'werkzeug>=0.11.15',
             'flask>=0.11.1'
         ],
         'vis': [
+            'wordcloud>=1.3.1',
             'pyLDAvis>=2.0.0',    # to feature 'pyldavis'
         ],
         'evaluation': [
