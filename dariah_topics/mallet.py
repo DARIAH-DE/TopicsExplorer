@@ -36,7 +36,8 @@ logging.basicConfig(level=logging.INFO,
 def create_mallet_binary(outfile='binary.mallet', outfolder='mallet_output',
                          path_to_file=False, path_to_corpus=os.path.join(os.path.abspath('.'), 'corpus_txt'),
                          path_to_mallet="mallet", keep_sequence=False, preserve_case=False,
-                         remove_stopwords=True, stoplist=None, token_regex=False):
+                         remove_stopwords=True, stoplist=None, token_regex=False, use_pipe_from=False,
+                         replacement_files=False, deletion_files=False, extra-stopwords=False):
     """Creates a MALLET binary file.
 
     Args:
@@ -54,8 +55,17 @@ def create_mallet_binary(outfile='binary.mallet', outfolder='mallet_output',
         preserve_case (bool): Converts all word features to lowercase. Defaults to False.
         remove_stopwords (bool): Ignores a standard list of very common tokens. Defaults to True.
         stoplist (str): Absolute path to plain text stopword list. Defaults to None.
-        token_regex (bool): Divides documents into tokens using a regular expression.
+        token_regex (str): Divides documents into tokens using a regular expression.
                             Defaults to False.
+        use_pipe_from (str): Use the pipe and alphabets from a previously created vectors file.
+                             Allows the creation, for example, of a test set of vectors that are
+                             compatible with a previously created set of training vectors. Defaults to False.
+        replacement_files (str): Files containing string replacements, one per line:
+                                 'A B [tab] C' replaces A B with C,
+                                 'A B' replaces A B with A_B
+        deletion_files (str): Files containing strings to delete after replacements but before
+                              tokenization (i.e. multiword stop terms).
+        extra_stopwords (str): 
 
     Returns:
         String. Absolute path to created MALLET binary file.
@@ -87,9 +97,18 @@ def create_mallet_binary(outfile='binary.mallet', outfolder='mallet_output',
         if stoplist is not None:
             param.append('--stoplist-file')
             param.append(stoplist)
-    if token_regex:
+    if token_regex is not False:
         param.append('--token-regex')
         param.append(token_regex)
+    if use_pipe_from:
+        param.append('--use-pipe-from')
+        param.append(use_pipe_from)
+    if replacement_files:
+        param.append('--replacement-files')
+        param.append(replacement_files)
+    if deletion_files:
+        param.append('--deletion-files')
+        param.append(deletion_files)
 
     param.append('--output')
     param.append(os.path.join(path_to_binary))
