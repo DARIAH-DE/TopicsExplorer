@@ -131,7 +131,7 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet='mallet', num_
                         num_icm_iterations=False, no_inference=False, random_seed=False,
                         optimize_interval=False, optimize_burn_in=False, use_symmetric_alpha=False,
                         alpha=False, beta=False, output_topic_keys=True, topic_word_weights_file=True,
-                        word_topic_counts_file=True, diagnostics_file=True, xml_topic_report=False,
+                        word_topic_counts_file=True, diagnostics_file=True, xml_topic_report=True,
                         xml_topic_phrase_report=False, output_topic_docs=True, num_top_docs=False,
                         output_doc_topics=True, doc_topics_threshold=False, output_model=False,
                         output_state=True, doc_topics_max=False):
@@ -292,10 +292,9 @@ def _grouper(n, iterable, fillvalue=None):
     return itertools.zip_longest(*args, fillvalue=fillvalue)
 
 
-def show_doc_topic_matrix(output_folder, doc_topics='doc_topics.txt', topic_keys='topic_keys.txt',
+def show_doc_topic_matrix(output_folder, doc_topics='topic_docs.txt', topic_keys='topic_keys.txt',
                           easy_file_format=False):
     """Shows document-topic-mapping.
-
     Args:
         outfolder (str): Folder for MALLET output.
         doc_topics (str): Name of MALLET's doc_topic file. Defaults to 'doc_topics.txt'.

@@ -7,6 +7,8 @@ This module contains functions for LDA visualization provided by `DARIAH-DE`_.
 
 .. _Gensim:
     https://radimrehurek.com/gensim/index.html
+.. _Mallet:
+    http://mallet.cs.umass.edu/
 .. _DARIAH-DE:
     https://de.dariah.eu
     https://github.com/DARIAH-DE
@@ -217,7 +219,7 @@ class Visualization:
             pass
 
 def create_doc_topic(corpus, model, doc_labels):
-    # Adapted from cody by Stefan Pernes
+    # Adapted from code by Stefan Pernes
     """Creates a document-topic data frame.
 
     Args:
