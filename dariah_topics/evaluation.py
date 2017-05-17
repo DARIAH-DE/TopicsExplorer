@@ -17,6 +17,18 @@ import numpy as np
 import pandas as pd
 
 
+def read_bow(path):
+    sparse_bow = pd.read_csv(path, header=None)
+    sparse_bow.columns = ['doc_id', 'token_id', 0]
+    sparse_bow.set_index(['doc_id', 'token_id'])
+    return sparse_bow
+
+def read_dictionary(path):
+    dictionary = pd.read_csv(path, header=None)
+    dictionary.index = dictionary[0]
+    dictionary = dictionary[1]
+    return dictionary.to_dict()
+
 def token2bow(token, type_dictionary):
     try:
         return type_dictionary[token]
@@ -25,7 +37,7 @@ def token2bow(token, type_dictionary):
         return type_dictionary[token]
 
 
-class Preprocessing:
+class Preparation:
     def __init__(self, topics, sparse_bow, type_dictionary):
         self.topics = topics
         self.sparse_bow = sparse_bow
@@ -55,6 +67,7 @@ class Preprocessing:
                     keys.add(bigram[0])
                     keys.add(bigram[1])
         for key in keys:
+            print(key)
             total = set()
             for doc in bow.groupby(level=0):
                 if key in doc[1].values:
@@ -62,7 +75,7 @@ class Preprocessing:
             occurences[str(key)] = total
         return occurences
 
-class Measures(Preprocessing):
+class Measures(Preparation):
     def __init__(self, sparse_bow, type_dictionary):
         self.type_dictionary = type_dictionary
         self.sparse_bow = sparse_bow
@@ -96,6 +109,7 @@ class Evaluation(Measures):
         self.topics = topics
         self.sparse_bow = sparse_bow
         self.type_dictionary = type_dictionary
+        self.N = len(self.topics.T)
 
 
     def calculate_umass(self, mean=True, e=0.1):
