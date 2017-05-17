@@ -132,8 +132,8 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet='mallet', num_
                         optimize_interval=False, optimize_burn_in=False, use_symmetric_alpha=False,
                         alpha=False, beta=False, output_topic_keys=True, topic_word_weights_file=True,
                         word_topic_counts_file=True, diagnostics_file=True, xml_topic_report=True,
-                        xml_topic_phrase_report=False, output_topic_docs=True, num_top_docs=False,
-                        output_doc_topics=True, doc_topics_threshold=False, output_model=False,
+                        xml_topic_phrase_report=False, output_topic_docs=False, num_top_docs=False,
+                        output_doc_topics=True, doc_topics_threshold=False, output_model=True,
                         output_state=True, doc_topics_max=False):
     """Creates MALLET model.
 
@@ -175,6 +175,12 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet='mallet', num_
                              and restarting training, but does not produce data that can easily be analyzed. Defaults to False.
         output_state (bool): Output a compressed text file containing the words in the corpus with their topic assignments.
                              The file format can easily be parsed and used by non-Java-based software. Defaults to True.
+    ToDo:
+        Param 'output_topic_docs' is causing an internal error 
+        -> Exception in thread "main" java.lang.ClassCastException: java.net.URI cannot be cast to java.lang.String
+        -> at cc.mallet.topics.ParallelTopicModel.printTopicDocuments(ParallelTopicModel.java:1773)
+        -> at cc.mallet.topics.tui.TopicTrainer.main(TopicTrainer.java:281)
+        Para, 'num_top_docs' is obsolete, refering to 'output_topic_docs'
 
     Returns:
         None
@@ -248,6 +254,7 @@ def create_mallet_model(path_to_binary, outfolder, path_to_mallet='mallet', num_
     if xml_topic_phrase_report:
         param.append('--xml-topic-phrase-report')
         param.append(os.path.join(outfolder, 'topic_phrase_report.xml'))
+    #not yet working
     if output_topic_docs:
         param.append('--output-topic-docs')
         param.append(os.path.join(outfolder, 'topic_docs.txt'))
@@ -408,7 +415,7 @@ def show_topics_keys(output_folder, topicsKeyFile="topic_keys.txt", num_topics=1
         topic_keys_lines=input.readlines()
 
     topic_keys=[]
-    topicLabels=[]
+    #topicLabels=[]
 
 
     for line in topic_keys_lines:
