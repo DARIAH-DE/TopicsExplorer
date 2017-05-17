@@ -109,7 +109,6 @@ class Evaluation(Measures):
         self.topics = topics
         self.sparse_bow = sparse_bow
         self.type_dictionary = type_dictionary
-        self.N = len(self.topics.T)
 
 
     def calculate_umass(self, mean=True, e=0.1):
