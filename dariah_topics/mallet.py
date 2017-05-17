@@ -299,7 +299,7 @@ def _grouper(n, iterable, fillvalue=None):
     return itertools.zip_longest(*args, fillvalue=fillvalue)
 
 
-def show_doc_topic_matrix(output_folder, doc_topics='topic_docs.txt', topic_keys='topic_keys.txt',
+def show_doc_topic_matrix(output_folder, doc_topics='doc_topics.txt', topic_keys='topic_keys.txt',
                           easy_file_format=False):
     """Shows document-topic-mapping.
     Args:
