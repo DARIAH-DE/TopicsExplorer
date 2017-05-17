@@ -176,8 +176,8 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
                         output_topic_keys=True, topic_word_weights_file=True,
                         word_topic_counts_file=True, diagnostics_file=True, xml_topic_report=True,
                         xml_topic_phrase_report=True, output_topic_docs=False, num_top_docs=100,
-                        output_doc_topics=True, doc_topics_threshold=0.0, doc_topics_max=-1,
-                        show_topics_interval=50, num_topics=10, num_top_words=10,
+                        output_doc_topics=True, doc_topics_threshold=0.0,
+                        num_topics=10, num_top_words=10,
                         num_iterations=1000, num_threads=1, num_icm_iterations=0,
                         no_inference=False, random_seed=0, optimize_interval=0,
                         optimize_burn_in=200, use_symmetric_alpha=False, alpha=5.0,
@@ -233,11 +233,6 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
             the end of the iterations. Defaults to True.
         doc_topics_threshold (float): Do not print topics with proportions less
             than this threshold value within `output_doc_topics`. Defaults to 0.0.
-        doc_topics_max (int): Do not print more than `int` number of topics.
-            A negative value indicates that all topics should be printed.
-            Defaults to -1.
-        show_topics_interval (int): The number of iterations between printing a
-            brief summary of the topics so far. Defaults to 50.
         num_topics (int): Number of topics. Defaults to 10.
         num_top_words (int): Number of keywords for each topic. Defaults to 10.
         num_interations (int): Number of iterations. Defaults to 1000.
@@ -290,8 +285,6 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
         param.append('--input-state')
         param.append(input_state)
 
-
-
     log.debug("Choosing parameters ...")
     if num_topics is not False:
         param.append('--num-topics')
@@ -324,7 +317,6 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
         param.append(str(optimize_burn_in))
     if use_symmetric_alpha is not None:
         param.append('--use-symmetric-alpha')
-        param.append(str(use_symmetric_alpha))
     if alpha is not None:
         param.append('--alpha')
         param.append(str(alpha))
@@ -342,9 +334,6 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
         if doc_topics_threshold is not None:
             param.append('--doc-topics-threshold')
             param.append(str(doc_topics_threshold))
-        if doc_topics_max is not None:
-            param.append('--doc-topics-max')
-            param.append(str(doc_topics_max))
     if topic_word_weights_file:
         param.append('--topic-word-weights-file')
         param.append(os.path.join(folder_for_output, 'topic_word_weights.txt'))
@@ -353,7 +342,7 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
         param.append(os.path.join(folder_for_output, 'word_topic_counts.txt'))
     if diagnostics_file:
         param.append('--diagnostics-file')
-        param.append(os.path.join(folder_for_output, 'diagnostics.txt'))
+        param.append(os.path.join(folder_for_output, 'diagnostics.xml'))
     if xml_topic_report:
         param.append('--xml-topic-report')
         param.append(os.path.join(folder_for_output, 'topic_report.xml'))
@@ -378,9 +367,6 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
     if evaluator_file:
         param.append('--evaluator-filename')
         param.append(os.path.join(folder_for_output, 'evaluator'))
-    if show_topics_interval is not None:
-        param.append('--show_topics_interval')
-        param.append(str(show_topics_interval))
 
     # not yet working
     if output_topic_docs:
