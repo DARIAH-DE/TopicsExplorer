@@ -99,8 +99,8 @@ def create_mallet_binary(path_to_mallet='mallet', path_to_file=False,
     else:
         shell = False
 
-    if not os.path.exists(os.path.dirname(output)):
-        os.makedirs(os.path.dirname(output))
+    if not os.path.exists(os.path.dirname(output_file)):
+        os.makedirs(os.path.dirname(output_file))
 
     param = [path_to_mallet]
     if not path_to_file:
@@ -158,7 +158,7 @@ def create_mallet_binary(path_to_mallet='mallet', path_to_file=False,
 
     try:
         log.info("Running MALLET with %s ...", param)
-        log.info("Saving MALLET binary to %s ...", output_file
+        log.info("Saving MALLET binary to %s ...", output_file)
         p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
         mallet_info = p.communicate()[0].decode('utf-8')
         if print_output:
@@ -172,10 +172,10 @@ def create_mallet_binary(path_to_mallet='mallet', path_to_file=False,
 def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_model=None,
                         input_state=None, folder_for_output='mallet_output',
                         output_model=True, output_model_interval=0, output_state=True,
-                        output_state_interval=0, inferencer_file=False, evaluator_file=False,
+                        output_state_interval=0, inferencer_file=True, evaluator_file=True,
                         output_topic_keys=True, topic_word_weights_file=True,
                         word_topic_counts_file=True, diagnostics_file=True, xml_topic_report=True,
-                        xml_topic_phrase_report=False, output_topic_docs=False, num_top_docs=100,
+                        xml_topic_phrase_report=True, output_topic_docs=False, num_top_docs=100,
                         output_doc_topics=True, doc_topics_threshold=0.0, doc_topics_max=-1,
                         show_topics_interval=50, num_topics=10, num_top_words=10,
                         num_iterations=1000, num_threads=1, num_icm_iterations=0,
@@ -271,14 +271,12 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
         Nothing.
     """
     if system() == 'Windows':
-        log.debug(outfolder)
         shell = True
     else:
-        log.debug(outfolder)
         shell = False
 
-    if not os.path.exists(os.path.dirname(output)):
-        os.makedirs(os.path.dirname(output))
+    if not os.path.exists(os.path.dirname(folder_for_output)):
+        os.makedirs(os.path.dirname(folder_for_output))
 
     param = [path_to_mallet, 'train-topics']
     if input_model is None:
@@ -318,21 +316,21 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
         param.append(str(random_seed))
 
     log.debug("Choosing hyperparameters ...")
-    if optimize_interval is not False:
+    if optimize_interval is not None:
         param.append('--optimize-interval')
-        param.append(optimize_interval)
-    if optimize_burn_in is not False:
+        param.append(str(optimize_interval))
+    if optimize_burn_in is not None:
         param.append('--optimize-burn-in')
-        param.append(optimize_burn_in)
-    if use_symmetric_alpha is not False:
+        param.append(str(optimize_burn_in))
+    if use_symmetric_alpha is not None:
         param.append('--use-symmetric-alpha')
-        param.append(use_symmetric_alpha)
-    if alpha is not False:
+        param.append(str(use_symmetric_alpha))
+    if alpha is not None:
         param.append('--alpha')
-        param.append(alpha)
-    if beta is not False:
+        param.append(str(alpha))
+    if beta is not None:
         param.append('--beta')
-        param.append(beta)
+        param.append(str(beta))
 
     log.debug("Choosing output parameters ...")
     if output_topic_keys:
@@ -382,7 +380,7 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
         param.append(os.path.join(folder_for_output, 'evaluator'))
     if show_topics_interval is not None:
         param.append('--show_topics_interval')
-        param.append(show_topics_interval)
+        param.append(str(show_topics_interval))
 
     # not yet working
     if output_topic_docs:
