@@ -565,7 +565,7 @@ def save_sparse_bow(sparse_bow, output):
         .. _.mm file: http://math.nist.gov/MatrixMarket/formats.html#MMformat
 
     Args:
-        sparse_bow (DataFrame): DataFrame with term and term frequency by document. 
+        sparse_bow (DataFrame): DataFrame with term and term frequency by document.
         output (str): Path to output file without extension, e.g. /tmp/sparsebow.
 
     Returns:
@@ -703,9 +703,9 @@ def remove_features(sparse_bow, id_types, features):
     if isinstance(features, list):
         features = set(features)
     stoplist_applied = [word for word in set(id_types.keys()) if word in features]
-    clean_term_frequency = sparse_bow.drop([id_types[word] for word in stoplist_applied], level="token_id")
+    clean_sparse_bow = sparse_bow.drop([id_types[word] for word in stoplist_applied], level="token_id")
     log.debug("%s features removed.", len(features))
-    return clean_term_frequency
+    return clean_sparse_bow
 
 
 def make_doc2bow_list(sparse_bow):
@@ -778,11 +778,11 @@ def gensim2dataframe(model, num_keys=10):
 #        idx = topic[0]
 #        temp = topic[1]
 #        topics_df.loc[idx] = temp
-          
-    num_topics = model.num_topics 
-    topics_df = pd.DataFrame(index = range(num_topics), 
+
+    num_topics = model.num_topics
+    topics_df = pd.DataFrame(index = range(num_topics),
                                  columns= range(num_keys))
-    
+
     topics = model.show_topics(num_topics = model.num_topics, formatted=False)
 
     for topic, values in topics:
