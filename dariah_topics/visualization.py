@@ -346,6 +346,54 @@ def get_topicRank(topic, topicRanksFile):
         rank = int(topicRanks.iloc[topic]["Rank"])
         return rank
 
+def read_mallet_word_weights(word_weights_file):
+    """Reads Mallet output (topics with words and word weights) into dataframe.""" 
+    word_scores = pd.read_table(word_weights_file, header=None, sep="\t")
+    word_scores = word_scores.sort(columns=[0,2], axis=0, ascending=[True, False])
+    word_scores_grouped = word_scores.groupby(0)
+    return word_scores_grouped
+    
+def get_wordlewords(word_scores_grouped, number_of_top_words, topic_nr):
+    """Transform Mallet output for wordle generation."""
+    topic_word_scores = word_scores_grouped.get_group(topic_nr)
+    top_topic_word_scores = topic_word_scores.iloc[0:number_of_top_words]
+    topic_words = top_topic_word_scores.loc[:,1].tolist()
+    print(topic_words)
+    word_scores = top_topic_word_scores.loc[:,2].tolist()
+    print(word_scores)
+    wordlewords = ""
+    j = 0
+    for word in topic_words:
+        word = word
+        score = word_scores[j]
+        j += 1
+        wordlewords = wordlewords + ((word + " ") + str(score))
+    return wordlewords
+    
+def plot_wordle_from_mallet(word_weights_file, 
+                            topic_nr,
+                            number_of_top_words,
+                            outfolder,
+                            dpi):
+    """Generate wordles from Mallet output, using the wordcloud module."""
+
+    word_scores_grouped = read_mallet_word_weights(word_weights_file)
+    text = get_wordlewords(word_scores_grouped, number_of_top_words, topic_nr)
+    wordcloud = WordCloud(width=600, height=400, background_color="white", margin=4).generate(text)
+    default_colors = wordcloud.to_array()
+    figure_title = "topic "+ str(topic_nr)
+    plt.imshow(default_colors)
+    plt.imshow(wordcloud)
+    plt.title(figure_title, fontsize=30)
+    plt.axis("off")
+                
+    ## Saving the image file.
+    if not os.path.exists(outfolder):
+        os.makedirs(outfolder)
+        
+    figure_filename = "wordle_tp"+"{:03d}".format(topic_nr) + ".png"
+    plt.savefig(outfolder + figure_filename, dpi=dpi)
+    return plt
 
 
 
