@@ -270,8 +270,7 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
     else:
         shell = False
 
-    if not os.path.exists(os.path.dirname(folder_for_output)):
-        os.makedirs(os.path.dirname(folder_for_output))
+    os.makedirs(folder_for_output, exist_ok=True)
 
     param = [path_to_mallet, 'train-topics']
     if input_model is None:
