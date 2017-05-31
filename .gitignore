@@ -24,6 +24,7 @@ grenzbote_plain/
 .python-version
 .tox
 wiki/
+tutorial-supplementals/font/
 tutorial-supplementals/mallet/
 tutorial-supplementals/mallet_output/*
 .ropeproject
