@@ -379,6 +379,7 @@ def plot_wordle_from_mallet(word_weights_file,
 
     word_scores_grouped = read_mallet_word_weights(word_weights_file)
     text = get_wordlewords(word_scores_grouped, number_of_top_words, topic_nr)
+    print(text)
     wordcloud = WordCloud(width=600, height=400, background_color="white", margin=4).generate(text)
     default_colors = wordcloud.to_array()
     figure_title = "topic "+ str(topic_nr)
