@@ -33,7 +33,7 @@ logging.basicConfig(level=logging.INFO,
 
 
 def create_mallet_binary(path_to_mallet='mallet', path_to_file=False,
-                         path_to_corpus=False, output_file='mallet_output/binary.mallet',
+                         path_to_corpus=False, output_file=os.path.join('mallet_output', 'binary.mallet'),
                          encoding=None, token_regex=None, preserve_case=False,
                          remove_stopwords=True, stoplist=None, extra_stopwords=None,
                          stop_pattern_file=None, skip_header=False, skip_html=False,
