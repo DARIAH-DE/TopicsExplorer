@@ -102,19 +102,16 @@ def upload_file():
             stopwords.save(os.path.join('stopwordlist', secure_filename(stopwords.filename)))
             try:
                 mallet.create_mallet_binary(path_to_corpus='tmp_files',
-                                            path_to_mallet='mallet',
-                                            output_file=os.path.join('mallet_output', 'binary.mallet'),
                                             stoplist=os.path.join('stopwordlist', secure_filename(stopwords.filename)))
             except:
                 log.error("Retry ...")
                 mallet.create_mallet_binary(path_to_corpus='tmp_files',
                                             path_to_mallet=os.path.join('mallet', 'bin', 'mallet'),
-                                            output_file=os.path.join('mallet_output', 'binary.mallet'),
                                             stoplist=os.path.join('stopwordlist', secure_filename(stopwords.filename)))
             shutil.rmtree('stopwordlist')
         else:
             try:
-                mallet.create_mallet_binary(path_to_corpus='tmp_files', path_to_mallet='mallet')
+                mallet.create_mallet_binary(path_to_corpus='tmp_files')
             except:
                 log.error("Retry ...")
                 mallet.create_mallet_binary(path_to_corpus='tmp_files', path_to_mallet=os.path.join('mallet', 'bin', 'mallet'))
@@ -122,11 +119,8 @@ def upload_file():
         log.info("Training MALLET LDA model ...")
         try:
             mallet.create_mallet_model(path_to_binary=os.path.join('mallet_output', 'binary.mallet'),
-                                       folder_for_output='mallet_output',
-                                       path_to_mallet='mallet',
                                        num_topics=str(num_topics),
                                        num_iterations=str(num_iterations),
-                                       num_top_words=10,
                                        output_model=False,
                                        output_state=False,
                                        inferencer_file=False,
@@ -135,17 +129,13 @@ def upload_file():
                                        word_topic_counts_file=False,
                                        diagnostics_file=False,
                                        xml_topic_report=False,
-                                       xml_topic_phrase_report=False,
-                                       output_topic_docs=False,
-                                       output_doc_topics=True)
+                                       xml_topic_phrase_report=False)
         except:
             log.error("Retry ...")
             mallet.create_mallet_model(path_to_binary=os.path.join('mallet_output', 'binary.mallet'),
-                                       folder_for_output='mallet_output',
                                        path_to_mallet=os.path.join('mallet', 'bin', 'mallet'),
                                        num_topics=str(num_topics),
                                        num_iterations=str(num_iterations),
-                                       num_top_words=10,
                                        output_model=False,
                                        output_state=False,
                                        inferencer_file=False,
@@ -154,9 +144,7 @@ def upload_file():
                                        word_topic_counts_file=False,
                                        diagnostics_file=False,
                                        xml_topic_report=False,
-                                       xml_topic_phrase_report=False,
-                                       output_topic_docs=False,
-                                       output_doc_topics=True)
+                                       xml_topic_phrase_report=False)
 
         log.info("Accessing and visualizing MALLET output as heatmap ...")
         df = mallet.show_topics_keys('mallet_output', num_topics=num_topics)
@@ -171,12 +159,12 @@ def upload_file():
             wordcloud = WordCloud(width=800, height=600, background_color='white').generate(text)
             plt.imshow(wordcloud)
             plt.axis('off')
-            plt.savefig('static/cloud.png')
+            plt.savefig(os.path.join('static', 'cloud.png')))
             plt.close()
 
         shutil.rmtree('tmp_files')
         shutil.rmtree('mallet_output')
-        print("Rendering result page ...")
+        log.info("Rendering result page ...")
         return render_template('result.html', tables=[df.to_html(classes='df')])
 
     elif 'gensim' in lda:
@@ -219,7 +207,7 @@ def upload_file():
         wordcloud = WordCloud(width=800, height=600, background_color='white').fit_words(dict(model.show_topic(1,100)))
         plt.imshow(wordcloud)
         plt.axis('off')
-        plt.savefig('static/cloud.png')
+        plt.savefig(os.path.join('static', 'cloud.png'))
         plt.close()
 
         df = preprocessing.gensim2dataframe(model)
