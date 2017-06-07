@@ -159,7 +159,7 @@ def upload_file():
             wordcloud = WordCloud(width=800, height=600, background_color='white').generate(text)
             plt.imshow(wordcloud)
             plt.axis('off')
-            plt.savefig(os.path.join('static', 'cloud.png')))
+            plt.savefig(os.path.join('static', 'cloud.png'))
             plt.close()
 
         shutil.rmtree('tmp_files')
