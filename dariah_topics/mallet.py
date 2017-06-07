@@ -370,7 +370,7 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
     # not yet working
     if output_topic_docs:
         param.append('--output-topic-docs')
-        param.append(os.path.join(outfolder, 'topic_docs.txt'))
+        param.append(os.path.join(folder_for_output, 'topic_docs.txt'))
         if num_top_docs is not None:
             param.append('--num-top-docs')
             param.append(str(topic_word_weights_file))
