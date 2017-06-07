@@ -8,7 +8,7 @@ def test_document_list():
 
     # die Funktion under test aufrufen
     docs = pre.PathDocList(str(Path(project_path, 'corpus_txt')))
-    doclist = doclist.full_paths(as_str=True)
+    doclist = docs.full_paths(as_str=True)
 
     # Bedingungen auf dem Ergebnis prüfen:
     assert len(doclist) == 17
