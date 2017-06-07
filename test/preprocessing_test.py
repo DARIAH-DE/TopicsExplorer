@@ -7,8 +7,8 @@ project_path = Path(__file__).absolute().parent.parent
 def test_document_list():
 
     # die Funktion under test aufrufen
-
-    doclist = pre.create_document_list(str(Path(project_path, 'corpus_txt')))
+    docs = pre.PathDocList(str(Path(project_path, 'corpus_txt')))
+    doclist = doclist.full_paths(as_str=True)
 
     # Bedingungen auf dem Ergebnis prüfen:
     assert len(doclist) == 17
@@ -17,5 +17,6 @@ def test_document_list():
 
 def test_document_labels():
     doclist = test_document_list()
-    labels = pre.get_labels(doclist)
+    docs = pre.PathDocList(str(Path(project_path, 'corpus_txt')))
+    labels = docs.labels()
     assert len(list(labels)) == len(doclist)
