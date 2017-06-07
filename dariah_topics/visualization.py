@@ -349,7 +349,7 @@ def get_topicRank(topic, topicRanksFile):
 def read_mallet_word_weights(word_weights_file):
     """Reads Mallet output (topics with words and word weights) into dataframe.""" 
     word_scores = pd.read_table(word_weights_file, header=None, sep="\t")
-    word_scores = word_scores.sort(columns=[0,2], axis=0, ascending=[True, False])
+    word_scores = word_scores.sort_values(columns=[0,2], axis=0, ascending=[True, False])
     word_scores_grouped = word_scores.groupby(0)
     return word_scores_grouped
     
