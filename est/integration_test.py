@@ -67,5 +67,4 @@ def jupyter_integration_test():
         if cellinfo:
             message = cellinfo.group(1)
         logging.error(message)
-        
-raise
+        raise
