@@ -412,6 +412,70 @@ def segment(document, segment_size=1000, tolerance=0, chunker=None,
         segments = list(segments)
 
     return segments
+    
+def remove_features_from_file(doc_token_list, features_to_be_removed):
+    """Removes features using feature list.
+
+    Description:
+        With this function you can remove features from ppreprocessed files. 
+        Commit a list of features.
+        Use the function `tokenize()` to access your files.
+
+    Args:
+        doc_token_list Union(list[str], str): List of all documents in the corpus
+            and their tokens.
+        features_to_be_removed list[str]: List of features that should be
+        removed
+    Yields:
+        cleaned token array
+
+    Todo:
+
+    Example:
+        >>> doc_tokens = [['short', 'example', 'example', 'text', 'text']]
+        >>> features_to_be_removed = ['example']
+        >>> test = remove_features_from_file(doc_tokens, features_to_be_removed)
+        >>> list(test)
+        [['short', 'text', 'text']]
+    """
+    #log.info("Removing features ...")
+    doc_token_array = np.array(doc_token_list)
+    feature_array = np.array(features_to_be_removed)
+    #get indices of features that should be deleted
+    indices = np.where(np.in1d(doc_token_array, feature_array,))
+    doc_token_array = np.delete(doc_token_array, indices)
+    yield doc_token_array.tolist()
+
+def create_mallet_import(doc_tokens_cleaned, doc_labels, outpath = os.path.join('tutorial_supplementals', 'mallet_input')):
+    """Creates files for mallet import.
+
+    Description:
+        With this function you can create preprocessed plain text files. 
+        Commit a list of full paths or one single path as argument.
+        Use the function `remove_features_from_file()` to create a list of tokens
+        per document.
+
+    Args:
+        doc_tokens_cleaned Union(list[str], str): List of tokens per document
+        doc_labels list[str]: List of documents labels.
+
+    Todo:
+    
+    Example:
+        >>> doc_labels = ['examplefile']
+        >>> doc_tokens_cleaned = [['short', 'example', 'text']]
+        >>> create_mallet_import(doc_tokens_cleaned, doc_labels)
+        >>> outpath = os.path.join('tutorial_supplementals', 'mallet_input')
+        >>> os.path.isfile(os.path.join(outpath, 'examplefile.txt'))
+        True
+    """
+    #log.info("Generating mallet input files ...")
+    if not os.path.exists(outpath):
+                os.makedirs(outpath)
+    
+    for tokens, label in zip(doc_tokens_cleaned, doc_labels):
+        with open(os.path.join(outpath,label+'.txt'), 'w', encoding="utf-8") as f:
+            f.write(str(tokens))
 
 
 def create_dictionary(tokens):
