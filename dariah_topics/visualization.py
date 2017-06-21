@@ -32,7 +32,7 @@ import regex
 
 log = logging.getLogger('visualization')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level = logging.WARNING,
+logging.basicConfig(level = logging.ERROR,
                     format = '%(levelname)s %(name)s: %(message)s')
 
 class Visualization:
@@ -318,10 +318,10 @@ def show_wordle_for_topic(model, topic_nr, words):
         model: Gensim LDA model
         topic_nr(int): Choose topic
         words (int): Number of words to show
-    
+
     Note: Function does use wordcloud package -> https://pypi.python.org/pypi/wordcloud
          pip install wordcloud
-    
+
     ToDo: Check if this function should be implemented
 
     """
@@ -330,8 +330,8 @@ def show_wordle_for_topic(model, topic_nr, words):
     plt.axis("off")
     plt.title("Topic #" + str(topic_nr + 1))
     return plt
-	
-        
+
+
 def get_color_scale(word, font_size, position, orientation, font_path, random_state=None):
     """ Create color scheme for wordle."""
     return "hsl(245, 58%, 25%)" # Default. Uniform dark blue.
@@ -346,12 +346,12 @@ def get_topicRank(topic, topicRanksFile):
         return rank
 
 def read_mallet_word_weights(word_weights_file):
-    """Reads Mallet output (topics with words and word weights) into dataframe.""" 
+    """Reads Mallet output (topics with words and word weights) into dataframe."""
     word_scores = pd.read_table(word_weights_file, header=None, sep="\t")
     word_scores = word_scores.sort_values(columns=[0,2], axis=0, ascending=[True, False])
     word_scores_grouped = word_scores.groupby(0)
     return word_scores_grouped
-    
+
 def get_wordlewords(word_scores_grouped, number_of_top_words, topic_nr):
     """Transform Mallet output for wordle generation."""
     topic_word_scores = word_scores_grouped.get_group(topic_nr)
@@ -368,8 +368,8 @@ def get_wordlewords(word_scores_grouped, number_of_top_words, topic_nr):
         j += 1
         wordlewords = wordlewords + ((word + " ") + str(score))
     return wordlewords
-    
-def plot_wordle_from_mallet(word_weights_file, 
+
+def plot_wordle_from_mallet(word_weights_file,
                             topic_nr,
                             number_of_top_words,
                             outfolder,
@@ -386,15 +386,11 @@ def plot_wordle_from_mallet(word_weights_file,
     plt.imshow(wordcloud)
     plt.title(figure_title, fontsize=30)
     plt.axis("off")
-                
+
     ## Saving the image file.
     if not os.path.exists(outfolder):
         os.makedirs(outfolder)
-        
+
     figure_filename = "wordle_tp"+"{:03d}".format(topic_nr) + ".png"
     plt.savefig(outfolder + figure_filename, dpi=dpi)
     return plt
-
-
-
-

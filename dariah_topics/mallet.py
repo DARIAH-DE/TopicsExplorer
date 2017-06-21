@@ -27,7 +27,7 @@ from subprocess import Popen, PIPE
 
 log = logging.getLogger('mallet')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.ERROR,
                     format='%(levelname)s %(name)s: %(message)s')
 
 

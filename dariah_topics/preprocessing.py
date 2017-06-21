@@ -32,7 +32,7 @@ import regex
 
 log = logging.getLogger('preprocessing')
 log.addHandler(logging.NullHandler())
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.ERROR,
                     format='%(levelname)s %(name)s: %(message)s')
 
 regular_expression = r'\p{Letter}+\p{Punctuation}?\p{Letter}+'
