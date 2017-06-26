@@ -170,11 +170,11 @@ def create_mallet_binary(path_to_mallet='mallet', path_to_file=False,
 
 def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_model=None,
                         input_state=None, folder_for_output='mallet_output',
-                        output_model=True, output_model_interval=0, output_state=True,
-                        output_state_interval=0, inferencer_file=True, evaluator_file=True,
+                        output_model=False, output_model_interval=0, output_state=False,
+                        output_state_interval=0, inferencer_file=False, evaluator_file=False,
                         output_topic_keys=True, topic_word_weights_file=True,
-                        word_topic_counts_file=True, diagnostics_file=True, xml_topic_report=True,
-                        xml_topic_phrase_report=True, output_topic_docs=False, num_top_docs=100,
+                        word_topic_counts_file=False, diagnostics_file=False, xml_topic_report=False,
+                        xml_topic_phrase_report=False, output_topic_docs=False, num_top_docs=100,
                         output_doc_topics=True, doc_topics_threshold=0.0,
                         num_topics=10, num_top_words=10,
                         num_iterations=1000, num_threads=1, num_icm_iterations=0,
@@ -377,8 +377,8 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
     try:
        log.info("Accessing Mallet with %s ...", param)
        p = Popen(param, stdout=PIPE, stderr=PIPE, shell=shell)
-       out = p.communicate()[1].decode('utf-8')
-       log.debug(out)
+       stdout, stderr = p.communicate()
+       log.debug(stderr.decode('utf-8'))
     except KeyboardInterrupt:
        p.terminate()
        log.error(out)

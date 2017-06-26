@@ -421,7 +421,19 @@ def create_mallet_import(doc_tokens_cleaned, doc_labels, outpath = os.path.join(
 
     for tokens, label in zip(doc_tokens_cleaned, doc_labels):
         with open(os.path.join(outpath,label+'.txt'), 'w', encoding="utf-8") as f:
-            f.write(str(tokens))
+            for token in tokens:
+                f.write(' '.join(token))
+
+
+def create_doc_term_matrix(tokens, doc_labels):
+    df = pd.DataFrame([wordcounts(doc, label) for doc, label in zip(tokens, doc_labels)])
+    df = df.fillna(0)
+    return df.loc[:, df.sum().sort_values(ascending=False).index]
+
+def wordcounts(doc, label):
+    s = pd.Series(Counter(doc))
+    s.name = label
+    return s
 
 
 def create_dictionary(tokens):
@@ -754,6 +766,14 @@ def make_doc2bow_list(sparse_bow):
     return doc2bow_list
 
 
+def lda2dataframe(model, vocab, num_keys=10):
+    topics = []
+    topic_word = model.topic_word_
+    for i, topic_dist in enumerate(topic_word):
+        topics.append(np.array(vocab)[np.argsort(topic_dist)][:-num_keys-1:-1])
+    return pd.DataFrame(topics)
+
+
 def gensim2dataframe(model, num_keys=10):
     """Converts gensim output to DataFrame.
 
@@ -818,3 +838,13 @@ def doctopic2dataframe(model, doc2bow_list, doc2id):
         df[doc2id[idx]] = pd.Series(
             [value[1] for value in model.get_document_topics(doc)])
     return df.fillna(0)
+
+def lda_doc_topic(model, topics, doc_labels):
+    topic_labels = []
+    topic_terms = [x[:3] for x in topics.values.tolist()]
+    for topic in topic_terms:
+        topic_labels.append(" ".join(topic))
+    df = pd.DataFrame(model.doc_topic_).T
+    df.columns = doc_labels
+    df.index = topic_labels
+    return df
