@@ -3,10 +3,10 @@
 Topics is a gentle introduction to Topic Modeling. It provides a convenient, modular workflow that can be entirely controlled from within and which comes with a well documented [Jupyter notebook](http://jupyter.org/), integrating three of the most popular LDA implementations: [Gensim](https://radimrehurek.com/gensim/), [MALLET](http://mallet.cs.umass.edu/), and [lda](http://pythonhosted.org/lda/index.html). Users not yet familiar with working with Python scripts can test basic topic modeling in a [Flask](http://flask.pocoo.org/)-based [GUI demonstrator](/demonstrator/README.md).
 
 
-At the moment, there are three Jupyter notebooks:
-- [Introducing lda](Introducing_lda.ipynb)
-- [Introducing gensim](Introducing_gensim.ipynb)
-- [Introducing MALLET](Introducing_MALLET.ipynb)
+At the moment, there are three Jupyter notebooks containing three different LDA implementations:
+- [An Introducing to lda](Introducing_lda.ipynb)
+- [An Introducing to gensim](Introducing_gensim.ipynb)
+- [An Introducing to MALLET](Introducing_MALLET.ipynb)
 
 
 ### Getting Started
