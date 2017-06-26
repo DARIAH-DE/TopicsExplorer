@@ -4,9 +4,9 @@ Topics is a gentle introduction to Topic Modeling. It provides a convenient, mod
 
 
 At the moment, there are three Jupyter notebooks:
-- [Introducing lda](Introducing lda.ipynb)
-- [Introducing gensim](Introducing gensim.ipynb)
-- [Introducing MALLET](Introducing MALLET.ipynb)
+- [Introducing lda](Introducing_lda.ipynb)
+- [Introducing gensim](Introducing_gensim.ipynb)
+- [Introducing MALLET](Introducing_MALLET.ipynb)
 
 
 ### Getting Started
