@@ -1,6 +1,6 @@
 # Topics – Easy Topic Modeling in Python
 
-Topics is a gentle introduction to Topic Modeling. It provides a convenient, modular workflow that can be entirely controlled from within and which comes with a well documented [Jupyter notebook](http://jupyter.org/), integrating three of the most popular LDA implementations: [Gensim](https://radimrehurek.com/gensim/), [MALLET](http://mallet.cs.umass.edu/), and [lda](http://pythonhosted.org/lda/index.html). Users not yet familiar with working with Python scripts can test basic topic modeling in a [Flask](http://flask.pocoo.org/)-based [GUI demonstrator](/demonstrator/README.md).
+Topics is a gentle introduction to Topic Modeling. It provides a convenient, modular workflow that can be entirely controlled from within and which comes with a well documented [Jupyter notebook](http://jupyter.org/), integrating three of the most popular LDA implementations: [gensim](https://radimrehurek.com/gensim/), [MALLET](http://mallet.cs.umass.edu/), and [lda](http://pythonhosted.org/lda/index.html). Users not yet familiar with working with Python scripts can test basic topic modeling in a [Flask](http://flask.pocoo.org/)-based [GUI demonstrator](/demonstrator/README.md).
 
 
 At the moment, there are three Jupyter notebooks containing three different LDA implementations:
