@@ -29,7 +29,7 @@ def jupyter_integration_test():
         if cellinfo:
             message = cellinfo.group(1)
         logging.error(message)
-    
+
     #Test Introducing_gensim.ipynb
     try:
         check_output(["jupyter-nbconvert", "--execute",
@@ -48,7 +48,7 @@ def jupyter_integration_test():
         if cellinfo:
             message = cellinfo.group(1)
         logging.error(message)
-        
+
     #Test Introducing_MALLET.ipynb
     try:
         check_output(["jupyter-nbconvert", "--execute",
@@ -56,6 +56,26 @@ def jupyter_integration_test():
                      "--ExecutePreprocessor.iopub_timeout=30",
                       "--ExecutePreprocessor.timeout=None",
                     str(Path(project_path, "Introducing_MALLET.ipynb"))],
+                     stderr=STDOUT, universal_newlines=True)
+    except FileNotFoundError as e:
+        raise SkipTest("jupyter-nbconvert not found. Cannot run integration test. "
+                   + str(e))
+    except CalledProcessError as e:
+        message = e.output
+        cellinfo = re.search('nbconvert.preprocessors.execute.CellExecutionError: (.+)$',
+                  message, re.MULTILINE | re.DOTALL)
+        if cellinfo:
+            message = cellinfo.group(1)
+        logging.error(message)
+        raise
+
+    #Test IntegrationTest_txt_gensim.ipynb
+    try:
+        check_output(["jupyter-nbconvert", "--execute",
+                     "--log-level=ERROR",
+                     "--ExecutePreprocessor.iopub_timeout=30",
+                      "--ExecutePreprocessor.timeout=None",
+                    str(Path(project_path, "IntegrationTest_txt_gensim.ipynb"))],
                      stderr=STDOUT, universal_newlines=True)
     except FileNotFoundError as e:
         raise SkipTest("jupyter-nbconvert not found. Cannot run integration test. "
