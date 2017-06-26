@@ -11,13 +11,13 @@ def jupyter_integration_test():
     """
     Integration test notebook (via Jupyter)
     """
-    #Test Introduction
+    #Test Introducing_lda.ipynb
     try:
         check_output(["jupyter-nbconvert", "--execute",
                      "--log-level=ERROR",
                      "--ExecutePreprocessor.iopub_timeout=30",
                       "--ExecutePreprocessor.timeout=None",
-                    str(Path(project_path, "Introduction.ipynb"))],
+                    str(Path(project_path, "Introducing_lda.ipynb"))],
                      stderr=STDOUT, universal_newlines=True)
     except FileNotFoundError as e:
         raise SkipTest("jupyter-nbconvert not found. Cannot run integration test. "
@@ -30,13 +30,13 @@ def jupyter_integration_test():
             message = cellinfo.group(1)
         logging.error(message)
     
-    #Test Gensim
+    #Test Introducing_gensim.ipynb
     try:
         check_output(["jupyter-nbconvert", "--execute",
                      "--log-level=ERROR",
                      "--ExecutePreprocessor.iopub_timeout=30",
                       "--ExecutePreprocessor.timeout=None",
-                    str(Path(project_path, "IntegrationTest_txt_gensim.ipynb"))],
+                    str(Path(project_path, "Introducing_gensim.ipynb"))],
                      stderr=STDOUT, universal_newlines=True)
     except FileNotFoundError as e:
         raise SkipTest("jupyter-nbconvert not found. Cannot run integration test. "
@@ -49,13 +49,13 @@ def jupyter_integration_test():
             message = cellinfo.group(1)
         logging.error(message)
         
-    #Test Mallet
+    #Test Introducing_MALLET.ipynb
     try:
         check_output(["jupyter-nbconvert", "--execute",
                      "--log-level=ERROR",
                      "--ExecutePreprocessor.iopub_timeout=30",
                       "--ExecutePreprocessor.timeout=None",
-                    str(Path(project_path, "Mallet.ipynb"))],
+                    str(Path(project_path, "Introducing_MALLET.ipynb"))],
                      stderr=STDOUT, universal_newlines=True)
     except FileNotFoundError as e:
         raise SkipTest("jupyter-nbconvert not found. Cannot run integration test. "
