@@ -21,6 +21,10 @@ Segments
 --------
 
 """
+__author__ = "DARIAH-DE"
+__authors__ = "Thorsten Vitt"
+__email__ = "thorsten.vitt@uni-wuerzburg.de"
+
 
 from pathlib import Path
 from itertools import zip_longest
