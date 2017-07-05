@@ -733,7 +733,7 @@ def remove_features(df, features, id_types=None):
         if isinstance(features, list):
             features = set(features)
         stoplist_applied = [word for word in set(id_types.keys()) if word in features]
-        clean_sparse_bow = sparse_bow.drop([id_types[word] for word in stoplist_applied], level="token_id")
+        clean_sparse_bow = df.drop([id_types[word] for word in stoplist_applied], level='token_id')
         return clean_sparse_bow
     else:
         features = [token for token in features if token in df.columns]
