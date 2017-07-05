@@ -20,6 +20,7 @@ from flask import Flask, request, render_template
 from gensim.models import LdaModel
 from gensim.corpora import MmCorpus
 import logging
+from logging.handlers import RotatingFileHandler
 from lxml import etree
 import matplotlib
 matplotlib.use('Agg')
@@ -36,15 +37,10 @@ __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 
-log = logging.getLogger('demonstrator')
-log.addHandler(logging.NullHandler())
-logging.basicConfig(level=logging.INFO,
-                    format='%(levelname)s %(name)s: %(message)s')
-
 app = Flask(__name__)
 
 def tei(file):
-    log.info("Processing TEI XML ...")
+    app.logger.info("Processing TEI XML ...")
     ns = dict(tei='http://www.tei-c.org/ns/1.0')
     text = etree.parse(file)
     text = text.xpath('//tei:text', namespaces=ns)[0]
@@ -52,12 +48,12 @@ def tei(file):
 
 @app.route('/')
 def index():
-    log.info("Rendering main page ...")
+    app.logger.info("Rendering main page ...")
     return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    log.info("Accessing user input ...")
+    app.logger.info("Accessing user input ...")
     files = request.files.getlist('files')
     lda = request.form['lda']
     num_topics = int(request.form['number_topics'])
@@ -68,7 +64,7 @@ def upload_file():
     if 'gensim' in lda:
         corpus = pd.Series()
 
-    log.info("Processing text files ...")
+    app.logger.info("Processing text files ...")
     for file in files:
         filename, extension = os.path.splitext(secure_filename(file.filename))
 
@@ -81,7 +77,7 @@ def upload_file():
                 with open(os.path.join('tmp_files', secure_filename(file.filename)), 'w+', encoding='utf-8') as f:
                     f.writelines(text)
             else:
-                log.error("File format is not supported.")
+                app.logger.error("File format is not supported.")
 
         elif 'gensim' in lda:
             if extension == '.txt':
@@ -89,14 +85,14 @@ def upload_file():
             elif extension == '.xml':
                 text = tei(file)
             else:
-                log.error("File format is not supported.")
+                app.logger.error("File format is not supported.")
             tokens = list(preprocessing.tokenize(text))
             label = filename
             corpus[label] = tokens
         file.flush()
 
     if 'mallet' in lda:
-        log.info("Creating MALLET binary ...")
+        app.logger.info("Creating MALLET binary ...")
         if request.files.get('stoplist', None):
             os.makedirs('stopwordlist', exist_ok=True)
             stopwords.save(os.path.join('stopwordlist', secure_filename(stopwords.filename)))
@@ -104,7 +100,7 @@ def upload_file():
                 mallet.create_mallet_binary(path_to_corpus='tmp_files',
                                             stoplist=os.path.join('stopwordlist', secure_filename(stopwords.filename)))
             except:
-                log.error("Retry ...")
+                app.logger.error("Retry ...")
                 mallet.create_mallet_binary(path_to_corpus='tmp_files',
                                             path_to_mallet=os.path.join('mallet', 'bin', 'mallet'),
                                             stoplist=os.path.join('stopwordlist', secure_filename(stopwords.filename)))
@@ -113,10 +109,10 @@ def upload_file():
             try:
                 mallet.create_mallet_binary(path_to_corpus='tmp_files')
             except:
-                log.error("Retry ...")
+                app.logger.error("Retry ...")
                 mallet.create_mallet_binary(path_to_corpus='tmp_files', path_to_mallet=os.path.join('mallet', 'bin', 'mallet'))
 
-        log.info("Training MALLET LDA model ...")
+        app.logger.info("Training MALLET LDA model ...")
         try:
             mallet.create_mallet_model(path_to_binary=os.path.join('mallet_output', 'binary.mallet'),
                                        num_topics=str(num_topics),
@@ -131,7 +127,7 @@ def upload_file():
                                        xml_topic_report=False,
                                        xml_topic_phrase_report=False)
         except:
-            log.error("Retry ...")
+            app.logger.error("Retry ...")
             mallet.create_mallet_model(path_to_binary=os.path.join('mallet_output', 'binary.mallet'),
                                        path_to_mallet=os.path.join('mallet', 'bin', 'mallet'),
                                        num_topics=str(num_topics),
@@ -146,14 +142,14 @@ def upload_file():
                                        xml_topic_report=False,
                                        xml_topic_phrase_report=False)
 
-        log.info("Accessing and visualizing MALLET output as heatmap ...")
+        app.logger.info("Accessing and visualizing MALLET output as heatmap ...")
         df = mallet.show_topics_keys('mallet_output', num_topics=num_topics)
         doc_topic = mallet.show_doc_topic_matrix('mallet_output')
         heatmap = visualization.doc_topic_heatmap(doc_topic)
         heatmap.savefig(os.path.join('static', 'heatmap.png'))
         heatmap.close()
 
-        log.info("Accessing and visualizing MALLET output as wordcloud ...")
+        app.logger.info("Accessing and visualizing MALLET output as wordcloud ...")
         with open (os.path.join('mallet_output', 'topic_keys.txt'), 'r', encoding='utf-8') as f:
             text = f.read()
             wordcloud = WordCloud(width=800, height=600, background_color='white').generate(text)
@@ -164,19 +160,19 @@ def upload_file():
 
         shutil.rmtree('tmp_files')
         shutil.rmtree('mallet_output')
-        log.info("Rendering result page ...")
+        app.logger.info("Rendering result page ...")
         return render_template('result.html', tables=[df.to_html(classes='df')])
 
     elif 'gensim' in lda:
         labels = corpus.index.tolist()
         tokens = corpus.tolist()
-        log.info("Creating bag-of-words model ...")
+        app.logger.info("Creating bag-of-words model ...")
         id_types = preprocessing.create_dictionary(tokens)
         doc_ids = preprocessing.create_dictionary(labels)
         sparse_bow = preprocessing.create_sparse_bow(labels, tokens, id_types, doc_ids)
 
         if request.files.get('stoplist', None):
-            log.info("Accessing external stopword list and cleaning corpus ...")
+            app.logger.info("Accessing external stopword list and cleaning corpus ...")
             words = stopwords.read().decode('utf-8')
             words = set(preprocessing.tokenize(words))
             hapax = preprocessing.find_hapax(sparse_bow, id_types)
@@ -184,22 +180,22 @@ def upload_file():
             sparse_bow = preprocessing.remove_features(sparse_bow, id_types, feature_list)
             stopwords.flush()
         else:
-            log.info("Accessing", threshold, "most frequent words and cleaning corpus ...")
+            app.logger.info("Accessing", threshold, "most frequent words and cleaning corpus ...")
             stopwords = preprocessing.find_stopwords(sparse_bow, id_types, threshold)
             hapax = preprocessing.find_hapax(sparse_bow, id_types)
             feature_list = set(stopwords).union(hapax)
             sparse_bow = preprocessing.remove_features(sparse_bow, id_types, feature_list)
 
-        log.info("Creating matrix market model ...")
+        app.logger.info("Creating matrix market model ...")
         preprocessing.save_sparse_bow(sparse_bow, 'matrixmarket')
 
         mm = MmCorpus('matrixmarket.mm')
         type2id = {value : key for key, value in id_types.items()}
 
-        log.info("Training Gensim LDA model ...")
+        app.logger.info("Training Gensim LDA model ...")
         model = LdaModel(corpus=mm, id2word=type2id, num_topics=num_topics, iterations=num_iterations, passes=10)
 
-        log.info("Visualizing Gensim output ...")
+        app.logger.info("Visualizing Gensim output ...")
         doc_topic = visualization.create_doc_topic(mm, model, corpus.index.tolist())
         heatmap = visualization.doc_topic_heatmap(doc_topic)
         heatmap.savefig(os.path.join('static', 'heatmap.png'))
@@ -211,7 +207,7 @@ def upload_file():
         plt.close()
 
         df = preprocessing.gensim2dataframe(model)
-        log.info("Rendering result page ...")
+        app.logger.info("Rendering result page ...")
         return render_template('result.html', tables=[df.to_html(classes='df')])
 
 
@@ -224,6 +220,9 @@ def add_header(r):
     return r
 
 if __name__ == '__main__':
+    handler = RotatingFileHandler('demonstrator.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.DEBUG)
+    app.logger.addHandler(handler)
     threading.Timer(
         1.25, lambda: webbrowser.open('http://127.0.0.1:5000')).start()
     app.run()
