@@ -617,7 +617,7 @@ def save_sparse_bow(sparse_bow, output):
         sparse_bow.to_csv(f, sep=' ', header=None)
 
 
-def find_stopwords(sparse_bow, id_types, mfw=200):
+def find_stopwords(df, mfw=200, id_types=None):
     """Creates a stopword list.
 
     Description:
@@ -640,20 +640,23 @@ def find_stopwords(sparse_bow, id_types, mfw=200):
         >>> id_types = {'short': 1, 'example': 2, 'text': 3}
         >>> doc_ids = {'exampletext': 1}
         >>> sparse_bow = create_sparse_bow(doc_labels, doc_tokens, id_types, doc_ids)
-        >>> find_stopwords(sparse_bow, id_types, 1)
+        >>> find_stopwords(sparse_bow, 1, id_types)
         ['short']
     """
     log.info("Finding stopwords ...")
-    type2id = {value: key for key, value in id_types.items()}
-    sparse_bow_collapsed = sparse_bow.groupby(
-        sparse_bow.index.get_level_values('token_id')).sum()
-    sparse_bow_stopwords = sparse_bow_collapsed[0].nlargest(mfw)
-    stopwords = [type2id[key]
-                 for key in sparse_bow_stopwords.index.get_level_values('token_id')]
-    return stopwords
+    if isinstance(df.index, pd.MultiIndex):
+        type2id = {value: key for key, value in id_types.items()}
+        sparse_bow_collapsed = df.groupby(
+            df.index.get_level_values('token_id')).sum()
+        sparse_bow_stopwords = sparse_bow_collapsed[0].nlargest(mfw)
+        stopwords = [type2id[key]
+                     for key in sparse_bow_stopwords.index.get_level_values('token_id')]
+        return stopwords
+    else:
+        return df.iloc[:,:100].columns.tolist()
 
 
-def find_hapax(sparse_bow, id_types):
+def find_hapax(df, id_types=None):
     """Creates a list with hapax legommena.
 
     Description:
@@ -679,16 +682,20 @@ def find_hapax(sparse_bow, id_types):
         ['short']
     """
     log.info("Finding hapax legomena ...")
-    type2id = {value: key for key, value in id_types.items()}
-    sparse_bow_collapsed = sparse_bow.groupby(
-        sparse_bow.index.get_level_values('token_id')).sum()
-    sparse_bow_hapax = sparse_bow_collapsed.loc[sparse_bow_collapsed[0] == 1]
-    hapax = [type2id[key]
-             for key in sparse_bow_hapax.index.get_level_values('token_id')]
-    return hapax
+    if isinstance(df.index, pd.MultiIndex):
+        type2id = {value: key for key, value in id_types.items()}
+        sparse_bow_collapsed = df.groupby(
+            df.index.get_level_values('token_id')).sum()
+        sparse_bow_hapax = sparse_bow_collapsed.loc[sparse_bow_collapsed[0] == 1]
+        hapax = [type2id[key]
+                 for key in sparse_bow_hapax.index.get_level_values('token_id')]
+        return hapax
+    else:
+        #return df.loc[:,(df.isin([1])).any()].columns.tolist()
+        return df.loc[:, df.max() == 1].columns.tolist()
 
 
-def remove_features(sparse_bow, id_types, features):
+def remove_features(df, features, id_types=None):
     """Removes features based on a list of words (types).
 
     Description:
@@ -718,16 +725,20 @@ def remove_features(sparse_bow, id_types, features):
         >>> doc_ids = {'exampletext': 1}
         >>> sparse_bow = create_sparse_bow(doc_labels, doc_tokens, id_types, doc_ids)
         >>> features = ['short']
-        >>> len(remove_features(sparse_bow, id_types, features))
+        >>> len(remove_features(sparse_bow, features, id_types))
         2
     """
     log.info("Removing features ...")
-    if isinstance(features, list):
-        features = set(features)
-    stoplist_applied = [word for word in set(id_types.keys()) if word in features]
-    clean_sparse_bow = sparse_bow.drop([id_types[word] for word in stoplist_applied], level="token_id")
-    log.debug("%s features removed.", len(features))
-    return clean_sparse_bow
+    if isinstance(df.index, pd.MultiIndex):
+        if isinstance(features, list):
+            features = set(features)
+        stoplist_applied = [word for word in set(id_types.keys()) if word in features]
+        clean_sparse_bow = sparse_bow.drop([id_types[word] for word in stoplist_applied], level="token_id")
+        return clean_sparse_bow
+    else:
+        features = [token for token in features if token in df.columns]
+        df.drop(features, inplace=True, axis=1)
+        return df
 
 
 def make_doc2bow_list(sparse_bow):
