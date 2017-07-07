@@ -21,6 +21,8 @@ __date__ = "2017-01-20"
 
 
 import logging
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import numpy as np
