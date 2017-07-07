@@ -782,7 +782,7 @@ def lda2dataframe(model, vocab, num_keys=10):
     topic_word = model.topic_word_
     for i, topic_dist in enumerate(topic_word):
         topics.append(np.array(vocab)[np.argsort(topic_dist)][:-num_keys-1:-1])
-    return pd.DataFrame(topics)
+    return pd.DataFrame(topics, index=['Topic ' + str(n+1) for n in range(len(topics))], columns=['Key ' + str(n+1) for n in range(num_keys)])
 
 
 def gensim2dataframe(model, num_keys=10):
