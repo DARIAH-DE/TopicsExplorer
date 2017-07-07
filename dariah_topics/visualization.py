@@ -394,3 +394,11 @@ def plot_wordle_from_mallet(word_weights_file,
     figure_filename = "wordle_tp"+"{:03d}".format(topic_nr) + ".png"
     plt.savefig(outfolder + figure_filename, dpi=dpi)
     return plt
+
+def plot_wordle_from_lda(model, vocab, topic_nr, words, height, width):
+    topic_dist = model.topic_word_[topic_nr]
+    topic_words = np.array(vocab)[np.argsort(topic_dist)][:-words:-1]
+    token_value = {}
+    for token, value in zip(topic_words, topic_dist[:-words:-1]):
+        token_value.update({token: value})
+    return WordCloud(background_color='white', height=height, width=width).fit_words(token_value)
