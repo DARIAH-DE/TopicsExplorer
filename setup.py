@@ -21,7 +21,7 @@ setup(
         'pandas>=0.19.2',
         'regex>=2017.01.14',
         'gensim>=0.13.2',
-        'matplotlib==1.5.3',
+        'matplotlib>=1.5.3',
         'numpy>=1.3',
         'scipy>=0.7',
     ],
