@@ -24,7 +24,7 @@ import logging
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from wordcloud import WordCloud
+#from wordcloud import WordCloud
 import numpy as np
 import os
 import pandas as pd
@@ -61,6 +61,8 @@ class Visualization:
             OSError: If directory or files not found.
             ValueError: If no matching values found.
             Unexpected error: Everything else.
+            
+        Note: Currently not in use due to dependencies
         """
         try:
             log.info("Accessing corpus ...")
@@ -114,6 +116,8 @@ class Visualization:
             * add colorbar
             * create figure dynamically?
                 http://stackoverflow.com/questions/23058560/plotting-dynamic-data-using-matplotlib
+                
+        Note: Currently not in use due to dependencies
         """
         no_of_topics = self.model.num_topics
         no_of_docs = len(self.doc_labels)
@@ -161,6 +165,8 @@ class Visualization:
 
         Returns:
             ~/out/corpus_heatmap.png
+            
+        Note: Currently not in use due to dependencies
         """
         log.info("Saving heatmap figure...")
         try:
@@ -187,6 +193,8 @@ class Visualization:
 
         Returns:
             pyLDAvis visualization.
+            
+        Note: Currently not in use due to dependencies
         """
         log.info("Accessing model, corpus and dictionary ...")
         self.interactive_vis = pyLDAvis.gensim.prepare(self.model, self.corpus, self.dictionary)
@@ -303,6 +311,9 @@ def plot_doc_topics(doc_topic, document_index):
     plt.tight_layout()
     return plt
 
+#
+# Work in progress following
+#
 def topicwords_in_df(model):
     pattern = regex.compile(r'\p{L}+\p{P}?\p{L}+')
     topics = []
