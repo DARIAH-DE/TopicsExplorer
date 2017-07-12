@@ -92,6 +92,13 @@ def create_mallet_binary(path_to_mallet='mallet', path_to_file=False,
 
     Returns:
         String. Absolute path to created MALLET binary file.
+        
+    Example:    
+        >>> outfolder = "tutorial_supplementals/mallet_output"
+        >>> binary = "tutorial_supplementals/mallet_output/binary.mallet"
+        >>> mallet_binary = mallet.create_mallet_binary(path_to_corpus="corpus_txt",
+                                            output_file=binary)
+        'tutorial_supplementals/mallet_output/binary.mallet'
     """
     if system() == 'Windows':
         shell = True
@@ -169,7 +176,7 @@ def create_mallet_binary(path_to_mallet='mallet', path_to_file=False,
 
 
 def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_model=None,
-                        input_state=None, folder_for_output='mallet_output',
+                        input_state=None, folder_for_output='tutorial_supplementals/mallet_output',
                         output_model=False, output_model_interval=0, output_state=False,
                         output_state_interval=0, inferencer_file=False, evaluator_file=False,
                         output_topic_keys=True, topic_word_weights_file=True,
@@ -263,6 +270,16 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
 
     Returns:
         Nothing.
+        
+    Example:    
+        >>> outfolder = "tutorial_supplementals/mallet_output"
+        >>> binary = "tutorial_supplementals/mallet_output/binary.mallet"
+        >>> mallet.create_mallet_model(path_to_binary=binary, 
+                           folder_for_output=outfolder,
+                           num_iterations=5,
+                           num_topics=10)
+        >>> os.path.isfile('tutorial_supplementals/mallet_output/binary.mallet')
+        True
     """
     if system() == 'Windows':
         shell = True
