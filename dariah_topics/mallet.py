@@ -381,14 +381,17 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
        log.debug(stderr.decode('utf-8'))
     except KeyboardInterrupt:
        p.terminate()
-       log.error(out)
+       log.error(stderr.decode('utf-8'))
 
 def _grouper(n, iterable, fillvalue=None):
     """Collects data into fixed-length chunks or blocks.
 
     Args:
+        n (int): Length of chunks or blocks
+        iterable (object): Iterable object
+        fillvalue (boolean): If iterable can not be devided into evenly-sized chunks fill chunks with value.
 
-    Returns:
+    Returns: n-sized chunks
 
     """
 
