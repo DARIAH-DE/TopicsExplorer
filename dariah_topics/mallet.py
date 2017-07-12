@@ -413,7 +413,7 @@ def show_doc_topic_matrix(output_folder, doc_topics='doc_topics.txt', topic_keys
         >>> outfolder = "tutorial_supplementals/mallet_output"
         >>> df = show_doc_topic_matrix(outfolder)
         >>> len(df.T)
-        10
+        17
     """
 
     doc_topics=os.path.join(output_folder, doc_topics)
