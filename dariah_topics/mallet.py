@@ -411,8 +411,8 @@ def show_doc_topic_matrix(output_folder, doc_topics='doc_topics.txt', topic_keys
     
     Example:    
         >>> outfolder = "tutorial_supplementals/mallet_output"
-        >>> doc_topic_matrix.T
-        >>> len(doc_topic_matrix.T)
+        >>> df = show_doc_topic_matrix(output_folder)
+        >>> len(df.T)
         10
     """
 
@@ -515,7 +515,8 @@ def show_topics_keys(output_folder, topicsKeyFile="topic_keys.txt", num_topics=1
     
     Example:    
         >>> outfolder = "tutorial_supplementals/mallet_output"
-        >>> len(topicKeysMatrix)
+        >>> df = show_topics_keys(output_folder, num_topics=10)
+        >>> len(df)
         10
     """
 
