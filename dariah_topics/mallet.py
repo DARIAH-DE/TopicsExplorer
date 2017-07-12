@@ -92,12 +92,6 @@ def create_mallet_binary(path_to_mallet='mallet', path_to_file=False,
 
     Returns:
         String. Absolute path to created MALLET binary file.
-        
-    Example:    
-        >>> outfolder = "tutorial_supplementals/mallet_output"
-        >>> binary = "tutorial_supplementals/mallet_output/binary.mallet"
-        >>> mallet_binary = mallet.create_mallet_binary(path_to_corpus="corpus_txt",output_file=binary)
-        'tutorial_supplementals/mallet_output/binary.mallet'
     """
     if system() == 'Windows':
         shell = True
@@ -269,13 +263,6 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
 
     Returns:
         Nothing.
-        
-    Example:    
-        >>> outfolder = "tutorial_supplementals/mallet_output"
-        >>> binary = "tutorial_supplementals/mallet_output/binary.mallet"
-        >>> mallet.create_mallet_model(path_to_binary=binary, folder_for_output=outfolder, num_iterations=5,num_topics=10)
-        >>> os.path.isfile('tutorial_supplementals/mallet_output/binary.mallet')
-        True
     """
     if system() == 'Windows':
         shell = True
@@ -421,6 +408,12 @@ def show_doc_topic_matrix(output_folder, doc_topics='doc_topics.txt', topic_keys
         topic_keys (str): Name of MALLET's topic_keys file. Defaults to 'topic_keys.txt'.
 
     ToDo: Prettify docnames
+    
+    Example:    
+        >>> outfolder = "tutorial_supplementals/mallet_output"
+        >>> doc_topic_matrix.T
+        >>> len(doc_topic_matrix.T)
+        10
     """
 
     doc_topics=os.path.join(output_folder, doc_topics)
@@ -519,6 +512,11 @@ def show_topics_keys(output_folder, topicsKeyFile="topic_keys.txt", num_topics=1
     Note: FBased on DARIAH-Tutorial -> https://de.dariah.eu/tatom/topic_model_mallet.html
 
     ToDo: Prettify index
+    
+    Example:    
+        >>> outfolder = "tutorial_supplementals/mallet_output"
+        >>> len(topicKeysMatrix)
+        10
     """
 
     path_to_topic_keys=os.path.join(output_folder, topicsKeyFile)
