@@ -96,8 +96,7 @@ def create_mallet_binary(path_to_mallet='mallet', path_to_file=False,
     Example:    
         >>> outfolder = "tutorial_supplementals/mallet_output"
         >>> binary = "tutorial_supplementals/mallet_output/binary.mallet"
-        >>> mallet_binary = mallet.create_mallet_binary(path_to_corpus="corpus_txt",
-                                            output_file=binary)
+        >>> mallet_binary = mallet.create_mallet_binary(path_to_corpus="corpus_txt",output_file=binary)
         'tutorial_supplementals/mallet_output/binary.mallet'
     """
     if system() == 'Windows':
@@ -274,10 +273,7 @@ def create_mallet_model(path_to_mallet='mallet', path_to_binary=None, input_mode
     Example:    
         >>> outfolder = "tutorial_supplementals/mallet_output"
         >>> binary = "tutorial_supplementals/mallet_output/binary.mallet"
-        >>> mallet.create_mallet_model(path_to_binary=binary, 
-                           folder_for_output=outfolder,
-                           num_iterations=5,
-                           num_topics=10)
+        >>> mallet.create_mallet_model(path_to_binary=binary, folder_for_output=outfolder, num_iterations=5,num_topics=10)
         >>> os.path.isfile('tutorial_supplementals/mallet_output/binary.mallet')
         True
     """

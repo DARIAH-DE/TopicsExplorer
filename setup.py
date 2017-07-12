@@ -31,8 +31,8 @@ setup(
             'flask>=0.11.1'
         ],
         'vis': [
-            'wordcloud>=1.3.1',
-            'pyLDAvis>=2.0.0',    # to feature 'pyldavis'
+            #'wordcloud>=1.3.1',
+            #'pyLDAvis>=2.0.0',    # to feature 'pyldavis'
         ],
         'evaluation': [
             'wikipedia>=1.4.0',
