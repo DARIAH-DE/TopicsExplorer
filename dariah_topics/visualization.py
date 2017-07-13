@@ -20,6 +20,7 @@ __version__ = "0.1"
 __date__ = "2017-01-20"
 
 
+from bokeh.charts import HeatMap
 import logging
 import matplotlib
 matplotlib.use('Agg')
@@ -61,7 +62,7 @@ class Visualization:
             OSError: If directory or files not found.
             ValueError: If no matching values found.
             Unexpected error: Everything else.
-            
+
         Note: Currently not in use due to dependencies
         """
         try:
@@ -116,7 +117,7 @@ class Visualization:
             * add colorbar
             * create figure dynamically?
                 http://stackoverflow.com/questions/23058560/plotting-dynamic-data-using-matplotlib
-                
+
         Note: Currently not in use due to dependencies
         """
         no_of_topics = self.model.num_topics
@@ -165,7 +166,7 @@ class Visualization:
 
         Returns:
             ~/out/corpus_heatmap.png
-            
+
         Note: Currently not in use due to dependencies
         """
         log.info("Saving heatmap figure...")
@@ -193,7 +194,7 @@ class Visualization:
 
         Returns:
             pyLDAvis visualization.
-            
+
         Note: Currently not in use due to dependencies
         """
         log.info("Accessing model, corpus and dictionary ...")
@@ -415,3 +416,15 @@ def plot_wordle_from_lda(model, vocab, topic_nr, words, height, width):
     for token, value in zip(topic_words, topic_dist[:-words:-1]):
         token_value.update({token: value})
     return WordCloud(background_color='white', height=height, width=width).fit_words(token_value)
+
+
+def doc_topic_heatmap_interactive(doc_topics):
+    score = []
+    for x in doc_topics.apply(tuple):
+        score.extend(x)
+    data = {
+      'Topic': list(doc_topics.index) * len(doc_topics.columns),
+      'Document':  [item for item in list(doc_topics.columns) for i in range(len(doc_topics.index))],
+      'Score':   score
+    }
+    return HeatMap(data, x='Topic', y='Document',values='Score', stat=None, legend=False)
