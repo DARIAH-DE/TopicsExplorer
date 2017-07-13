@@ -24,6 +24,7 @@ setup(
         'matplotlib>=1.5.3',
         'numpy>=1.3',
         'scipy>=0.7',
+        'bokeh>=0.12.6'
     ],
     # pip install -e .[demonstrator,vis,evaluation]
     extras_require={
