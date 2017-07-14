@@ -11,9 +11,9 @@ This web application introduces an user-friendly workflow, basically containing 
 ### Running the application
 To run the application, type `python demonstrator.py` (or `python3 demonstrator.py` for UNIX) in the command-line and press enter. Your default browser should immediately display the interface (it might take some seconds until your browser automatically opens – if not, do it by yourself and go to `http://127.0.0.1:5000`).<br>
 
-**Important**: This application aims for simplicity and usability. If you are working with a large corpus (> 200 documents) you may wish to use more sophisticated topic models such as those implemented in MALLET, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing topic modeling with MALLET](Introducing_MALLET.ipynb).<br>
+**Important**: This application aims for simplicity and usability. If you are working with a large corpus (> 200 documents) you may wish to use more sophisticated topic models such as those implemented in MALLET, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing topic modeling with MALLET](https://github.com/DARIAH-DE/Topics/tree/testing/Introducing_MALLET.ipynb).<br>
 
-**Hint**: To gain better results, it is highly recommended to use one of the provided [stopword lists](tutorial_supplementals/stopwords). Removing the most frequent words is a dangerous game, because you might remove quite important words.
+**Hint**: To gain better results, it is highly recommended to use one of the provided [stopword lists](https://github.com/DARIAH-DE/Topics/tree/testing/tutorial_supplementals/stopwords). Removing the most frequent words is a dangerous game, because you might remove quite important words.
 
 ### Handling the application
 The application behaves just like any other website. Basically, there are only two sites: one to select text files and make some more adjustments, and one to show what your topic model has generated. Once clicked the `Send`-button, all generated data will be stored in the cache and you can jump between the pages without losing any data. **But be careful**, once you clicked the `Send`-button again, all of the previous data will be lost.
