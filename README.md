@@ -1,45 +1,45 @@
-# Topics – Easy Topic Modeling in Python
+# Demonstrator: GUI for Topics – Easy Topic Modeling
 
-Topics is a gentle introduction to Topic Modeling. It provides a convenient, modular workflow that can be entirely controlled from within and which comes with a well documented [Jupyter notebook](http://jupyter.org/), integrating three of the most popular LDA implementations: [gensim](https://radimrehurek.com/gensim/), [MALLET](http://mallet.cs.umass.edu/), and [lda](http://pythonhosted.org/lda/index.html). Users not yet familiar with working with Python scripts can test basic topic modeling in a [Flask](http://flask.pocoo.org/)-based [GUI demonstrator](/demonstrator/README.md).
+This web application introduces an user-friendly workflow, basically containing data preprocessing, an implementation of the prototypic topic model latent Dirichlet allocation (LDA), as well as one interactive visualization (but more to come).
 
+![screenshot](https://picload.org/image/rplodrar/screenshot2017-07-08at12.32.57.png)
 
-At the moment, there are three Jupyter notebooks containing three different LDA implementations:
-- [An Introduction to lda](Introducing_lda.ipynb)
-- [An Introduction to gensim](Introducing_gensim.ipynb)
-- [An Introduction to MALLET](Introducing_MALLET.ipynb)
+## First steps
 
+**Important**: Please make sure all dependencies are properly installed, including the `dariah_topics` module. If not (or you are not sure), simply run `pip install -e .[demonstrator]` (or `sudo pip3 install -e .[demonstrator]` if you are on an [UNIX-based](https://en.wikipedia.org/wiki/Unix) operating system like macOS or Linux Ubuntu) through the [command-line](https://en.wikipedia.org/wiki/Command-line_interface).
 
-### Getting Started
+# Running the application
+To run the application, type `python demonstrator.py` (or `python3 demonstrator.py` for UNIX) in the command-line and press enter. Your default browser should immediately display the interface (it might take some seconds until your browser automatically opens – if not, do it by yourself and go to `http://127.0.0.1:5000`).<br>
 
-#### Windows
+**Important**: This application aims for simplicity and usability. If you are working with a large corpus (> 200 documents) you may wish to use more sophisticated topic models such as those implemented in MALLET, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing topic modeling with MALLET](Introducing_MALLET.ipynb).<br>
 
-1.  Download and install the latest version of [WinPython](https://winpython.github.io/).
-2.  Download and install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
-3.  Open the **WinPython PowerShell Prompt.exe** in your **WinPython** folder and type `git clone https://github.com/DARIAH-DE/Topics.git` to clone **Topics** into your WinPython folder.
-4.  Type `cd .\Topics` in **WinPython PowerShell** to navigate to the **Topics** folder. 
-5a. Either: Type `pip install .` in **Winpython PowerShell** to install packages required by **Topics** 
-5b. Or: Type `pip install -r requirements.txt` in **Winpython PowerShell** to install **Topics** with additional development packages.
-6.  Type `jupyter notebook` in **WinPython PowerShell** to open Jupyter, select one of the files with suffix `.ipynb` and follow the instructions.
-7.  **Note**: For the development packages the Python module **future** is needed. Depending in your WinPython and your Windows version you might have to install **future** manually.
-8.  Therefore, download the latest [future-x.xx.x-py3-none-any.whl](http://www.lfd.uci.edu/~gohlke/pythonlibs/).
-9.  Open the **WinPython Control Panel.exe** in your **WinPython** folder.
-10. Install the **future**-wheel via the **WinPython Control Panel.exe**.
+**Hint**: To gain better results, it is highly recommended to use one of the provided [stopword lists](tutorial_supplementals/stopwords). Removing the most frequent words is a dangerous game, because you might remove quite important words.
 
+## Handling the application
+The application behaves just like any other website. Basically, there are only two sites: one to select text files and make some more adjustments, and one to show what your topic model has generated. Once clicked the `Send`-button, all generated data will be stored in the cache and you can jump between the pages without losing any data. **But be careful**, once you clicked the `Send`-button again, all of the previous data will be lost.
 
-#### macOS and Linux
-
-1. Download and install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
-2. Open the [command-line interface](https://en.wikipedia.org/wiki/Command-line_interface), type `git clone https://github.com/DARIAH-DE/Topics.git` to clone **Topics** into your working directory.
-3. **Note**: The distribution packages `libfreetype6-dev` and `libpng-dev` and a compiler for C++, e.g. [gcc](https://gcc.gnu.org/) have to be installed.
-4. Open the [command-line interface](https://en.wikipedia.org/wiki/Command-line_interface), navigate to the folder **Topics**  and type `pip install . --user` to install the required packages.
-5. Install [Jupyter](http://jupyter.readthedocs.io/en/latest/install.html) and run it by typing `jupyter notebook` in the command-line.
-5. Access the folder **Topics** through Jupyter in your browser, select one of the files with suffix `.ipynb` and follow the instructions.
+## Troubleshooting
+If you are confronted with any issues, please use `Issues` [on GitHub](https://github.com/DARIAH-DE/Topics/issues).<br>
+Hopefully, you are able to solve issues by yourself with the help of the following hints:
+- Please be patient. Depending on corpus size and number of iterations, topic modeling may take some time, meaning something between some seconds and some hours. Our example corpus should be done within a minute or two. If the application has crashed, you will get an `Internal Server Error` in your browser.
+- Logging is available via the commmand-line – this might help you solving problems. One possible error could be `OSError: [Errno 24] Too many open files`, meaning your corpus is too big for this application. In this case, try one of the Jupyter notebooks – they are designed for large corpora.
+- Make sure you run `demonstrator.py` within the correct command-line. For example, if you installed WinPython on your machine, you have to use `WinPython PowerShell Prompt.exe` and not `cmd.exe`. If you are using Anaconda, try running `demonstrator.py` through Anaconda.
+- In case you want to jump from the output site back to the first page, but your browser displays a blank page, press the reload button. Jumping between sites should be possible within seconds, in any other cases something went wrong.
+- If you get a `ModuleNotFoundError`-error, your dependencies are probably not up-to-date. Try running `pip install -e .[demonstrator]` (or `sudo pip3 install -e .[demonstrator]` for UNIX) in the command-line.
 
 
-#### Working with MALLET
+## Stand-alone application for macOS
+Although this application is built with Python, it is possible to run it as if it was a native application, without having to install Python or any related packages. There is currently only one build for macOS, soon also for Windows.
 
-1. Download and unzip [MALLET](http://mallet.cs.umass.edu).
-2. Set the environment variable for MALLET.
+# Running the stand-alone application
+1. Download `demonstrator-mac-0.0.1.dmg` from the [release-section](https://github.com/DARIAH-DE/Topics/releases/tag/0.0.1).
+2. Open it by double-clicking.
+3. Drag the app into your `Applications` folder – or into any folder at all.
+4. Run the app by double-clicking.
+5. If you get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
 
+## Creating a build
+To create a stand-alone application, you need to install `pyinstaller` and run:
 
-For more detailed instructions, have a look at [this](http://programminghistorian.org/lessons/topic-modeling-and-mallet).
+1. For Mac: `pyinstaller --onefile --windowed --add-data static:static --add-data templates:templates --additional-hooks-dir hooks demonstrator.py`
+2. For Windows: `pyinstaller --onefile --windowed --add-data static;static --add-data templates;templates --additional-hooks-dir hooks demonstrator.py`
