@@ -34,6 +34,3 @@ def jupyter_gensim_test():
 
 def jupyter_MALLET_test():
     run_notebook("Introducing_MALLET.ipynb")
-
-def jupyter_integration_test():
-    run_notebook("IntegrationTest_txt_gensim.ipynb")
