@@ -6,9 +6,9 @@ project_path = Path(__file__).absolute().parent.parent
 
 
 def setup():
-    global corpus_txt, docs, testfilenames, segments
+    global grenzboten_sample, docs, testfilenames, segments
     testfilenames = ['file1.txt', 'file2.txt', 'subdir/file3.txt']
-    corpus_txt = PathDocList(str(project_path.joinpath('grenzboten_sample')))
+    grenzboten_sample = PathDocList(str(project_path.joinpath('grenzboten_sample')))
     docs = PathDocList('test', filenames=testfilenames)
     segments = [
         # file1:
@@ -20,8 +20,8 @@ def setup():
 
 
 def test_pdl_glob():
-    """The glob created list should contain the 17 files from corpus_txt"""
-    eq_(len(corpus_txt), 17, msg="Not 17 texts: " + str(docs))
+    """The glob created list should contain the 30 files from grenzboten_sample"""
+    eq_(len(grenzboten_sample), 30, msg="Not 30 texts: " + str(docs))
 
 
 def test_pdl_list():
