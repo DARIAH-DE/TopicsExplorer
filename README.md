@@ -2,7 +2,9 @@
 
 This web application introduces an user-friendly workflow, basically containing data preprocessing, an implementation of the prototypic topic model latent Dirichlet allocation (LDA), as well as one interactive visualization (but more to come).
 
-<img align="center" src="https://media.giphy.com/media/sFKlVo4Ko1d8A/giphy.gif" alt="Topics">
+<p align="center">
+  <img src="https://media.giphy.com/media/sFKlVo4Ko1d8A/giphy.gif" alt="Topics"/>
+</p>
 
 ## First steps
 
