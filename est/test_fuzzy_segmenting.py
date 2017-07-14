@@ -97,7 +97,7 @@ def test_overlong_chunk():
 
 def test_segment():
     """segment convenience wrapper"""
-    path = project_path.joinpath('corpus_txt', 'Doyle_AStudyinScarlet.txt')
+    path = project_path.joinpath('grenzboten_sample', 'Grenzboten_1844_Tagebuch_56.txt')
     text = path.read_text(encoding='utf-8')
     segments = segment(text, segment_size=1000, tolerance=0.05,
                        chunker=partial(split_paragraphs, sep=re.compile(r'\n\n')),

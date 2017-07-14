@@ -8,7 +8,7 @@ project_path = Path(__file__).absolute().parent.parent
 def setup():
     global corpus_txt, docs, testfilenames, segments
     testfilenames = ['file1.txt', 'file2.txt', 'subdir/file3.txt']
-    corpus_txt = PathDocList(str(project_path.joinpath('corpus_txt')))
+    corpus_txt = PathDocList(str(project_path.joinpath('grenzboten_sample')))
     docs = PathDocList('test', filenames=testfilenames)
     segments = [
         # file1:
