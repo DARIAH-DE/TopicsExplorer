@@ -19,8 +19,7 @@ To run the application, type `python demonstrator.py` (or `python3 demonstrator.
 The application behaves just like any other website. Basically, there are only two sites: one to select text files and make some more adjustments, and one to show what your topic model has generated. Once clicked the `Send`-button, all generated data will be stored in the cache and you can jump between the pages without losing any data. **But be careful**, once you clicked the `Send`-button again, all of the previous data will be lost.
 
 ### Troubleshooting
-If you are confronted with any issues, please use `Issues` [on GitHub](https://github.com/DARIAH-DE/Topics/issues).<br>
-Hopefully, you are able to solve issues by yourself with the help of the following hints:
+If you are confronted with any issues, please use `Issues` [on GitHub](https://github.com/DARIAH-DE/Topics/issues). Hopefully, you are able to solve issues by yourself with the help of the following hints:
 - Please be patient. Depending on corpus size and number of iterations, topic modeling may take some time, meaning something between some seconds and some hours. Our example corpus should be done within a minute or two. If the application has crashed, you will get an `Internal Server Error` in your browser.
 - Logging is available via the commmand-line – this might help you solving problems. One possible error could be `OSError: [Errno 24] Too many open files`, meaning your corpus is too big for this application. In this case, try one of the Jupyter notebooks – they are designed for large corpora.
 - Make sure you run `demonstrator.py` within the correct command-line. For example, if you installed WinPython on your machine, you have to use `WinPython PowerShell Prompt.exe` and not `cmd.exe`. If you are using Anaconda, try running `demonstrator.py` through Anaconda.
