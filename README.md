@@ -6,7 +6,7 @@ This web application introduces an user-friendly workflow, basically containing 
 
 ## First steps
 
-**Important**: Please make sure all dependencies are properly installed, including the `dariah_topics` module. If not (or you are not sure), simply run `pip install -e .[demonstrator]` (or `sudo pip3 install -e .[demonstrator]` if you are on an [UNIX-based](https://en.wikipedia.org/wiki/Unix) operating system like macOS or Linux Ubuntu) through the [command-line](https://en.wikipedia.org/wiki/Command-line_interface).
+**Important**: Please make sure all dependencies are properly installed, including the `dariah_topics` module. If not (or you are not sure), simply run `pip install -r requirements.txt` (or `pip3 install -r requirements.txt` if you are on an [UNIX-based](https://en.wikipedia.org/wiki/Unix) operating system like macOS or Linux Ubuntu) through the [command-line](https://en.wikipedia.org/wiki/Command-line_interface) within `Topics`.
 
 ### Running the application
 To run the application, type `python demonstrator.py` (or `python3 demonstrator.py` for UNIX) in the command-line and press enter. Your default browser should immediately display the interface (it might take some seconds until your browser automatically opens – if not, do it by yourself and go to `http://127.0.0.1:5000`).<br>
