@@ -118,7 +118,7 @@
               <p>Each topic has a certain probability for each document in the corpus. This probability distributions are visualized in an interactive <b>heatmap</b> (the darker the color, the higher the probability) which displays the kind of information
                 that is presumably most useful to literary scholars. Going beyond pure exploration, this visualization can be used to show thematic developments over a set of texts as well as a single text, akin to a dynamic topic model. What might become
                 apparent here, is that some topics correlate highly with a specific author or group of authors, while other topics correlate highly with a specific text or group of texts.</p><br>
-              <div class="plot">{{ div|safe }}</div><br>
+              {{ div|safe }}<br>
               <!-- <p>In case you are interested in one specific document, the following visualization option contains information about the topics and their respective proportions for the specific document.
                 <img style="display:block; margin-left: auto; margin-right: auto;" src={{url_for( 'static', filename='topics.png' )}}> -->
               <h2>2. Getting deeper into topic modeling</h2>
@@ -127,9 +127,8 @@
                 of three popular LDA implementations: <a href="http://pythonhosted.org/lda/index.html">lda</a>, which you already know from this application, as well as <a href="http://radimrehurek.com/gensim">Gensim</a> and <a href="http://mallet.cs.umass.edu">MALLET</a>.</p>
               <p>All ressources are available via <a href="https://github.com/DARIAH-DE/Topics">GitHub</a>.</p>
               <hr>
-              <div class="plot" <h2>Contact</h2>
+              <h2>Contact</h2>
                 <p><a href="mailto:pielstroem@biozentrum.uni-wuerzburg.de">Dr. Steffen Pielström</a>, University of Würzburg</p>
-              </div>
             </div>
           </div>
         </div>
