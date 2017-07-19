@@ -24,7 +24,7 @@ If you are confronted with any issues, please use `Issues` [on GitHub](https://g
 - Logging is available via the commmand-line – this might help you solving problems. One possible error could be `OSError: [Errno 24] Too many open files`, meaning your corpus is too big for this application. In this case, try one of the Jupyter notebooks – they are designed for large corpora.
 - Make sure you run `demonstrator.py` within the correct command-line. For example, if you installed WinPython on your machine, you have to use `WinPython PowerShell Prompt.exe` and not `cmd.exe`. If you are using Anaconda, try running `demonstrator.py` through Anaconda.
 - In case you want to jump from the output site back to the first page, but your browser displays a blank page, press the reload button. Jumping between sites should be possible within seconds, in any other cases something went wrong.
-- If you get a `ModuleNotFoundError`-error, your dependencies are probably not up-to-date. Try running `pip install -e .[demonstrator]` (or `sudo pip3 install -e .[demonstrator]` for UNIX) in the command-line.
+- If you get a `ModuleNotFoundError`-error, your dependencies are probably not up-to-date. Try running `pip install -r requirements.txt` (or `pip3 install -r requirements.txt` for UNIX) in the command-line within `Topics`.
 
 
 ## Stand-alone application for macOS
