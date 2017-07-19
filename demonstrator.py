@@ -11,12 +11,6 @@ web application provided by `DARIAH-DE`_.
 """
 
 
-import ensurepip
-ensurepip.bootstrap()
-import pip
-pip.main(['instal', 'bokeh'])
-
-
 from bokeh.embed import components
 from bokeh.resources import INLINE
 from dariah_topics import preprocessing
