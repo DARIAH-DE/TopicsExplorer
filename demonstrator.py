@@ -20,7 +20,6 @@ import lda
 from lxml import etree
 import os
 import pandas as pd
-import shutil
 import sys
 import threading
 import webbrowser
