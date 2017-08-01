@@ -111,7 +111,7 @@ def upload_file():
     print("Accessing doc-topic-matrix ...")
     doc_topics = preprocessing.lda_doc_topic(model, topics, corpus.index)
     print("Creating interactive heatmap ...")
-    heatmap = visualization.doc_topic_heatmap_interactive(doc_topics, title="Grenzboten")
+    heatmap = visualization.doc_topic_heatmap_interactive(doc_topics, title=" ")
     script, div = components(heatmap)
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
