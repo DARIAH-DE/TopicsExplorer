@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+import sys
+sys.path.insert(0, 'demonstrator')
 
 import demonstrator
 from io import BytesIO
 import os
 import tempfile
 import unittest
+from pathlib import Path
 
 
 class DemonstratorTestCase(unittest.TestCase):
@@ -12,6 +15,7 @@ class DemonstratorTestCase(unittest.TestCase):
         self.db_fd, demonstrator.app.config['DATABASE'] = tempfile.mkstemp()
         demonstrator.app.testing = True
         self.app = demonstrator.app.test_client()
+        self.project_path = Path(__file__).absolute().parent.parent
 
     def tearDown(self):
         os.close(self.db_fd)
@@ -22,9 +26,8 @@ class DemonstratorTestCase(unittest.TestCase):
         assert b'index' in rv.data
 
     def test_topic_modeling(self):
-        with open(os.path.join(os.path.dirname(os.getcwd()),
-                               'grenzboten_sample',
-                               'Grenzboten_1844_Tagebuch_56.txt'), 'rb') as f:
+        with Path(self.project_path, 'grenzboten_sample',
+                  'Grenzboten_1844_Tagebuch_56.txt').open('rb') as f:
             text_bytes = f.read()
         int_bytes = b"1"
         stopword_bytes = b"foo bar"
