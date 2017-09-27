@@ -97,7 +97,7 @@ def upload_file():
     hapax = preprocessing.find_hapax(doc_term_matrix)
     features = set(stopwords).union(hapax)
     print("Removing stopwords and hapax legomena from corpus ...")
-    doc_term_matrix = preprocessing.remove_features(doc_term_matrix, features)
+    doc_term_matrix = preprocessing.remove_features_from_df(doc_term_matrix, features)
     doc_term_arr = doc_term_matrix.as_matrix().astype(int)
     print("Accessing corpus vocabulary ...")
     corpus_vocabulary = doc_term_matrix.columns
