@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from dariah_topics.preprocessing import segment_fuzzy, split_paragraphs, \
     segment, tokenize
 from functools import partial
