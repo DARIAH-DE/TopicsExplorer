@@ -14,6 +14,12 @@ from pathlib import Path
 int_bytes = b"1"
 stopword_bytes = b"this\nis\na\nstopwords\nlist"
 text_bytes = b"""
+I had called upon my friend, Mr. Sherlock Holmes, one day in the autumn
+of last year, and found him in deep conversation with a very stout,
+florid-faced elderly gentleman, with fiery red hair. With an apology for
+my intrusion, I was about to withdraw, when Holmes pulled me abruptly into
+the room and closed the door behind me.
+
 "Wedlock suits you," he remarked. "I think Watson, that you have put on
 seven and a half pounds since I saw you."
 
