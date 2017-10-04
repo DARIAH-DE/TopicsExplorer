@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from subprocess import check_output, STDOUT, CalledProcessError
 from nose.plugins.skip import SkipTest
 from pathlib import Path
