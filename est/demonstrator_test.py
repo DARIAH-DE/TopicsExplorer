@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import sys
 sys.path.insert(0, 'demonstrator')
-
 import demonstrator
 from io import BytesIO
 import os
 import tempfile
 import unittest
-from pathlib import Path
 
 
 class DemonstratorTestCase(unittest.TestCase):
@@ -26,12 +26,10 @@ class DemonstratorTestCase(unittest.TestCase):
         assert b'index' in rv.data
 
     def test_topic_modeling(self):
-        with Path(self.project_path, 'grenzboten_sample',
-                  'Grenzboten_1844_Tagebuch_56.txt').open('rb') as f:
-            text_bytes = f.read()
-        int_bytes = b"1"
-        stopword_bytes = b"foo bar"
-        files = (BytesIO(text_bytes), 'Grenzboten_1844_Tagebuch_56.txt')
+        text_bytes = "This is an example."
+        int_bytes = "1"
+        stopword_bytes = "this\nis\na\nstopwords\nlist"
+        files = (BytesIO(text_bytes), 'document.txt')
         num_topics = BytesIO(int_bytes)
         num_iterations = BytesIO(int_bytes)
         stopword_list = (BytesIO(stopword_bytes), 'stopwords.txt')
