@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from dariah_topics.doclist import PathDocList
 from pathlib import Path
 from nose.tools import eq_
