@@ -11,6 +11,21 @@ import unittest
 from pathlib import Path
 
 
+int_bytes = b"1"
+stopword_bytes = b"this\nis\na\nstopwords\nlist"
+text_bytes = b"""
+"Wedlock suits you," he remarked. "I think Watson, that you have put on
+seven and a half pounds since I saw you."
+
+"Seven," I answered.
+
+"Indeed, I should have thought a little more. Just a trifle more, I
+fancy, Watson. And in practice again, I observe. You did not tell me
+that you intended to go into harness."
+
+"Then how do you know?"
+"""
+
 class DemonstratorTestCase(unittest.TestCase):
     def setUp(self):
         self.db_fd, demonstrator.app.config['DATABASE'] = tempfile.mkstemp()
@@ -27,9 +42,6 @@ class DemonstratorTestCase(unittest.TestCase):
         assert b'index' in rv.data
 
     def test_topic_modeling(self):
-        text_bytes = b"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua." * 10
-        int_bytes = b"1"
-        stopword_bytes = b"this\nis\na\nstopwords\nlist"
         files = (BytesIO(text_bytes), 'document.txt')
         num_topics = BytesIO(int_bytes)
         num_iterations = BytesIO(int_bytes)
