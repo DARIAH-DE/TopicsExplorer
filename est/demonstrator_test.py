@@ -27,7 +27,7 @@ class DemonstratorTestCase(unittest.TestCase):
         assert b'index' in rv.data
 
     def test_topic_modeling(self):
-        text_bytes = b"This is an example."
+        text_bytes = b"This is an example. " * 50
         int_bytes = b"1"
         stopword_bytes = b"this\nis\na\nstopwords\nlist"
         files = (BytesIO(text_bytes), 'document.txt')
