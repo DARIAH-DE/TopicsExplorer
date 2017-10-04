@@ -8,6 +8,7 @@ from io import BytesIO
 import os
 import tempfile
 import unittest
+from pathlib import Path
 
 
 class DemonstratorTestCase(unittest.TestCase):
