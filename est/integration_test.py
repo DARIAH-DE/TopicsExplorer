@@ -30,10 +30,10 @@ def run_notebook(notebook_name):
 
 @SkipTest
 def jupyter_lda_test():
-    run_notebook("Introducing_lda.ipynb")
+    run_notebook("IntroducingLda.ipynb")
 
 def jupyter_gensim_test():
-    run_notebook("Introducing_gensim.ipynb")
+    run_notebook("IntroducingGensim.ipynb")
 
 def jupyter_MALLET_test():
-    run_notebook("Introducing_MALLET.ipynb")
+    run_notebook("IntroducingMallet.ipynb")
