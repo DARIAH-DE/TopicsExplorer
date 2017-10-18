@@ -11,9 +11,9 @@ This web application introduces an user-friendly workflow, basically containing 
 ### Running the application
 To run the application, type `python demonstrator.py` (or `python3 demonstrator.py` for UNIX) in the command-line and press enter. Your default browser should immediately display the interface (it might take some seconds until your browser automatically opens – if not, do it by yourself and go to `http://127.0.0.1:5000`).<br>
 
-**Important**: This application aims for simplicity and usability. If you are working with a large corpus (> 200 documents) you may wish to use more sophisticated topic models such as those implemented in MALLET, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing topic modeling with MALLET](https://github.com/DARIAH-DE/Topics/tree/testing/Introducing_MALLET.ipynb).<br>
+**Important**: This application aims for simplicity and usability. If you are working with a large corpus (> 200 documents) you may wish to use more sophisticated topic models such as those implemented in MALLET, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing topic modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/testing/IntroducingMallet.ipynb).<br>
 
-**Hint**: To gain better results, it is highly recommended to use one of the provided [stopword lists](https://github.com/DARIAH-DE/Topics/tree/testing/tutorial_supplementals/stopwords). Removing the most frequent words is a dangerous game, because you might remove quite important words.
+**Hint**: To gain better results, it is highly recommended to use one of the provided [stopword lists](https://github.com/DARIAH-DE/Topics/blob/master/tutorial_supplementals/stopwords). Removing the most frequent words is a dangerous game, because you might remove quite important words.
 
 ### Handling the application
 The application behaves just like any other website. Basically, there are only two sites: one to select text files and make some more adjustments, and one to show what your topic model has generated. Once clicked the `Send`-button, all generated data will be stored in the cache and you can jump between the pages without losing any data. **But be careful**, once you clicked the `Send`-button again, all of the previous data will be lost.
@@ -27,15 +27,14 @@ If you are confronted with any issues, please use `Issues` [on GitHub](https://g
 - If you get a `ModuleNotFoundError`-error, your dependencies are probably not up-to-date. Try running `pip install -r requirements.txt` (or `pip3 install -r requirements.txt` for UNIX) in the command-line within `Topics`.
 
 
-## Stand-alone application for macOS
-Although this application is built with Python, it is possible to run it as if it was a native application, without having to install Python or any related packages. There is currently only one build for macOS, soon also for Windows.
+## Stand-alone application
+Although this application is built with Python, it is possible to run it as if it was a native application, without having to install Python or any related packages. There is currently one build for Windows and macOS, respectively.
 
 ### Running the stand-alone application
-1. Download `demonstrator-mac-0.0.1.dmg` from the [release-section](https://github.com/DARIAH-DE/Topics/releases/tag/0.0.1).
+1. Download `demonstrator-0.0.1-windows.zip` or `demonstrator-0.0.1-mac.zip` from the [release-section](https://github.com/DARIAH-DE/Topics/releases/tag/0.0.1).
 2. Open it by double-clicking.
-3. Drag the app into your `Applications` folder – or into any folder at all.
-4. Run the app by double-clicking.
-5. If you get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
+3. Run the app by double-clicking.
+4. **Mac**: If you get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
 
 ## Creating a build
 To create a stand-alone application, you need to install `pyinstaller` and run:
