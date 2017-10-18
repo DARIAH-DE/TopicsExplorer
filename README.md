@@ -1,6 +1,6 @@
 # Demonstrator: GUI for Topics – Easy Topic Modeling
 
-This web application introduces an user-friendly workflow, basically containing data preprocessing, an implementation of the prototypic topic model latent Dirichlet allocation (LDA), as well as one interactive visualization (but more to come).
+This web application introduces an user-friendly workflow, basically containing data preprocessing, an implementation of the prototypic topic model latent Dirichlet allocation (LDA), as well as one interactive visualization.
 
 ![Demonstrator Screenshot](screenshot.png)
 
