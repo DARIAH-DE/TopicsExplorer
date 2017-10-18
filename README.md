@@ -2,7 +2,7 @@
 
 This web application introduces an user-friendly workflow, basically containing data preprocessing, an implementation of the prototypic topic model latent Dirichlet allocation (LDA), as well as one interactive visualization (but more to come).
 
-<img src="screenshot.png" alt="Demonstrator Screenshot">
+![Demonstrator Screenshot](screenshot.png)
 
 ## First steps
 
