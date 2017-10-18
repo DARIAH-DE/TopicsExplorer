@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Demonstrator: Topics – Easy Topic Modeling.
+"""Topics – Easy Topic Modeling Demonstrator.
 
-This script demonstrates the joy of Topic Modeling, wrapped in an user-friendly
-web application provided by `DARIAH-DE`_.
+This is a web-application introducing the text mining technique Topic Modeling.
+Open a command-line and type `python demonstrator.py` to run the application,
+your browser will be launched by default. If not, go to http://127.0.0.1:5000/
+by yourself.
 
-.. _DARIAH-DE:
-    https://de.dariah.eu
+There are also standalone executables for Windows and macOS available. Please
+go to the release section on GitHub.
 """
 
 
-from bokeh.embed import components
-from bokeh.resources import INLINE
 from dariah_topics import preprocessing
 from dariah_topics import visualization
 from flask import Flask, request, render_template
 import lda
 from lxml import etree
+import numpy as np
 import os
 import pandas as pd
 import sys
@@ -29,15 +30,62 @@ __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 if getattr(sys, 'frozen', False):
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import mpld3
+    from mpld3 import plugins
+
     template_folder = os.path.join(sys._MEIPASS, 'templates')
     static_folder = os.path.join(sys._MEIPASS, 'static')
     app = Flask(__name__, template_folder=template_folder,
                 static_folder=static_folder)
+    
+    def plot_mpld3_heatmap(doc_topics, figsize=(1200/96, 800/96), fontsize=12, cmap='Reds'):
+        css = """
+        .meta {
+            background-color: #FFFFFF;
+            padding: 10px 10px 10px 10px;
+            border: solid;
+            border-width: thin;
+            font-size: 12;
+            font-family: Arial, Helvetica;}
+        """
+        html = """
+        <div class='meta'>
+            <b>Topic {}</b>: {}<br>
+            <b>Document</b>: {}<br>
+            <b>Score</b>: {}
+        </div>
+        """
+        doc_topics = doc_topics.T
+        docs = doc_topics.shape[0]
+        topics = doc_topics.shape[1]
+        labels = []
+        for row in doc_topics.iterrows():
+            tmp = []
+            n = 0
+            for topic, score in row[1].iteritems():
+                tmp.append(html.format(n, topic, row[0], score))
+                n += 1
+            labels.extend(tmp)
+        fig, ax = plt.subplots(figsize=figsize)
+        ax.set_xlabel('Topics', fontsize=fontsize+1)
+        heatmap = ax.pcolor(doc_topics, cmap=cmap)
+        plt.yticks(np.arange(docs) + 0.5, doc_topics.index, fontsize=fontsize)
+        plt.xticks(np.arange(topics) + 0.5, np.arange(topics), fontsize=fontsize)
+        fig.subplots_adjust(left=0.27, right=0.95, bottom=0.1, top=0.95, hspace=0.1, wspace=0.1)
+        tooltip = plugins.PointHTMLTooltip(heatmap, labels=labels, voffset=10, hoffset=10, css=css)
+        plugins.connect(fig, tooltip)
+        return fig
+
 else:
+    from bokeh.embed import components
+    from bokeh.resources import INLINE
     app = Flask(__name__)
 
 
-def tei(file):
+def process_xml(file):
     ns = dict(tei='http://www.tei-c.org/ns/1.0')
     text = etree.parse(file)
     text = text.xpath('//tei:text', namespaces=ns)[0]
@@ -72,7 +120,7 @@ def upload_file():
         if extension == '.txt':
             text = file.read().decode('utf-8')
         elif extension == '.xml':
-            text = tei(file)
+            text = process_xml(file)
         else:
             print("File format is not supported.")
         tokens = list(preprocessing.tokenize(text))
@@ -111,31 +159,19 @@ def upload_file():
     print("Accessing doc-topic-matrix ...")
     doc_topics = preprocessing.lda_doc_topic(model, topics, corpus.index)
     print("Creating interactive heatmap ...")
-    heatmap = visualization.doc_topic_heatmap_interactive(doc_topics, title=" ")
-    script, div = components(heatmap)
-    js_resources = INLINE.render_js()
-    css_resources = INLINE.render_css()
-    '''
-    print("Creating heatmap ...")
-    heatmap = visualization.doc_topic_heatmap(doc_topics)
     if getattr(sys, 'frozen', False):
-        heatmap.savefig(os.path.join(sys._MEIPASS, 'static', 'heatmap.png'))
+        heatmap = plot_mpld3_heatmap(doc_topics)
+        return render_template('result.html', topics=[topics.to_html(classes='df')],
+                               div=mpld3.fig_to_html(heatmap))
+        
     else:
-        heatmap.savefig(os.path.join('static', 'heatmap.png'))
-    heatmap.close()
-
-    doc_topic_plot = visualization.plot_doc_topics(doc_topics, 0)
-    if getattr(sys, 'frozen', False):
-        doc_topic_plot.savefig(os.path.join(
-            sys._MEIPASS, 'static', 'topics.png'))
-    else:
-        doc_topic_plot.savefig(os.path.join('static', 'topics.png'))
-    doc_topic_plot.close()
-    '''
-    print("Rendering result.html ...")
-    return render_template('result.html', topics=[topics.to_html(classes='df')],
-                           script=script, div=div, js_resources=js_resources,
-                           css_resources=css_resources)
+        heatmap = visualization.doc_topic_heatmap_interactive(doc_topics, title=" ")
+        script, div = components(heatmap)
+        js_resources = INLINE.render_js()
+        css_resources = INLINE.render_css()
+        return render_template('result.html', topics=[topics.to_html(classes='df')],
+                               script=script, div=div, js_resources=js_resources,
+                               css_resources=css_resources)
 
 
 @app.after_request

@@ -2,6 +2,8 @@
 
 This web application introduces an user-friendly workflow, basically containing data preprocessing, an implementation of the prototypic topic model latent Dirichlet allocation (LDA), as well as one interactive visualization (but more to come).
 
+<img src="screenshot.png" alt="Demonstrator Screenshot">
+
 ## First steps
 
 **Important**: Please make sure all dependencies are properly installed, including the `dariah_topics` module. If not (or you are not sure), simply run `pip install -r requirements.txt` (or `pip3 install -r requirements.txt` if you are on an [UNIX-based](https://en.wikipedia.org/wiki/Unix) operating system like macOS or Linux Ubuntu) through the [command-line](https://en.wikipedia.org/wiki/Command-line_interface) within `Topics`.
