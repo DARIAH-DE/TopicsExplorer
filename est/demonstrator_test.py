@@ -31,7 +31,7 @@ that you intended to go into harness."
 
 "Then how do you know?"
 """
-
+"""
 class DemonstratorTestCase(unittest.TestCase):
     def setUp(self):
         self.db_fd, demonstrator.app.config['DATABASE'] = tempfile.mkstemp()
@@ -59,3 +59,4 @@ class DemonstratorTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+"""
