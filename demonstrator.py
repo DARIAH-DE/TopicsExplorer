@@ -14,6 +14,7 @@ go to the release section on GitHub.
 
 
 from dariah_topics import preprocessing
+from dariah_topics import postprocessing
 from dariah_topics import visualization
 from flask import Flask, request, render_template
 import lda
@@ -128,8 +129,7 @@ def upload_file():
         file.flush()
 
     app.logger.info("Creating doc-term-matrix ...")
-    doc_term_matrix = preprocessing.create_doc_term_matrix(
-        corpus, corpus.index)
+    doc_term_matrix = preprocessing.create_document_term_matrix(corpus, corpus.index)
 
     if request.files.get('stopword_list', None):
         print("Accessing external stopwords list ...")
@@ -139,13 +139,12 @@ def upload_file():
         stopword_list.flush()
     else:
         print("Determining %s most frequent words" % mfw_threshold)
-        stopwords = preprocessing.find_stopwords(
-            doc_term_matrix, mfw_threshold)
+        stopwords = preprocessing.find_stopwords(doc_term_matrix, mfw_threshold)
     print("Determining hapax legomena ...")
-    hapax = preprocessing.find_hapax(doc_term_matrix)
+    hapax = preprocessing.find_hapax_legomena(doc_term_matrix)
     features = set(stopwords).union(hapax)
     print("Removing stopwords and hapax legomena from corpus ...")
-    doc_term_matrix = preprocessing.remove_features_from_df(doc_term_matrix, features)
+    doc_term_matrix = preprocessing.remove_features(features, doc_term_matrix)
     doc_term_arr = doc_term_matrix.as_matrix().astype(int)
     print("Accessing corpus vocabulary ...")
     corpus_vocabulary = doc_term_matrix.columns
@@ -155,9 +154,9 @@ def upload_file():
     model.fit(doc_term_arr)
 
     print("Accessing topics ...")
-    topics = preprocessing.lda2dataframe(model, corpus_vocabulary)
+    topics = postprocessing.show_topics(model=model, vocabulary=corpus_vocabulary)
     print("Accessing doc-topic-matrix ...")
-    doc_topics = preprocessing.lda_doc_topic(model, topics, corpus.index)
+    doc_topics = postprocessing.show_document_topics(model=model, topics=topics, document_labels=corpus.index)
     print("Creating interactive heatmap ...")
     if getattr(sys, 'frozen', False):
         heatmap = plot_mpld3_heatmap(doc_topics)
