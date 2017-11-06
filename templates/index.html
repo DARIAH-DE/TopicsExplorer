@@ -112,15 +112,13 @@
             <h1>Topics – Easy Topic Modeling</h1>
             <div id="contentInner" style="text-align:justify">
               <form action="/upload" method="POST" enctype="multipart/form-data">
-                <p>The text mining technique <b>Topic Modeling</b> has become a popular statistical method for clustering documents. This web application introduces an user-friendly workflow, basically containing data preprocessing, an implementation of
-                  the prototypic topic model <b>latent Dirichlet allocation</b> (LDA) which learns the relationships between words, topics, and documents, as well as one interactive visualization to explore the model.</p>
+                <p>The text mining technique <b>Topic Modeling</b> has become a popular statistical method for clustering documents. This web application introduces an user-friendly workflow, basically containing data preprocessing, the actual topic modeling using <b>latent Dirichlet allocation</b> (LDA), which learns the relationships between words, topics and documents, as well as one interactive visualization to explore the model.</p>
                 <p>LDA, introduced in the context of text analysis in <a href="http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf">2003</a>, is an instance of a more general class of models called <b>mixed-membership models</b>. Involving a number of
-                  distributions and parameters, the topic model is typically performed using <a href="https://en.wikipedia.org/wiki/Gibbs_sampling">Gibbs sampling</a> with conjugate priors and is purely based on word frequencies.</p>
-                <p>There have been written numerous introductions to topic modeling for humanists (e.g. <a href="http://mcburton.net/blog/joy-of-tm/">this one</a>), which provide another level of detail regarding its technical and epistemic properties.</p>
+                  distributions and parameters, the topic model is typically performed using <a href="https://en.wikipedia.org/wiki/Gibbs_sampling">Gibbs sampling</a> with conjugate priors and is purely based on word frequencies. There have been written numerous introductions to topic modeling for humanists (e.g. <a href="http://www.scottbot.net/HIAL/index.html@p=19113.html">this one</a>), which provide another level of detail regarding its technical and epistemic properties</p>
+                <p>For this workflow, you will need a corpus (a set of texts) as plain text (<b>.txt</b>) or <a href="http://www.tei-c.org/index.xml">TEI XML</a> (<b>.xml</b>). The <a href="https://textgridrep.org/">TextGrid Repository</a> is a great place to start searching for text data. Anyway, to demonstrate topic modeling, we provide one small text collection containing 15 diary excerpts, as well as 15 war diary excerpts, which appeared in <i>Die Grenzboten</i>, a German newspaper of the late 19th and early 20th century.</p>
                 <div class="alert alert-block">
                   <button type="button" class="close" data-dismiss="alert">&times;</button>
-                  <i class="fa fa-exclamation-circle"></i> This application aims for simplicity and usability. If you are working with a large corpus (> 200 documents) you may wish to use more sophisticated topic models such as those implemented in MALLET,
-                  which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing <a href="https://github.com/DARIAH-DE/Topics/blob/testing/Introducing_MALLET.ipynb">topic modeling with MALLET</a>.</div>
+                  <i class="fa fa-exclamation-circle"></i> Of course, you can work with your own corpus, but this application aims for simplicity and usability. If you have a large corpus (let's say more than 200 documents with more than 5000 words per document), you may wish to use more sophisticated topic models such as those implemented in <a href="http://mallet.cs.umass.edu/topics.php">MALLET</a>, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing <a href="https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb">topic modeling with MALLET</a>.</div>
                 <br>
                 <h2>1. Preprocessing</h2>
                 <h3>1.1. Reading a corpus of documents</h3>
@@ -159,7 +157,7 @@
                 <p>Finally, submit your data and explore the model.</p>
                 <div class="alert alert-block">
                   <button type="button" class="close" data-dismiss="alert">&times;</button>
-                  <i class="fa fa-exclamation-circle"></i> This application is still in development, so errors may occur. Please contact us, if you are confronted with any issues, have improvements or wishes.</div>
+                  <i class="fa fa-exclamation-circle"></i> This application is still in development, so errors may occur. Feel free to write an email or go to the GitHub issues page.</div>
                 <input type="submit" value="Send" onclick="loading();">
               </form>
               <hr>
