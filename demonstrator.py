@@ -165,7 +165,9 @@ def upload_file():
                                div=mpld3.fig_to_html(heatmap))
         
     else:
-        heatmap = visualization.doc_topic_heatmap_interactive(doc_topics, title=" ")
+        PlotDocumentTopics = visualization.PlotDocumentTopics(doc_topics,
+                                                              enable_notebook=False)
+        heatmap = PlotDocumentTopics.interactive_heatmap()
         script, div = components(heatmap)
         js_resources = INLINE.render_js()
         css_resources = INLINE.render_css()
