@@ -126,10 +126,10 @@ def modeling():
 
     log.info("Creating interactive heatmap ...")
     if document_topics.shape[0] < document_topics.shape[1]:
-        height = document_topics.shape[1] * 20
+        height = document_topics.shape[1] * 25
         document_topics = document_topics.T
     else:
-        height = document_topics.shape[0] * 20
+        height = document_topics.shape[0] * 25
     fig = visualization.PlotDocumentTopics(document_topics,
                                            enable_notebook=False)
     heatmap = fig.interactive_heatmap(sizing_mode='scale_width',
