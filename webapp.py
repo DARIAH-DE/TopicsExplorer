@@ -66,7 +66,7 @@ def modeling():
     if not request.files.get('files', None):
         return render_template('error.html')
     elif len(files) < 5:
-        return render_template('error.html')
+        return "Too less files"
     log.info("{} text files.".format(str(len(files))))
     num_topics = int(request.form['num_topics'])
     log.info("{} topics.".format(str(num_topics)))
