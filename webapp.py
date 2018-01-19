@@ -141,6 +141,10 @@ def modeling():
                            script=script, div=div, js_resources=js_resources,
                            css_resources=css_resources)
 
+@app.route('/help')
+def help():
+    return render_template('help.html')
+
 
 @app.after_request
 def add_header(r):
