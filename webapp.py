@@ -28,7 +28,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(levelname)s: %(message)s')
 
 
-NUM_KEYS = 7 # number of topic keys
+NUM_KEYS = 6 # number of topic keys
 
 
 if getattr(sys, 'frozen', False):
@@ -126,10 +126,14 @@ def modeling():
 
     log.info("Creating interactive heatmap ...")
     if document_topics.shape[0] < document_topics.shape[1]:
+        height = document_topics.shape[1] * 20
         document_topics = document_topics.T
+    else:
+        height = document_topics.shape[0] * 20
     fig = visualization.PlotDocumentTopics(document_topics,
                                            enable_notebook=False)
-    heatmap = fig.interactive_heatmap(sizing_mode='scale_width')
+    heatmap = fig.interactive_heatmap(sizing_mode='scale_width',
+                                      height=height)
     script, div = components(heatmap)
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
