@@ -232,6 +232,27 @@ body {
 	font-size: 85%;
 }
 
+.button {
+    background-color: #5E5E5E;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+
+.center_button {
+    height: 30px;
+    margin: 0 auto;
+    width: 21%;
+}
+
 /**
  * Carousel
  */
@@ -480,4 +501,24 @@ figcaption {
 	.footer, .breadcrumb, .push, .navigation-wrapper, .navbar-static-top, .searchbar-dariah, .breadcrumb {
 		display: none;
 	}
+}
+
+.df * {
+      margin: 0 auto;
+      border: 1px solid #ddd;
+      border-collapse: collapse;
+      padding: 2px 2px 2px 2px;
+      text-align: center;
+}
+
+.dataframe {
+           margin: 0 auto;
+}
+
+.bk-root {
+         margin: 0 auto;
+}
+    
+#div *{
+      max-width: 500px;
 }
