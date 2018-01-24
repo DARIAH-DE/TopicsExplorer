@@ -10,7 +10,9 @@ app.on('ready', () => {
     var mainAddr = 'http://127.0.0.1:5000';
     
     var openWindow = function(){
-        mainWindow = new BrowserWindow({width: 1200, height: 660});
+        mainWindow = new BrowserWindow({width: 1200,
+                                        height: 660,
+                                        icon: 'static/img/app_icon.ico'});
         mainWindow.setMenu(null) 
         mainWindow.loadURL(mainAddr);
         mainWindow.on('closed', () => {
