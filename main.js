@@ -15,7 +15,7 @@ app.on('ready', () => {
     var openWindow = function(){
         mainWindow = new BrowserWindow({width: 1200,
                                         height: 660,
-                                        icon: 'static/img/app_icon.ico'});
+                                        icon: 'static/img/app_icon.png'});
         mainWindow.setMenu(null) 
         mainWindow.loadURL(mainAddr);
         mainWindow.on('closed', () => {
