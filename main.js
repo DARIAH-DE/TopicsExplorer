@@ -6,6 +6,9 @@ app.on('window-all-closed', () => {
 
 app.on('ready', () => {
     var subpy = require('child_process').spawn('python3', ['webapp.py']);
+    //var subpy = require('child_process').spawn('python', ['webapp.py']);
+    //var subpy = require('child_process').spawn('webapp.exe');
+    //var subpy = require('child_process').spawn('webapp.app');
     var rq = require('request-promise');
     var mainAddr = 'http://127.0.0.1:5000';
     
