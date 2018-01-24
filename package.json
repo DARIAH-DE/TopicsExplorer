@@ -19,7 +19,6 @@
   },
   "scripts": {
     "start": "electron .",
-    "dev": "electron . --debug",
     "package-mac": "electron-packager dist --overwrite --platform=darwin --arch=x64 --icon=static/img/app_icon.png --out=release-builds",
     "package-win": "electron-packager dist --overwrite --platform=win32 --arch=ia32 --icon=static/img/app_icon.ico --out=release-builds"    
   }
