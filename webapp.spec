@@ -21,10 +21,11 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='DARIAH Topics',
+          name='webapp',
           debug=False,
           strip=False,
           upx=False,
           runtime_tmpdir=None,
           console=False,
+          #icon='static/img/app_icon.png', for macos
           icon='static/img/app_icon.ico')
