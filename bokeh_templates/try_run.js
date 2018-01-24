@@ -1,7 +1,8 @@
 (function(root) {
   function embed_document(root) {
-    {% block code_to_run %}
-    {% endblock %}
+    { % block code_to_run %
+    } { % endblock %
+    }
   }
   if (root.Bokeh !== undefined) {
     embed_document(root);

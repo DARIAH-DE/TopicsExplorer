@@ -28,7 +28,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(levelname)s: %(message)s')
 
 
-NUM_KEYS = 6 # number of topic keys
+NUM_KEYS = 6  # number of topic keys
 
 
 if getattr(sys, 'frozen', False):
@@ -76,7 +76,8 @@ def modeling():
         log.info("Using external stopwords list.")
     else:
         mft_threshold = int(request.form['mft_threshold'])
-        log.info("{} as threshold for most frequent tokens.".format(str(mft_threshold)))
+        log.info("{} as threshold for most frequent tokens.".format(
+            str(mft_threshold)))
 
     tokenized_corpus = pd.Series()
     for file in files:
@@ -94,7 +95,8 @@ def modeling():
 
     log.info("Creating document-term matrix ...")
     document_labels = tokenized_corpus.index
-    document_term_matrix = preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
+    document_term_matrix = preprocessing.create_document_term_matrix(
+        tokenized_corpus, document_labels)
 
     if request.files.get('stopword_list', None):
         log.info("Accessing external stopwords list ...")
@@ -104,12 +106,14 @@ def modeling():
         stopword_list.flush()
     else:
         log.info("Getting {} most frequent tokens ...".format(mft_threshold))
-        stopwords = preprocessing.find_stopwords(document_term_matrix, mft_threshold)
+        stopwords = preprocessing.find_stopwords(
+            document_term_matrix, mft_threshold)
     log.info("Getting hapax legomena ...")
     hapax_legomena = preprocessing.find_hapax_legomena(document_term_matrix)
     features = set(stopwords).union(hapax_legomena)
     log.info("Removing stopwords and hapax legomena from corpus ...")
-    features = [token for token in features if token in document_term_matrix.columns]
+    features = [
+        token for token in features if token in document_term_matrix.columns]
     document_term_matrix = document_term_matrix.drop(features, axis=1)
     document_term_arr = document_term_matrix.as_matrix().astype(int)
     log.info("Accessing corpus vocabulary ...")
@@ -120,9 +124,11 @@ def modeling():
     model.fit(document_term_arr)
 
     log.info("Accessing topics ...")
-    topics = postprocessing.show_topics(model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
+    topics = postprocessing.show_topics(
+        model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
     log.info("Accessing document-topic matrix ...")
-    document_topics = postprocessing.show_document_topics(model=model, topics=topics, document_labels=document_labels)
+    document_topics = postprocessing.show_document_topics(
+        model=model, topics=topics, document_labels=document_labels)
 
     log.info("Creating interactive heatmap ...")
     if document_topics.shape[0] < document_topics.shape[1]:
@@ -140,6 +146,7 @@ def modeling():
     return render_template('result.html', topics=[topics.to_html(classes='df')],
                            script=script, div=div, js_resources=js_resources,
                            css_resources=css_resources)
+
 
 @app.route('/help')
 def help():
