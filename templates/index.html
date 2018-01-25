@@ -79,7 +79,7 @@
                     <b>Tip:</b> The TextGrid Repository (https://textgridrep.org) is a great place to start searching for text data. It's Open Access and provides a lot of literary texts in valid and well-formed TEI XML.
                   </div>
                 </p>
-                <input type="file" name="files" multiple/><br><br>
+                <input type="file" name="files" multiple required/><br><br>
                 <h3>1.2. Tokenization</h3>
                 <p>An important preprocessing step is tokenization. Without identifying tokens, it is difficult to extract necessary information, such as <b>most frequent tokens</b>, also known as <i>stopwords</i>, or token frequencies in general. In this
                   application, one token consists of one or more characters, optionally followed by exactly one punctuation (a hyphen or something related), followed by one or more characters. For example, the phrase “her father's arm-chair” will be tokenized
@@ -99,10 +99,10 @@
                   <p>In this workflow, we are relying on an implementation by Allen Riddell, which is lightweight, fast and provides basic LDA. You have to specify some <b>model parameters</b> in this section, first of all the number of topics. The best
                     number depends on what you are looking for in the model. The default will provide a <b>broad overview</b> of the contents of the corpus. The number of topics should also depend to some degree on the size of the text collection, but
                     100 to 200 will produce reasonably <b>fine-grained results</b>.</p>
-                  <input type="number" name="num_topics" value="10" min="1">
+                  <input type="number" name="num_topics" value="10" min="1" required>
                   <p>An iteration is a process of repeating the same action multiple times to achieve a specific goal. This is how LDA works. The number of sampling iterations should be a <b>trade-off</b> between the time taken to complete sampling and the
                     quality of the model. The default value produces quite good results, but feel free to increase the number of iterations.</p>
-                  <input type="number" name="num_iterations" value="5000" , min="1"><br>
+                  <input type="number" name="num_iterations" value="5000" min="1" required><br>
                   <div class="alert alert-block">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     <i class="fa fa-exclamation-circle"></i> This step can take quite a while! Meaning something between some seconds and some hours, depending on corpus size and the number of iterations.</div>
