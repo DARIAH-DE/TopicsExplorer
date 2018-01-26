@@ -6,7 +6,7 @@ import os
 import sys
 from bokeh.layouts import column
 from bokeh.plotting import figure
-from bokeh.models import CustomJS, ColumnDataSource
+from bokeh.models import CustomJS, ColumnDataSource, HoverTool
 from bokeh.models.widgets import Dropdown
 from bokeh.embed import components
 from bokeh.resources import INLINE
