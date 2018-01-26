@@ -4,6 +4,10 @@
 import logging
 import os
 import sys
+from bokeh.layouts import column
+from bokeh.plotting import figure
+from bokeh.models import CustomJS, ColumnDataSource
+from bokeh.models.widgets import Dropdown
 from bokeh.embed import components
 from bokeh.resources import INLINE
 from dariah_topics import preprocessing
@@ -14,21 +18,34 @@ import lda
 from lxml import etree
 import numpy as np
 import pandas as pd
+import re
 from werkzeug.utils import secure_filename
 
 
 __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
-__copyright__ = "Copyright 2018, DARIAH-DE"
-__status__ = "Development"
+
 
 log = logging.getLogger(__name__)
-log.addHandler(logging.NullHandler())
-logging.basicConfig(level=logging.INFO,
-                    format='%(levelname)s: %(message)s')
 
 
-NUM_KEYS = 6  # number of topic keys
+NUM_KEYS = 6
+TOOLS = 'hover, pan, reset, save, wheel_zoom, zoom_in, zoom_out'
+JAVASCRIPT = """
+             var f = cb_obj.value;
+             var options = %s;
+             
+             for (var i in options) {
+                 if (f == options[i]) {
+                     console.log("Visible:" + options[i])
+                     options[i].visible = true;
+                 }
+                 else {
+                     console.log("Unvisible:" + options[i])
+                     options[i].visible = false;
+                 }
+             }
+             """
 
 
 if getattr(sys, 'frozen', False):
@@ -44,6 +61,33 @@ def process_xml(file):
     text = etree.parse(file)
     text = text.xpath('//tei:text', namespaces=ns)[0]
     return ''.join(text.xpath('.//text()'))
+
+
+def boxplot(document_topics, height):
+    y_range = document_topics.columns.tolist()
+    fig = figure(y_range=y_range, plot_height=height, tools=TOOLS,
+                 toolbar_location='right', sizing_mode='scale_width',
+                 logo=None)
+
+    plots = {}
+    options = document_topics.index.tolist()
+    for i, option in enumerate(options):
+        x_axis = document_topics.iloc[i]
+        source = ColumnDataSource(dict(Describer=y_range, Proportion=x_axis))
+        option = re.sub(' ', '_', option)
+        bar = fig.hbar(y='Describer', right='Proportion', source=source,
+                       height=0.5, color='#053967')
+        plots[option] = bar
+
+    fig.xgrid.grid_line_color = None
+    fig.x_range.start = 0
+    fig.select_one(HoverTool).tooltips = [('Proportion', '@Proportion')]
+
+    callback = CustomJS(args=plots, code=JAVASCRIPT % list(plots.keys()))
+    
+    menu = [('Topic {0}'.format(i), re.sub(' ', '_', option)) for i, option in zip(range(document_topics.shape[0]), options)]
+    dropdown = Dropdown(label="Select Topic", menu=menu, callback=callback)
+    return column(dropdown, fig)
 
 
 def shutdown_server():
