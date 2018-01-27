@@ -4,6 +4,7 @@
 import logging
 import os
 import sys
+import time
 from bokeh.layouts import column
 from bokeh.plotting import figure
 from bokeh.models import CustomJS, ColumnDataSource, HoverTool
@@ -114,6 +115,7 @@ def index():
 
 @app.route('/modeling', methods=['POST'])
 def modeling():
+    start = time.time()
     log.info("Accessing user input ...")
     files = request.files.getlist('files')
     log.info("Got {0} text files.".format(str(len(files))))
@@ -129,6 +131,7 @@ def modeling():
 
     log.info("Processing text files ...")
     tokenized_corpus = pd.Series()
+    corpus_tokens = 0
     for file in files:
         filename, extension = os.path.splitext(secure_filename(file.filename))
         log.debug("Tokenizing {0} ...".format(file))
@@ -140,6 +143,7 @@ def modeling():
             return render_template('error.html')
         tokens = list(preprocessing.tokenize(text))
         tokenized_corpus[filename] = tokens
+        corpus_tokens += len(tokens)
         file.flush()
 
     log.info("Creating document-term matrix ...")
@@ -182,16 +186,17 @@ def modeling():
             height = 20 * 25
         else:
             height = document_topics.shape[1] * 25
-        document_topics = document_topics.T
+        document_topics_heatmap = document_topics.T
     else:
         if document_topics.shape[0] < 20:
             height = 20 * 25
         else:
             height = document_topics.shape[0] * 25
-    fig = visualization.PlotDocumentTopics(document_topics,
+        document_topics_heatmap = document_topics
+    fig = visualization.PlotDocumentTopics(document_topics_heatmap,
                                            enable_notebook=False)
-    heatmap = fig.interactive_heatmap(sizing_mode='scale_width',
-                                      height=height)
+    heatmap = fig.interactive_heatmap(height=height,
+                                      sizing_mode='scale_width')
     heatmap_script, heatmap_div = components(heatmap)
     
     log.info("Creating interactive boxplots ...")
@@ -205,17 +210,22 @@ def modeling():
     if document_topics.shape[0] < 10:
         height = 10 * 20
     else:
-        height = document_topics.shape[1] * 15
+        height = document_topics.shape[1] * 20
     documents_boxplot = boxplot(document_topics.T, height=height, topics=False)
     documents_script, documents_div = components(documents_boxplot)
     
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
+    end = time.time()
     return render_template('result.html', topics=[topics.to_html(classes='df')],
                            heatmap_script=heatmap_script, heatmap_div=heatmap_div,
                            topics_script=topics_script, topics_div=topics_div,
                            documents_script=documents_script, documents_div=documents_div,
-                           js_resources=js_resources, css_resources=css_resources)
+                           js_resources=js_resources, css_resources=css_resources,
+                           corpus_docs=len(tokenized_corpus), corpus_tokens=corpus_tokens,
+                           corpus_tokens_c=int(document_term_matrix.values.sum()), n_topics=num_topics,
+                           n_iterations=num_iterations, log_likelihood=round(model.loglikelihood()),
+                           time=round((end - start) / 60))
 
 
 @app.route('/help')

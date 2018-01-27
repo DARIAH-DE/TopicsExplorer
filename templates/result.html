@@ -66,12 +66,46 @@
           <div id="contentInner" style="text-align:justify;">
             <h2>1. Inspecting the Topic Model</h2>
             <p>Topic Models are unsupervised. It is called <i>unsupervised</i>, because you did not have any labels describing the semantic structures or anything related, but only pure word frequencies. Since the examples given to the algorithm are unlabeled,
-              there is no evaluation of the accuracy or how <i>good</i> your model is. So, it is now up to you by inspecting the model to decide whether you are satisfied with its performance or not.
+              there is no evaluation of the accuracy, or how <i>good</i> your model is. So, it is up to you now by inspecting the model to decide whether you are satisfied with its performance or not.
               <div class="alert alert-info">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 <b>Tip:</b> The quantitative evaluation of topics (meaning a list of words as seen below) is a very challenging task. <b>Pointwise Mutual Information</b> (PMI) is one possibility to evaluate the semantic coherence of topics. We implemented
                 two variants of PMI in the programming language Python, which is available via GitHub (https://github.com/DARIAH-DE/Topics/dariah_topics/evaluation.py).
               </div>
+            </p>
+            <p>To resume, you adjusted <br>
+            <table border="0" style="margin: 0 auto;">
+              <tbody>
+                <tr>
+                  <td style="text-align: right; padding-right: 15px;"><b>Corpus Size in Documents:</b></td>
+                  <td>{{ corpus_docs|safe }}</td>
+                </tr>
+                <tr>
+                  <td style="text-align: right; padding-right: 15px;"><b>Corpus Size in Tokens:</b></td>
+                  <td>{{ corpus_tokens|safe }}</td>
+                </tr>
+                <tr>
+                  <td style="text-align: right; padding-right: 15px;"><b>Corpus Size in Tokens (cleaned):</b></td>
+                  <td>{{ corpus_tokens_c|safe }}</td>
+                </tr>
+                <tr>
+                  <td style="text-align: right; padding-right: 15px;"><b>Number of Topics:</b></td>
+                  <td>{{ n_topics|safe }}</td>
+                </tr>
+                <tr>
+                  <td style="text-align: right; padding-right: 15px;"><b>Number of Iterations:</b></td>
+                  <td>{{ n_iterations|safe }}</td>
+                </tr>
+                <tr>
+                  <td style="text-align: right; padding-right: 15px;"><b>The Model's Log Likelihood:</b></td>
+                  <td>{{ log_likelihood|safe }}</td>
+                </tr>
+                <tr>
+                  <td style="text-align: right; padding-right: 15px;"><b>Passed Time in Minutes:</b></td>
+                  <td>{{ time|safe }}</td>
+                </tr>
+              </tbody>
+            </table>
             </p>
             <h3>1.1. Topics</h3>
             <p>Each topic is a probability distribution over the vocabulary of words found in the corpus. The top words (so-called <i>keys</i>) shown in the table below are those words most probable to be found in each topic and describe the semantic structures
