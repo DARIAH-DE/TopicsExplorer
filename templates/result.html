@@ -73,7 +73,7 @@
                 two variants of PMI in the programming language Python, which is available via GitHub (https://github.com/DARIAH-DE/Topics/dariah_topics/evaluation.py).
               </div>
             </p>
-            <p>To resume, you adjusted <br>
+            <p>To sum up, the following table shows all the parameters you have adjusted for the LDA model. This might<br>
             {% for table in parameter %} {{ table|safe }} {% endfor %}
             </p>
             <h3>1.1. Topics</h3>
@@ -85,7 +85,7 @@
               thematic developments over a set of texts as well as a single text, akin to a dynamic topic model. What also can become apparent here, is that some topics correlate highly with a specific author or group of authors, while other topics correlate
               highly with a specific text or group of texts. All in all, this displays two of LDA's properties – its use as a distant reading tool that aims to get at text meaning, and its use as a provider of data that can be further used in computational
               analysis, such as document classification or authorship attribution.</p><br> {{ heatmap_div|safe }}<br><br>
-              <h3>1.3. Topics Proportions in Documents</h3>
+              <h3>1.3. Topic Proportions of Documents</h3>
               <br>{{ topics_div|safe }}<br><br>
               <h3>1.4. Document Proportions in Topics</h3>
               <br>{{ documents_div|safe }}<br><br><br>

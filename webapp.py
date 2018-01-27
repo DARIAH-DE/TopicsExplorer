@@ -68,7 +68,7 @@ def process_xml(file):
     return ''.join(text.xpath('.//text()'))
 
 
-def boxplot(document_topics, height, topics=True):
+def barchart(document_topics, height, topics=True):
     y_range = document_topics.columns.tolist()
     fig = figure(y_range=y_range, plot_height=height, tools=TOOLS,
                  toolbar_location='right', sizing_mode='scale_width',
@@ -210,30 +210,30 @@ def modeling():
     
     log.info("Creating interactive boxplots ...")
     if document_topics.shape[1] < 10:
-        height = 10 * 20
+        height = 10 * 15
     else:
         height = document_topics.shape[1] * 15
-    topics_boxplot = boxplot(document_topics, height=height)
-    topics_script, topics_div = components(topics_boxplot)
+    topics_barchart = barchart(document_topics, height=height)
+    topics_script, topics_div = components(topics_barchart)
 
     if document_topics.shape[0] < 10:
-        height = 10 * 20
+        height = 10 * 15
     else:
         height = document_topics.shape[1] * 15
-    documents_boxplot = boxplot(document_topics.T, height=height, topics=False)
-    documents_script, documents_div = components(documents_boxplot)
+    documents_barchart = barchart(document_topics.T, height=height, topics=False)
+    documents_script, documents_div = components(documents_barchart)
     
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
     end = time.time()
     passed_time = round((end - start) / 60)
-    index = ['Corpus Size in Documents', 'Corpus Size in Tokens', 'Corpus Size in Tokens (cleaned)',
-             'Size of Vocabulary', 'Number of Topics', 'Number of Iterations', 'The Model\'s Log Likelihood']
+    index = ['Corpus size in documents', 'Corpus size in tokens', 'Corpus size in tokens (cleaned)',
+             'Size of vocabulary (cleaned)', 'Number of topics', 'Number of iterations', 'The model\'s log likelihood']
     if passed_time == 0:
-        index.append('Passed Time in Seconds')
+        index.append('Passed time in seconds')
         parameter.append(round(end - start))
     else:
-        index.append('Passed Time in Minutes')
+        index.append('Passed time in minutes')
         parameter.append(passed_time)
     parameter = pd.Series(parameter, index=index)
     return render_template('result.html', topics=[topics.to_html(classes='topics')],
