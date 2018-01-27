@@ -60,7 +60,10 @@ else:
 def process_xml(file):
     ns = dict(tei='http://www.tei-c.org/ns/1.0')
     text = etree.parse(file)
-    text = text.xpath('//tei:text', namespaces=ns)[0]
+    try:
+        text = text.xpath('//tei:text', namespaces=ns)[0]
+    except IndexError:
+        pass
     return ''.join(text.xpath('.//text()'))
 
 
