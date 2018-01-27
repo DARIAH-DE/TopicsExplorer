@@ -116,6 +116,7 @@ def index():
 @app.route('/modeling', methods=['POST'])
 def modeling():
     start = time.time()
+    parameter = []
     log.info("Accessing user input ...")
     files = request.files.getlist('files')
     log.info("Got {0} text files.".format(str(len(files))))
@@ -145,6 +146,8 @@ def modeling():
         tokenized_corpus[filename] = tokens
         corpus_tokens += len(tokens)
         file.flush()
+    parameter.append(len(tokenized_corpus))
+    parameter.append(corpus_tokens)
 
     log.info("Creating document-term matrix ...")
     document_labels = tokenized_corpus.index
@@ -165,13 +168,19 @@ def modeling():
     log.info("Removing stopwords and hapax legomena from corpus ...")
     features = [token for token in features if token in document_term_matrix.columns]
     document_term_matrix = document_term_matrix.drop(features, axis=1)
+    parameter.append(int(document_term_matrix.values.sum()))
     document_term_arr = document_term_matrix.as_matrix().astype(int)
     log.info("Accessing corpus vocabulary ...")
     vocabulary = document_term_matrix.columns
+    parameter.append(len(vocabulary))
+    
+    parameter.append(num_topics)
+    parameter.append(num_iterations)
 
     log.info("LDA training ...")
     model = lda.LDA(n_topics=num_topics, n_iter=num_iterations)
     model.fit(document_term_arr)
+    parameter.append(round(model.loglikelihood()))
 
     log.info("Accessing topics ...")
     topics = postprocessing.show_topics(model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
@@ -210,22 +219,29 @@ def modeling():
     if document_topics.shape[0] < 10:
         height = 10 * 20
     else:
-        height = document_topics.shape[1] * 20
+        height = document_topics.shape[1] * 15
     documents_boxplot = boxplot(document_topics.T, height=height, topics=False)
     documents_script, documents_div = components(documents_boxplot)
     
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
     end = time.time()
-    return render_template('result.html', topics=[topics.to_html(classes='df')],
+    passed_time = round((end - start) / 60)
+    index = ['Corpus Size in Documents', 'Corpus Size in Tokens', 'Corpus Size in Tokens (cleaned)',
+             'Size of Vocabulary', 'Number of Topics', 'Number of Iterations', 'The Model\'s Log Likelihood']
+    if passed_time == 0:
+        index.append('Passed Time in Seconds')
+        parameter.append(round(end - start))
+    else:
+        index.append('Passed Time in Minutes')
+        parameter.append(passed_time)
+    parameter = pd.Series(parameter, index=index)
+    return render_template('result.html', topics=[topics.to_html(classes='topics')],
                            heatmap_script=heatmap_script, heatmap_div=heatmap_div,
                            topics_script=topics_script, topics_div=topics_div,
                            documents_script=documents_script, documents_div=documents_div,
                            js_resources=js_resources, css_resources=css_resources,
-                           corpus_docs=len(tokenized_corpus), corpus_tokens=corpus_tokens,
-                           corpus_tokens_c=int(document_term_matrix.values.sum()), n_topics=num_topics,
-                           n_iterations=num_iterations, log_likelihood=round(model.loglikelihood()),
-                           time=round((end - start) / 60))
+                           parameter=[pd.DataFrame(parameter, columns=['']).to_html(classes=['parameter'], border=0)])
 
 
 @app.route('/help')

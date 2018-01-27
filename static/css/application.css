@@ -506,12 +506,17 @@ figcaption {
   }
 }
 
-.df * {
-  margin: 0 auto;
+.topics * {
   border: 1px solid #ddd;
   border-collapse: collapse;
   padding: 2px 2px 2px 2px;
   text-align: center;
+}
+
+.parameter * {
+    border: 0;
+    border-collapse: collapse;
+    padding-right: 20px;
 }
 
 .dataframe {

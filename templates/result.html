@@ -74,38 +74,7 @@
               </div>
             </p>
             <p>To resume, you adjusted <br>
-            <table border="0" style="margin: 0 auto;">
-              <tbody>
-                <tr>
-                  <td style="text-align: right; padding-right: 15px;"><b>Corpus Size in Documents:</b></td>
-                  <td>{{ corpus_docs|safe }}</td>
-                </tr>
-                <tr>
-                  <td style="text-align: right; padding-right: 15px;"><b>Corpus Size in Tokens:</b></td>
-                  <td>{{ corpus_tokens|safe }}</td>
-                </tr>
-                <tr>
-                  <td style="text-align: right; padding-right: 15px;"><b>Corpus Size in Tokens (cleaned):</b></td>
-                  <td>{{ corpus_tokens_c|safe }}</td>
-                </tr>
-                <tr>
-                  <td style="text-align: right; padding-right: 15px;"><b>Number of Topics:</b></td>
-                  <td>{{ n_topics|safe }}</td>
-                </tr>
-                <tr>
-                  <td style="text-align: right; padding-right: 15px;"><b>Number of Iterations:</b></td>
-                  <td>{{ n_iterations|safe }}</td>
-                </tr>
-                <tr>
-                  <td style="text-align: right; padding-right: 15px;"><b>The Model's Log Likelihood:</b></td>
-                  <td>{{ log_likelihood|safe }}</td>
-                </tr>
-                <tr>
-                  <td style="text-align: right; padding-right: 15px;"><b>Passed Time in Minutes:</b></td>
-                  <td>{{ time|safe }}</td>
-                </tr>
-              </tbody>
-            </table>
+            {% for table in parameter %} {{ table|safe }} {% endfor %}
             </p>
             <h3>1.1. Topics</h3>
             <p>Each topic is a probability distribution over the vocabulary of words found in the corpus. The top words (so-called <i>keys</i>) shown in the table below are those words most probable to be found in each topic and describe the semantic structures
