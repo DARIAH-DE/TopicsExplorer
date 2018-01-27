@@ -29,7 +29,7 @@ __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 log = logging.getLogger('webapp')
 
 
-NUM_KEYS = 6
+NUM_KEYS = 5
 TOOLS = 'hover, pan, reset, save, wheel_zoom, zoom_in, zoom_out'
 JAVASCRIPT = '''
              var f = cb_obj.value;
@@ -88,24 +88,24 @@ def boxplot(document_topics, height, topics=True):
     
     callback = CustomJS(args=plots, code=JAVASCRIPT % list(plots.keys()))
     
-    menu = [(select, re.sub(' ', '_', option)) for select, option in zip(document_topics.columns, options)]
+    menu = [(select, re.sub(' ', '_', option)) for select, option in zip(document_topics.index, options)]
     if topics:
         dropdown = Dropdown(label="Select Topic", menu=menu, callback=callback)
     else:
         dropdown = Dropdown(label="Select Document", menu=menu, callback=callback)
-    return column(dropdown, fig)
+    return column(dropdown, fig, sizing_mode='scale_width')
 
 
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server.')
+        raise RuntimeError("Not running with the Werkzeug Server.")
     func()
 
 
 @app.route('/')
 def index():
-    log.info("Rendering index.html ...")
+    log.info("Rendering main page ...")
     return render_template('index.html')
 
 
@@ -113,26 +113,22 @@ def index():
 def modeling():
     log.info("Accessing user input ...")
     files = request.files.getlist('files')
-    if not request.files.get('files', None):
-        return render_template('error.html')
-    elif len(files) < 5:
-        return "Too less files"
-    log.info("{} text files.".format(str(len(files))))
+    log.info("Got {0} text files.".format(str(len(files))))
     num_topics = int(request.form['num_topics'])
-    log.info("{} topics.".format(str(num_topics)))
+    log.info("Got {0} topics.".format(str(num_topics)))
     num_iterations = int(request.form['num_iterations'])
-    log.info("{} iterations.".format(str(num_iterations)))
+    log.info("Got {0} iterations.".format(str(num_iterations)))
     if request.files.get('stopword_list', None):
         log.info("Using external stopwords list.")
     else:
         mft_threshold = int(request.form['mft_threshold'])
-        log.info("{} as threshold for most frequent tokens.".format(
-            str(mft_threshold)))
+        log.info("Using '{0}' as threshold for most frequent tokens.".format(str(mft_threshold)))
 
+    log.info("Processing text files ...")
     tokenized_corpus = pd.Series()
     for file in files:
         filename, extension = os.path.splitext(secure_filename(file.filename))
-        log.debug("Tokenizing {} ...".format(file))
+        log.debug("Tokenizing {0} ...".format(file))
         if extension == '.txt':
             text = file.read().decode('utf-8')
         elif extension == '.xml':
@@ -145,8 +141,7 @@ def modeling():
 
     log.info("Creating document-term matrix ...")
     document_labels = tokenized_corpus.index
-    document_term_matrix = preprocessing.create_document_term_matrix(
-        tokenized_corpus, document_labels)
+    document_term_matrix = preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
 
     if request.files.get('stopword_list', None):
         log.info("Accessing external stopwords list ...")
@@ -155,15 +150,13 @@ def modeling():
         stopwords = preprocessing.tokenize(stopwords)
         stopword_list.flush()
     else:
-        log.info("Getting {} most frequent tokens ...".format(mft_threshold))
-        stopwords = preprocessing.find_stopwords(
-            document_term_matrix, mft_threshold)
-    log.info("Getting hapax legomena ...")
+        log.info("Determining {0} most frequent tokens ...".format(mft_threshold))
+        stopwords = preprocessing.find_stopwords(document_term_matrix, mft_threshold)
+    log.info("Determining hapax legomena ...")
     hapax_legomena = preprocessing.find_hapax_legomena(document_term_matrix)
     features = set(stopwords).union(hapax_legomena)
     log.info("Removing stopwords and hapax legomena from corpus ...")
-    features = [
-        token for token in features if token in document_term_matrix.columns]
+    features = [token for token in features if token in document_term_matrix.columns]
     document_term_matrix = document_term_matrix.drop(features, axis=1)
     document_term_arr = document_term_matrix.as_matrix().astype(int)
     log.info("Accessing corpus vocabulary ...")
@@ -174,20 +167,24 @@ def modeling():
     model.fit(document_term_arr)
 
     log.info("Accessing topics ...")
-    topics = postprocessing.show_topics(
-        model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
+    topics = postprocessing.show_topics(model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
     topics.columns = ['Key {0}'.format(i) for i in range(1, NUM_KEYS + 1)]
     topics.index = ['Topic {0}'.format(i) for i in range(1, num_topics + 1)]
     log.info("Accessing document-topic matrix ...")
-    document_topics = postprocessing.show_document_topics(
-        model=model, topics=topics, document_labels=document_labels)
+    document_topics = postprocessing.show_document_topics(model=model, topics=topics, document_labels=document_labels)
 
     log.info("Creating interactive heatmap ...")
     if document_topics.shape[0] < document_topics.shape[1]:
-        height = document_topics.shape[1] * 25
+        if document_topics.shape[1] < 20:
+            height = 20 * 25
+        else:
+            height = document_topics.shape[1] * 25
         document_topics = document_topics.T
     else:
-        height = document_topics.shape[0] * 25
+        if document_topics.shape[0] < 20:
+            height = 20 * 25
+        else:
+            height = document_topics.shape[0] * 25
     fig = visualization.PlotDocumentTopics(document_topics,
                                            enable_notebook=False)
     heatmap = fig.interactive_heatmap(sizing_mode='scale_width',
@@ -195,10 +192,18 @@ def modeling():
     heatmap_script, heatmap_div = components(heatmap)
     
     log.info("Creating interactive boxplots ...")
-    topics_boxplot = boxplot(document_topics, height=document_topics.shape[1] * 35)
+    if document_topics.shape[1] < 10:
+        height = 10 * 20
+    else:
+        height = document_topics.shape[1] * 15
+    topics_boxplot = boxplot(document_topics, height=height)
     topics_script, topics_div = components(topics_boxplot)
 
-    documents_boxplot = boxplot(document_topics.T, height=document_topics.shape[0] * 35, topics=False)
+    if document_topics.shape[0] < 10:
+        height = 10 * 20
+    else:
+        height = document_topics.shape[1] * 15
+    documents_boxplot = boxplot(document_topics.T, height=height, topics=False)
     documents_script, documents_div = components(documents_boxplot)
     
     js_resources = INLINE.render_js()
