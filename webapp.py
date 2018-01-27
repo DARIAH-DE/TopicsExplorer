@@ -26,26 +26,27 @@ __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('webapp')
 
 
 NUM_KEYS = 6
 TOOLS = 'hover, pan, reset, save, wheel_zoom, zoom_in, zoom_out'
-JAVASCRIPT = """
+JAVASCRIPT = '''
              var f = cb_obj.value;
              var options = %s;
              
              for (var i in options) {
                  if (f == options[i]) {
-                     console.log("Visible:" + options[i])
-                     options[i].visible = true;
+                     console.log("Visible: " + options[i])
+                     eval(options[i]).visible = true;
                  }
                  else {
-                     console.log("Unvisible:" + options[i])
-                     options[i].visible = false;
+                     console.log("Unvisible: " + options[i])
+                     eval(options[i]).visible = false;
                  }
              }
-             """
+             console.log(' ')
+             '''
 
 
 if getattr(sys, 'frozen', False):
@@ -63,7 +64,7 @@ def process_xml(file):
     return ''.join(text.xpath('.//text()'))
 
 
-def boxplot(document_topics, height):
+def boxplot(document_topics, height, topics=True):
     y_range = document_topics.columns.tolist()
     fig = figure(y_range=y_range, plot_height=height, tools=TOOLS,
                  toolbar_location='right', sizing_mode='scale_width',
@@ -77,16 +78,21 @@ def boxplot(document_topics, height):
         option = re.sub(' ', '_', option)
         bar = fig.hbar(y='Describer', right='Proportion', source=source,
                        height=0.5, color='#053967')
+        bar.visible = False
         plots[option] = bar
 
     fig.xgrid.grid_line_color = None
     fig.x_range.start = 0
     fig.select_one(HoverTool).tooltips = [('Proportion', '@Proportion')]
-
+    fig.xaxis.axis_label = 'Proportion'
+    
     callback = CustomJS(args=plots, code=JAVASCRIPT % list(plots.keys()))
     
-    menu = [('Topic {0}'.format(i), re.sub(' ', '_', option)) for i, option in zip(range(document_topics.shape[0]), options)]
-    dropdown = Dropdown(label="Select Topic", menu=menu, callback=callback)
+    menu = [(select, re.sub(' ', '_', option)) for select, option in zip(document_topics.columns, options)]
+    if topics:
+        dropdown = Dropdown(label="Select Topic", menu=menu, callback=callback)
+    else:
+        dropdown = Dropdown(label="Select Document", menu=menu, callback=callback)
     return column(dropdown, fig)
 
 
@@ -170,6 +176,8 @@ def modeling():
     log.info("Accessing topics ...")
     topics = postprocessing.show_topics(
         model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
+    topics.columns = ['Key {0}'.format(i) for i in range(1, NUM_KEYS + 1)]
+    topics.index = ['Topic {0}'.format(i) for i in range(1, num_topics + 1)]
     log.info("Accessing document-topic matrix ...")
     document_topics = postprocessing.show_document_topics(
         model=model, topics=topics, document_labels=document_labels)
@@ -184,12 +192,22 @@ def modeling():
                                            enable_notebook=False)
     heatmap = fig.interactive_heatmap(sizing_mode='scale_width',
                                       height=height)
-    script, div = components(heatmap)
+    heatmap_script, heatmap_div = components(heatmap)
+    
+    log.info("Creating interactive boxplots ...")
+    topics_boxplot = boxplot(document_topics, height=document_topics.shape[1] * 35)
+    topics_script, topics_div = components(topics_boxplot)
+
+    documents_boxplot = boxplot(document_topics.T, height=document_topics.shape[0] * 35, topics=False)
+    documents_script, documents_div = components(documents_boxplot)
+    
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
     return render_template('result.html', topics=[topics.to_html(classes='df')],
-                           script=script, div=div, js_resources=js_resources,
-                           css_resources=css_resources)
+                           heatmap_script=heatmap_script, heatmap_div=heatmap_div,
+                           topics_script=topics_script, topics_div=topics_div,
+                           documents_script=documents_script, documents_div=documents_div,
+                           js_resources=js_resources, css_resources=css_resources)
 
 
 @app.route('/help')

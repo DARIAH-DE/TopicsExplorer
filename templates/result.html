@@ -9,7 +9,9 @@
   <meta name="description" content="Topics App">
   {{ js_resources|safe }}
   {{ css_resources|safe }}
-  {{ script|safe }}
+  {{ heatmap_script|safe }}
+  {{ topics_script|safe }}
+  {{ documents_script|safe }}
   <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}" type="text/css" media="screen, projection" />
   <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-responsive.css')}}" type="text/css" media="screen, projection" />
   <link rel="stylesheet" href="{{url_for('static', filename='css/application.css')}}" type="text/css" media="screen, projection" />
@@ -79,7 +81,11 @@
             <p>Each topic has proportions per document, which can be visualized in heatmap. This option displays the kind of information that is probably most useful to literary scholars. Going beyond pure exploration, this visualization can be used to show
               thematic developments over a set of texts as well as a single text, akin to a dynamic topic model. What also can become apparent here, is that some topics correlate highly with a specific author or group of authors, while other topics correlate
               highly with a specific text or group of texts. All in all, this displays two of LDA's properties – its use as a distant reading tool that aims to get at text meaning, and its use as a provider of data that can be further used in computational
-              analysis, such as document classification or authorship attribution.</p><br> {{ div|safe }}<br>
+              analysis, such as document classification or authorship attribution.</p><br> {{ heatmap_div|safe }}<br><br>
+              <h3>1.3. Topics Proportions in Documents</h3>
+              <br>{{ topics_div|safe }}<br><br>
+              <h3>1.4. Document Proportions in Topics</h3>
+              <br>{{ documents_div|safe }}<br><br><br>
             <h2>2. Diving Deeper into Topic Modeling</h2>
             <p>We want to empower users with little or no previous experience and programming skills to create custom workflows mostly using predefined functions within a familiar environment. So, if this practical introduction aroused your interest and
               you want to <b>dive deeper into the technical parts</b>, we provide another convenient, modular workflow that can be entirely controlled from within a well documented Jupyter notebook, integrating a total of three popular LDA implementations.</p>
