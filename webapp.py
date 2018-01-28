@@ -69,9 +69,8 @@ def process_xml(file):
 
 
 def boxplot(stats):
-    x_labels = ["Corpus (clean)","Corpus (raw)"]
+    x_labels = ['Corpus (clean)', 'Corpus (raw)']
 
-    # find the quartiles and IQR for each category
     groups = stats.groupby('group')
     q1 = groups.quantile(q=0.25)
     q2 = groups.quantile(q=0.5)
@@ -80,40 +79,35 @@ def boxplot(stats):
     upper = q3 + 1.5*iqr
     lower = q1 - 1.5*iqr
 
-    # find the outliers for each category
     def outliers(group):
         cat = group.name
-        return group[(group.score > upper.loc[cat]['score']) | (group.score < lower.loc[cat]['score'])]['score']
+        return group[(group.score > upper.loc[cat]['score']) |
+                     (group.score < lower.loc[cat]['score'])]['score']
     out = groups.apply(outliers).dropna()
 
-    p = figure(tools="save", background_fill_color="#EFE8E2", title="", x_range=x_labels, logo=None, sizing_mode='fixed',plot_width=500, plot_height=350)
+    fig = figure(tools='save', background_fill_color='#EFE8E2', title='', x_range=x_labels,
+                 logo=None, sizing_mode='fixed', plot_width=500, plot_height=350)
 
-    # if no outliers, shrink lengths of stems to be no longer than the minimums or maximums
     qmin = groups.quantile(q=0.00)
     qmax = groups.quantile(q=1.00)
     upper.score = [min([x,y]) for (x,y) in zip(list(qmax.loc[:,'score']),upper.score)]
     lower.score = [max([x,y]) for (x,y) in zip(list(qmin.loc[:,'score']),lower.score)]
 
-    # stems
-    p.segment(x_labels, upper.score, x_labels, q3.score, line_color="black")
-    p.segment(x_labels, lower.score, x_labels, q1.score, line_color="black")
+    fig.segment(x_labels, upper.score, x_labels, q3.score, line_color='black')
+    fig.segment(x_labels, lower.score, x_labels, q1.score, line_color='black')
 
-    # boxes
-    p.vbar(x_labels, 0.7, q2.score, q3.score, fill_color="#E08E79", line_color="black")
-    p.vbar(x_labels, 0.7, q1.score, q2.score, fill_color="#3B8686", line_color="black")
+    fig.vbar(x_labels, 0.7, q2.score, q3.score, fill_color='#E08E79', line_color='black')
+    fig.vbar(x_labels, 0.7, q1.score, q2.score, fill_color='#3B8686', line_color='black')
 
-    # whiskers (almost-0 height rects simpler than segments)
-    p.rect(x_labels, lower.score, 0.2, 0.01, line_color="black")
-    p.rect(x_labels, upper.score, 0.2, 0.01, line_color="black")
+    fig.rect(x_labels, lower.score, 0.2, 0.01, line_color='black')
+    fig.rect(x_labels, upper.score, 0.2, 0.01, line_color='black')
 
-
-    p.xgrid.grid_line_color = None
-    p.ygrid.grid_line_color = "white"
-    p.grid.grid_line_width = 2
-    p.xaxis.major_label_text_font_size="9pt"
-    p.yaxis.major_label_text_font_size="9pt"
-
-    return p
+    fig.xgrid.grid_line_color = None
+    fig.ygrid.grid_line_color = 'white'
+    fig.grid.grid_line_width = 2
+    fig.xaxis.major_label_text_font_size = '11pt'
+    fig.yaxis.major_label_text_font_size = '9pt'
+    return fig
     
 
 def barchart(document_topics, height, topics=True):
@@ -137,8 +131,8 @@ def barchart(document_topics, height, topics=True):
     fig.x_range.start = 0
     fig.select_one(HoverTool).tooltips = [('Proportion', '@Proportion')]
     fig.xaxis.axis_label = 'Proportion'
-    fig.xaxis.major_label_text_font_size="9pt"
-    fig.yaxis.major_label_text_font_size="9pt"
+    fig.xaxis.major_label_text_font_size = '9pt'
+    fig.yaxis.major_label_text_font_size = '9pt'
     
     callback = CustomJS(args=plots, code=JAVASCRIPT % list(plots.keys()))
     
