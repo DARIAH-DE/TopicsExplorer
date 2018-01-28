@@ -243,7 +243,7 @@ def modeling():
             height = 20 * 25
         else:
             height = document_topics.shape[1] * 25
-        document_topics_heatmap = document_topics.T
+        document_topics_heatmap = document_topics.T # todo: Fix hover when transposed
     else:
         if document_topics.shape[0] < 20:
             height = 20 * 25
