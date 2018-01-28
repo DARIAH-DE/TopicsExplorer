@@ -523,8 +523,13 @@ figcaption {
   margin: 0 auto;
 }
 
+.bk-plot-wrapper table {
+    margin: 0 auto;
+}
+
 .bk-root {
   margin: 0 auto;
+  border: 10px;
 }
 
 #div * {

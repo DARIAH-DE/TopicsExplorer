@@ -68,6 +68,54 @@ def process_xml(file):
     return ''.join(text.xpath('.//text()'))
 
 
+def boxplot(stats):
+    x_labels = ["Corpus (clean)","Corpus (raw)"]
+
+    # find the quartiles and IQR for each category
+    groups = stats.groupby('group')
+    q1 = groups.quantile(q=0.25)
+    q2 = groups.quantile(q=0.5)
+    q3 = groups.quantile(q=0.75)
+    iqr = q3 - q1
+    upper = q3 + 1.5*iqr
+    lower = q1 - 1.5*iqr
+
+    # find the outliers for each category
+    def outliers(group):
+        cat = group.name
+        return group[(group.score > upper.loc[cat]['score']) | (group.score < lower.loc[cat]['score'])]['score']
+    out = groups.apply(outliers).dropna()
+
+    p = figure(tools="save", background_fill_color="#EFE8E2", title="", x_range=x_labels, logo=None, sizing_mode='fixed',plot_width=500, plot_height=350)
+
+    # if no outliers, shrink lengths of stems to be no longer than the minimums or maximums
+    qmin = groups.quantile(q=0.00)
+    qmax = groups.quantile(q=1.00)
+    upper.score = [min([x,y]) for (x,y) in zip(list(qmax.loc[:,'score']),upper.score)]
+    lower.score = [max([x,y]) for (x,y) in zip(list(qmin.loc[:,'score']),lower.score)]
+
+    # stems
+    p.segment(x_labels, upper.score, x_labels, q3.score, line_color="black")
+    p.segment(x_labels, lower.score, x_labels, q1.score, line_color="black")
+
+    # boxes
+    p.vbar(x_labels, 0.7, q2.score, q3.score, fill_color="#E08E79", line_color="black")
+    p.vbar(x_labels, 0.7, q1.score, q2.score, fill_color="#3B8686", line_color="black")
+
+    # whiskers (almost-0 height rects simpler than segments)
+    p.rect(x_labels, lower.score, 0.2, 0.01, line_color="black")
+    p.rect(x_labels, upper.score, 0.2, 0.01, line_color="black")
+
+
+    p.xgrid.grid_line_color = None
+    p.ygrid.grid_line_color = "white"
+    p.grid.grid_line_width = 2
+    p.xaxis.major_label_text_font_size="9pt"
+    p.yaxis.major_label_text_font_size="9pt"
+
+    return p
+    
+
 def barchart(document_topics, height, topics=True):
     y_range = document_topics.columns.tolist()
     fig = figure(y_range=y_range, plot_height=height, tools=TOOLS,
@@ -89,6 +137,8 @@ def barchart(document_topics, height, topics=True):
     fig.x_range.start = 0
     fig.select_one(HoverTool).tooltips = [('Proportion', '@Proportion')]
     fig.xaxis.axis_label = 'Proportion'
+    fig.xaxis.major_label_text_font_size="9pt"
+    fig.yaxis.major_label_text_font_size="9pt"
     
     callback = CustomJS(args=plots, code=JAVASCRIPT % list(plots.keys()))
     
@@ -152,6 +202,8 @@ def modeling():
     log.info("Creating document-term matrix ...")
     document_labels = tokenized_corpus.index
     document_term_matrix = preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
+    stats = pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
+                          'group': ['Corpus (raw)' for x in range(len(tokenized_corpus))]})
 
     if request.files.get('stopword_list', None):
         log.info("Accessing external stopwords list ...")
@@ -168,6 +220,8 @@ def modeling():
     log.info("Removing stopwords and hapax legomena from corpus ...")
     features = [token for token in features if token in document_term_matrix.columns]
     document_term_matrix = document_term_matrix.drop(features, axis=1)
+    stats = stats.append(pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
+                                       'group': ['Corpus (cleaned)' for x in range(len(tokenized_corpus))]}))
     parameter.append(int(document_term_matrix.values.sum()))
     document_term_arr = document_term_matrix.as_matrix().astype(int)
     log.info("Accessing corpus vocabulary ...")
@@ -208,7 +262,10 @@ def modeling():
                                       sizing_mode='scale_width')
     heatmap_script, heatmap_div = components(heatmap)
     
-    log.info("Creating interactive boxplots ...")
+    log.info("Creating boxplot ...")
+    corpus_boxplot_script, corpus_boxplot_div = components(boxplot(stats))
+    
+    log.info("Creating interactive barcharts ...")
     if document_topics.shape[1] < 10:
         height = 10 * 15
     else:
@@ -241,7 +298,8 @@ def modeling():
                            topics_script=topics_script, topics_div=topics_div,
                            documents_script=documents_script, documents_div=documents_div,
                            js_resources=js_resources, css_resources=css_resources,
-                           parameter=[pd.DataFrame(parameter, columns=['']).to_html(classes=['parameter'], border=0)])
+                           parameter=[pd.DataFrame(parameter, columns=['']).to_html(classes=['parameter'], border=0)],
+                           corpus_boxplot_script=corpus_boxplot_script, corpus_boxplot_div=corpus_boxplot_div)
 
 
 @app.route('/help')
