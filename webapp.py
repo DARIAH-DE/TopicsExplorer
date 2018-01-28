@@ -69,7 +69,7 @@ def process_xml(file):
 
 
 def boxplot(stats):
-    x_labels = ['Corpus (clean)', 'Corpus (raw)']
+    x_labels = ['Document size (clean)', 'Document size (raw)']
 
     groups = stats.groupby('group')
     q1 = groups.quantile(q=0.25)
@@ -102,6 +102,7 @@ def boxplot(stats):
     fig.rect(x_labels, lower.score, 0.2, 0.01, line_color='black')
     fig.rect(x_labels, upper.score, 0.2, 0.01, line_color='black')
 
+    fig.yaxis.axis_label = 'Tokens'
     fig.xgrid.grid_line_color = None
     fig.ygrid.grid_line_color = 'white'
     fig.grid.grid_line_width = 2
@@ -197,7 +198,7 @@ def modeling():
     document_labels = tokenized_corpus.index
     document_term_matrix = preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
     stats = pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
-                          'group': ['Corpus (raw)' for x in range(len(tokenized_corpus))]})
+                          'group': ['Document size (raw)' for x in range(len(tokenized_corpus))]})
 
     if request.files.get('stopword_list', None):
         log.info("Accessing external stopwords list ...")
@@ -215,7 +216,7 @@ def modeling():
     features = [token for token in features if token in document_term_matrix.columns]
     document_term_matrix = document_term_matrix.drop(features, axis=1)
     stats = stats.append(pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
-                                       'group': ['Corpus (cleaned)' for x in range(len(tokenized_corpus))]}))
+                                       'group': ['Document size (cleaned)' for x in range(len(tokenized_corpus))]}))
     parameter.append(int(document_term_matrix.values.sum()))
     document_term_arr = document_term_matrix.as_matrix().astype(int)
     log.info("Accessing corpus vocabulary ...")
@@ -240,15 +241,15 @@ def modeling():
     log.info("Creating interactive heatmap ...")
     if document_topics.shape[0] < document_topics.shape[1]:
         if document_topics.shape[1] < 20:
-            height = 20 * 25
+            height = 20 * 28
         else:
-            height = document_topics.shape[1] * 25
+            height = document_topics.shape[1] * 28
         document_topics_heatmap = document_topics.T # todo: Fix hover when transposed
     else:
         if document_topics.shape[0] < 20:
-            height = 20 * 25
+            height = 20 * 28
         else:
-            height = document_topics.shape[0] * 25
+            height = document_topics.shape[0] * 28
         document_topics_heatmap = document_topics
     fig = visualization.PlotDocumentTopics(document_topics_heatmap,
                                            enable_notebook=False)
@@ -261,16 +262,16 @@ def modeling():
     
     log.info("Creating interactive barcharts ...")
     if document_topics.shape[1] < 10:
-        height = 10 * 15
+        height = 10 * 18
     else:
-        height = document_topics.shape[1] * 15
+        height = document_topics.shape[1] * 18
     topics_barchart = barchart(document_topics, height=height)
     topics_script, topics_div = components(topics_barchart)
 
     if document_topics.shape[0] < 10:
-        height = 10 * 15
+        height = 10 * 18
     else:
-        height = document_topics.shape[1] * 15
+        height = document_topics.shape[0] * 18
     documents_barchart = barchart(document_topics.T, height=height, topics=False)
     documents_script, documents_div = components(documents_barchart)
     
@@ -278,8 +279,8 @@ def modeling():
     css_resources = INLINE.render_css()
     end = time.time()
     passed_time = round((end - start) / 60)
-    index = ['Corpus size in documents', 'Corpus size in tokens', 'Corpus size in tokens (cleaned)',
-             'Size of vocabulary (cleaned)', 'Number of topics', 'Number of iterations', 'The model\'s log likelihood']
+    index = ['Corpus size in documents', 'Corpus size in tokens (raw)', 'Corpus size in tokens (clean)',
+             'Size of vocabulary (clean)', 'Number of topics', 'Number of iterations', 'The model\'s log likelihood']
     if passed_time == 0:
         index.append('Passed time in seconds')
         parameter.append(round(end - start))
