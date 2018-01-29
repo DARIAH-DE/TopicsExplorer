@@ -21,6 +21,7 @@ Although this application is built with Python, it is possible to run it as if i
 2. Open it by double-clicking.
 3. Run the app by double-clicking.
 4. **Mac**: If you get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
+5. When installing electron via npm type 'sudo npm install -g electron --unsafe-perm=true --allow-root' for proper installation.
 
 #### Linux
 To run the application, type `python3 demonstrator.py` in the command-line and press enter. Your default browser should immediately display the interface (it might take some seconds until your browser automatically opens – if not, do it by yourself and go to `http://127.0.0.1:5000`).
