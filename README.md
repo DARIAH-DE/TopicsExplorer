@@ -66,7 +66,7 @@ npm install
 ```
 
 ### Contents
-* [`bokeh_templates`](bokeh_templates): Various HTML templates for `bokeh`. This is only relevant, if you want to freeze the Python part with `pyinstaller`.
+* [`bokeh_templates`](bokeh_templates): HTML templates for `bokeh`. This is only relevant, if you want to freeze the Python part with `pyinstaller`.
 * [`hooks`](hooks): Necessary hook files. This is only relevant, if you want to freeze the Python part with `pyinstaller`.
 * [`main.js`](main.js): Basically the GUI.
 * [`package.json`](package.json): Metadata, dependencies, and scripts for the GUI.
