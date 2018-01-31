@@ -71,12 +71,12 @@ npm install
 To freeze the Python part, you have to install `pyinstaller` and run on macOS:
 
 ```
-pyinstaller --onefile --add-data static:static --add-data templates:templates --add-data bokeh\_templates:bokeh\_templates --additional-hooks-dir hooks webapp.py
+pyinstaller --onefile --add-data static:static --add-data templates:templates --add-data bokeh_templates:bokeh_templates --additional-hooks-dir hooks webapp.py
 ```
 
 or, for Windows:
 ```
-pyinstaller --onefile --windowed --add-data static;static --add-data templates;templates --add-data bokeh\_templates;bokeh\_templates --additional-hooks-dir hooks webapp.py
+pyinstaller --onefile --windowed --add-data static;static --add-data templates;templates --add-data bokeh_templates;bokeh_templates --additional-hooks-dir hooks webapp.py
 ```
 ## Creating a build for the whole application
 To freeze the Electron part, you have to install `electron-builder` and run:
