@@ -65,6 +65,19 @@ Run the following command via [`npm`](https://www.npmjs.com/get-npm):
 npm install
 ```
 
+### Contents
+Layer 1 and 2:
+* [`bokeh_templates`](bokeh_templates): HTML templates for `bokeh`. This is only relevant, if you want to freeze the Python part with `pyinstaller`.
+* [`hooks`](hooks): Necessary hook files. This is only relevant, if you want to freeze the Python part with `pyinstaller`.
+* [`static`](static) and [`templates`](templates): Static files (e.g. images, CSS, etc.) and HTML templates for the `flask` template engine.
+* [`test`](test): Unittest for `webapp.py`, testing all functions of the application.
+* [`webapp.py`](webapp.py): Contains 3rd party functions (**Layer 1**) and communicates with the webserver (**Layer 2**).
+* [`webapp.spec`](webapp.spec): The build script for `pyinstaller` containing metadata.
+
+Layer 3:
+* [`main.js`](main.js): Basically the GUI.
+* [`package.json`](package.json): Metadata, dependencies, and scripts for the GUI.
+
 
 ### Troubleshooting
 * When installing `electron` fails, try `sudo npm install -g electron --unsafe-perm=true --allow-root`.
@@ -80,7 +93,7 @@ pyinstaller --onefile --add-data static:static --add-data templates:templates --
 
 or, for Windows:
 ```
-pyinstaller --onefile --windowed --add-data static;static --add-data templates;templates --add-data bokeh_templates;bokeh_templates --additional-hooks-dir hooks webapp.py
+pyinstaller --onefile --add-data static;static --add-data templates;templates --add-data bokeh_templates;bokeh_templates --additional-hooks-dir hooks webapp.py
 ```
 ## Creating a build for the whole application
 To freeze the Electron part with `electron-builder`, run:
