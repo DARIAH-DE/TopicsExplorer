@@ -71,7 +71,7 @@ npm install
 * Please use [GitHub Issues](https://github.com/DARIAH-DE/TopicsExplorer/issues).
 
 
-## Creating a build for layer 1 and 2
+## Creating a build for Layer 1 and 2
 To freeze the Python part with `pyinstaller`, run on macOS:
 
 ```
