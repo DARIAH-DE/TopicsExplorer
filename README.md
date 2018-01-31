@@ -67,13 +67,13 @@ npm install
 
 ### Contents
 * [`bokeh_templates`](bokeh_templates): Various HTML templates for `bokeh`. This is only relevant, if you want to freeze the Python part with `pyinstaller`.
-* [`hooks`](hooks): Necessary hook files. This is only relevant, if you want to freeze the Python part with `pyinstaller` (**Layer 1** and **2**).
-* [`static`](static) and [`templates`](templates): Static files (e.g. images, CSS, etc.) and HTML templates for the `flask` template engine (**Layer 2**).
+* [`hooks`](hooks): Necessary hook files. This is only relevant, if you want to freeze the Python part with `pyinstaller`.
+* [`main.js`](main.js): Basically the GUI.
+* [`package.json`](package.json): Metadata, dependencies, and scripts for the GUI.
+* [`static`](static) and [`templates`](templates): Static files (e.g. images, CSS, etc.) and HTML templates for the `flask` template engine.
 * [`test`](test): Unittest for `webapp.py`, testing all functions of the application.
-* [`webapp.py`](webapp.py): Contains 3rd party functions (**Layer 1**) and communicates with the webserver (**Layer 2**).
+* [`webapp.py`](webapp.py): Contains 3rd party functions and communicates with the webserver.
 * [`webapp.spec`](webapp.spec): The build script for `pyinstaller` containing metadata.
-* [`main.js`](main.js): Basically the GUI (**Layer 3**).
-* [`package.json`](package.json): Metadata, dependencies, and scripts for the GUI (**Layer 3**).
 
 
 ### Troubleshooting
