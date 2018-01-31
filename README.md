@@ -25,7 +25,9 @@ Although this application is built with Python and some JavaScript, it is possib
 ## Working with the development version
 **Topics Explorer** basically consists of three layers with an user-interface built on top:
 
-<center><img src="layer.png" width=650px/></center>
+<p align="center">
+  <img src="layer.png"/>
+</p>
 
 
 ### Requirements
