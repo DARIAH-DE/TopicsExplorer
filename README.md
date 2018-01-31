@@ -8,7 +8,7 @@ Topics Explorer aims for *simplicity* and *usability*. If you are working with a
 ![Demonstrator Screenshot](screenshot.png)
 
 
-## Standalone executables
+## Getting started
 Although this application is built with Python and some JavaScript, it is possible to run it as if it was a native application, without having to install Python or any related packages. There is currently one build for Windows and macOS, respectively.
 
 1. Download `demonstrator-0.0.1-windows.zip` or `demonstrator-0.0.1-mac.zip` from the [release-section](https://github.com/DARIAH-DE/Topics/releases).
