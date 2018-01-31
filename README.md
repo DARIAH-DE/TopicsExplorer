@@ -1,9 +1,9 @@
 # Topics Explorer: A GUI for Topics – Easy Topic Modeling
-This application introduces an user-friendly Topic Modeling workflow, basically containing text data preprocessing, the actual modeling using [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), as well as various interactive visualizations.
+This application introduces an user-friendly Topic Modeling workflow, basically containing text data preprocessing, the actual modeling using [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf) (LDA), as well as various interactive visualizations.
 
 **If you do not know anything about Topic Modeling or programming in general, this is where you start.**
 
-Topics Explorer aims for *simplicity* and *usability*. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated Topic Models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing Topic Modeling with MALLET](https://github.com/DARIAH-DE/Topics/IntroducingMallet.ipynb).
+**Topics Explorer** aims for *simplicity* and *usability*. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated Topic Models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing Topic Modeling with MALLET](https://github.com/DARIAH-DE/Topics/IntroducingMallet.ipynb).
 
 ![Demonstrator Screenshot](screenshot.png)
 
