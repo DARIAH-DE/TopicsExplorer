@@ -1,0 +1,25 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+dariah-topics = {git = "git://github.com/DARIAH-DE/Topics"}
+lda = "==1.0.5"
+bokeh = "==0.12.13"
+Flask = "==0.12.2"
+lxml = "==4.1.1"
+pandas = "==0.21.1"
+numpy = "==1.14.0"
+
+
+[dev-packages]
+
+
+
+[requires]
+
+python_version = "3.6"
