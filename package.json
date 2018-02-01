@@ -1,7 +1,7 @@
 {
   "author": "DARIAH-DE, Severin Simmler",
-  "name": "dariah-topics-app",
-  "productName": "DARIAH Topics",
+  "name": "dariah-topics-explorer",
+  "productName": "DARIAH Topics Explorer",
   "description": "GUI for a Topic Modeling workflow",
   "version": "0.2.0",
   "keywords": [
@@ -9,7 +9,7 @@
     "LDA",
     "Natural Language Processing"
   ],
-  "repository": "https://github.com/DARIAH-DE/Topics",
+  "repository": "https://github.com/DARIAH-DE/TopicsExplorer",
   "main": "main.js",
   "devDependencies": {
     "electron": "^1.4.3",
