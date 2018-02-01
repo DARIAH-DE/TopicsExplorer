@@ -37,27 +37,27 @@ Besides the standalone executables, you have the ability to run the development 
 * If you wish to use *Layer 3* (which is not necessary at all): Node.js, from [here](https://nodejs.org/en/download/).
 
 For Python, you will need the following libraries:
-* [`dariah_topics`](https://github.com/DARIAH-DE/Topics) 0.0.5 or higher.
-* [`lda`](https://github.com/lda-project/lda) 1.0.5 or higher.
-* [`bokeh`](https://github.com/bokeh/bokeh) 0.12.13 or higher.
-* [`flask`](https://github.com/pallets/flask) 0.12.2 or higher.
-* [`lxml`](https://github.com/lxml/lxml) 4.1.1 or higher.
-* [`pandas`](https://github.com/pandas-dev/pandas) 0.21.1 or higher.
-* [`numpy`](https://github.com/numpy/numpy) 1.14.0 or higher.
+* [`dariah_topics`](https://github.com/DARIAH-DE/Topics) 0.0.5.
+* [`lda`](https://github.com/lda-project/lda) 1.0.5.
+* [`bokeh`](https://github.com/bokeh/bokeh) 0.12.13.
+* [`flask`](https://github.com/pallets/flask) 0.12.2.
+* [`lxml`](https://github.com/lxml/lxml) 4.1.1.
+* [`pandas`](https://github.com/pandas-dev/pandas) 0.21.1.
+* [`numpy`](https://github.com/numpy/numpy) 1.14.0.
 
-You can install all dependencies using Python's package manager [`pip`](https://pip.pypa.io/en/stable/):
+You can install all dependencies using [`pipenv`](http://pipenv.readthedocs.io/en/latest/):
 
 ```
-pip install -r requirements.txt
+pipenv install
 ```
 
 > If you are on a UNIX-based machine, remember using `pip3` and `python3` instead of `pip` and `python`.
 
 So far, you could run the application via `python webapp.py` and go to `http://127.0.0.1:5000` in any web browser. If you want a more desktop app-like feeling, you can build *Layer 3* on top with [Electron](https://electronjs.org/), a JavaScript framework for creating native applications with web technologies like JavaScript, HTML, and CSS. The dependencies are:
 
-* [`electron`](https://github.com/electron/electron) 1.7.10 or higher.
-* [`request-promise`](https://github.com/request/request-promise) 4.2.2 or higher.
-* [`request`](https://github.com/request/request) 2.83.1 or higher.
+* [`electron`](https://github.com/electron/electron) 1.7.10.
+* [`request-promise`](https://github.com/request/request-promise) 4.2.2.
+* [`request`](https://github.com/request/request) 2.83.1.
 
 Run the following command via [`npm`](https://www.npmjs.com/get-npm):
 
