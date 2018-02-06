@@ -33,7 +33,7 @@
             <div class="nav-collapse collapse">
               <ul class="nav" />
               <li>
-                <span class="brand dropdown-toggle" data-toggle="dropdown">DARIAH-DE</span>
+                  <a href="{{ url_for('index') }}"><img src="../static/img/dariah_white.png" height="80" width="80"/></a>
               </li>
               </ul>
               <ul class="nav pull-right">
@@ -52,7 +52,7 @@
     <div class="row-fluid">
       <div class="span10 offset1 main-content-wrapper no-margin">
         <div id="content" class="primary-area">
-          <h1>Topics – Easy Topic Modeling</h1>
+          <h1><a href="index.html">Topics – Easy Topic Modeling </a></h1>
           <div id="contentInner">
             <form action="/modeling" method="POST" enctype="multipart/form-data">
               <p>The text mining technique <b>Topic Modeling</b> has become a popular statistical method for clustering documents. This application introduces an user-friendly workflow, basically containing data preprocessing, the actual modeling using <b>latent Dirichlet allocation</b>                (LDA), as well as various interactive visualizations to explore the model.</p>
