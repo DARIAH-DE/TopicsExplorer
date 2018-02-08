@@ -255,10 +255,4 @@ def stream_template(template_name, **context):
     return rv
 
 if __name__ == '__main__':
-    lda_log = logging.getLogger('lda')
-    lda_log.setLevel(logging.INFO)
-
-    handler = logging.FileHandler('webapp.log', 'w')
-    lda_log.addHandler(handler)
-
     app.run()
