@@ -55,14 +55,12 @@
       {% for info_1, info_2, info_3, info_4, info_5 in logging %}
         {% if 'render_result' not in info_1 %}
       <script>
-        $("#log").text("{{ info_1 }}") { %
-          if 'FYI' in info_2 %
-        }
-        $("#parameter").html("<b>{{ info_2 }}</b><br>{{ info_3 }}<br>{{ info_4 }}<br>{{ info_5 }}") { %
-          else %
-        }
-        $("#parameter").html("{{ info_2 }}<br>{{ info_3 }}<br>{{ info_4 }}<br>{{ info_5 }}") { % endif %
-        }
+        $("#log").text("{{ info_1 }}")
+        {% if 'FYI' in info_2 %}
+        $("#parameter").html("<b>{{ info_2 }}</b><br>{{ info_3 }}<br>{{ info_4 }}<br>{{ info_5 }}")
+        {% else %}
+        $("#parameter").html("{{ info_2 }}<br>{{ info_3 }}<br>{{ info_4 }}<br>{{ info_5 }}")
+        {% endif %}
       </script>
       {% else %}
       <script>
