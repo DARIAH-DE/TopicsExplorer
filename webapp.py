@@ -35,7 +35,6 @@ if getattr(sys, 'frozen', False):
                 static_folder=str(Path(sys._MEIPASS, 'static')))
 else:
     app = Flask(__name__)
-    app.secret_key = "oyoyoy"
 
 
 @app.route('/')
