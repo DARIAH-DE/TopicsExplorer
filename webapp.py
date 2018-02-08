@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from flask import Flask, request, flash, render_template, Response, stream_with_context
+from flask import Flask, request, render_template, Response, stream_with_context
 from pathlib import Path
 import utils
 import pandas as pd
@@ -84,7 +84,6 @@ def create_model():
     INFO_3B = "containing {0} tokens"
     INFO_4B = "or {0} unique types"
     INFO_5B = "to generate {0} topics."
-    flash("Hallo")
     start = time.time()
     yield "Collecting user input ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
     user_input = {'files': request.files.getlist('files'),
@@ -110,7 +109,6 @@ def create_model():
         tokenized_corpus[filename.stem] = tokens
         parameter['Corpus size (raw), in tokens'] += len(tokens)
         file.flush()
-    flash("OKOKK")
     yield "Creating document-term matrix ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
     document_labels = tokenized_corpus.index
     document_term_matrix = preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
