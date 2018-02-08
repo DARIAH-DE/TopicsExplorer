@@ -26,7 +26,7 @@ __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 
 tempdir = tempfile.mkdtemp()
-NUM_KEYS = 5
+NUM_KEYS = 10
 
 
 if getattr(sys, 'frozen', False):
@@ -41,8 +41,7 @@ else:
 def index():
     lda_log = logging.getLogger('lda')
     lda_log.setLevel(logging.INFO)
-
-    handler = logging.FileHandler('webapp.log', 'w')
+    handler = logging.FileHandler(str(Path(tempdir, 'topicmodeling.log')), 'w')
     lda_log.addHandler(handler)
     return render_template('index.html')
 
@@ -60,9 +59,10 @@ def modeling():
 @app.route('/model')
 def model():
     data = utils.decompress(str(Path(tempdir, 'data.bin.xz')))
-    data['topics'] = pd.read_csv(str(Path(tempdir, 'topics.csv'))).to_html()
-    data['document_topics'] = pd.read_csv(str(Path(tempdir, 'document_topics.csv'))).to_html()
-    data['parameter'] = pd.read_csv(str(Path(tempdir, 'parameter.csv'))).to_html()
+    parameter = pd.read_csv(str(Path(tempdir, 'parameter.csv')), index_col=0)
+    parameter.columns = ['']
+    data['parameter'] = [parameter.to_html(classes=['parameter'], border=0)]
+    data['topics'] = [pd.read_csv(str(Path(tempdir, 'topics.csv')), index_col=0).to_html(classes='topics')]
     return render_template('model.html', **data)
 
 
@@ -94,8 +94,9 @@ def create_model():
     else:
         user_input['mft'] = int(request.form['mft_threshold'])
 
-    parameter = {'Corpus size, in documents': len(user_input['files']),
-                 'Corpus size (raw), in tokens': 0}
+    parameter = pd.Series()
+    parameter['Corpus size, in documents'] = len(user_input['files'])
+    parameter['Corpus size (raw), in tokens'] = 0
 
     yield "Reading and tokenizing corpus ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
     tokenized_corpus = pd.Series()
@@ -112,7 +113,7 @@ def create_model():
     yield "Creating document-term matrix ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
     document_labels = tokenized_corpus.index
     document_term_matrix = preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
-    
+
     group = ['Document size (raw)' for n in range(parameter['Corpus size, in documents'])]
     corpus_stats = pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
                                  'group': group})
@@ -127,15 +128,16 @@ def create_model():
     features = set(stopwords).union(hapax_legomena)
     features = [token for token in features if token in document_term_matrix.columns]
     document_term_matrix = document_term_matrix.drop(features, axis=1)
-    
-    
+
+    group = ['Document size (clean)' for n in range(parameter['Corpus size, in documents'])]
     corpus_stats = corpus_stats.append(pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
                                                      'group': group}))
+
     parameter['Corpus size (clean), in tokens'] = int(document_term_matrix.values.sum())
-    
+
     document_term_arr = document_term_matrix.as_matrix().astype(int)
     vocabulary = document_term_matrix.columns
-    
+
     parameter['Size of vocabulary, in tokens'] = len(vocabulary)
     parameter['Number of topics'] = user_input['num_topics']
     parameter['Number of iterations'] = user_input['num_iterations']
@@ -146,7 +148,7 @@ def create_model():
     INFO_5B = INFO_5B.format(parameter['Number of topics'])
 
     yield "Initializing LDA topic model ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
-    
+
     pool = Pool(processes=2)
     model = pool.apply_async(utils.lda_modeling, [document_term_arr, user_input['num_topics'], user_input['num_iterations']])
     while True:
@@ -156,15 +158,15 @@ def create_model():
             pool.close()
             break
 
-    parameter['Log likelihood of the last iteration'] = round(model.loglikelihood())
-    
+    parameter['The model log likelihood'] = round(model.loglikelihood())
+
     yield "Accessing topics ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
     topics = postprocessing.show_topics(model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
     topics.columns = ['Key {0}'.format(i) for i in range(1, NUM_KEYS + 1)]
     topics.index = ['Topic {0}'.format(i) for i in range(1, user_input['num_topics'] + 1)]
 
     yield "Accessing document topics distributions ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
-    
+
     document_topics = postprocessing.show_document_topics(model=model, topics=topics, document_labels=document_labels)
     if document_topics.shape[0] < document_topics.shape[1]:
         if document_topics.shape[1] < 20:
@@ -183,17 +185,17 @@ def create_model():
                                            enable_notebook=False)
     heatmap = fig.interactive_heatmap(height=height,
                                       sizing_mode='scale_width')
-    
+
     output_file(str(Path(tempdir, 'heatmap.html')))
     save(heatmap)
-    
+
     heatmap_script, heatmap_div = components(heatmap)
-        
+
     corpus_boxplot = utils.boxplot(corpus_stats)
     corpus_boxplot_script, corpus_boxplot_div = components(corpus_boxplot)
     output_file(str(Path(tempdir, 'corpus_statistics.html')))
     save(corpus_boxplot)
-    """
+
     if document_topics.shape[1] < 10:
         height = 10 * 18
     else:
@@ -207,11 +209,11 @@ def create_model():
         height = 10 * 18
     else:
         height = document_topics.shape[0] * 18
-    documents_barchart = utils.barchart(document_topics.T, height=height, topics=False)
+    documents_barchart = utils.barchart(document_topics.T, height=height, topics=topics)
     documents_script, documents_div = components(documents_barchart)
     output_file(str(Path(tempdir, 'document_topics_barchart.html')))
     save(documents_barchart)
-    """
+
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
     end = time.time()
@@ -226,18 +228,18 @@ def create_model():
     topics.to_csv(str(Path(tempdir, 'topics.csv')))
     document_topics.to_csv(str(Path(tempdir, 'document_topics.csv')))
     parameter.to_csv(str(Path(tempdir, 'parameter.csv')))
-    
+
     shutil.make_archive(str(Path(app.static_folder, 'topicmodeling')), 'zip', tempdir)
     print(app.static_folder)
     import glob
     print(glob.glob(str(Path(tempdir, '*'))))
-    
+
     data = {'heatmap_script': heatmap_script,
             'heatmap_div': heatmap_div,
-            #'topics_script': topics_script,
-            #'topics_div': topics_div,
-            #'documents_script': documents_script,
-            #'documents_div': documents_div,
+            'topics_script': topics_script,
+            'topics_div': topics_div,
+            'documents_script': documents_script,
+            'documents_div': documents_div,
             'js_resources': js_resources,
             'css_resources': css_resources,
             'corpus_boxplot_script': corpus_boxplot_script,
@@ -245,7 +247,7 @@ def create_model():
     utils.compress(data, str(Path(tempdir, 'data.bin.xz')))
     yield 'render_result', '', '', '', ''
 
-    
+
 def stream_template(template_name, **context):
     app.update_template_context(context)
     t = app.jinja_env.get_template(template_name)

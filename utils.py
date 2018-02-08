@@ -18,16 +18,20 @@ __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 TOOLS = 'hover, pan, reset, save, wheel_zoom, zoom_in, zoom_out'
 JAVASCRIPT = """
-             var selection = cb_obj.value;
+             var f = cb_obj.value;
              var options = %s;
-             for (var option in options) {
-                 if (selection == options[option]) {
-                     eval(options[selection]).visible = true;
+
+             for (var i in options) {
+                 if (f == options[i]) {
+                     console.log("Visible: " + options[i])
+                     eval(options[i]).visible = true;
                  }
                  else {
-                     eval(options[selection]).visible = false;
+                     console.log("Unvisible: " + options[i])
+                     eval(options[i]).visible = false;
                  }
              }
+             console.log(' ')
              """
 
 
@@ -52,7 +56,9 @@ def process_xml(file):
     return ''.join(text.xpath('.//text()'))
 
 
-def boxplot(stats, x_labels=['Document size (clean)', 'Document size (raw)'], yaxis_label='Tokens'):
+def boxplot(stats):
+    x_labels = ['Document size (clean)', 'Document size (raw)']
+
     groups = stats.groupby('group')
     q1 = groups.quantile(q=0.25)
     q2 = groups.quantile(q=0.5)
@@ -67,14 +73,13 @@ def boxplot(stats, x_labels=['Document size (clean)', 'Document size (raw)'], ya
                      (group.score < lower.loc[cat]['score'])]['score']
     out = groups.apply(outliers).dropna()
 
-    fig = figure(tools='save', background_fill_color='#EFE8E2', title='',
-                 x_range=x_labels, logo=None, sizing_mode='fixed', plot_width=500,
-                 plot_height=350)
+    fig = figure(tools='save', background_fill_color='#EFE8E2', title='', x_range=x_labels,
+                 logo=None, sizing_mode='fixed', plot_width=500, plot_height=350)
 
     qmin = groups.quantile(q=0.00)
     qmax = groups.quantile(q=1.00)
-    upper.score = [min([x, y]) for (x, y) in zip(list(qmax.loc[:, 'score']), upper.score)]
-    lower.score = [max([x, y]) for (x, y) in zip(list(qmin.loc[:, 'score']), lower.score)]
+    upper.score = [min([x,y]) for (x,y) in zip(list(qmax.loc[:,'score']),upper.score)]
+    lower.score = [max([x,y]) for (x,y) in zip(list(qmin.loc[:,'score']),lower.score)]
 
     fig.segment(x_labels, upper.score, x_labels, q3.score, line_color='black')
     fig.segment(x_labels, lower.score, x_labels, q1.score, line_color='black')
@@ -85,7 +90,7 @@ def boxplot(stats, x_labels=['Document size (clean)', 'Document size (raw)'], ya
     fig.rect(x_labels, lower.score, 0.2, 0.01, line_color='black')
     fig.rect(x_labels, upper.score, 0.2, 0.01, line_color='black')
 
-    fig.yaxis.axis_label = yaxis_label
+    fig.yaxis.axis_label = 'Tokens'
     fig.xgrid.grid_line_color = None
     fig.ygrid.grid_line_color = 'white'
     fig.grid.grid_line_width = 2
@@ -94,9 +99,9 @@ def boxplot(stats, x_labels=['Document size (clean)', 'Document size (raw)'], ya
     return fig
 
 
-def barchart(document_topics, height, topics=True):
+def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOLS):
     y_range = document_topics.columns.tolist()
-    fig = figure(y_range=y_range, plot_height=height, tools=TOOLS,
+    fig = figure(y_range=y_range, plot_height=height, tools=tools,
                  toolbar_location='right', sizing_mode='scale_width',
                  logo=None)
 
@@ -118,15 +123,16 @@ def barchart(document_topics, height, topics=True):
     fig.xaxis.major_label_text_font_size = '9pt'
     fig.yaxis.major_label_text_font_size = '9pt'
 
-    callback = CustomJS(args=plots, code=JAVASCRIPT % list(plots.keys()))
+    callback = CustomJS(args=plots, code=script % list(plots.keys()))
 
     menu = [(select, re.sub(' ', '_', option)) for select, option in zip(document_topics.index, options)]
-    if topics:
-        menu = [(select, re.sub(' ', '_', option)) for select, option in zip(document_topics.index, options)]
-        dropdown = Dropdown(label='Select Topic ...', menu=menu, callback=callback)
+    if topics is not None:
+        selection = [' '.join(topics.iloc[i].tolist()) + ' ...' for i in range(topics.shape[0])]
+        menu = [(select, re.sub(' ', '_', option)) for select, option in zip(selection, options)]
+        dropdown = Dropdown(label='Select topic to display proportion', menu=menu, callback=callback)
     else:
         menu = [(select, option) for select, option in zip(document_topics.index, options)]
-        dropdown = Dropdown(label='Select Document ...', menu=menu, callback=callback)
+        dropdown = Dropdown(label='Select document to display proportion', menu=menu, callback=callback)
     return column(dropdown, fig, sizing_mode='scale_width')
 
 
