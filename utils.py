@@ -136,7 +136,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     return column(dropdown, fig, sizing_mode='scale_width')
 
 
-def read_logfile(logfile='webapp.log'):
+def read_logfile(logfile):
     time.sleep(3)
     pattern = re.compile('-?\d+')
     with open(logfile, 'r', encoding='utf-8') as file:

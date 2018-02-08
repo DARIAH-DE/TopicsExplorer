@@ -152,7 +152,7 @@ def create_model():
     pool = Pool(processes=2)
     model = pool.apply_async(utils.lda_modeling, [document_term_arr, user_input['num_topics'], user_input['num_iterations']])
     while True:
-        yield 'Iteration {0} of {1} ...'.format(pool.apply_async(utils.read_logfile).get(), user_input['num_iterations']), INFO_2B, INFO_3B, INFO_4B, INFO_5B
+        yield 'Iteration {0} of {1} ...'.format(pool.apply_async(utils.read_logfile, [str(Path(tempdir, 'topicmodeling.log'))]).get(), user_input['num_iterations']), INFO_2B, INFO_3B, INFO_4B, INFO_5B
         if model.ready():
             model = model.get()
             pool.close()
@@ -230,9 +230,6 @@ def create_model():
     parameter.to_csv(str(Path(tempdir, 'parameter.csv')))
 
     shutil.make_archive(str(Path(app.static_folder, 'topicmodeling')), 'zip', tempdir)
-    print(app.static_folder)
-    import glob
-    print(glob.glob(str(Path(tempdir, '*'))))
 
     data = {'heatmap_script': heatmap_script,
             'heatmap_div': heatmap_div,
