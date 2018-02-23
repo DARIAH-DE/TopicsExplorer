@@ -3,17 +3,17 @@ This application introduces an user-friendly Topic Modeling workflow, basically 
 
 **If you do not know anything about Topic Modeling or programming in general, this is where you start.**
 
-**Topics Explorer** aims for *simplicity* and *usability*. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated Topic Models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing Topic Modeling with MALLET](https://github.com/DARIAH-DE/Topics/IntroducingMallet.ipynb).
+**Topics Explorer** aims for simplicity and usability. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated Topic Models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing Topic Modeling with MALLET](https://github.com/DARIAH-DE/Topics/IntroducingMallet.ipynb).
 
 ![Demonstrator Screenshot](screenshot.png)
 
 
 ## Getting started
-Although this application is built with Python and some JavaScript, it is possible to run it as if it was a native application, without having to install Python or any related packages. There is currently one build for Windows and macOS, respectively.
+Although this application is built with Python, it is possible to run it as if it was a native application, without having to install Python or any related packages. There is currently one build for Windows and macOS, respectively. **At the moment, Linux user will have to use the development version**.
 
-1. Download `demonstrator-0.0.1-windows.zip` or `demonstrator-0.0.1-mac.zip` from the [release-section](https://github.com/DARIAH-DE/Topics/releases).
+1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the zip-archive for your OS.
 2. Open it by double-clicking.
-3. Run the app by double-clicking the file `DARIAH Topics Explorer.exe` or `DARIAH Topics Explorer.app`, respectively.
+3. Run the app by double-clicking the file `DARIAH Topics Explorer`. (The files in the folder `src` is basically source code. You do not need to worry about that).
 
 
 ### Troubleshooting
@@ -34,16 +34,16 @@ Although this application is built with Python and some JavaScript, it is possib
 Besides the standalone executables, you have the ability to run the development version. In this case, you will have to install some dependencies, but first of all:
 
 * At least Python 3.6, from [here](https://www.python.org/downloads/). Python 2 is *not* supported.
-* If you wish to use *Layer 3* (which is not necessary at all): Node.js, from [here](https://nodejs.org/en/download/).
 
-For Python, you will need the following libraries:
-* [`dariah_topics`](https://github.com/DARIAH-DE/Topics) 0.0.5.
-* [`lda`](https://github.com/lda-project/lda) 1.0.5.
-* [`bokeh`](https://github.com/bokeh/bokeh) 0.12.13.
-* [`flask`](https://github.com/pallets/flask) 0.12.2.
-* [`lxml`](https://github.com/lxml/lxml) 4.1.1.
-* [`pandas`](https://github.com/pandas-dev/pandas) 0.21.1.
-* [`numpy`](https://github.com/numpy/numpy) 1.14.0.
+You will need the following libraries:
+* [`dariah_topics`](https://github.com/DARIAH-DE/Topics) 0.0.6
+* [`lda`](https://github.com/lda-project/lda) 1.0.5
+* [`bokeh`](https://github.com/bokeh/bokeh) 0.12.13
+* [`flask`](https://github.com/pallets/flask) 0.12.2
+* [`lxml`](https://github.com/lxml/lxml) 4.1.1
+* [`pandas`](https://github.com/pandas-dev/pandas) 0.21.1
+* [`numpy`](https://github.com/numpy/numpy) 1.14.0
+* [`PyQt5`](https://github.com/baoboa/pyqt5) 5.9.2.
 
 You can install all dependencies using [`pipenv`](http://pipenv.readthedocs.io/en/latest/):
 
@@ -51,33 +51,26 @@ You can install all dependencies using [`pipenv`](http://pipenv.readthedocs.io/e
 pipenv install
 ```
 
-> If you are on a UNIX-based machine, remember using `pip3` and `python3` instead of `pip` and `python`.
+> If you are on a UNIX-based machine, remember using `python3` instead of `python`.
 
-So far, you could run the application via `python webapp.py` and go to `http://127.0.0.1:5000` in any web browser. If you want a more desktop app-like feeling, you can build *Layer 3* on top with [Electron](https://electronjs.org/), a JavaScript framework for creating native applications with web technologies like JavaScript, HTML, and CSS. The dependencies are:
-
-* [`electron`](https://github.com/electron/electron) 1.7.10.
-* [`request-promise`](https://github.com/request/request-promise) 4.2.2.
-* [`request`](https://github.com/request/request) 2.83.1.
-
-Run the following command via [`npm`](https://www.npmjs.com/get-npm):
+So far, you could run the application via `python webapp.py` and go to `http://127.0.0.1:5000` in any web browser. If you want a more desktop app-like feeling, you can build *Layer 3* on top and run:
 
 ```
-npm install
+python topicsexplorer.py
 ```
+
 
 ### Contents
 * [`bokeh_templates`](bokeh_templates): HTML templates for `bokeh`. This is only relevant, if you want to freeze the Python part with `pyinstaller`.
 * [`hooks`](hooks): Necessary hook files. This is only relevant, if you want to freeze the Python part with `pyinstaller`.
-* [`main.js`](main.js): Basically the GUI.
-* [`package.json`](package.json): Metadata, dependencies, and scripts for the GUI.
 * [`static`](static) and [`templates`](templates): Static files (e.g. images, CSS, etc.) and HTML templates for the `flask` template engine.
 * [`test`](test): Unittest for `webapp.py`, testing all functions of the application.
 * [`webapp.py`](webapp.py): Contains 3rd party functions and communicates with the webserver.
-* [`webapp.spec`](webapp.spec): The build script for `pyinstaller` containing metadata.
+* [`topicsexplorer.py`](topicsexplorer.py): A Qt-based UI displaying the contents of the app by running `webapp.py`.
+* [`topicsexplorer.spec`](webapp.spec): The build script for `pyinstaller` containing metadata.
 
 
 ### Troubleshooting
-* When installing `electron` fails, try `sudo npm install -g electron --unsafe-perm=true --allow-root`.
 * Please use [GitHub Issues](https://github.com/DARIAH-DE/TopicsExplorer/issues).
 
 
@@ -91,10 +84,4 @@ pyinstaller --onefile --add-data static:static --add-data templates:templates --
 or, for Windows:
 ```
 pyinstaller --onefile --add-data static;static --add-data templates;templates --add-data bokeh_templates;bokeh_templates --additional-hooks-dir hooks webapp.py
-```
-## Creating a build for the whole application
-To freeze the Electron part with `electron-builder`, run:
-
-```
-electron-builder
 ```
