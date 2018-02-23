@@ -76,7 +76,7 @@
                   better).
                   <div class="alert alert-info">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <b>Tip:</b> <a href="https://textgridrep.org", onclick="electronOpenLinkInBrowser();">The TextGrid Repository</a> (https://textgridrep.org) is a great place to start searching for text data. It's Open Access and provides a lot of literary texts in valid and well-formed TEI XML.
+                <b>Tip:</b> The TextGrid Repository (https://textgridrep.org) is a great place to start searching for text data. It's Open Access and provides a lot of literary texts in valid and well-formed TEI XML.
                   </div>
                 </p>
                 <input type="file" name="files" accept=".txt, .xml" multiple required/><br><br>
@@ -109,7 +109,10 @@
                   <h2>3. Visualizing</h2>
                   <p>When using LDA to explore text collections, we are typically interested in examining texts in terms of their <b>constituent topics</b> (instead of word frequencies). Because the number of topics is so much smaller than the number of
                     unique vocabulary elements (say, 10 versus 10,000), a range of data visualization methods become available. As you will see, all of the provided visualizations are <b>interactive</b>, but you will have the ability to save the plots
-                    as a <b>static image file</b>.</p><br>
+                    as a <b>static image file</b>.</p>
+                    <div class="alert alert-danger">
+                      <button type="button" class="close" data-dismiss="alert">&times;</button>
+                      <i class="fa fa-exclamation-circle"></i> Due to some graphics and styles, you will need an active internet connection. Otherwise, the following page may not be displayed properly, but this does not influence the performance of this application or the topic modeling process in general.</div><br>
                   <div class="center_button">
                     <button class="button" type="submit"><b>Train<br>Topic Model</b></button>
                   </div><br>
