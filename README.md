@@ -3,6 +3,8 @@ This application introduces an user-friendly Topic Modeling workflow, basically 
 
 **If you do not know anything about Topic Modeling or programming in general, this is where you start.**
 
+<p style="background-color: #f8d7da; padding: 20px 20px 20px 20px; border-radius: 6px; border-color: #f5c6cb">Hinweis auf Release Seite</p>
+
 **Topics Explorer** aims for simplicity and usability. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated Topic Models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing Topic Modeling with MALLET](https://github.com/DARIAH-DE/Topics/IntroducingMallet.ipynb).
 
 ![Demonstrator Screenshot](screenshot.png)
@@ -74,14 +76,14 @@ python topicsexplorer.py
 * Please use [GitHub Issues](https://github.com/DARIAH-DE/TopicsExplorer/issues).
 
 
-## Creating a build for Layer 1 and 2
-To freeze the Python part with `pyinstaller`, run on macOS:
+## Creating a standalone build
+To freeze the Python scripts with `pyinstaller`, run on macOS:
 
 ```
 pyinstaller --onefile --add-data static:static --add-data templates:templates --add-data bokeh_templates:bokeh_templates --additional-hooks-dir hooks webapp.py
 ```
 
-or, for Windows:
+or, on Windows:
 ```
 pyinstaller --onefile --add-data static;static --add-data templates;templates --add-data bokeh_templates;bokeh_templates --additional-hooks-dir hooks webapp.py
 ```
