@@ -42,7 +42,7 @@ You will need the following libraries:
 * [`lxml`](https://github.com/lxml/lxml) 4.1.1
 * [`pandas`](https://github.com/pandas-dev/pandas) 0.21.1
 * [`numpy`](https://github.com/numpy/numpy) 1.14.0
-* [`PyQt5`](https://github.com/baoboa/pyqt5) 5.9.2.
+* [`pyqt5`](https://github.com/baoboa/pyqt5) 5.9.2.
 
 You can install all dependencies using [`pipenv`](http://pipenv.readthedocs.io/en/latest/):
 
