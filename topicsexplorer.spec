@@ -3,10 +3,10 @@
 block_cipher = None
 
 
-a = Analysis(['webapp.py'],
+a = Analysis(['topicsexplorer.py'],
              pathex=[],
              binaries=[],
-             datas=[('static', 'static'), ('templates', 'templates'), ('bokeh_templates', 'bokeh_templates')],
+             datas=[('webapp.py', '.'), ('utils.py', '.'), ('static', 'static'), ('templates', 'templates'), ('bokeh_templates', 'bokeh_templates')],
              hiddenimports=[],
              hookspath=['hooks'],
              runtime_hooks=[],
@@ -18,14 +18,18 @@ pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
-          a.binaries,
-          a.zipfiles,
-          a.datas,
-          name='webapp',
+          exclude_binaries=True,
+          name='DARIAH Topics Explorer',
           debug=False,
           strip=False,
           upx=False,
-          runtime_tmpdir=None,
           console=False,
           #icon='static/img/app_icon.png', for macos
           icon='static/img/app_icon.ico')
+coll = COLLECT(exe,
+               a.binaries,
+               a.zipfiles,
+               a.datas,
+               strip=False,
+               upx=False,
+               name='DARIAH Topics Explorer')
