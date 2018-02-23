@@ -169,7 +169,10 @@ def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
     lda_log.addHandler(handler)
     
     model = lda.LDA(n_topics=n_topics, n_iter=n_iter)
-    return model.fit(document_term_arr)
+    model.fit(document_term_arr)
+    with open(file, 'a', encoding='utf-8') as f:
+        f.write('DONE')
+    return model
 
    
 def enthread(target, args):
