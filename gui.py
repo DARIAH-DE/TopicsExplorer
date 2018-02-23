@@ -8,9 +8,21 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl, QThread
 
+import lzma
+import pickle
+import time
+import re
+import logging
+from lxml import etree
+from bokeh.plotting import figure
+from bokeh.models import CustomJS, ColumnDataSource, HoverTool
+from bokeh.models.widgets import Dropdown
+from bokeh.layouts import column
+import lda
+from threading import Thread
+import queue
+
 from flask import Flask, request, render_template, Response, stream_with_context
-from pathlib import Path
-import utils
 import pandas as pd
 import time
 from bokeh.plotting import output_file, save
@@ -19,11 +31,8 @@ from bokeh.resources import INLINE
 from dariah_topics import preprocessing
 from dariah_topics import postprocessing
 from dariah_topics import visualization
-import logging
 import tempfile
-import sys
 import shutil
-from multiprocessing import Pool
 import numpy as np
 from werkzeug.utils import secure_filename
 
