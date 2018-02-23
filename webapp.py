@@ -25,7 +25,7 @@ __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 
 tempdir = tempfile.mkdtemp()
-NUM_KEYS = 10
+NUM_KEYS = 8
 
 
 if getattr(sys, 'frozen', False):
@@ -199,7 +199,7 @@ def create_model():
         height = 10 * 18
     else:
         height = document_topics.shape[1] * 18
-    topics_barchart = utils.barchart(document_topics, height=height)
+    topics_barchart = utils.barchart(document_topics, height=height, topics=topics)
     topics_script, topics_div = components(topics_barchart)
     output_file(str(Path(tempdir, 'topics_barchart.html')))
     save(topics_barchart)
@@ -208,7 +208,7 @@ def create_model():
         height = 10 * 18
     else:
         height = document_topics.shape[0] * 18
-    documents_barchart = utils.barchart(document_topics.T, height=height, topics=topics)
+    documents_barchart = utils.barchart(document_topics.T, height=height)
     documents_script, documents_div = components(documents_barchart)
     output_file(str(Path(tempdir, 'document_topics_barchart.html')))
     save(documents_barchart)

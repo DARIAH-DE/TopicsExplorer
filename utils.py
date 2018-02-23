@@ -117,7 +117,10 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
         option = re.sub(' ', '_', option)
         bar = fig.hbar(y='Describer', right='Proportion', source=source,
                        height=0.5, color='#053967')
-        bar.visible = False
+        if i == 0:
+            bar.visible = True
+        else:
+            bar.visible = False
         plots[option] = bar
 
     fig.xgrid.grid_line_color = None
@@ -127,16 +130,17 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     fig.xaxis.major_label_text_font_size = '9pt'
     fig.yaxis.major_label_text_font_size = '9pt'
 
-    callback = CustomJS(args=plots, code=script % list(plots.keys()))
+    options = list(plots.keys())
+    callback = CustomJS(args=plots, code=script % options)
 
-    menu = [(select, re.sub(' ', '_', option)) for select, option in zip(document_topics.index, options)]
     if topics is not None:
         selection = [' '.join(topics.iloc[i].tolist()) + ' ...' for i in range(topics.shape[0])]
-        menu = [(select, re.sub(' ', '_', option)) for select, option in zip(selection, options)]
-        dropdown = Dropdown(label='Select topic to display proportion', menu=menu, callback=callback)
+        menu = [(select, option) for select, option in zip(selection, options)]
+        label = 'Select topic to display proportions'
     else:
         menu = [(select, option) for select, option in zip(document_topics.index, options)]
-        dropdown = Dropdown(label='Select document to display proportion', menu=menu, callback=callback)
+        label = 'Select document to display proportions'
+    dropdown = Dropdown(label=label, menu=menu, callback=callback)
     return column(dropdown, fig, sizing_mode='scale_width')
 
 
