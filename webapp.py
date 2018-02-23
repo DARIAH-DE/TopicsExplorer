@@ -16,7 +16,6 @@ import logging
 import tempfile
 import sys
 import shutil
-from multiprocessing import Pool
 import numpy as np
 from werkzeug.utils import secure_filename
 
@@ -39,10 +38,6 @@ else:
 
 @app.route('/')
 def index():
-    lda_log = logging.getLogger('lda')
-    lda_log.setLevel(logging.INFO)
-    handler = logging.FileHandler(str(Path(tempdir, 'topicmodeling.log')), 'w')
-    lda_log.addHandler(handler)
     return render_template('index.html')
 
 
@@ -59,10 +54,10 @@ def modeling():
 @app.route('/model')
 def model():
     data = utils.decompress(str(Path(tempdir, 'data.bin.xz')))
-    parameter = pd.read_csv(str(Path(tempdir, 'parameter.csv')), index_col=0)
+    parameter = pd.read_csv(str(Path(tempdir, 'parameter.csv')), index_col=0, encoding='utf-8')
     parameter.columns = ['']
     data['parameter'] = [parameter.to_html(classes=['parameter'], border=0)]
-    data['topics'] = [pd.read_csv(str(Path(tempdir, 'topics.csv')), index_col=0).to_html(classes='topics')]
+    data['topics'] = [pd.read_csv(str(Path(tempdir, 'topics.csv')), index_col=0, encoding='utf-8').to_html(classes='topics')]
     return render_template('model.html', **data)
 
 
@@ -110,6 +105,7 @@ def create_model():
         tokenized_corpus[filename.stem] = tokens
         parameter['Corpus size (raw), in tokens'] += len(tokens)
         file.flush()
+    
     yield "Creating document-term matrix ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
     document_labels = tokenized_corpus.index
     document_term_matrix = preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
@@ -148,15 +144,17 @@ def create_model():
     INFO_5B = INFO_5B.format(parameter['Number of topics'])
 
     yield "Initializing LDA topic model ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
-
-    pool = Pool(processes=2)
-    model = pool.apply_async(utils.lda_modeling, [document_term_arr, user_input['num_topics'], user_input['num_iterations']])
+    
+    model = utils.enthread(target=utils.lda_modeling,
+                           args=(document_term_arr, user_input['num_topics'], user_input['num_iterations'], tempdir))
     while True:
-        yield 'Iteration {0} of {1} ...'.format(pool.apply_async(utils.read_logfile, [str(Path(tempdir, 'topicmodeling.log'))]).get(), user_input['num_iterations']), INFO_2B, INFO_3B, INFO_4B, INFO_5B
-        if model.ready():
+        msg = utils.read_logfile(str(Path(tempdir, 'topicmodeling.log')))
+
+        if msg == None:
             model = model.get()
-            pool.close()
             break
+        else:
+            yield 'Iteration {0} of {1} ...'.format(msg, user_input['num_iterations']), INFO_2B, INFO_3B, INFO_4B, INFO_5B
 
     parameter['The model log likelihood'] = round(model.loglikelihood())
 
@@ -225,9 +223,9 @@ def create_model():
         parameter['Passed time, in minutes'] = passed_time
 
     parameter = pd.DataFrame(pd.Series(parameter))
-    topics.to_csv(str(Path(tempdir, 'topics.csv')))
-    document_topics.to_csv(str(Path(tempdir, 'document_topics.csv')))
-    parameter.to_csv(str(Path(tempdir, 'parameter.csv')))
+    topics.to_csv(str(Path(tempdir, 'topics.csv')), encoding='utf-8')
+    document_topics.to_csv(str(Path(tempdir, 'document_topics.csv')), encoding='utf-8')
+    parameter.to_csv(str(Path(tempdir, 'parameter.csv')), encoding='utf-8')
 
     shutil.make_archive(str(Path(app.static_folder, 'topicmodeling')), 'zip', tempdir)
 
