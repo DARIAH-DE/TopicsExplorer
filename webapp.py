@@ -156,7 +156,7 @@ def create_model():
         else:
             yield 'Iteration {0} of {1} ...'.format(msg, user_input['num_iterations']), INFO_2B, INFO_3B, INFO_4B, INFO_5B
 
-    parameter['The model log likelihood'] = round(model.loglikelihood())
+    parameter['The model log-likelihood'] = round(model.loglikelihood())
 
     yield "Accessing topics ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
     topics = postprocessing.show_topics(model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)

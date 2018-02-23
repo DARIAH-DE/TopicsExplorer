@@ -46,9 +46,6 @@
                   <a href="{{ url_for('index') }}"><i class="icon-refresh icon-white"></i> Reset</a>
                 </li>
                 <li>
-                  <a href="../static/topicmodeling.zip"><i class="icon-download-alt icon-white"></i> Save Data</a>
-                </li>
-                <li>
                   <a href="{{ url_for('help') }}"><i class="icon-question-sign icon-white"></i> Help</a>
                 </li>
               </ul>
@@ -66,11 +63,16 @@
           <h1>Topics – Easy Topic Modeling</h1>
           <div id="contentInner" style="text-align:justify;">
             <h2>1. Corpus and Parameter Summary</h2>
-            <p>
+            <p>All parameters, including some corpus statistics, are summed up in the following table. This kind of information might be useful, if you create more than one topic model and want to compare the results. The most common way to evaluate a probabilistic model is to measure the log-likelihood (if you are interested in the evaluation of probabilistic models, have a look at <i>Wallach et al. 2009: Evaluation Methods for Topic Models</i>, a mathematical approach). If you increase the number of iterations, your model gets better, and you will see, the log-likelihood also increases <b>until a certain point</b>. This is how you might find out the ideal number of iterations.
             {% for table in parameter %} {{ table|safe }} {% endfor %}<br>
+            As you can see, your corpus is a lot smaller after cleaning. You either defined a threshold for most frequent words, or selected an external stopwords list. In addition so-called <i>hapax legomena</i> have been removed. In corpus linguistics, a hapax legomenon is a word that occurs only once within a context. So, if a word occurs only once in a document, it is very likely that the word is semantically insignificant – meaning not useful for the topic modeling algorithm.<br>
             <center>
             {{ corpus_boxplot_div|safe }}</center>
             </p><br>
+            <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <b>FYI:</b> All of the generated data (tables and <i>interactive</i> graphics) was automatically saved in a ZIP archive (<b>topicmodeling.zip</b>) in your current working directory.
+                  </div>
             <h2>2. Inspecting the Topic Model</h2>
             <p>Topic Models are unsupervised. It is called <i>unsupervised</i>, because you did not have any labels describing the semantic structures or anything related, but only pure word frequencies. Since the examples given to the algorithm are unlabeled,
               there is no evaluation of the accuracy, or how <i>good</i> your model is. So, it is up to you now by inspecting the model to decide whether you are satisfied with its performance or not.
