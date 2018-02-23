@@ -5,18 +5,22 @@ import lzma
 import pickle
 import time
 import re
+from pathlib import Path
+import logging
 from lxml import etree
 from bokeh.plotting import figure
 from bokeh.models import CustomJS, ColumnDataSource, HoverTool
 from bokeh.models.widgets import Dropdown
 from bokeh.layouts import column
 import lda
+from threading import Thread
+import queue
 
 __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 
-TOOLS = 'hover, pan, reset, save, wheel_zoom, zoom_in, zoom_out'
+TOOLS = 'hover, pan, reset, wheel_zoom, zoom_in, zoom_out'
 JAVASCRIPT = """
              var f = cb_obj.value;
              var options = %s;
@@ -73,7 +77,7 @@ def boxplot(stats):
                      (group.score < lower.loc[cat]['score'])]['score']
     out = groups.apply(outliers).dropna()
 
-    fig = figure(tools='save', background_fill_color='#EFE8E2', title='', x_range=x_labels,
+    fig = figure(tools='', background_fill_color='#EFE8E2', title='', x_range=x_labels,
                  logo=None, sizing_mode='fixed', plot_width=500, plot_height=350)
 
     qmin = groups.quantile(q=0.00)
@@ -157,6 +161,21 @@ def read_logfile(logfile):
             return 0
 
 
-def lda_modeling(document_term_arr, n_topics, n_iter):
+def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
+    file = str(Path(tempdir, 'topicmodeling.log'))
+    handler = logging.FileHandler(file, 'w')
+    lda_log = logging.getLogger('lda')
+    lda_log.setLevel(logging.INFO)
+    lda_log.addHandler(handler)
+    
     model = lda.LDA(n_topics=n_topics, n_iter=n_iter)
     return model.fit(document_term_arr)
+
+   
+def enthread(target, args):
+    q = queue.Queue()
+    def wrapper():
+        q.put(target(*args))
+    t = Thread(target=wrapper)
+    t.start()
+    return q
