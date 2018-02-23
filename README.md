@@ -13,7 +13,7 @@ If you do not know anything about Topic Modeling or programming in general, this
 ## Getting started
 Although this application is built with Python, it is possible to run it as if it was a native application, without having to install Python or any related packages. There is currently one build for Windows and macOS, respectively. **At the moment, Linux user will have to use the development version**.
 
-1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the zip-archive for your OS.
+1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the ZIP archive for your OS.
 2. Open it by double-clicking.
 3. Run the app by double-clicking the file `DARIAH Topics Explorer`. (The files in the folder `src` is basically source code. You do not need to worry about that).
 
