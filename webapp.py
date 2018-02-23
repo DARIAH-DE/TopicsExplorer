@@ -182,7 +182,8 @@ def create_model():
     fig = visualization.PlotDocumentTopics(document_topics_heatmap,
                                            enable_notebook=False)
     heatmap = fig.interactive_heatmap(height=height,
-                                      sizing_mode='scale_width')
+                                      sizing_mode='scale_width',
+                                      tools='hover, pan, reset, wheel_zoom, zoom_in, zoom_out')
 
     output_file(str(Path(tempdir, 'heatmap.html')))
     save(heatmap)
