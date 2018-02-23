@@ -4,3 +4,4 @@ venv/*
 webapp.log
 static/topicmodeling.zip
 __pycache__/*
+Pipfile.lock
