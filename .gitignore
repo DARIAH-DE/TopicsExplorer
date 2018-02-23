@@ -3,3 +3,4 @@ venv/*
 .idea/*
 webapp.log
 static/topicmodeling.zip
+__pycache__/*
