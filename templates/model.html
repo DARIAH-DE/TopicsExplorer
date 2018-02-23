@@ -38,7 +38,7 @@
             <div class="nav-collapse collapse">
               <ul class="nav" />
               <li>
-                <span class="brand dropdown-toggle" data-toggle="dropdown">DARIAH-DE</span>
+                <a href="{{ url_for('index') }}"><img src="{{url_for('static', filename='img/dariah_white.png')}}" height="80" width="80"/></a>
               </li>
               </ul>
               <ul class="nav pull-right">
@@ -46,7 +46,7 @@
                   <a href="{{ url_for('index') }}"><i class="icon-refresh icon-white"></i> Reset</a>
                 </li>
                 <li>
-                  <a href="#"><i class="icon-download-alt icon-white"></i> Save Data</a>
+                  <a href="../static/topicmodeling.zip"><i class="icon-download-alt icon-white"></i> Save Data</a>
                 </li>
                 <li>
                   <a href="{{ url_for('help') }}"><i class="icon-question-sign icon-white"></i> Help</a>

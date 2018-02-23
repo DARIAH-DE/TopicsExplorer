@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging
-import os
-import sys
+from flask import Flask, request, render_template, Response, stream_with_context
+from pathlib import Path
+import utils
+import pandas as pd
 import time
-from bokeh.layouts import column
-from bokeh.plotting import figure
-from bokeh.models import CustomJS, ColumnDataSource, HoverTool
-from bokeh.models.widgets import Dropdown
+from bokeh.plotting import output_file, save
 from bokeh.embed import components
 from bokeh.resources import INLINE
 from dariah_topics import preprocessing
 from dariah_topics import postprocessing
 from dariah_topics import visualization
-from flask import Flask, request, render_template
-import lda
-from lxml import etree
+import logging
+import tempfile
+import sys
+import shutil
+from multiprocessing import Pool
 import numpy as np
-import pandas as pd
-import re
 from werkzeug.utils import secure_filename
 
 
@@ -27,279 +25,45 @@ __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 
-log = logging.getLogger('webapp')
-
-
-NUM_KEYS = 5
-TOOLS = 'hover, pan, reset, save, wheel_zoom, zoom_in, zoom_out'
-JAVASCRIPT = '''
-             var f = cb_obj.value;
-             var options = %s;
-             
-             for (var i in options) {
-                 if (f == options[i]) {
-                     console.log("Visible: " + options[i])
-                     eval(options[i]).visible = true;
-                 }
-                 else {
-                     console.log("Unvisible: " + options[i])
-                     eval(options[i]).visible = false;
-                 }
-             }
-             console.log(' ')
-             '''
+tempdir = tempfile.mkdtemp()
+NUM_KEYS = 10
 
 
 if getattr(sys, 'frozen', False):
     app = Flask(__name__,
-                template_folder=os.path.join(sys._MEIPASS, 'templates'),
-                static_folder=os.path.join(sys._MEIPASS, 'static'))
+                template_folder=str(Path(sys._MEIPASS, 'templates')),
+                static_folder=str(Path(sys._MEIPASS, 'static')))
 else:
     app = Flask(__name__)
 
 
-def process_xml(file):
-    ns = dict(tei='http://www.tei-c.org/ns/1.0')
-    text = etree.parse(file)
-    try:
-        text = text.xpath('//tei:text', namespaces=ns)[0]
-    except IndexError:
-        pass
-    return ''.join(text.xpath('.//text()'))
-
-
-def boxplot(stats):
-    x_labels = ['Document size (clean)', 'Document size (raw)']
-
-    groups = stats.groupby('group')
-    q1 = groups.quantile(q=0.25)
-    q2 = groups.quantile(q=0.5)
-    q3 = groups.quantile(q=0.75)
-    iqr = q3 - q1
-    upper = q3 + 1.5*iqr
-    lower = q1 - 1.5*iqr
-
-    def outliers(group):
-        cat = group.name
-        return group[(group.score > upper.loc[cat]['score']) |
-                     (group.score < lower.loc[cat]['score'])]['score']
-    out = groups.apply(outliers).dropna()
-
-    fig = figure(tools='save', background_fill_color='#EFE8E2', title='', x_range=x_labels,
-                 logo=None, sizing_mode='fixed', plot_width=500, plot_height=350)
-
-    qmin = groups.quantile(q=0.00)
-    qmax = groups.quantile(q=1.00)
-    upper.score = [min([x,y]) for (x,y) in zip(list(qmax.loc[:,'score']),upper.score)]
-    lower.score = [max([x,y]) for (x,y) in zip(list(qmin.loc[:,'score']),lower.score)]
-
-    fig.segment(x_labels, upper.score, x_labels, q3.score, line_color='black')
-    fig.segment(x_labels, lower.score, x_labels, q1.score, line_color='black')
-
-    fig.vbar(x_labels, 0.7, q2.score, q3.score, fill_color='#E08E79', line_color='black')
-    fig.vbar(x_labels, 0.7, q1.score, q2.score, fill_color='#3B8686', line_color='black')
-
-    fig.rect(x_labels, lower.score, 0.2, 0.01, line_color='black')
-    fig.rect(x_labels, upper.score, 0.2, 0.01, line_color='black')
-
-    fig.yaxis.axis_label = 'Tokens'
-    fig.xgrid.grid_line_color = None
-    fig.ygrid.grid_line_color = 'white'
-    fig.grid.grid_line_width = 2
-    fig.xaxis.major_label_text_font_size = '11pt'
-    fig.yaxis.major_label_text_font_size = '9pt'
-    return fig
-    
-
-def barchart(document_topics, height, topics=True):
-    y_range = document_topics.columns.tolist()
-    fig = figure(y_range=y_range, plot_height=height, tools=TOOLS,
-                 toolbar_location='right', sizing_mode='scale_width',
-                 logo=None)
-
-    plots = {}
-    options = document_topics.index.tolist()
-    for i, option in enumerate(options):
-        x_axis = document_topics.iloc[i]
-        source = ColumnDataSource(dict(Describer=y_range, Proportion=x_axis))
-        option = re.sub(' ', '_', option)
-        bar = fig.hbar(y='Describer', right='Proportion', source=source,
-                       height=0.5, color='#053967')
-        bar.visible = False
-        plots[option] = bar
-
-    fig.xgrid.grid_line_color = None
-    fig.x_range.start = 0
-    fig.select_one(HoverTool).tooltips = [('Proportion', '@Proportion')]
-    fig.xaxis.axis_label = 'Proportion'
-    fig.xaxis.major_label_text_font_size = '9pt'
-    fig.yaxis.major_label_text_font_size = '9pt'
-    
-    callback = CustomJS(args=plots, code=JAVASCRIPT % list(plots.keys()))
-    
-    menu = [(select, re.sub(' ', '_', option)) for select, option in zip(document_topics.index, options)]
-    if topics:
-        dropdown = Dropdown(label="Select Topic", menu=menu, callback=callback)
-    else:
-        dropdown = Dropdown(label="Select Document", menu=menu, callback=callback)
-    return column(dropdown, fig, sizing_mode='scale_width')
-
-
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError("Not running with the Werkzeug Server.")
-    func()
-
-
 @app.route('/')
 def index():
-    log.info("Rendering main page ...")
+    lda_log = logging.getLogger('lda')
+    lda_log.setLevel(logging.INFO)
+    handler = logging.FileHandler(str(Path(tempdir, 'topicmodeling.log')), 'w')
+    lda_log.addHandler(handler)
     return render_template('index.html')
-
-
-@app.route('/modeling', methods=['POST'])
-def modeling():
-    start = time.time()
-    parameter = []
-    log.info("Accessing user input ...")
-    files = request.files.getlist('files')
-    log.info("Got {0} text files.".format(str(len(files))))
-    num_topics = int(request.form['num_topics'])
-    log.info("Got {0} topics.".format(str(num_topics)))
-    num_iterations = int(request.form['num_iterations'])
-    log.info("Got {0} iterations.".format(str(num_iterations)))
-    if request.files.get('stopword_list', None):
-        log.info("Using external stopwords list.")
-    else:
-        mft_threshold = int(request.form['mft_threshold'])
-        log.info("Using '{0}' as threshold for most frequent tokens.".format(str(mft_threshold)))
-
-    log.info("Processing text files ...")
-    tokenized_corpus = pd.Series()
-    corpus_tokens = 0
-    for file in files:
-        filename, extension = os.path.splitext(secure_filename(file.filename))
-        log.debug("Tokenizing {0} ...".format(file))
-        if extension == '.txt':
-            text = file.read().decode('utf-8')
-        elif extension == '.xml':
-            text = process_xml(file)
-        else:
-            return render_template('error.html')
-        tokens = list(preprocessing.tokenize(text))
-        tokenized_corpus[filename] = tokens
-        corpus_tokens += len(tokens)
-        file.flush()
-    parameter.append(len(tokenized_corpus))
-    parameter.append(corpus_tokens)
-
-    log.info("Creating document-term matrix ...")
-    document_labels = tokenized_corpus.index
-    document_term_matrix = preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
-    stats = pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
-                          'group': ['Document size (raw)' for x in range(len(tokenized_corpus))]})
-
-    if request.files.get('stopword_list', None):
-        log.info("Accessing external stopwords list ...")
-        stopword_list = request.files['stopword_list']
-        stopwords = stopword_list.read().decode('utf-8')
-        stopwords = preprocessing.tokenize(stopwords)
-        stopword_list.flush()
-    else:
-        log.info("Determining {0} most frequent tokens ...".format(mft_threshold))
-        stopwords = preprocessing.find_stopwords(document_term_matrix, mft_threshold)
-    log.info("Determining hapax legomena ...")
-    hapax_legomena = preprocessing.find_hapax_legomena(document_term_matrix)
-    features = set(stopwords).union(hapax_legomena)
-    log.info("Removing stopwords and hapax legomena from corpus ...")
-    features = [token for token in features if token in document_term_matrix.columns]
-    document_term_matrix = document_term_matrix.drop(features, axis=1)
-    stats = stats.append(pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
-                                       'group': ['Document size (cleaned)' for x in range(len(tokenized_corpus))]}))
-    parameter.append(int(document_term_matrix.values.sum()))
-    document_term_arr = document_term_matrix.as_matrix().astype(int)
-    log.info("Accessing corpus vocabulary ...")
-    vocabulary = document_term_matrix.columns
-    parameter.append(len(vocabulary))
-    
-    parameter.append(num_topics)
-    parameter.append(num_iterations)
-
-    log.info("LDA training ...")
-    model = lda.LDA(n_topics=num_topics, n_iter=num_iterations)
-    model.fit(document_term_arr)
-    parameter.append(round(model.loglikelihood()))
-
-    log.info("Accessing topics ...")
-    topics = postprocessing.show_topics(model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
-    topics.columns = ['Key {0}'.format(i) for i in range(1, NUM_KEYS + 1)]
-    topics.index = ['Topic {0}'.format(i) for i in range(1, num_topics + 1)]
-    log.info("Accessing document-topic matrix ...")
-    document_topics = postprocessing.show_document_topics(model=model, topics=topics, document_labels=document_labels)
-
-    log.info("Creating interactive heatmap ...")
-    if document_topics.shape[0] < document_topics.shape[1]:
-        if document_topics.shape[1] < 20:
-            height = 20 * 28
-        else:
-            height = document_topics.shape[1] * 28
-        document_topics_heatmap = document_topics.T # todo: Fix hover when transposed
-    else:
-        if document_topics.shape[0] < 20:
-            height = 20 * 28
-        else:
-            height = document_topics.shape[0] * 28
-        document_topics_heatmap = document_topics
-    fig = visualization.PlotDocumentTopics(document_topics_heatmap,
-                                           enable_notebook=False)
-    heatmap = fig.interactive_heatmap(height=height,
-                                      sizing_mode='scale_width')
-    heatmap_script, heatmap_div = components(heatmap)
-    
-    log.info("Creating boxplot ...")
-    corpus_boxplot_script, corpus_boxplot_div = components(boxplot(stats))
-    
-    log.info("Creating interactive barcharts ...")
-    if document_topics.shape[1] < 10:
-        height = 10 * 18
-    else:
-        height = document_topics.shape[1] * 18
-    topics_barchart = barchart(document_topics, height=height)
-    topics_script, topics_div = components(topics_barchart)
-
-    if document_topics.shape[0] < 10:
-        height = 10 * 18
-    else:
-        height = document_topics.shape[0] * 18
-    documents_barchart = barchart(document_topics.T, height=height, topics=False)
-    documents_script, documents_div = components(documents_barchart)
-    
-    js_resources = INLINE.render_js()
-    css_resources = INLINE.render_css()
-    end = time.time()
-    passed_time = round((end - start) / 60)
-    index = ['Corpus size in documents', 'Corpus size in tokens (raw)', 'Corpus size in tokens (clean)',
-             'Size of vocabulary (clean)', 'Number of topics', 'Number of iterations', 'The model\'s log likelihood']
-    if passed_time == 0:
-        index.append('Passed time in seconds')
-        parameter.append(round(end - start))
-    else:
-        index.append('Passed time in minutes')
-        parameter.append(passed_time)
-    parameter = pd.Series(parameter, index=index)
-    return render_template('result.html', topics=[topics.to_html(classes='topics')],
-                           heatmap_script=heatmap_script, heatmap_div=heatmap_div,
-                           topics_script=topics_script, topics_div=topics_div,
-                           documents_script=documents_script, documents_div=documents_div,
-                           js_resources=js_resources, css_resources=css_resources,
-                           parameter=[pd.DataFrame(parameter, columns=['']).to_html(classes=['parameter'], border=0)],
-                           corpus_boxplot_script=corpus_boxplot_script, corpus_boxplot_div=corpus_boxplot_div)
 
 
 @app.route('/help')
 def help():
     return render_template('help.html')
+
+
+@app.route('/modeling', methods=['POST'])
+def modeling():
+    return Response(stream_with_context(stream_template('modeling.html', logging=create_model())))
+
+
+@app.route('/model')
+def model():
+    data = utils.decompress(str(Path(tempdir, 'data.bin.xz')))
+    parameter = pd.read_csv(str(Path(tempdir, 'parameter.csv')), index_col=0)
+    parameter.columns = ['']
+    data['parameter'] = [parameter.to_html(classes=['parameter'], border=0)]
+    data['topics'] = [pd.read_csv(str(Path(tempdir, 'topics.csv')), index_col=0).to_html(classes='topics')]
+    return render_template('model.html', **data)
 
 
 @app.after_request
@@ -310,13 +74,182 @@ def add_header(r):
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
 
+def create_model():
+    INFO_2A = "FYI: This might take a while..."
+    INFO_3A = "In the meanwhile, have a look at"
+    INFO_4A = "our Jupyter notebook introducing"
+    INFO_5A = "topic modeling with MALLET."
+    INFO_1B = "Iteration {0} of {1} ..."
+    INFO_2B = "You have selected {0} text files,"
+    INFO_3B = "containing {0} tokens"
+    INFO_4B = "or {0} unique types"
+    INFO_5B = "to generate {0} topics."
+    start = time.time()
+    yield "Collecting user input ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
+    user_input = {'files': request.files.getlist('files'),
+                  'num_topics': int(request.form['num_topics']),
+                  'num_iterations': int(request.form['num_iterations'])}
+    if request.files.get('stopword_list', None):
+        user_input['stopwords'] = request.files['stopword_list']
+    else:
+        user_input['mft'] = int(request.form['mft_threshold'])
 
-@app.route('/shutdown', methods=['POST'])
-def shutdown():
-    shutdown_server()
-    return "Shutdown"
+    parameter = pd.Series()
+    parameter['Corpus size, in documents'] = len(user_input['files'])
+    parameter['Corpus size (raw), in tokens'] = 0
 
+    yield "Reading and tokenizing corpus ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
+    tokenized_corpus = pd.Series()
+    for file in user_input['files']:
+        filename = Path(secure_filename(file.filename))
+        if filename.suffix == '.txt':
+            text = file.read().decode('utf-8')
+        elif filename.suffix == '.xml':
+            text = utils.process_xml(file)
+        tokens = list(preprocessing.tokenize(text))
+        tokenized_corpus[filename.stem] = tokens
+        parameter['Corpus size (raw), in tokens'] += len(tokens)
+        file.flush()
+    yield "Creating document-term matrix ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
+    document_labels = tokenized_corpus.index
+    document_term_matrix = preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
+
+    group = ['Document size (raw)' for n in range(parameter['Corpus size, in documents'])]
+    corpus_stats = pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
+                                 'group': group})
+
+    yield "Removing stopwords and hapax legomena from corpus ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
+    try:
+        stopwords = preprocessing.find_stopwords(document_term_matrix, user_input['mft'])
+    except KeyError:
+        stopwords = user_input['stopwords'].read().decode('utf-8')
+        stopwords = preprocessing.tokenize(stopwords)
+    hapax_legomena = preprocessing.find_hapax_legomena(document_term_matrix)
+    features = set(stopwords).union(hapax_legomena)
+    features = [token for token in features if token in document_term_matrix.columns]
+    document_term_matrix = document_term_matrix.drop(features, axis=1)
+
+    group = ['Document size (clean)' for n in range(parameter['Corpus size, in documents'])]
+    corpus_stats = corpus_stats.append(pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
+                                                     'group': group}))
+
+    parameter['Corpus size (clean), in tokens'] = int(document_term_matrix.values.sum())
+
+    document_term_arr = document_term_matrix.as_matrix().astype(int)
+    vocabulary = document_term_matrix.columns
+
+    parameter['Size of vocabulary, in tokens'] = len(vocabulary)
+    parameter['Number of topics'] = user_input['num_topics']
+    parameter['Number of iterations'] = user_input['num_iterations']
+
+    INFO_2B = INFO_2B.format(parameter['Corpus size, in documents'])
+    INFO_3B = INFO_3B.format(parameter['Corpus size (raw), in tokens'])
+    INFO_4B = INFO_4B.format(parameter['Size of vocabulary, in tokens'])
+    INFO_5B = INFO_5B.format(parameter['Number of topics'])
+
+    yield "Initializing LDA topic model ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
+
+    pool = Pool(processes=2)
+    model = pool.apply_async(utils.lda_modeling, [document_term_arr, user_input['num_topics'], user_input['num_iterations']])
+    while True:
+        yield 'Iteration {0} of {1} ...'.format(pool.apply_async(utils.read_logfile, [str(Path(tempdir, 'topicmodeling.log'))]).get(), user_input['num_iterations']), INFO_2B, INFO_3B, INFO_4B, INFO_5B
+        if model.ready():
+            model = model.get()
+            pool.close()
+            break
+
+    parameter['The model log likelihood'] = round(model.loglikelihood())
+
+    yield "Accessing topics ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
+    topics = postprocessing.show_topics(model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
+    topics.columns = ['Key {0}'.format(i) for i in range(1, NUM_KEYS + 1)]
+    topics.index = ['Topic {0}'.format(i) for i in range(1, user_input['num_topics'] + 1)]
+
+    yield "Accessing document topics distributions ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
+
+    document_topics = postprocessing.show_document_topics(model=model, topics=topics, document_labels=document_labels)
+    if document_topics.shape[0] < document_topics.shape[1]:
+        if document_topics.shape[1] < 20:
+            height = 20 * 28
+        else:
+            height = document_topics.shape[1] * 28
+        document_topics_heatmap = document_topics.T
+    else:
+        if document_topics.shape[0] < 20:
+            height = 20 * 28
+        else:
+            height = document_topics.shape[0] * 28
+        document_topics_heatmap = document_topics
+    yield "Creating visualizations ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
+    fig = visualization.PlotDocumentTopics(document_topics_heatmap,
+                                           enable_notebook=False)
+    heatmap = fig.interactive_heatmap(height=height,
+                                      sizing_mode='scale_width')
+
+    output_file(str(Path(tempdir, 'heatmap.html')))
+    save(heatmap)
+
+    heatmap_script, heatmap_div = components(heatmap)
+
+    corpus_boxplot = utils.boxplot(corpus_stats)
+    corpus_boxplot_script, corpus_boxplot_div = components(corpus_boxplot)
+    output_file(str(Path(tempdir, 'corpus_statistics.html')))
+    save(corpus_boxplot)
+
+    if document_topics.shape[1] < 10:
+        height = 10 * 18
+    else:
+        height = document_topics.shape[1] * 18
+    topics_barchart = utils.barchart(document_topics, height=height)
+    topics_script, topics_div = components(topics_barchart)
+    output_file(str(Path(tempdir, 'topics_barchart.html')))
+    save(topics_barchart)
+
+    if document_topics.shape[0] < 10:
+        height = 10 * 18
+    else:
+        height = document_topics.shape[0] * 18
+    documents_barchart = utils.barchart(document_topics.T, height=height, topics=topics)
+    documents_script, documents_div = components(documents_barchart)
+    output_file(str(Path(tempdir, 'document_topics_barchart.html')))
+    save(documents_barchart)
+
+    js_resources = INLINE.render_js()
+    css_resources = INLINE.render_css()
+    end = time.time()
+    passed_time = round((end - start) / 60)
+
+    if passed_time == 0:
+        parameter['Passed time, in seconds'] = round(end - start)
+    else:
+        parameter['Passed time, in minutes'] = passed_time
+
+    parameter = pd.DataFrame(pd.Series(parameter))
+    topics.to_csv(str(Path(tempdir, 'topics.csv')))
+    document_topics.to_csv(str(Path(tempdir, 'document_topics.csv')))
+    parameter.to_csv(str(Path(tempdir, 'parameter.csv')))
+
+    shutil.make_archive(str(Path(app.static_folder, 'topicmodeling')), 'zip', tempdir)
+
+    data = {'heatmap_script': heatmap_script,
+            'heatmap_div': heatmap_div,
+            'topics_script': topics_script,
+            'topics_div': topics_div,
+            'documents_script': documents_script,
+            'documents_div': documents_div,
+            'js_resources': js_resources,
+            'css_resources': css_resources,
+            'corpus_boxplot_script': corpus_boxplot_script,
+            'corpus_boxplot_div': corpus_boxplot_div}
+    utils.compress(data, str(Path(tempdir, 'data.bin.xz')))
+    yield 'render_result', '', '', '', ''
+
+
+def stream_template(template_name, **context):
+    app.update_template_context(context)
+    t = app.jinja_env.get_template(template_name)
+    rv = t.stream(context)
+    return rv
 
 if __name__ == '__main__':
-    log.info("Starting application ...")
     app.run()

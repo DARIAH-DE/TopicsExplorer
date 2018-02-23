@@ -1,1 +1,5 @@
 node_modules
+venv/*
+.idea/*
+webapp.log
+static/topicmodeling.zip

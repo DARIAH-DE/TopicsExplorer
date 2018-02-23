@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8">
+  <title>Topics Explorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="DARIAH-DE">
+  <meta name="description" content="Topics App">
+  <style>
+    body {
+      background-image: url("https://github.com/DARIAH-DE/TopicsExplorer/blob/master/static/img/paper-pattern1-0.jpg?raw=true");
+    }
+
+    #status {
+      width: 430px;
+      height: 310px;
+      background-color: white;
+      padding: 20px 20px 20px 20px;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      border-radius: 6px;
+      font-family: Arial, Sans-Serif;
+      font-size: 14px;
+      max-width: 100%;
+      max-height: 100%;
+      overflow: auto;
+    }
+
+    #parameter {
+      margin: 20px 5px 5px 5px;
+      padding: 5px 5px 5px 5px;
+      background-color: #D9EDF7;
+      border: solid;
+      border-color: #BCE8F1;
+      border-radius: 6px;
+      border-width: 1px;
+      color: #3A87AD;
+    }
+
+  </style>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+
+<body>
+  <center>
+    <div id="status">
+      <img id="pie" src="https://github.com/DARIAH-DE/TopicsExplorer/blob/testing/static/img/dariah_wait.gif?raw=true"><br><br><br>
+      <b><div id="log">Collecting user input ...</div></b><br>
+      <div id="parameter"><b>FYI: This might take a while...</b><br> In the meanwhile, have a look at<br>our Jupyter notebook introducing<br>topic modeling with MALLET.</div>
+      {% for info_1, info_2, info_3, info_4, info_5 in logging %}
+        {% if 'render_result' not in info_1 %}
+      <script>
+        $("#log").text("{{ info_1 }}")
+        {% if 'FYI' in info_2 %}
+        $("#parameter").html("<b>{{ info_2 }}</b><br>{{ info_3 }}<br>{{ info_4 }}<br>{{ info_5 }}")
+        {% else %}
+        $("#parameter").html("{{ info_2 }}<br>{{ info_3 }}<br>{{ info_4 }}<br>{{ info_5 }}")
+        {% endif %}
+      </script>
+      {% else %}
+      <script>
+        window.location.replace("{{ url_for('model') }}");
+      </script>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </center>
+</body>
+
+</html>

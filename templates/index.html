@@ -18,6 +18,7 @@
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/globalmenu.js')}}"></script>
+  <script type="text/javascript" src="build/electron-open-link-in-browser.js"></script>
 
   <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='img/page_icon.png')}}" />
 </head>
@@ -33,7 +34,7 @@
             <div class="nav-collapse collapse">
               <ul class="nav" />
               <li>
-                <span class="brand dropdown-toggle" data-toggle="dropdown">DARIAH-DE</span>
+                  <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/dariah_white.png') }}" height="80" width="80"/></a>
               </li>
               </ul>
               <ul class="nav pull-right">
@@ -60,7 +61,7 @@
               <div class="alert alert-block">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 <i class="fa fa-exclamation-circle"></i> This application is designed to introduce the technique in a gentle way and aims for simplicity. If you have a <b>very large corpus</b> (let's say more than 200 documents with more than 5000 words per document), you may
-                wish to use more sophisticated models such as those implemented in <b>MALLET</b>, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing <i>Topic Modeling with MALLET</i>, available via <a href="https://github.com/DARIAH-DE/Topics">GitHub</a>.
+                wish to use more sophisticated models such as those implemented in <b>MALLET</b>, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing <i>Topic Modeling with MALLET</i>, available via GitHub (https://github.com/DARIAH-DE/Topics).
               </div>
               <br>
               <h2>1. Preprocessing</h2>
@@ -75,7 +76,7 @@
                   better).
                   <div class="alert alert-info">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <b>Tip:</b> The <a href="https://textgridrep.org">TextGrid Repository</a> is a great place to start searching for text data. It's Open Access and provides a lot of literary texts in valid and well-formed TEI XML.
+                <b>Tip:</b> <a href="https://textgridrep.org", onclick="electronOpenLinkInBrowser();">The TextGrid Repository</a> (https://textgridrep.org) is a great place to start searching for text data. It's Open Access and provides a lot of literary texts in valid and well-formed TEI XML.
                   </div>
                 </p>
                 <input type="file" name="files" accept=".txt, .xml" multiple required/><br><br>
