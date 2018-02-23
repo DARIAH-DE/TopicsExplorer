@@ -227,8 +227,9 @@ def create_model():
     topics.to_csv(str(Path(tempdir, 'topics.csv')), encoding='utf-8')
     document_topics.to_csv(str(Path(tempdir, 'document_topics.csv')), encoding='utf-8')
     parameter.to_csv(str(Path(tempdir, 'parameter.csv')), encoding='utf-8')
-
-    shutil.make_archive(str(Path(app.static_folder, 'topicmodeling')), 'zip', tempdir)
+    
+    cwd = str(Path(*Path.cwd().parts[:-1]))
+    shutil.make_archive(str(Path(cwd, 'topicmodeling')), 'zip', tempdir)
 
     data = {'heatmap_script': heatmap_script,
             'heatmap_div': heatmap_div,
@@ -239,7 +240,8 @@ def create_model():
             'js_resources': js_resources,
             'css_resources': css_resources,
             'corpus_boxplot_script': corpus_boxplot_script,
-            'corpus_boxplot_div': corpus_boxplot_div}
+            'corpus_boxplot_div': corpus_boxplot_div,
+            'cwd': cwd}
     utils.compress(data, str(Path(tempdir, 'data.bin.xz')))
     yield 'render_result', '', '', '', ''
 
