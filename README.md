@@ -3,10 +3,6 @@ This application introduces an user-friendly Topic Modeling workflow, basically 
 
 **If you do not know anything about Topic Modeling or programming in general, this is where you start.**
 
-```diff
-Release
-```
-
 **Topics Explorer** aims for simplicity and usability. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated Topic Models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing Topic Modeling with MALLET](https://github.com/DARIAH-DE/Topics/IntroducingMallet.ipynb).
 
 ![Demonstrator Screenshot](screenshot.png)
@@ -23,7 +19,7 @@ Although this application is built with Python, it is possible to run it as if i
 ### Troubleshooting
 * Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
 * If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
-* Please use [GitHub Issues](https://github.com/DARIAH-DE/TopicsExplorer/issues).
+* Please use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues).
 
 
 ## Working with the development version
@@ -74,7 +70,7 @@ python topicsexplorer.py
 
 
 ### Troubleshooting
-* Please use [GitHub Issues](https://github.com/DARIAH-DE/TopicsExplorer/issues).
+* Please use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues).
 
 
 ## Creating a standalone build
