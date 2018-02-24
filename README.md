@@ -60,12 +60,12 @@ python topicsexplorer.py
 
 ### Contents
 * [`bokeh_templates`](bokeh_templates): HTML templates for `bokeh`. This is only relevant, if you want to freeze the scripts with PyInstaller.
-* [`hooks`](hooks): Necessary hook files. This is only relevant, if you want to freeze the Python part with `pyinstaller`.
+* [`hooks`](hooks): Necessary hook files. This is only relevant, if you want to freeze the Python part with PyInstaller.
 * [`static`](static) and [`templates`](templates): Static files (e.g. images, CSS, etc.) and HTML templates for the `flask` template engine.
 * [`test`](test): Unittest for `webapp.py`, testing all functions of the application.
 * [`webapp.py`](webapp.py): Contains 3rd party functions and communicates with the webserver.
 * [`topicsexplorer.py`](topicsexplorer.py): A Qt-based UI displaying the contents of the app by running `webapp.py`.
-* [`topicsexplorer.spec`](webapp.spec): The build script for `pyinstaller` containing metadata.
+* [`topicsexplorer.spec`](webapp.spec): The build script for PyInstaller containing metadata.
 
 
 ### Troubleshooting
