@@ -27,7 +27,6 @@ import pandas as pd
 import time
 from bokeh.plotting import output_file, save
 from bokeh.embed import components
-from bokeh.resources import INLINE
 from dariah_topics import preprocessing
 from dariah_topics import postprocessing
 from dariah_topics import visualization

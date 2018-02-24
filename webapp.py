@@ -8,7 +8,6 @@ import pandas as pd
 import time
 from bokeh.plotting import output_file, save
 from bokeh.embed import components
-from bokeh.resources import INLINE
 from dariah_topics import preprocessing
 from dariah_topics import postprocessing
 from dariah_topics import visualization
@@ -32,8 +31,10 @@ if getattr(sys, 'frozen', False):
     app = Flask(__name__,
                 template_folder=str(Path(sys._MEIPASS, 'templates')),
                 static_folder=str(Path(sys._MEIPASS, 'static')))
+    bokeh_resources = str(Path(sys._MEIPASS, 'bokeh_templates'))
 else:
     app = Flask(__name__)
+    bokeh_resources = 'bokeh_templates'
 
 
 @app.route('/')
@@ -213,8 +214,12 @@ def create_model():
     output_file(str(Path(tempdir, 'document_topics_barchart.html')))
     save(documents_barchart)
 
-    js_resources = INLINE.render_js()
-    css_resources = INLINE.render_css()
+    
+    with open(str(Path(bokeh_resources, 'render_js.txt')), 'r', encoding='utf-8') as file:
+        js_resources = file.read()
+    with open(str(Path(bokeh_resources, 'render_css.txt')), 'r', encoding='utf-8') as file:
+        css_resources = file.read()    
+    
     end = time.time()
     passed_time = round((end - start) / 60)
 
