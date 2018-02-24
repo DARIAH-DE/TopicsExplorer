@@ -54,7 +54,7 @@ def modeling():
 
 @app.route('/model')
 def model():
-    data = utils.decompress(str(Path(tempdir, 'data.bin.xz')))
+    data = utils.decompress(str(Path(tempdir, 'data.pickle')))
     parameter = pd.read_csv(str(Path(tempdir, 'parameter.csv')), index_col=0, encoding='utf-8')
     parameter.columns = ['']
     data['parameter'] = [parameter.to_html(classes=['parameter'], border=0)]
@@ -247,7 +247,7 @@ def create_model():
             'corpus_boxplot_script': corpus_boxplot_script,
             'corpus_boxplot_div': corpus_boxplot_div,
             'cwd': cwd}
-    utils.compress(data, str(Path(tempdir, 'data.bin.xz')))
+    utils.compress(data, str(Path(tempdir, 'data.pickle')))
     yield 'render_result', '', '', '', ''
 
 
