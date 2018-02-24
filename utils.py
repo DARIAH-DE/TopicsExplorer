@@ -41,13 +41,12 @@ JAVASCRIPT = """
 
 def compress(data, filepath):
     with open(filepath, 'wb') as file:
-        file.write(lzma.compress(pickle.dumps(data, pickle.HIGHEST_PROTOCOL)))
+        pickle.dump(data, file)
 
 
 def decompress(filepath):
     with open(filepath, 'rb') as file:
-        data = lzma.decompress(file.read())
-        return pickle.loads(data)
+        return pickle.load(file)
 
 
 def process_xml(file):
