@@ -8,7 +8,10 @@ You **do not** have to install a Python interpreter or anything else. There is c
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the ZIP archive for your OS.
 2. Open it by double-clicking.
-3. Run the app by double-clicking the file `DARIAH Topics Explorer`. (The files in the folder `src` is basically source code. You do not need to worry about that).
+3. Unzip the archive, e.g. using [7-zip](http://www.7-zip.org/).
+4. Run the app by double-clicking the file `DARIAH Topics Explorer`. (The files in the folder `src` is basically source code. You do not need to worry about that).
+
+> If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
 
 **Topics Explorer** aims for simplicity and usability. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated topic models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing Topic Modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb).
 
