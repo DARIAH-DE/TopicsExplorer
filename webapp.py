@@ -8,7 +8,6 @@ import pandas as pd
 import time
 from bokeh.plotting import output_file, save
 from bokeh.embed import components
-from bokeh.resources import INLINE
 from dariah_topics import preprocessing
 from dariah_topics import postprocessing
 from dariah_topics import visualization
@@ -16,7 +15,6 @@ import logging
 import tempfile
 import sys
 import shutil
-from multiprocessing import Pool
 import numpy as np
 from werkzeug.utils import secure_filename
 
@@ -26,23 +24,21 @@ __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 
 tempdir = tempfile.mkdtemp()
-NUM_KEYS = 10
+NUM_KEYS = 8
 
 
 if getattr(sys, 'frozen', False):
     app = Flask(__name__,
                 template_folder=str(Path(sys._MEIPASS, 'templates')),
                 static_folder=str(Path(sys._MEIPASS, 'static')))
+    bokeh_resources = str(Path(sys._MEIPASS, 'bokeh_templates'))
 else:
     app = Flask(__name__)
+    bokeh_resources = 'bokeh_templates'
 
 
 @app.route('/')
 def index():
-    lda_log = logging.getLogger('lda')
-    lda_log.setLevel(logging.INFO)
-    handler = logging.FileHandler(str(Path(tempdir, 'topicmodeling.log')), 'w')
-    lda_log.addHandler(handler)
     return render_template('index.html')
 
 
@@ -58,11 +54,11 @@ def modeling():
 
 @app.route('/model')
 def model():
-    data = utils.decompress(str(Path(tempdir, 'data.bin.xz')))
-    parameter = pd.read_csv(str(Path(tempdir, 'parameter.csv')), index_col=0)
+    data = utils.decompress(str(Path(tempdir, 'data.pickle')))
+    parameter = pd.read_csv(str(Path(tempdir, 'parameter.csv')), index_col=0, encoding='utf-8')
     parameter.columns = ['']
     data['parameter'] = [parameter.to_html(classes=['parameter'], border=0)]
-    data['topics'] = [pd.read_csv(str(Path(tempdir, 'topics.csv')), index_col=0).to_html(classes='topics')]
+    data['topics'] = [pd.read_csv(str(Path(tempdir, 'topics.csv')), index_col=0, encoding='utf-8').to_html(classes='topics')]
     return render_template('model.html', **data)
 
 
@@ -110,6 +106,7 @@ def create_model():
         tokenized_corpus[filename.stem] = tokens
         parameter['Corpus size (raw), in tokens'] += len(tokens)
         file.flush()
+    
     yield "Creating document-term matrix ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
     document_labels = tokenized_corpus.index
     document_term_matrix = preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
@@ -148,17 +145,19 @@ def create_model():
     INFO_5B = INFO_5B.format(parameter['Number of topics'])
 
     yield "Initializing LDA topic model ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
-
-    pool = Pool(processes=2)
-    model = pool.apply_async(utils.lda_modeling, [document_term_arr, user_input['num_topics'], user_input['num_iterations']])
+    
+    model = utils.enthread(target=utils.lda_modeling,
+                           args=(document_term_arr, user_input['num_topics'], user_input['num_iterations'], tempdir))
     while True:
-        yield 'Iteration {0} of {1} ...'.format(pool.apply_async(utils.read_logfile, [str(Path(tempdir, 'topicmodeling.log'))]).get(), user_input['num_iterations']), INFO_2B, INFO_3B, INFO_4B, INFO_5B
-        if model.ready():
-            model = model.get()
-            pool.close()
-            break
+        msg = utils.read_logfile(str(Path(tempdir, 'topicmodeling.log')))
 
-    parameter['The model log likelihood'] = round(model.loglikelihood())
+        if msg == None:
+            model = model.get()
+            break
+        else:
+            yield 'Iteration {0} of {1} ...'.format(msg, user_input['num_iterations']), INFO_2B, INFO_3B, INFO_4B, INFO_5B
+
+    parameter['The model log-likelihood'] = round(model.loglikelihood())
 
     yield "Accessing topics ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
     topics = postprocessing.show_topics(model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
@@ -184,7 +183,8 @@ def create_model():
     fig = visualization.PlotDocumentTopics(document_topics_heatmap,
                                            enable_notebook=False)
     heatmap = fig.interactive_heatmap(height=height,
-                                      sizing_mode='scale_width')
+                                      sizing_mode='scale_width',
+                                      tools='hover, pan, reset, wheel_zoom, zoom_in, zoom_out')
 
     output_file(str(Path(tempdir, 'heatmap.html')))
     save(heatmap)
@@ -200,7 +200,7 @@ def create_model():
         height = 10 * 18
     else:
         height = document_topics.shape[1] * 18
-    topics_barchart = utils.barchart(document_topics, height=height)
+    topics_barchart = utils.barchart(document_topics, height=height, topics=topics)
     topics_script, topics_div = components(topics_barchart)
     output_file(str(Path(tempdir, 'topics_barchart.html')))
     save(topics_barchart)
@@ -209,13 +209,17 @@ def create_model():
         height = 10 * 18
     else:
         height = document_topics.shape[0] * 18
-    documents_barchart = utils.barchart(document_topics.T, height=height, topics=topics)
+    documents_barchart = utils.barchart(document_topics.T, height=height)
     documents_script, documents_div = components(documents_barchart)
     output_file(str(Path(tempdir, 'document_topics_barchart.html')))
     save(documents_barchart)
 
-    js_resources = INLINE.render_js()
-    css_resources = INLINE.render_css()
+    
+    with open(str(Path(bokeh_resources, 'render_js.txt')), 'r', encoding='utf-8') as file:
+        js_resources = file.read()
+    with open(str(Path(bokeh_resources, 'render_css.txt')), 'r', encoding='utf-8') as file:
+        css_resources = file.read()    
+    
     end = time.time()
     passed_time = round((end - start) / 60)
 
@@ -225,11 +229,12 @@ def create_model():
         parameter['Passed time, in minutes'] = passed_time
 
     parameter = pd.DataFrame(pd.Series(parameter))
-    topics.to_csv(str(Path(tempdir, 'topics.csv')))
-    document_topics.to_csv(str(Path(tempdir, 'document_topics.csv')))
-    parameter.to_csv(str(Path(tempdir, 'parameter.csv')))
-
-    shutil.make_archive(str(Path(app.static_folder, 'topicmodeling')), 'zip', tempdir)
+    topics.to_csv(str(Path(tempdir, 'topics.csv')), encoding='utf-8')
+    document_topics.to_csv(str(Path(tempdir, 'document_topics.csv')), encoding='utf-8')
+    parameter.to_csv(str(Path(tempdir, 'parameter.csv')), encoding='utf-8')
+    
+    cwd = str(Path(*Path.cwd().parts[:-1]))
+    shutil.make_archive(str(Path(cwd, 'topicmodeling')), 'zip', tempdir)
 
     data = {'heatmap_script': heatmap_script,
             'heatmap_div': heatmap_div,
@@ -240,8 +245,9 @@ def create_model():
             'js_resources': js_resources,
             'css_resources': css_resources,
             'corpus_boxplot_script': corpus_boxplot_script,
-            'corpus_boxplot_div': corpus_boxplot_div}
-    utils.compress(data, str(Path(tempdir, 'data.bin.xz')))
+            'corpus_boxplot_div': corpus_boxplot_div,
+            'cwd': cwd}
+    utils.compress(data, str(Path(tempdir, 'data.pickle')))
     yield 'render_result', '', '', '', ''
 
 

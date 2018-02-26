@@ -1,54 +1,43 @@
 {#
-  Renders JavaScript code
-  for "autoloading".
+Renders JavaScript code for "autoloading".
 
-  The code automatically and asynchronously loads BokehJS(
-    if necessary) and
-  then replaces the AUTOLOAD_TAG `` < script > ``
-  tag that
-  calls it with the rendered model.
+The code automatically and asynchronously loads BokehJS (if necessary) and
+then replaces the AUTOLOAD_TAG ``<script>`` tag that
+calls it with the rendered model.
 
-    : param elementid: the unique id
-  for the script tag
-    : type elementid: str
+:param elementid: the unique id for the script tag
+:type elementid: str
 
-    : param js_urls: URLs of JS files making up Bokeh library: type js_urls: list
+:param js_urls: URLs of JS files making up Bokeh library
+:type js_urls: list
 
-    : param css_urls: CSS urls to inject: type css_urls: list
+:param css_urls: CSS urls to inject
+:type css_urls: list
 
-  #
-}
+#}
 (function(root) {
   function now() {
     return new Date();
   }
 
-  var force = {
-    {
-      force |
-        default (False) | json
-    }
-  };
+  var force = {{ force|default(False)|json }};
 
-  if (typeof(root._bokeh_onload_callbacks) === "undefined" || force === true) {
+  if (typeof (root._bokeh_onload_callbacks) === "undefined" || force === true) {
     root._bokeh_onload_callbacks = [];
     root._bokeh_is_loading = undefined;
   }
 
-  { % block register_mimetype %
-  } { % endblock %
-  }
+  {% block register_mimetype %}
+  {% endblock %}
 
-  { % block autoload_init %
-  } { % endblock %
-  }
+  {% block autoload_init %}
+  {% endblock %}
 
   function run_callbacks() {
     try {
-      root._bokeh_onload_callbacks.forEach(function(callback) {
-        callback()
-      });
-    } finally {
+      root._bokeh_onload_callbacks.forEach(function(callback) { callback() });
+    }
+    finally {
       delete root._bokeh_onload_callbacks
     }
     console.info("Bokeh: all callbacks have finished");
@@ -86,70 +75,40 @@
     }
   };
 
-  { % -
-    if elementid - %
-  }
-  var element = document.getElementById({
-    {
-      elementid | json
-    }
-  });
+  {%- if elementid -%}
+  var element = document.getElementById({{ elementid|json }});
   if (element == null) {
     console.log("Bokeh: ERROR: autoload.js configured with elementid '{{ elementid }}' but no matching script tag was found. ")
     return false;
-  } { % -endif %
   }
+  {%- endif %}
 
-  var js_urls = {
-    {
-      js_urls | json
-    }
-  };
+  var js_urls = {{ js_urls|json }};
 
-  var inline_js = [{ % -
-      for js in js_raw %
-    }
-
+  var inline_js = [
+    {%- for js in js_raw %}
     function(Bokeh) {
-      {
-        {
-          js | indent(6)
-        }
-      }
+      {{ js|indent(6) }}
     },
-    { % endfor - %
-    }
-
+    {% endfor -%}
     function(Bokeh) {
-      { % -
-        for url in css_urls %
-      }
+      {%- for url in css_urls %}
       console.log("Bokeh: injecting CSS: {{ url }}");
-      Bokeh.embed.inject_css({
-        {
-          url | json
-        }
-      }); { % -endfor %
-      } { % -
-        for css in css_raw %
-      }
+      Bokeh.embed.inject_css({{ url|json }});
+      {%- endfor %}
+      {%- for css in css_raw %}
       console.log("Bokeh: injecting raw CSS");
-      Bokeh.embed.inject_raw_css({
-        {
-          css
-        }
-      }); { % -endfor %
-      }
+      Bokeh.embed.inject_raw_css({{ css }});
+      {%- endfor %}
     }
   ];
 
   function run_inline_js() {
-    { % block run_inline_js %
-    }
+    {% block run_inline_js %}
     for (var i = 0; i < inline_js.length; i++) {
       inline_js[i].call(root, root.Bokeh);
-    } { % endblock %
     }
+    {% endblock %}
   }
 
   if (root._bokeh_is_loading === 0) {

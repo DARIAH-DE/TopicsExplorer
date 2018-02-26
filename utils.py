@@ -5,18 +5,22 @@ import lzma
 import pickle
 import time
 import re
+from pathlib import Path
+import logging
 from lxml import etree
 from bokeh.plotting import figure
 from bokeh.models import CustomJS, ColumnDataSource, HoverTool
 from bokeh.models.widgets import Dropdown
 from bokeh.layouts import column
 import lda
+from threading import Thread
+import queue
 
 __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
 
 
-TOOLS = 'hover, pan, reset, save, wheel_zoom, zoom_in, zoom_out'
+TOOLS = 'hover, pan, reset, wheel_zoom, zoom_in, zoom_out'
 JAVASCRIPT = """
              var f = cb_obj.value;
              var options = %s;
@@ -37,13 +41,12 @@ JAVASCRIPT = """
 
 def compress(data, filepath):
     with open(filepath, 'wb') as file:
-        file.write(lzma.compress(pickle.dumps(data, pickle.HIGHEST_PROTOCOL)))
+        pickle.dump(data, file)
 
 
 def decompress(filepath):
     with open(filepath, 'rb') as file:
-        data = lzma.decompress(file.read())
-        return pickle.loads(data)
+        return pickle.load(file)
 
 
 def process_xml(file):
@@ -73,7 +76,7 @@ def boxplot(stats):
                      (group.score < lower.loc[cat]['score'])]['score']
     out = groups.apply(outliers).dropna()
 
-    fig = figure(tools='save', background_fill_color='#EFE8E2', title='', x_range=x_labels,
+    fig = figure(tools='', background_fill_color='#EFE8E2', title='', x_range=x_labels,
                  logo=None, sizing_mode='fixed', plot_width=500, plot_height=350)
 
     qmin = groups.quantile(q=0.00)
@@ -113,7 +116,10 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
         option = re.sub(' ', '_', option)
         bar = fig.hbar(y='Describer', right='Proportion', source=source,
                        height=0.5, color='#053967')
-        bar.visible = False
+        if i == 0:
+            bar.visible = True
+        else:
+            bar.visible = False
         plots[option] = bar
 
     fig.xgrid.grid_line_color = None
@@ -123,16 +129,17 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     fig.xaxis.major_label_text_font_size = '9pt'
     fig.yaxis.major_label_text_font_size = '9pt'
 
-    callback = CustomJS(args=plots, code=script % list(plots.keys()))
+    options = list(plots.keys())
+    callback = CustomJS(args=plots, code=script % options)
 
-    menu = [(select, re.sub(' ', '_', option)) for select, option in zip(document_topics.index, options)]
     if topics is not None:
         selection = [' '.join(topics.iloc[i].tolist()) + ' ...' for i in range(topics.shape[0])]
-        menu = [(select, re.sub(' ', '_', option)) for select, option in zip(selection, options)]
-        dropdown = Dropdown(label='Select topic to display proportion', menu=menu, callback=callback)
+        menu = [(select, option) for select, option in zip(selection, options)]
+        label = 'Select topic to display proportions'
     else:
         menu = [(select, option) for select, option in zip(document_topics.index, options)]
-        dropdown = Dropdown(label='Select document to display proportion', menu=menu, callback=callback)
+        label = 'Select document to display proportions'
+    dropdown = Dropdown(label=label, menu=menu, callback=callback)
     return column(dropdown, fig, sizing_mode='scale_width')
 
 
@@ -157,6 +164,24 @@ def read_logfile(logfile):
             return 0
 
 
-def lda_modeling(document_term_arr, n_topics, n_iter):
+def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
+    file = str(Path(tempdir, 'topicmodeling.log'))
+    handler = logging.FileHandler(file, 'w')
+    lda_log = logging.getLogger('lda')
+    lda_log.setLevel(logging.INFO)
+    lda_log.addHandler(handler)
+    
     model = lda.LDA(n_topics=n_topics, n_iter=n_iter)
-    return model.fit(document_term_arr)
+    model.fit(document_term_arr)
+    with open(file, 'a', encoding='utf-8') as f:
+        f.write('DONE')
+    return model
+
+   
+def enthread(target, args):
+    q = queue.Queue()
+    def wrapper():
+        q.put(target(*args))
+    t = Thread(target=wrapper)
+    t.start()
+    return q

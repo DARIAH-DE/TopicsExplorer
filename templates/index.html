@@ -72,16 +72,16 @@
 
 
                 <h3>1.1. Reading a Corpus of Documents</h3>
-                <p>For this workflow, you will need a corpus (a set of texts) as plain text (<b>.txt</b>) or TEI XML (<b>.xml</b>). Use the button below to select multiple text files. To gain better results, choose at least five documents (but the more the
+                <p>For this workflow, you will need a corpus (a set of texts) as plain text (<b>.txt</b>) or XML (<b>.xml</b>). TEI encoded XML is fully supported to process only the text part. Use the button below to select multiple text files. To gain better results, <b>choose at least five documents</b> (but the more the
                   better).
                   <div class="alert alert-info">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <b>Tip:</b> <a href="https://textgridrep.org", onclick="electronOpenLinkInBrowser();">The TextGrid Repository</a> (https://textgridrep.org) is a great place to start searching for text data. It's Open Access and provides a lot of literary texts in valid and well-formed TEI XML.
+                <b>Tip:</b> The TextGrid Repository (https://textgridrep.org) is a great place to start searching for text data. It's Open Access and provides a lot of literary texts in valid and well-formed TEI XML.
                   </div>
                 </p>
                 <input type="file" name="files" accept=".txt, .xml" multiple required/><br><br>
                 <h3>1.2. Tokenization</h3>
-                <p>An important preprocessing step is tokenization. Without identifying tokens, it is difficult to extract necessary information, such as <b>most frequent tokens</b>, also known as <i>stopwords</i>, or token frequencies in general. In this
+                <p>An important preprocessing step is tokenization. Without identifying tokens, it is difficult to extract necessary information, such as token frequencies in general, or <b>most frequent tokens</b>, also known as <i>stopwords</i>. In this
                   application, one token consists of one or more characters, optionally followed by exactly one punctuation (a hyphen or something related), followed by one or more characters. For example, the phrase “her father's arm-chair” will be tokenized
                   as <code>["her", "father's", "arm-chair"]</code>.
                   <h3>1.3. Cleaning the Corpus</h3>
@@ -102,14 +102,17 @@
                   <input type="number" name="num_topics" value="10" min="1" required>
                   <p>An iteration is a process of repeating the same action multiple times to achieve a specific goal. This is how LDA works. The number of sampling iterations should be a <b>trade-off</b> between the time taken to complete sampling and the
                     quality of the model. The default value produces quite good results, but feel free to increase the number of iterations.</p>
-                  <input type="number" name="num_iterations" value="5000" min="1" required><br>
+                  <input type="number" name="num_iterations" value="1000" min="1" required><br>
                   <div class="alert alert-block">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     <i class="fa fa-exclamation-circle"></i> This step can take quite a while! Meaning something between some seconds and some hours, depending on corpus size and the number of iterations.</div>
                   <h2>3. Visualizing</h2>
                   <p>When using LDA to explore text collections, we are typically interested in examining texts in terms of their <b>constituent topics</b> (instead of word frequencies). Because the number of topics is so much smaller than the number of
                     unique vocabulary elements (say, 10 versus 10,000), a range of data visualization methods become available. As you will see, all of the provided visualizations are <b>interactive</b>, but you will have the ability to save the plots
-                    as a <b>static image file</b>.</p><br>
+                    as a <b>static image file</b>.</p>
+                    <div class="alert alert-danger">
+                      <button type="button" class="close" data-dismiss="alert">&times;</button>
+                      <i class="fa fa-exclamation-circle"></i> You need an active internet connection!</div><br>
                   <div class="center_button">
                     <button class="button" type="submit"><b>Train<br>Topic Model</b></button>
                   </div><br>

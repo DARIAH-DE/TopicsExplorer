@@ -46,9 +46,6 @@
                   <a href="{{ url_for('index') }}"><i class="icon-refresh icon-white"></i> Reset</a>
                 </li>
                 <li>
-                  <a href="../static/topicmodeling.zip"><i class="icon-download-alt icon-white"></i> Save Data</a>
-                </li>
-                <li>
                   <a href="{{ url_for('help') }}"><i class="icon-question-sign icon-white"></i> Help</a>
                 </li>
               </ul>
@@ -66,11 +63,16 @@
           <h1>Topics – Easy Topic Modeling</h1>
           <div id="contentInner" style="text-align:justify;">
             <h2>1. Corpus and Parameter Summary</h2>
-            <p>
+            <p>All parameters, including some corpus statistics, are summed up in the following table. This kind of information might be useful, if you create more than one topic model and want to compare the results. The most common way to evaluate a probabilistic model is to measure the log-likelihood (if you are interested in the evaluation of probabilistic models, have a look at <i>Wallach et al. 2009: Evaluation Methods for Topic Models</i>, a mathematical approach). If you increase the number of iterations, your model gets better, and you will see, the log-likelihood also increases <b>until a certain point</b>. This is how you might find out the ideal number of iterations.
             {% for table in parameter %} {{ table|safe }} {% endfor %}<br>
+            As you can see, your corpus is much smaller after cleaning. You either defined a threshold for most frequent words, or selected an external stopwords list. In addition so-called <i>hapax legomena</i> have been removed. In corpus linguistics, a hapax legomenon is a word that occurs only once within a context. So, if a word occurs only once in a document, it is very likely that the word is semantically insignificant – meaning not useful for the topic modeling algorithm.<br><br>
             <center>
             {{ corpus_boxplot_div|safe }}</center>
             </p><br>
+            <div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <b>FYI:</b> All of the generated data (tables and graphics) was automatically saved in a ZIP archive (<b>topicmodeling.zip</b>) in your current working directory: <b>{{ cwd|safe }}</b>.
+                  </div>
             <h2>2. Inspecting the Topic Model</h2>
             <p>Topic Models are unsupervised. It is called <i>unsupervised</i>, because you did not have any labels describing the semantic structures or anything related, but only pure word frequencies. Since the examples given to the algorithm are unlabeled,
               there is no evaluation of the accuracy, or how <i>good</i> your model is. So, it is up to you now by inspecting the model to decide whether you are satisfied with its performance or not.
@@ -89,9 +91,11 @@
               thematic developments over a set of texts as well as a single text, akin to a dynamic topic model. What also can become apparent here, is that some topics correlate highly with a specific author or group of authors, while other topics correlate
               highly with a specific text or group of texts. All in all, this displays two of LDA's properties – its use as a distant reading tool that aims to get at text meaning, and its use as a provider of data that can be further used in computational
               analysis, such as document classification or authorship attribution.</p><br> {{ heatmap_div|safe }}<br><br>
-              <h3>2.3. Topic Proportions of Documents</h3>
+              <h3>2.3. Distribution of Topics</h3>
+              <p>In the following graphic, you can access <i>one</i> dimension of the information displayed in the heatmap above. This might be a more clear approach, if you are interested in a specific topic, or, more precisely, how the topic is distributed over the documents of your corpus. Use the dropdown menu to select a topic. <b>The proportions you can see by default is based on the first topic.</b></p>
               {{ topics_div|safe }}<br>
-              <h3>2.4. Document Proportions of Topics</h3>
+              <h3>2.4. Distribution of Documents</h3>
+              <p>Similar thing as above, you can access the <i>other</i> dimension displayed in the heatmap. So, if you are intereseted in a specific <i>document</i>, you have the ability to select it via the dropdown menu and inspect its proportions. <b>The bars displayed by default are based on the first document.</b></p>
               {{ documents_div|safe }}<br>
             <h2>2. Diving Deeper into Topic Modeling</h2>
             <p>We want to empower users with little or no previous experience and programming skills to create custom workflows mostly using predefined functions within a familiar environment. So, if this practical introduction aroused your interest and
