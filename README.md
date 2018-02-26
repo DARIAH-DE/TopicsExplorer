@@ -1,4 +1,4 @@
-# Topics Explorer: A GUI for Topics – Easy Topic Modeling
+# Topics Explorer: A GUI for DARIAH Topics
 This application introduces an user-friendly Topic Modeling workflow, basically containing text data preprocessing, the actual modeling using [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf) (LDA), as well as various interactive visualizations.
 
 If you do not know anything about Topic Modeling or programming in general, this is where you start.
