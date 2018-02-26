@@ -3,8 +3,8 @@ This application introduces an user-friendly Topic Modeling workflow, basically 
 
 If you do not know anything about Topic Modeling or programming in general, this is where you start.
 
-## Getting started
-Although this application is built with Python, it is possible to run it as if it was a native application, without having to install Python or any related packages. There is currently one build for Windows and macOS, respectively. **At the moment, Linux user will have to use the development version**.
+## Getting started with the standalone executable
+You **do not** have to install a Python interpreter or anything else. There is currently one standalone build for Windows and macOS, respectively. **At the moment, Linux user will have to use the development version**.
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the ZIP archive for your OS.
 2. Open it by double-clicking.
