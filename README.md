@@ -15,7 +15,7 @@ Windows and macOS users **do not** have to install a Python interpreter or anyth
 
 **Topics Explorer** aims for simplicity and usability. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated topic models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing Topic Modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb).
 
-![Demonstrator Screenshot](screenshot.png)
+![Demonstrator Screenshot](docs/images/screenshot.png)
 
 
 ### Troubleshooting
@@ -28,7 +28,7 @@ Windows and macOS users **do not** have to install a Python interpreter or anyth
 **Topics Explorer** basically consists of three layers with an user-interface built on top:
 
 <p align="center">
-  <img src="layer.png" width=550px/>
+  <img src="docs/images/layer.png" width=550px/>
 </p>
 
 
