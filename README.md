@@ -81,3 +81,10 @@ To freeze the Python scripts with [PyInstaller](http://www.pyinstaller.org/), si
 ```
 pyinstaller topicsexplorer.spec
 ```
+
+<hr>
+
+The application has been developed with support from the [DARIAH-DE](https://de.dariah.eu) initiative, the German branch of [DARIAH-EU](http://dariah.eu/), the European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been provided by the German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610J.
+
+![DARIAH-DE](https://raw.githubusercontent.com/DARIAH-DE/Topics/testing/docs/images/dariah-de_logo.png)
+![BMBF](https://raw.githubusercontent.com/DARIAH-DE/Topics/testing/docs/images/bmbf_logo.png)
