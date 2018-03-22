@@ -50,13 +50,16 @@ def decompress(filepath):
 
 
 def process_xml(file):
-    ns = dict(tei='http://www.tei-c.org/ns/1.0')
-    text = etree.parse(file)
-    try:
-        text = text.xpath('//tei:text', namespaces=ns)[0]
-    except IndexError:
-        pass
-    return ''.join(text.xpath('.//text()'))
+    with open (file, 'r', encoding='utf-8') as file:
+        content = file.readlines()
+    text = []
+    for line in content:
+        line = re.sub('(<.[^(><.)]+>)|<.?>', '', line)
+        line = re.sub('\\n','', line)
+        line = re.sub('[ ]{2,}',' ',line)
+        line = re.sub('<?(.*?)?>','', line)
+        text.append(line)
+    return ''.join(text)
 
 
 def boxplot(stats):
