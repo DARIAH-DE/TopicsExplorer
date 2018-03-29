@@ -72,7 +72,12 @@ def add_header(r):
 
 def create_model():
     try:
-        raise ValueError("Es funktioniert!")
+        try:
+            raise ValueError("Es funktioniert!")
+        except ValueError as e:
+            print("GEHT SCHON")
+            yield "ERROR", str(e), "", "", ""
+            return None
         INFO_2A = "FYI: This might take a while..."
         INFO_3A = "In the meanwhile, have a look at"
         INFO_4A = "our Jupyter notebook introducing"
