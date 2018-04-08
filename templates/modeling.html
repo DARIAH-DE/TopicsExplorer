@@ -46,49 +46,16 @@
       border-width: 1px;
       color: #3A87AD;
     }
+
+    .disableforerror {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
-  <center>
-    <div id="status">
-      <img style="width: 120px; height: 120px;" src="https://github.com/DARIAH-DE/TopicsExplorer/blob/testing/static/img/dariah_wait.gif?raw=true">
-      <br><br>
-      <b><div id="log">Collecting user input ...</div></b>
-      <div id="progress">
-        <b>FYI: This might take a while...</b>
-        <br>
-        In the meanwhile, have a look at<br>
-        our Jupyter notebook introducing<br>
-        topic modeling with MALLET.
-      </div>
-
-      <script>
-      {% for identifier, title, message1, message2, message3, message4  in info %}
-        {% if 'running' == identifier %}
-          $("#log").text("{{ title }}")
-          $("#progress").text("{{ message1 }}<br>{{ message2 }}<br>{{ message3 }}<br>{{ message4 }}")
-        {% elif 'done' == identifier %}
-          window.location.replace("{{ url_for('model') }}");
-        {% elif 'error' == identifier %}
-          $('#errorModal').modal({ show: false,
-                                   keyboard: false})
-          $('#errorModal').modal('toggle')
-          $('#errorModal').modal('show')
-        {% endif %}
-      {% endfor %}
-      </script>
-
-    </div>
-  </center>
-  <!-- Button trigger modal -->
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#errorModal">
-    Launch demo modal
-  </button>
-
-  <!-- Modal -->
   <form action="/index">
-    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalTitle" aria-hidden="true">
+    <div class="modal fade" id="errorModal" role="dialog" aria-labelledby="errorModalTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -109,6 +76,37 @@
       </div>
     </div>
   </form>
+
+  <center>
+    <div id="status">
+      <img style="width: 120px; height: 120px;" src="https://github.com/DARIAH-DE/TopicsExplorer/blob/testing/static/img/dariah_wait.gif?raw=true">
+      <br><br>
+      <b><div id="log">Collecting user input ...</div></b>
+      <div id="progress">
+        <b>FYI: This might take a while...</b>
+        <br>
+        In the meanwhile, have a look at<br>
+        our Jupyter notebook introducing<br>
+        topic modeling with MALLET.
+      </div>
+
+      {% for identifier, title, message1, message2, message3, message4  in info %}
+        <script>
+          {% if 'running' == identifier %}
+            $("#log").html("{{ title }}")
+            $("#progress").html("{{ message1 }}<br>{{ message2 }}<br>{{ message3 }}<br>{{ message4 }}")
+          {% elif 'done' == identifier %}
+            window.location.replace("{{ url_for('model') }}");
+          {% elif 'error' == identifier %}
+            $("#status").addClass("disableforerror");
+            $('#errorModal').modal({keyboard: false, backdrop: 'static'})
+            $('#errorModal').modal('show');
+          {% endif %}
+        </script>
+        {% endfor %}
+
+    </div>
+  </center>
 </body>
 
 </html>

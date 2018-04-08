@@ -54,12 +54,13 @@ def modeling():
     Streams the modeling page, printing useful information to screen.
     The generated data will be dumped into the tempdir (specified above).
     """
-    data = [1, 2, 3, 4, 5]
+    data = ["running", "running", "error"]
+    data1 = ["ok", "cool", "nice"]
 
     @flask.stream_with_context
     def generate():
-        for item in data:
-            yield "error", str(item), str(item), str(item), str(item), str(item)
+        for x, item in zip(data1, data):
+            yield item, x, "B", "C", "D", "E"
             time.sleep(3)
 
     progress = generate()
