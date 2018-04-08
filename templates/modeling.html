@@ -64,7 +64,7 @@
           <div class="modal-body">
             Looks like something didn't work out as expected. Maybe you can figure out this error message by yourself:
             <br><br>
-            <code>This is an error.</code>
+            <code id="error">This is an error message.</code>
             <br><br>
             In any case, it would be very useful for us if you write a bug report either on <a href="https://github.com/DARIAH-DE/TopicsExplorer/issues">GitHub</a>, or send an email to <a href="mailto:severin.simmler@stud-mail.uni-wuerzburg.de">Severin Simmler</a>. Please include the error message from above in your report, and at best some details about your corpus (esp. file format).
             <br><br>
@@ -93,18 +93,18 @@
       {% for identifier, title, message1, message2, message3, message4  in info %}
         <script>
           {% if 'running' == identifier %}
-            $("#log").html("{{ title }}")
+            $("#log").text("{{ title }}")
             $("#progress").html("{{ message1 }}<br>{{ message2 }}<br>{{ message3 }}<br>{{ message4 }}")
           {% elif 'done' == identifier %}
             window.location.replace("{{ url_for('model') }}");
           {% elif 'error' == identifier %}
             $("#status").addClass("disableforerror");
+            $("#error").text("{{ title }}")
             $('#errorModal').modal({keyboard: false, backdrop: 'static'})
             $('#errorModal').modal('show');
           {% endif %}
         </script>
       {% endfor %}
-
     </div>
   </center>
 </body>

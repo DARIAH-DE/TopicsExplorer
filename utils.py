@@ -198,3 +198,14 @@ def connected_to_internet(url='http://www.example.org/', timeout=5):
     except requests.ConnectionError:
         raise Exception("You need an active internet connection!")
     return False
+
+import socket
+REMOTE_SERVER = "www.google.com"
+def is_connected():
+  try:
+    host = socket.gethostbyname(REMOTE_SERVER)
+    s = socket.create_connection((host, 80), 2)
+    return True
+  except:
+     pass
+  return False
