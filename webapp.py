@@ -55,15 +55,16 @@ def modeling():
     The generated data will be dumped into the tempdir (specified above).
     """
     resp = flask.Response
-    stream = flask.stream_with_context
+    context = flask.stream_with_context
     modeling_output = utils.create_model()
-    def stream_template(template_name, **context):
+    
+    def stream(template_name, **context):
         app.update_template_context(context)
         t = app.jinja_env.get_template(template_name)
         rv = t.stream(context)
         rv.disable_buffering() 
         return rv
-    return resp(context(stream_template('modeling.html', logging=modeling_output)))
+    return resp(context(stream('modeling.html', info=modeling_output)))
 
 
 @app.route('/model')
@@ -84,6 +85,7 @@ def model():
     data['topics'] = [topics.to_html(classes='topics')]
     return flask.render_template('model.html', **data)
 
+
 @app.after_request
 def add_header(r):
     """
@@ -95,8 +97,6 @@ def add_header(r):
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
 
-def test_error():
-    raise ValueError("Das ist eine Fehlermeldung")
 
 def create_model():
     INFO_2A = "FYI: This might take a while..."
