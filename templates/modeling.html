@@ -7,88 +7,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="DARIAH-DE">
   <meta name="description" content="Topics App">
-  <style>
-    body {
-      background-image: url("https://github.com/DARIAH-DE/TopicsExplorer/blob/master/static/img/paper-pattern1-0.jpg?raw=true");
-    }
 
-    #status {
-      width: 430px;
-      height: 310px;
-      background-color: white;
-      padding: 20px 20px 20px 20px;
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      margin: auto;
-      border-radius: 6px;
-      font-family: Arial, Sans-Serif;
-      font-size: 14px;
-      max-width: 100%;
-      max-height: 100%;
-      overflow: auto;
-    }
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}" type="text/css" media="screen, projection" />
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-responsive.css')}}" type="text/css" media="screen, projection" />
+  <link rel="stylesheet" href="{{url_for('static', filename='css/application.css')}}" type="text/css" media="screen, projection" />
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-customization.css')}}" type="text/css" media="screen, projection" />
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-modal.css')}}" type="text/css" media="screen, projection" />
+  <link rel="stylesheet" href="{{url_for('static', filename='css/font-awesome.css')}}">
 
-    #parameter {
-      margin: 20px 5px 5px 5px;
-      padding: 5px 5px 5px 5px;
-      background-color: #D9EDF7;
-      border: solid;
-      border-color: #BCE8F1;
-      border-radius: 6px;
-      border-width: 1px;
-      color: #3A87AD;
-    }
+  <script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/globalmenu.js')}}"></script>
 
-  </style>
-  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='img/page_icon.png')}}" />
 </head>
 
 <body>
-  <center>
-    <div id="status">
-      <img style="width: 120px; height: 120px;" src="https://github.com/DARIAH-DE/TopicsExplorer/blob/testing/static/img/dariah_wait.gif?raw=true"><br><br><br>
-      <b><div id="log">Collecting user input ...</div></b><br>
-      <div id="parameter"><b>FYI: This might take a while...</b><br> In the meanwhile, have a look at<br>our Jupyter notebook introducing<br>topic modeling with MALLET.</div>
-      {% for info_1, info_2, info_3, info_4, info_5 in logging %}
-        {% if 'render_result' not in info_1 %}
-      <script>
-        $("#log").text("{{ info_1 }}")
-        {% if 'FYI' in info_2 %}
-        $("#parameter").html("<b>{{ info_2 }}</b><br>{{ info_3 }}<br>{{ info_4 }}<br>{{ info_5 }}")
-        {% else %}
-        $("#parameter").html("{{ info_2 }}<br>{{ info_3 }}<br>{{ info_4 }}<br>{{ info_5 }}")
-        {% endif %}
-      </script>
-          {%if info_1=="error"%}
-              <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-                  </div>
-                  <div class="modal-body">
-                    {{ info_2 }}
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          {%endif%}
-      {% else %}
-      <script>
-        window.location.replace("{{ url_for('model') }}");
-      </script>
-      {% endif %}
-      {% endfor %}
+  <div id="content_layout" class="container-fluid">
+    <div style="height: 70px;"></div>
+    <div class="row-fluid">
+      <div class="span10 offset1 main-content-wrapper no-margin">
+        <div id="content" class="primary-area">
+        {%for a, b, c, d, e in logging%}
+          {{a}}
+        {%endfor%}
+        </div>
+      </div>
     </div>
-  </center>
+  </div>
 </body>
 
 </html>

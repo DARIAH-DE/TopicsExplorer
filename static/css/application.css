@@ -535,3 +535,9 @@ figcaption {
 #div * {
   max-width: 500px;
 }
+
+#navbar {
+position: fixed;
+width: 100%;
+z-index: 100;
+}
