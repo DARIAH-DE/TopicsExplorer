@@ -73,13 +73,13 @@ def model():
     Reads the dumped data and renders the output page.
     """
     data_path = str(pathlib.Path(TEMPDIR, 'data.pickle'))
-    parameter_path = str(pathlib.Path(TEMPDIR, 'parameter.csv')
-    topics_path = str(pathlib.Path(TEMPDIR, 'topics.csv')
+    parameter_path = str(pathlib.Path(TEMPDIR, 'parameter.csv'))
+    topics_path = str(pathlib.Path(TEMPDIR, 'topics.csv'))
     
     data = utils.decompress(data_path)
-    parameter = pd.read_csv(parameter_path), index_col=0, encoding='utf-8')
+    parameter = pd.read_csv(parameter_path, index_col=0, encoding='utf-8')
     parameter.columns = ['']  # remove column names
-    topics = pd.read_csv(topics_path), index_col=0, encoding='utf-8')
+    topics = pd.read_csv(topics_path, index_col=0, encoding='utf-8')
     
     data['parameter'] = [parameter.to_html(classes='parameter', border=0)]
     data['topics'] = [topics.to_html(classes='topics')]
@@ -89,7 +89,7 @@ def model():
 @app.after_request
 def add_header(r):
     """
-    Handles cache.
+    Handles the cache.
     """
     r.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     r.headers['Pragma'] = 'no-cache'
@@ -99,61 +99,48 @@ def add_header(r):
 
 
 def create_model():
-    INFO_2A = "FYI: This might take a while..."
-    INFO_3A = "In the meanwhile, have a look at"
-    INFO_4A = "our Jupyter notebook introducing"
-    INFO_5A = "topic modeling with MALLET."
-    INFO_1B = "Iteration {0} of {1} ..."
-    INFO_2B = "You have selected {0} text files,"
-    INFO_3B = "containing {0} tokens"
-    INFO_4B = "or {0} unique types"
-    INFO_5B = "to generate {0} topics."
     start = time.time()
-    yield "Collecting user input ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
     
     try:
-        #test_error()
         user_input = {'files': flask.request.files.getlist('files'),
                       'num_topics': int(flask.request.form['num_topics']),
                       'num_iterations': int(flask.request.form['num_iterations'])}
+        
         if flask.request.files.get('stopword_list', None):
             user_input['stopwords'] = flask.request.files['stopword_list']
         else:
-            user_input['mft'] = int(flask.request.form['mft_threshold'])
+            user_input['mfw'] = int(flask.request.form['mfw_threshold'])
 
         parameter = pd.Series()
         parameter['Corpus size, in documents'] = len(user_input['files'])
         parameter['Corpus size (raw), in tokens'] = 0
 
-        yield "Reading and tokenizing corpus ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
         tokenized_corpus = pd.Series()
         for file in user_input['files']:
             filename = pathlib.Path(werkzeug.utils.secure_filename(file.filename))
             if filename.suffix == '.txt':
                 text = file.read().decode('utf-8')
-            elif filename.suffix == '.xml':
+            else:
                 text = utils.process_xml(file)
             tokens = list(dariah_topics.preprocessing.tokenize(text))
             tokenized_corpus[filename.stem] = tokens
             parameter['Corpus size (raw), in tokens'] += len(tokens)
             file.flush()
         
-        yield "Creating document-term matrix ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
         document_labels = tokenized_corpus.index
         document_term_matrix = dariah_topics.preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
 
-        group = ['Document size (raw)' for n in range(parameter['Corpus size, in documents'])]
+        group = ['Document size (raw)' for i in range(parameter['Corpus size, in documents'])]
         corpus_stats = pd.DataFrame({'score': np.array(document_term_matrix.sum(axis=1)),
                                      'group': group})
 
-        yield "Removing stopwords and hapax legomena from corpus ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
         try:
-            stopwords = dariah_topics.preprocessing.find_stopwords(document_term_matrix, user_input['mft'])
+            stopwords = dariah_topics.preprocessing.find_stopwords(document_term_matrix, user_input['mfw'])
         except KeyError:
             stopwords = user_input['stopwords'].read().decode('utf-8')
-            stopwords = dariah_topics.preprocessing.tokenize(stopwords)
+            stopwords = set(dariah_topics.preprocessing.tokenize(stopwords))
         hapax_legomena = dariah_topics.preprocessing.find_hapax_legomena(document_term_matrix)
-        features = set(stopwords).union(hapax_legomena)
+        features = stopwords.union(hapax_legomena)
         features = [token for token in features if token in document_term_matrix.columns]
         document_term_matrix = document_term_matrix.drop(features, axis=1)
 
@@ -169,16 +156,12 @@ def create_model():
         parameter['Size of vocabulary, in tokens'] = len(vocabulary)
         parameter['Number of topics'] = user_input['num_topics']
         parameter['Number of iterations'] = user_input['num_iterations']
-
-        INFO_2B = INFO_2B.format(parameter['Corpus size, in documents'])
-        INFO_3B = INFO_3B.format(parameter['Corpus size (raw), in tokens'])
-        INFO_4B = INFO_4B.format(parameter['Size of vocabulary, in tokens'])
-        INFO_5B = INFO_5B.format(parameter['Number of topics'])
-
-        yield "Initializing LDA topic model ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
         
-        model = utils.enthread(target=utils.lda_modeling,
-                               args=(document_term_arr, user_input['num_topics'], user_input['num_iterations'], TEMPDIR))
+        model = enthread(target=lda_modeling,
+                         args=(document_term_arr,
+                               user_input['num_topics'],
+                               user_input['num_iterations'],
+                               TEMPDIR))
         while True:
             msg = utils.read_logfile(str(pathlib.Path(TEMPDIR, 'topicmodeling.log')))
 
@@ -186,18 +169,19 @@ def create_model():
                 model = model.get()
                 break
             else:
-                yield 'Iteration {0} of {1} ...'.format(msg, user_input['num_iterations']), INFO_2B, INFO_3B, INFO_4B, INFO_5B
+                yield msg
 
         parameter['The model log-likelihood'] = round(model.loglikelihood())
 
-        yield "Accessing topics ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
-        topics = dariah_topics.postprocessing.show_topics(model=model, vocabulary=vocabulary, num_keys=NUM_KEYS)
+        topics = dariah_topics.postprocessing.show_topics(model=model,
+                                                          vocabulary=vocabulary,
+                                                          num_keys=NUM_KEYS)
         topics.columns = ['Key {0}'.format(i) for i in range(1, NUM_KEYS + 1)]
         topics.index = ['Topic {0}'.format(i) for i in range(1, user_input['num_topics'] + 1)]
 
-        yield "Accessing document topics distributions ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
-
-        document_topics = dariah_topics.postprocessing.show_document_topics(model=model, topics=topics, document_labels=document_labels)
+        document_topics = dariah_topics.postprocessing.show_document_topics(model=model,
+                                                                            topics=topics,
+                                                                            document_labels=document_labels)
         if document_topics.shape[0] < document_topics.shape[1]:
             if document_topics.shape[1] < 20:
                 height = 20 * 28
@@ -210,9 +194,9 @@ def create_model():
             else:
                 height = document_topics.shape[0] * 28
             document_topics_heatmap = document_topics
-        yield "Creating visualizations ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
+
         fig = dariah_topics.visualization.PlotDocumentTopics(document_topics_heatmap,
-                                               enable_notebook=False)
+                                                             enable_notebook=False)
         heatmap = fig.interactive_heatmap(height=height,
                                           sizing_mode='scale_width',
                                           tools='hover, pan, reset, wheel_zoom, zoom_in, zoom_out')

@@ -23,28 +23,42 @@
 </head>
 
 <body>
+  <div id="content">
+    <div id="navbar">
+      <div class="navbar navbar-inverse navbar-static-top navbar-dariah" id="top" />
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <div class="row-fluid">
+            <div class="span1"></div>
+            <div class="span10">
+              <div class="nav-collapse collapse">
+                <ul class="nav" />
+                <li>
+                  <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/dariah_white.png') }}" height="80" width="80"/></a>
+                </li>
+                </ul>
+                {% block navigation %}
+                {% endblock %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div id="content_layout" class="container-fluid">
     <div class="row-fluid">
       <div class="span10 offset1 main-content-wrapper no-margin">
         <div id="content" class="primary-area">
-          
-
-
-          <b><div id="log">Collecting user input ...</div></b><br>
-                <div id="parameter"><b>FYI: This might take a while...</b><br> In the meanwhile, have a look at<br>our Jupyter notebook introducing<br>topic modeling with MALLET.</div>
-                {% for info_1, info_2, info_3, info_4, info_5 in logging %}
-                  {% if 'render_result' not in info_1 %}
-                <script>
-                  $("#log").text("{{ info_1 }}")
-                  {% if 'FYI' in info_2 %}
-                  $("#parameter").html("<b>{{ info_2 }}</b><br>{{ info_3 }}<br>{{ info_4 }}<br>{{ info_5 }}")
-                  {% else %}
-                  $("#parameter").html("{{ info_2 }}<br>{{ info_3 }}<br>{{ info_4 }}<br>{{ info_5 }}")
-                  {% endif %}
-                </script>
-
-
+          <br><br>
+          {% block content %}
+          {% endblock %}
         </div>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <div id="footer" class="span10 offset1 no-margin footer">
+        <span>&copy; 2017-2018 DARIAH-DE</span>
       </div>
     </div>
   </div>
