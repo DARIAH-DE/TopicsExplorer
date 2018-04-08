@@ -15,6 +15,7 @@ from bokeh.layouts import column
 import lda
 from threading import Thread
 import queue
+import requests
 
 __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
@@ -188,3 +189,12 @@ def enthread(target, args):
     t = Thread(target=wrapper)
     t.start()
     return q
+    
+
+def connected_to_internet(url='http://www.example.org/', timeout=5):
+    try:
+        _ = requests.get(url, timeout=timeout)
+        return True
+    except requests.ConnectionError:
+        raise Exception("You need an active internet connection!")
+    return False

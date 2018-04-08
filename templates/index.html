@@ -40,7 +40,7 @@
     <p>Stopwords are harmful for LDA and have to be removed from the corpus. In case you want to <b>determine stopwords individually</b> based on your corpus, define a threshold for most frequent words in the line below.</p>
     <div class="alert alert-info">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <b>Tip:</b> Be careful with removing most frequent tokens – you might remove words quite important for LDA. Anyway, to gain better results, it is highly recommended to use an <b>external stopwords list</b>. This application was shipped with stopword
+      <b>Tip:</b> Be careful with removing most frequent words – you might remove words quite important for LDA. Anyway, to gain better results, it is highly recommended to use an <b>external stopwords list</b>. This application was shipped with stopword
       lists for English, German, Spanish, and French.
     </div>
     <input type="number" name="mfw_threshold" value="150" min="1">
@@ -54,9 +54,7 @@
     <p>An iteration is a process of repeating the same action multiple times to achieve a specific goal. This is how LDA works. The number of sampling iterations should be a <b>trade-off</b> between the time taken to complete sampling and the quality of
       the model. The default value produces quite good results, but feel free to increase the number of iterations.</p>
     <input type="number" name="num_iterations" value="1000" min="1" required><br>
-    <div class="alert alert-block">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <i class="fa fa-exclamation-circle"></i> This step can take quite a while! Meaning something between some seconds and some hours, depending on corpus size and the number of iterations.</div>
+    <br>
     <h2>3. Visualizing</h2>
     <p>When using LDA to explore text collections, we are typically interested in examining texts in terms of their <b>constituent topics</b> (instead of word frequencies). Because the number of topics is so much smaller than the number of unique vocabulary
       elements (say, 10 versus 10,000), a range of data visualization methods become available. As you will see, all of the provided visualizations are <b>interactive</b>, but you will have the ability to save the plots as a <b>static image file</b>.</p>

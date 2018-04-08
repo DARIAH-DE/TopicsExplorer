@@ -15,6 +15,7 @@ lxml = "==4.1.1"
 pandas = "==0.21.1"
 numpy = "==1.14.0"
 pyqt5 = "==5.9.2"
+requests = "==2.18.4"
 
 
 [dev-packages]
