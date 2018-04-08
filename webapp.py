@@ -16,19 +16,20 @@ import bokeh.embed
 import werkzeug.utils
 
 
-TEMPDIR = tempfile.mkdtemp() # For storing the logfile, dumping temporary data, etc.
-NUM_KEYS = 8 # The number of topic keys for the topics table
+TEMPDIR = tempfile.mkdtemp()  # Storing logfile, dumping temporary data, etc.
+NUM_KEYS = 8  # The number of topic keys for the topics table
 
 
 if getattr(sys, 'frozen', False):
     # If the script is frozen by PyInstaller
+    root = pathlib.Path(sys._MEIPASS)
     app = flask.Flask(import_name=__name__,
-                      template_folder=str(pathlib.Path(sys._MEIPASS, 'templates')),
-                      static_folder=str(pathlib.Path(sys._MEIPASS, 'static')))
-    bokeh_resources = str(pathlib.Path(sys._MEIPASS, 'bokeh_templates'))
+                      template_folder=str(pathlib.Path(root, 'templates')),
+                      static_folder=str(pathlib.Path(root, 'static')))
+    bokeh_resources = str(pathlib.Path(root, 'static', 'bokeh_templates'))
 else:
     app = flask.Flask(import_name=__name__)
-    bokeh_resources = str(pathlib.Path('bokeh_templates'))
+    bokeh_resources = str(pathlib.Path('static', 'bokeh_templates'))
 
 
 @app.route('/')
@@ -38,6 +39,7 @@ def index():
     """
     return flask.render_template('index.html')
 
+
 @app.route('/help')
 def help():
     """
@@ -45,23 +47,39 @@ def help():
     """
     return flask.render_template('help.html')
 
+
 @app.route('/modeling', methods=['POST'])
 def modeling():
     """
-    Streams the modeling page, printing useful information on progress.
+    Streams the modeling page, printing useful information to screen.
     The generated data will be dumped into the tempdir (specified above).
     """
-    return flask.Response(flask.stream_with_context(stream_template('modeling.html', logging=create_model())))
+    resp = flask.Response
+    stream = flask.stream_with_context
+    modeling_output = utils.create_model()
+    def stream_template(template_name, **context):
+        app.update_template_context(context)
+        t = app.jinja_env.get_template(template_name)
+        rv = t.stream(context)
+        rv.disable_buffering() 
+        return rv
+    return resp(context(stream_template('modeling.html', logging=modeling_output)))
+
 
 @app.route('/model')
 def model():
     """
-    Reads the dumped data (see `modeling()`) and renders the output page.
+    Reads the dumped data and renders the output page.
     """
-    data = utils.decompress(str(pathlib.Path(TEMPDIR, 'data.pickle')))
-    parameter = pd.read_csv(str(pathlib.Path(TEMPDIR, 'parameter.csv')), index_col=0, encoding='utf-8')
-    parameter.columns = ['']
-    topics = pd.read_csv(str(pathlib.Path(TEMPDIR, 'topics.csv')), index_col=0, encoding='utf-8')
+    data_path = str(pathlib.Path(TEMPDIR, 'data.pickle'))
+    parameter_path = str(pathlib.Path(TEMPDIR, 'parameter.csv')
+    topics_path = str(pathlib.Path(TEMPDIR, 'topics.csv')
+    
+    data = utils.decompress(data_path)
+    parameter = pd.read_csv(parameter_path), index_col=0, encoding='utf-8')
+    parameter.columns = ['']  # remove column names
+    topics = pd.read_csv(topics_path), index_col=0, encoding='utf-8')
+    
     data['parameter'] = [parameter.to_html(classes='parameter', border=0)]
     data['topics'] = [topics.to_html(classes='topics')]
     return flask.render_template('model.html', **data)
@@ -69,7 +87,7 @@ def model():
 @app.after_request
 def add_header(r):
     """
-    Handles cache issues.
+    Handles cache.
     """
     r.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     r.headers['Pragma'] = 'no-cache'
@@ -267,11 +285,6 @@ def create_model():
         yield 'error', str(error), '', '', ''
 
 
-def stream_template(template_name, **context):
-    app.update_template_context(context)
-    t = app.jinja_env.get_template(template_name)
-    rv = t.stream(context)
-    return rv
 
 if __name__ == '__main__':
     app.run()
