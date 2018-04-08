@@ -6,7 +6,7 @@ block_cipher = None
 a = Analysis(['topicsexplorer.py'],
              pathex=[],
              binaries=[],
-             datas=[('webapp.py', '.'), ('utils.py', '.'), ('static', 'static'), ('templates', 'templates'), ('bokeh_templates', 'bokeh_templates')],
+             datas=[('webapp.py', '.'), ('utils.py', '.'), ('static', 'static'), ('templates', 'templates')],
              hiddenimports=[],
              hookspath=['hooks'],
              runtime_hooks=[],
@@ -24,8 +24,8 @@ exe = EXE(pyz,
           strip=False,
           upx=False,
           console=False,
-          #icon='static/img/app_icon.png', for macos
-          icon='static/img/app_icon.ico')
+          #icon='static/img/app_icon.png', # for macos
+          icon='static/img/app_icon.ico') # for windows
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
