@@ -54,17 +54,21 @@ def modeling():
     Streams the modeling page, printing useful information to screen.
     The generated data will be dumped into the tempdir (specified above).
     """
-    resp = flask.Response
-    context = flask.stream_with_context
-    modeling_output = utils.create_model()
-    
-    def stream(template_name, **context):
+    data = [1, 2, 3, 4, 5]
+
+    @flask.stream_with_context
+    def generate():
+        for item in data:
+            yield "error", str(item), str(item), str(item), str(item), str(item)
+            time.sleep(3)
+
+    progress = generate()
+
+    def stream_template(template_name, **context):
         app.update_template_context(context)
         t = app.jinja_env.get_template(template_name)
-        rv = t.stream(context)
-        rv.disable_buffering() 
-        return rv
-    return resp(context(stream('modeling.html', info=modeling_output)))
+        return t.stream(context)
+    return flask.Response(stream_template('modeling.html', info=progress))
 
 
 @app.route('/model')
@@ -75,12 +79,12 @@ def model():
     data_path = str(pathlib.Path(TEMPDIR, 'data.pickle'))
     parameter_path = str(pathlib.Path(TEMPDIR, 'parameter.csv'))
     topics_path = str(pathlib.Path(TEMPDIR, 'topics.csv'))
-    
+
     data = utils.decompress(data_path)
     parameter = pd.read_csv(parameter_path, index_col=0, encoding='utf-8')
     parameter.columns = ['']  # remove column names
     topics = pd.read_csv(topics_path, index_col=0, encoding='utf-8')
-    
+
     data['parameter'] = [parameter.to_html(classes='parameter', border=0)]
     data['topics'] = [topics.to_html(classes='topics')]
     return flask.render_template('model.html', **data)
@@ -100,12 +104,12 @@ def add_header(r):
 
 def create_model():
     start = time.time()
-    
+
     try:
         user_input = {'files': flask.request.files.getlist('files'),
                       'num_topics': int(flask.request.form['num_topics']),
                       'num_iterations': int(flask.request.form['num_iterations'])}
-        
+
         if flask.request.files.get('stopword_list', None):
             user_input['stopwords'] = flask.request.files['stopword_list']
         else:
@@ -126,7 +130,7 @@ def create_model():
             tokenized_corpus[filename.stem] = tokens
             parameter['Corpus size (raw), in tokens'] += len(tokens)
             file.flush()
-        
+
         document_labels = tokenized_corpus.index
         document_term_matrix = dariah_topics.preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
 
@@ -156,7 +160,7 @@ def create_model():
         parameter['Size of vocabulary, in tokens'] = len(vocabulary)
         parameter['Number of topics'] = user_input['num_topics']
         parameter['Number of iterations'] = user_input['num_iterations']
-        
+
         model = enthread(target=lda_modeling,
                          args=(document_term_arr,
                                user_input['num_topics'],
@@ -229,12 +233,12 @@ def create_model():
         bokeh.plotting.output_file(str(pathlib.Path(TEMPDIR, 'document_topics_barchart.html')))
         bokeh.plotting.save(documents_barchart)
 
-        
+
         with open(str(pathlib.Path(bokeh_resources, 'render_js.txt')), 'r', encoding='utf-8') as file:
             js_resources = file.read()
         with open(str(pathlib.Path(bokeh_resources, 'render_css.txt')), 'r', encoding='utf-8') as file:
-            css_resources = file.read()    
-        
+            css_resources = file.read()
+
         end = time.time()
         passed_time = round((end - start) / 60)
 
@@ -247,7 +251,7 @@ def create_model():
         topics.to_csv(str(pathlib.Path(TEMPDIR, 'topics.csv')), encoding='utf-8')
         document_topics.to_csv(str(pathlib.Path(TEMPDIR, 'document_topics.csv')), encoding='utf-8')
         parameter.to_csv(str(pathlib.Path(TEMPDIR, 'parameter.csv')), encoding='utf-8')
-        
+
         cwd = str(pathlib.Path(*pathlib.Path.cwd().parts[:-1]))
         shutil.make_archive(str(pathlib.Path(cwd, 'topicmodeling')), 'zip', TEMPDIR)
 
@@ -271,4 +275,5 @@ def create_model():
 
 
 if __name__ == '__main__':
+    app.debug = True
     app.run()
