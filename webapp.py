@@ -76,7 +76,7 @@ def modeling():
             parameter['Corpus size (raw), in tokens'] = 0
 
             if parameter['Corpus size, in documents'] < 5:
-                raise Exception("Your corpus is too small. Please select more files!")
+                raise Exception("Your corpus is too small. Please select at least five text files.")
 
             yield "running", "Reading and tokenizing corpus ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
             tokenized_corpus = pd.Series()
@@ -247,7 +247,6 @@ def modeling():
             utils.compress(data, str(pathlib.Path(TEMPDIR, 'data.pickle')))
             yield 'render_result', '', '', '', ''
         except Exception as error:
-            time.sleep(1)
             print(error)
             yield 'error', str(error), '', '', '', ''
 
