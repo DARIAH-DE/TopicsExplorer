@@ -1,3 +1,0 @@
-[submodule "data/corpus"]
-	path = data/corpus
-	url = https://github.com/cophi-wue/refcor
