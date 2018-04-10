@@ -26,22 +26,7 @@ Linux user have to use the development version, but Windows and macOS users can 
 Topics Explorer aims for **simplicity and usability**. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated topic models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing [topic modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb).
 
 ## Example visualization
-The following visualization is based on the distribution of 10 topics over a total of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). But first of all, the algorithm produces so-called topics:
-
-|                   | Key 1          | Key 2        | Key 3         | Key 4            | Key 5            |
-|------------------ | -------------- | ------------ | ------------- | ---------------- | ---------------- |
-|**Topic 1**        | captain        | lord         | whom          | over             | young            |
-|**Topic 2**        | phineas        | laura        | lord          | finn             | kennedy          |
-|**Topic 3**        | jarndyce       | quite        | sir           | richard          | ada              |
-|**Topic 4**        | jones          | indeed       | adams         | answered         | may              |
-|**Topic 5**        | our            | these        | can           | honour           | without          |
-|**Topic 6**        | lopez          | duke         | wharton       | course           | duchess          |
-|**Topic 7**        | crawley        | george       | osborne       | rebecca          | amelia           |
-|**Topic 8**        | peggotty       | aunt         | mother        | steerforth       | murdstone        |
-|**Topic 9**        | thought        | way          | too           | down             | went             |
-|**Topic 10**       | tom            | adam         | maggie        | work             | tulliver         |
-
-These topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
+The following visualization is based on the distribution of 10 topics over a total of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). The topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
 
 <p align="center">
   <img src="docs/images/heatmap.png"/>
