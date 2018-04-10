@@ -63,7 +63,7 @@
               </div>
               <p>Linux user have to use the development version, and install some dependencies:</p>
               <ol class="arabic simple">
-                <li>Go to the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases">release-section</a> and download the <strong>Source code</strong> as ZIP archive (or simply use <a class="reference external" href="https://git-scm.com/">Git</a>). </li>
+                <li>Go to the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases">release-section</a> and download the <strong>source code</strong> as ZIP archive.</li>
                 <li>Unzip the archive, e.g. using <code>unzip</code> via the command-line.</li>
                 <li>Make sure you have Python 3.6 and <a class="reference external" href="https://docs.pipenv.org/">Pipenv</a> installed.</li>
                 <li>Run <code>pipenv install</code>, and afterwards <code>pipenv shell</code></li>
@@ -73,11 +73,12 @@
             <div class="section" id="the-application">
               <h2>The application<a class="headerlink" href="#about-this-application" title="Permalink to this headline">¶</a></h2>
               <img alt="_static/screenshot.png" src="_static/screenshot.png" />
-              <p><strong>Topics Explorer</strong> aims for simplicity and usability. If you are working with a large corpus (let’s say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated topic models such as those implemented
+              <p>Topics Explorer aims for <strong>simplicity and usability</strong>. If you are working with a large corpus (let’s say more than 200 documents, 5000 words each document), you may wish to use more sophisticated topic models such as those implemented
                 in <a class="reference external" href="http://mallet.cs.umass.edu/topics.php">MALLET</a>, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook <a class="reference external" href="https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb">introducing Topic Modeling with MALLET</a>.</p>
             </div>
             <div class="section" id="example-visualization">
               <h2>Example visualization<a class="headerlink" href="#example-visualization" title="Permalink to this headline">¶</a></h2>
+              <p>The following visualization is based on the distribution of 10 topics over a total of 10 novels. But first of all, Topics Explorer, or more precisely the algorithm, produces so-called topics, just as you see here:</p>
               <p>
                 <center>
                   <table border="0" class="dataframe">
@@ -176,6 +177,7 @@
                   </table>
                 </center>
               </p>
+              <p>These topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.</p>
               <p>
                 <div class="bk-root">
                   <div class="bk-plotdiv" id="0e54979e-df5a-44e6-bcff-1ed2dcd6c19b"></div>
@@ -3780,6 +3782,12 @@
                     else document.addEventListener("DOMContentLoaded", fn);
                   })();
                 </script>
+              </p>
+              <br>
+              <p>
+                <div class="admonition note">
+                  <p class="last">Topics Explorer allows you to analyze and explore your own text corpora using topic models – without prior knowledge or special prerequisites.</p><br>
+                </div>
               </p>
             </div>
             <div class="section" id="troubleshooting">
