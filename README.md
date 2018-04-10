@@ -43,7 +43,7 @@ The following visualization is based on the distribution of 10 topics over a tot
 If you want to run the development version, you can either `git clone` this repository, or download the [ZIP archive](https://github.com/DARIAH-DE/TopicsExplorer/archive/master.zip).
 
 ### Requirements
-You can install all dependencies using [Pipenv]](https://docs.pipenv.org/):
+Use [Pipenv](https://docs.pipenv.org/) to install the dependencies:
 
 ```
 pipenv install
