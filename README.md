@@ -27,7 +27,7 @@ Topics Explorer aims for **simplicity and usability**. If you are working with a
 
 ## Example visualization
 The following visualization is based on the distribution of 10 topics over a total of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). But first of all, the algorithm produces so-called topics:
-
+<center>
 |               | Key 1          | Key 2        | Key 3         | Key 4            | Key 5            |
 |-------------- | -------------- | ------------ | ------------- | ---------------- | ---------------- |
 |**Topic 1**        | captain        | lord         | whom          | over             | young            |
@@ -40,7 +40,7 @@ The following visualization is based on the distribution of 10 topics over a tot
 |Topic 8        | peggotty       | aunt         | mother        | steerforth       | murdstone        |
 |Topic 9        | thought        | way          | too           | down             | went             |
 |Topic 10       | tom            | adam         | maggie        | work             | tulliver         |
-
+</center>
 
 These topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
 
