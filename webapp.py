@@ -42,7 +42,10 @@ def index():
     """
     Renders the main page.
     """
-    return flask.render_template('index.html')
+    if utils.is_connected():
+        return flask.render_template('index.html')
+    else:
+        return flask.render_template('index.html', internet="warning")
 
 
 @app.route('/help')

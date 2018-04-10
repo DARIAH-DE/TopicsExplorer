@@ -211,13 +211,13 @@ def enthread(target, args):
     return q
 
 
-def is_connected(url='http://www.example.org/'):
+def is_connected(host='8.8.8.8', port=53, timeout=3):
     """
     Checks if your machine is connected to the internet.
     """
     try:
-        host = socket.gethostbyname(url)
-        s = socket.create_connection((host, 80), 2)
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
     except:
         return False

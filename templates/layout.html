@@ -62,6 +62,27 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="errorModal" role="dialog" aria-labelledby="errorModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="exampleModalLongTitle">You are not connected to the internet!</h3>
+        </div>
+        <div class="modal-body">
+          To ensure that the application is fully functional, you <b>need a connection to the internet</b>. Complications <i>may</i> occur offline, but they do not have to. This has several influencing factors. However, the missing connection <b>can be a reason for errors</b>.
+          <br><br>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Got it!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if internet == "warning" %}
+    <script>
+      $('#errorModal').modal('show');
+    </script>
+  {% endif %}
 </body>
 
 </html>
