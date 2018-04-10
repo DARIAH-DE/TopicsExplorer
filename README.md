@@ -27,22 +27,103 @@ Topics Explorer aims for **simplicity and usability**. If you are working with a
 
 ## Example visualization
 The following visualization is based on the distribution of 10 topics over a total of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). But first of all, the algorithm produces so-called topics:
+
 <center>
-
-|               | Key 1          | Key 2        | Key 3         | Key 4            | Key 5            |
-|-------------- | -------------- | ------------ | ------------- | ---------------- | ---------------- |
-|**Topic 1**        | captain        | lord         | whom          | over             | young            |
-|Topic 2        | phineas        | laura        | lord          | finn             | kennedy          |
-|Topic 3        | jarndyce       | quite        | sir           | richard          | ada              |
-|Topic 4        | jones          | indeed       | adams         | answered         | may              |
-|Topic 5        | our            | these        | can           | honour           | without          |
-|Topic 6        | lopez          | duke         | wharton       | course           | duchess          |
-|Topic 7        | crawley        | george       | osborne       | rebecca          | amelia           |
-|Topic 8        | peggotty       | aunt         | mother        | steerforth       | murdstone        |
-|Topic 9        | thought        | way          | too           | down             | went             |
-|Topic 10       | tom            | adam         | maggie        | work             | tulliver         |
-
-</center>
+                  <table border="0" class="dataframe">
+                    <thead>
+                      <tr style="text-align: right;">
+                        <th></th>
+                        <th>Key 1</th>
+                        <th>Key 2</th>
+                        <th>Key 3</th>
+                        <th>Key 4</th>
+                        <th>Key 5</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th>Topic 1</th>
+                        <td>captain</td>
+                        <td>lord</td>
+                        <td>whom</td>
+                        <td>over</td>
+                        <td>young</td>
+                      </tr>
+                      <tr>
+                        <th>Topic 2</th>
+                        <td>phineas</td>
+                        <td>laura</td>
+                        <td>lord</td>
+                        <td>finn</td>
+                        <td>kennedy</td>
+                      </tr>
+                      <tr>
+                        <th>Topic 3</th>
+                        <td>jarndyce</td>
+                        <td>quite</td>
+                        <td>sir</td>
+                        <td>richard</td>
+                        <td>ada</td>
+                      </tr>
+                      <tr>
+                        <th>Topic 4</th>
+                        <td>jones</td>
+                        <td>indeed</td>
+                        <td>adams</td>
+                        <td>answered</td>
+                        <td>may</td>
+                      </tr>
+                      <tr>
+                        <th>Topic 5</th>
+                        <td>our</td>
+                        <td>these</td>
+                        <td>can</td>
+                        <td>honour</td>
+                        <td>without</td>
+                      </tr>
+                      <tr>
+                        <th>Topic 6</th>
+                        <td>lopez</td>
+                        <td>duke</td>
+                        <td>wharton</td>
+                        <td>course</td>
+                        <td>duchess</td>
+                      </tr>
+                      <tr>
+                        <th>Topic 7</th>
+                        <td>crawley</td>
+                        <td>george</td>
+                        <td>osborne</td>
+                        <td>rebecca</td>
+                        <td>amelia</td>
+                      </tr>
+                      <tr>
+                        <th>Topic 8</th>
+                        <td>peggotty</td>
+                        <td>aunt</td>
+                        <td>mother</td>
+                        <td>steerforth</td>
+                        <td>murdstone</td>
+                      </tr>
+                      <tr>
+                        <th>Topic 9</th>
+                        <td>thought</td>
+                        <td>way</td>
+                        <td>too</td>
+                        <td>down</td>
+                        <td>went</td>
+                      </tr>
+                      <tr>
+                        <th>Topic 10</th>
+                        <td>tom</td>
+                        <td>adam</td>
+                        <td>maggie</td>
+                        <td>work</td>
+                        <td>tulliver</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </center>
 
 These topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
 
