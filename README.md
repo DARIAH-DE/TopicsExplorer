@@ -44,7 +44,7 @@ The following visualization is based on the distribution of 10 topics over a tot
 These topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
 
 <center>
-![Heatmap](docs/images/heatmap.png)
+<img src="docs/images/heatmap.png">
 </center>
 
 > **DARIAH Topics Explorer** allows you to analyze and explore your own text corpora using topic models – without prior knowledge or special prerequisites.
