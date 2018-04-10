@@ -18,6 +18,7 @@ import werkzeug.utils
 
 TEMPDIR = tempfile.mkdtemp()  # Storing logfile, dumping temporary data, etc.
 NUM_KEYS = 8  # The number of topic keys for the topics table
+# These messages are displayed during modeling:
 INFO_2A = "FYI: This might take a while..."
 INFO_3A = "In the meanwhile, have a look at"
 INFO_4A = "our Jupyter notebook introducing"
@@ -56,7 +57,7 @@ def help():
 def modeling():
     """
     Streams the modeling page, printing useful information to screen.
-    The generated data will be dumped into the tempdir (specified above).
+    The generated data will be dumped into the TEMPDIR (specified above).
     """
     @flask.stream_with_context
     def create_model():
@@ -123,6 +124,7 @@ def modeling():
             parameter['Number of topics'] = user_input['num_topics']
             parameter['Number of iterations'] = user_input['num_iterations']
 
+            # These messages are displayed during modeling:
             INFO_1B = "Iteration {0} of {1} ..."
             INFO_2B = "You have selected {0} text files,"
             INFO_3B = "containing {0} tokens"
@@ -133,21 +135,22 @@ def modeling():
             INFO_4B = INFO_4B.format(parameter['Size of vocabulary, in tokens'])
             INFO_5B = INFO_5B.format(parameter['Number of topics'])
 
-            test_error()
             yield "running", "Initializing LDA topic model ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
-            model = enthread(target=utils.lda_modeling,
-                             args=(document_term_arr,
-                                   user_input['num_topics'],
-                                   user_input['num_iterations'],
-                                   TEMPDIR))
+            model = utils.enthread(target=utils.lda_modeling,
+                                   args=(document_term_arr,
+                                         user_input['num_topics'],
+                                         user_input['num_iterations'],
+                                         TEMPDIR))
             while True:
+                # During modeling the logfile is read continuously and the newest
+                # line is sent to the browser as information for the user:
                 msg = utils.read_logfile(str(pathlib.Path(TEMPDIR, 'topicmodeling.log')))
-
                 if msg == None:
+                    # When modeling is done, get the model:
                     model = model.get()
                     break
                 else:
-                    yield msg
+                    yield "running", INFO_1B.format(msg, parameter['Number of iterations']), INFO_2B, INFO_3B, INFO_4B, INFO_5B
 
             parameter['The model log-likelihood'] = round(model.loglikelihood())
 
@@ -183,7 +186,7 @@ def modeling():
                                               sizing_mode='scale_width',
                                               tools='hover, pan, reset, wheel_zoom, zoom_in, zoom_out')
 
-            bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'heatmap.html')))
+            bokeh.plotting.output_file(str(pathlib.Path(TEMPDIR, 'heatmap.html')))
             bokeh.plotting.save(heatmap)
 
             heatmap_script, heatmap_div = bokeh.embed.components(heatmap)
@@ -245,9 +248,8 @@ def modeling():
                     'corpus_boxplot_div': corpus_boxplot_div,
                     'cwd': cwd}
             utils.compress(data, str(pathlib.Path(TEMPDIR, 'data.pickle')))
-            yield 'render_result', '', '', '', ''
+            yield 'done', '', '', '', '', ''
         except Exception as error:
-            print(error)
             yield 'error', str(error), '', '', '', ''
 
     progress = create_model()
@@ -288,11 +290,6 @@ def add_header(r):
     r.headers['Expires'] = '0'
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
-
-
-
-def test_error():
-    raise ValueError("Das ist eine Fehlermeldung")
 
 
 if __name__ == '__main__':

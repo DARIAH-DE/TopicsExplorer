@@ -22,7 +22,7 @@ import PyQt5.QtCore
 # import lda
 # import threading
 # import queue
-# import requests
+# import socket
 
 # webapp.py dependencies:
 # import time
