@@ -15,8 +15,7 @@
     <div class="alert alert-block">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
       <i class="fa fa-exclamation-circle"></i> This application is designed to introduce the technique in a gentle way and aims for simplicity. If you have a <b>very large corpus</b> (let's say more than 200 documents with more than 5000 words per document),
-      you may wish to use more sophisticated models such as those implemented in <b>MALLET</b>, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing <i>Topic Modeling with MALLET</i>, available via GitHub
-      (https://github.com/DARIAH-DE/Topics).
+      you may wish to use more sophisticated models such as those implemented in <b>MALLET</b>, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing topic modeling with MALLET, available via <a href="https://github.com/DARIAH-DE/Topics">GitHub</a>.
     </div>
     <br>
     <h2>1. Preprocessing</h2>
@@ -29,7 +28,7 @@
       <b>choose at least five documents</b> (but the more the better).
       <div class="alert alert-info">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <b>Tip:</b> The TextGrid Repository (https://textgridrep.org) is a great place to start searching for text data. It's Open Access and provides a lot of literary texts in valid and well-formed TEI XML.
+        <b>Tip:</b> The <a href="https://textgridrep.org">TextGrid Repository</a> is a great place to start searching for text data. It's Open Access and provides a lot of literary texts in valid and well-formed TEI XML.
       </div>
     </p>
     <input type="file" name="files" accept=".txt, .xml" multiple required/><br><br>
@@ -53,7 +52,7 @@
     <input type="number" name="num_topics" value="10" min="1" required>
     <p>An iteration is a process of repeating the same action multiple times to achieve a specific goal. This is how LDA works. The number of sampling iterations should be a <b>trade-off</b> between the time taken to complete sampling and the quality of
       the model. The default value produces quite good results, but feel free to increase the number of iterations.</p>
-    <input type="number" name="num_iterations" value="1000" min="1" required><br>
+    <input type="number" name="num_iterations" value="200" min="10" required><br>
     <br>
     <h2>3. Visualizing</h2>
     <p>When using LDA to explore text collections, we are typically interested in examining texts in terms of their <b>constituent topics</b> (instead of word frequencies). Because the number of topics is so much smaller than the number of unique vocabulary

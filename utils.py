@@ -4,24 +4,19 @@
 import lzma
 import pickle
 import time
-import re
-from pathlib import Path
+import regex as re
+import pathlib
 import logging
-from lxml import etree
-from bokeh.plotting import figure
-from bokeh.models import CustomJS, ColumnDataSource, HoverTool
-from bokeh.models.widgets import Dropdown
-from bokeh.layouts import column
+import bokeh.plotting
+import bokeh.models
+import bokeh.layouts
 import lda
-from threading import Thread
+import threading
 import queue
-import requests
-
-__author__ = "Severin Simmler"
-__email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
+import socket
 
 
-TOOLS = 'hover, pan, reset, wheel_zoom, zoom_in, zoom_out'
+TOOLS = "hover, pan, reset, wheel_zoom, zoom_in, zoom_out"
 JAVASCRIPT = """
              var f = cb_obj.value;
              var options = %s;
@@ -36,21 +31,29 @@ JAVASCRIPT = """
                      eval(options[i]).visible = false;
                  }
              }
-             console.log(' ')
              """
 
 
 def compress(data, filepath):
+    """
+    Dumps generated data.
+    """
     with open(filepath, 'wb') as file:
         pickle.dump(data, file)
 
 
 def decompress(filepath):
+    """
+    Loads dumped data.
+    """
     with open(filepath, 'rb') as file:
         return pickle.load(file)
 
 
 def process_xml(file):
+    """
+    Removes markup from text.
+    """
     with open (file, 'r', encoding='utf-8') as file:
         content = file.readlines()
     text = []
@@ -64,6 +67,9 @@ def process_xml(file):
 
 
 def boxplot(stats):
+    """
+    Creates a boxplot for corpus statistics.
+    """
     x_labels = ['Document size (clean)', 'Document size (raw)']
 
     groups = stats.groupby('group')
@@ -80,13 +86,15 @@ def boxplot(stats):
                      (group.score < lower.loc[cat]['score'])]['score']
     out = groups.apply(outliers).dropna()
 
-    fig = figure(tools='', background_fill_color='#EFE8E2', title='', x_range=x_labels,
-                 logo=None, sizing_mode='fixed', plot_width=500, plot_height=350)
+    fig = bokeh.plotting.figure(tools='', background_fill_color='#EFE8E2',
+                                title='', x_range=x_labels, logo=None,
+                                sizing_mode='fixed', plot_width=500,
+                                plot_height=350)
 
     qmin = groups.quantile(q=0.00)
     qmax = groups.quantile(q=1.00)
-    upper.score = [min([x,y]) for (x,y) in zip(list(qmax.loc[:,'score']),upper.score)]
-    lower.score = [max([x,y]) for (x,y) in zip(list(qmin.loc[:,'score']),lower.score)]
+    upper.score = [min([x, y]) for (x, y) in zip(list(qmax.loc[:, 'score']), upper.score)]
+    lower.score = [max([x, y]) for (x, y) in zip(list(qmin.loc[:, 'score']), lower.score)]
 
     fig.segment(x_labels, upper.score, x_labels, q3.score, line_color='black')
     fig.segment(x_labels, lower.score, x_labels, q1.score, line_color='black')
@@ -107,16 +115,19 @@ def boxplot(stats):
 
 
 def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOLS):
+    """
+    Creates an interactive barchart for document-topics proportions.
+    """
     y_range = document_topics.columns.tolist()
-    fig = figure(y_range=y_range, plot_height=height, tools=tools,
-                 toolbar_location='right', sizing_mode='scale_width',
-                 logo=None)
+    fig = bokeh.plotting.figure(y_range=y_range, plot_height=height, tools=tools,
+                                toolbar_location='right', sizing_mode='scale_width',
+                                logo=None)
 
     plots = {}
     options = document_topics.index.tolist()
     for i, option in enumerate(options):
         x_axis = document_topics.iloc[i]
-        source = ColumnDataSource(dict(Describer=y_range, Proportion=x_axis))
+        source = bokeh.models.ColumnDataSource(dict(Describer=y_range, Proportion=x_axis))
         option = re.sub(' ', '_', option)
         bar = fig.hbar(y='Describer', right='Proportion', source=source,
                        height=0.5, color='#053967')
@@ -128,26 +139,29 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
 
     fig.xgrid.grid_line_color = None
     fig.x_range.start = 0
-    fig.select_one(HoverTool).tooltips = [('Proportion', '@Proportion')]
+    fig.select_one(bokeh.models.HoverTool).tooltips = [('Proportion', '@Proportion')]
     fig.xaxis.axis_label = 'Proportion'
     fig.xaxis.major_label_text_font_size = '9pt'
     fig.yaxis.major_label_text_font_size = '9pt'
 
     options = list(plots.keys())
-    callback = CustomJS(args=plots, code=script % options)
+    callback = bokeh.models.CustomJS(args=plots, code=script % options)
 
     if topics is not None:
         selection = [' '.join(topics.iloc[i].tolist()) + ' ...' for i in range(topics.shape[0])]
         menu = [(select, option) for select, option in zip(selection, options)]
-        label = 'Select topic to display proportions'
+        label = "Select topic to display proportions"
     else:
         menu = [(select, option) for select, option in zip(document_topics.index, options)]
-        label = 'Select document to display proportions'
-    dropdown = Dropdown(label=label, menu=menu, callback=callback)
-    return column(dropdown, fig, sizing_mode='scale_width')
+        label = "Select document to display proportions"
+    dropdown = bokeh.models.widgets.Dropdown(label=label, menu=menu, callback=callback)
+    return bokeh.layouts.column(dropdown, fig, sizing_mode='scale_width')
 
 
 def read_logfile(logfile):
+    """
+    Reads a logfile and returns the current number of iterations.
+    """
     time.sleep(3)
     pattern = re.compile('-?\d+')
     with open(logfile, 'r', encoding='utf-8') as file:
@@ -169,43 +183,41 @@ def read_logfile(logfile):
 
 
 def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
-    file = str(Path(tempdir, 'topicmodeling.log'))
+    """
+    Trains a LDA topic model and writes logging to a file.
+    """
+    file = str(pathlib.Path(tempdir, 'topicmodeling.log'))
     handler = logging.FileHandler(file, 'w')
     lda_log = logging.getLogger('lda')
     lda_log.setLevel(logging.INFO)
     lda_log.addHandler(handler)
-    
+
     model = lda.LDA(n_topics=n_topics, n_iter=n_iter)
     model.fit(document_term_arr)
     with open(file, 'a', encoding='utf-8') as f:
         f.write('DONE')
     return model
 
-   
+
 def enthread(target, args):
+    """
+    Threads a process.
+    """
     q = queue.Queue()
     def wrapper():
         q.put(target(*args))
-    t = Thread(target=wrapper)
+    t = threading.Thread(target=wrapper)
     t.start()
     return q
-    
 
-def connected_to_internet(url='http://www.example.org/', timeout=5):
+
+def is_connected(url='http://www.example.org/'):
+    """
+    Checks if your machine is connected to the internet.
+    """
     try:
-        _ = requests.get(url, timeout=timeout)
+        host = socket.gethostbyname(url)
+        s = socket.create_connection((host, 80), 2)
         return True
-    except requests.ConnectionError:
-        raise Exception("You need an active internet connection!")
-    return False
-
-import socket
-REMOTE_SERVER = "www.google.com"
-def is_connected():
-  try:
-    host = socket.gethostbyname(REMOTE_SERVER)
-    s = socket.create_connection((host, 80), 2)
-    return True
-  except:
-     pass
-  return False
+    except:
+        return False
