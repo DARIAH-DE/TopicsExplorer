@@ -32,6 +32,9 @@ that you intended to go into harness."
 "Then how do you know?"
 """
 
+def test_error():
+    raise ValueError("Das ist eine Fehlermeldung")
+
 class DemonstratorTestCase(unittest.TestCase):
     def setUp(self):
         self.db_fd, demonstrator.app.config['DATABASE'] = tempfile.mkstemp()

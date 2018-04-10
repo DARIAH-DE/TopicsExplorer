@@ -15,6 +15,7 @@ from bokeh.layouts import column
 import lda
 from threading import Thread
 import queue
+import requests
 
 __author__ = "Severin Simmler"
 __email__ = "severin.simmler@stud-mail.uni-wuerzburg.de"
@@ -50,13 +51,16 @@ def decompress(filepath):
 
 
 def process_xml(file):
-    ns = dict(tei='http://www.tei-c.org/ns/1.0')
-    text = etree.parse(file)
-    try:
-        text = text.xpath('//tei:text', namespaces=ns)[0]
-    except IndexError:
-        pass
-    return ''.join(text.xpath('.//text()'))
+    with open (file, 'r', encoding='utf-8') as file:
+        content = file.readlines()
+    text = []
+    for line in content:
+        line = re.sub('(<.[^(><.)]+>)|<.?>', '', line)
+        line = re.sub('\\n','', line)
+        line = re.sub('[ ]{2,}',' ',line)
+        line = re.sub('<?(.*?)?>','', line)
+        text.append(line)
+    return ''.join(text)
 
 
 def boxplot(stats):
@@ -185,3 +189,23 @@ def enthread(target, args):
     t = Thread(target=wrapper)
     t.start()
     return q
+    
+
+def connected_to_internet(url='http://www.example.org/', timeout=5):
+    try:
+        _ = requests.get(url, timeout=timeout)
+        return True
+    except requests.ConnectionError:
+        raise Exception("You need an active internet connection!")
+    return False
+
+import socket
+REMOTE_SERVER = "www.google.com"
+def is_connected():
+  try:
+    host = socket.gethostbyname(REMOTE_SERVER)
+    s = socket.create_connection((host, 80), 2)
+    return True
+  except:
+     pass
+  return False

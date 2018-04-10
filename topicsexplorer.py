@@ -1,47 +1,48 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import sys
-from pathlib import Path
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import QUrl, QThread
+import pathlib
+import PyQt5.QtGui
+import PyQt5.QtWidgets
+import PyQt5.QtWebEngineWidgets
+import PyQt5.QtCore
 
-import lzma
-import pickle
-import time
-import re
-import logging
-from lxml import etree
-from bokeh.plotting import figure
-from bokeh.models import CustomJS, ColumnDataSource, HoverTool
-from bokeh.models.widgets import Dropdown
-from bokeh.layouts import column
-import lda
-from threading import Thread
-import queue
+# If you want to freeze the application using PyInstaller, all of the
+# dependencies have to be imported here, although needed in other modules.
 
-from flask import Flask, request, render_template, Response, stream_with_context
-import pandas as pd
-import time
-from bokeh.plotting import output_file, save
-from bokeh.embed import components
-from dariah_topics import preprocessing
-from dariah_topics import postprocessing
-from dariah_topics import visualization
-import tempfile
-import shutil
-import numpy as np
-from werkzeug.utils import secure_filename
+# utils.py dependencies:
+# import lzma
+# import pickle
+# import time
+# import regex as re
+# import logging
+# import bokeh.plotting
+# import bokeh.models
+# import bokeh.layouts
+# import lda
+# import threading
+# import queue
+# import socket
+
+# webapp.py dependencies:
+# import time
+# import shutil
+# import tempfile
+# import dariah_topics
+# import flask
+# import pandas as pd
+# import numpy as np
+# import bokeh.embed
+# import werkzeug.utils
 
 
 PORT = 5000
-ROOT_URL = 'http://localhost:{}'.format(PORT)
+ROOT_URL = 'http://localhost:{port}'.format(port=PORT)
 
-class FlaskThread(QThread):
+
+class FlaskThread(PyQt5.QtCore.QThread):
     def __init__(self, application):
-        QThread.__init__(self)
+        PyQt5.QtCore.QThread.__init__(self)
         self.application = application
 
     def __del__(self):
@@ -52,19 +53,28 @@ class FlaskThread(QThread):
 
 
 def ProvideGui(application):
-    qtapp = QApplication(sys.argv)
+    """
+    Opens a QtWebEngine window, runs the Flask application, and renders the
+    index.html page.
+    """
+    title = 'Topics Explorer'
+    icon = str(pathlib.Path('static', 'img', 'page_icon.png'))
+    width = 1200
+    height = 660
+
+    qtapp = PyQt5.QtWidgets.QApplication(sys.argv)
 
     webapp = FlaskThread(application)
     webapp.start()
 
     qtapp.aboutToQuit.connect(webapp.terminate)
 
-    webview = QWebEngineView()
-    webview.resize(1200, 660)
-    webview.setWindowTitle('Topics Explorer')
-    webview.setWindowIcon(QIcon(str(Path('static', 'img', 'page_icon.png'))))
+    webview = PyQt5.QtWebEngineWidgets.QWebEngineView()
+    webview.resize(width, height)
+    webview.setWindowTitle(title)
+    webview.setWindowIcon(PyQt5.QtGui.QIcon(icon))
 
-    webview.load(QUrl(ROOT_URL))
+    webview.load(PyQt5.QtCore.QUrl(ROOT_URL))
     webview.show()
 
     return qtapp.exec_()
