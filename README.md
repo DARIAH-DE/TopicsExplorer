@@ -30,7 +30,7 @@ The following visualization is based on the distribution of 10 topics over a tot
 
 |               | Key 1          | Key 2        | Key 3         | Key 4            | Key 5            |
 |-------------- | -------------- | ------------ | ------------- | ---------------- | ---------------- |
-|Topic 1        | captain        | lord         | whom          | over             | young            |
+|**Topic 1**        | captain        | lord         | whom          | over             | young            |
 |Topic 2        | phineas        | laura        | lord          | finn             | kennedy          |
 |Topic 3        | jarndyce       | quite        | sir           | richard          | ada              |
 |Topic 4        | jones          | indeed       | adams         | answered         | may              |
