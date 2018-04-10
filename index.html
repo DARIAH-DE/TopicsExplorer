@@ -60,10 +60,9 @@
             </div>
             <div class="section" id="getting-started">
               <h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
-              <p>Windows and macOS users <strong>do not</strong> have to install additional software.</p>
+              <p>Windows and macOS users <strong>do not</strong> have to install additional software, except the application itself:</p>
               <ol class="arabic simple">
                 <li>Go to the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases">release-section</a> and download the ZIP archive for your OS.</li>
-                <li>Open it by double-clicking.</li>
                 <li>Unzip the archive, e.g. using <a class="reference external" href="http://www.7-zip.org">7-zip</a>.</li>
                 <li>Run the app by double-clicking the file <strong>DARIAH Topics Explorer</strong>.</li>
               </ol>
@@ -72,6 +71,14 @@
                 <p class="last">If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to
                   run the file anyway.</p>
               </div>
+              <p>Linux user have to use the development version, and install some dependencies:</p>
+              <ol class="arabic simple">
+                <li>Go to the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases">release-section</a> and download the <strong>Source code</strong> as ZIP archive.</li>
+                <li>Unzip the archive, e.g. using <code>unzip</code> via the command-line.</li>
+                <li>Make sure you have Python 3.6 and <a class="reference external" href="https://docs.pipenv.org/">Pipenv</a> installed.</li>
+                <li>Run <code>pipenv install</code>, and afterwards <code>pipenv shell</code></li>
+                <li>To start the application, type <code>python topicsexplorer.py</code>, and press enter</li>
+              </ol>
             </div>
             <div class="section" id="the-application">
               <h2>The application<a class="headerlink" href="#about-this-application" title="Permalink to this headline">¶</a></h2>
