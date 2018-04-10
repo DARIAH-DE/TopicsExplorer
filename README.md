@@ -1,90 +1,97 @@
-# Topics Explorer: A GUI for DARIAH Topics
-This application introduces an user-friendly Topic Modeling workflow, basically containing text data preprocessing, the actual modeling using [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf) (LDA), as well as various interactive visualizations.
+# DARIAH Topics Explorer
+This application introduces an **user-friendly topic modeling workflow**, basically containing text data preprocessing, the actual modeling using [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), as well as various interactive visualizations.
 
-If you do not know anything about Topic Modeling or programming in general, this is where you start.
+> If you do not know anything about Topic Modeling or programming in general, this is where you start.
 
-## Getting started with the standalone executable
-Windows and macOS users **do not** have to install a Python interpreter or anything else. There is currently one standalone build for both Windows and macOS. **Linux users will have to use the development version at the moment**.
+## Getting started
+Windows and macOS users **do not** have to install additional software, except the application itself:
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the ZIP archive for your OS.
-2. Open it by double-clicking.
-3. Unzip the archive, e.g. using [7-zip](http://www.7-zip.org/).
-4. Run the app by double-clicking the file `DARIAH Topics Explorer`. (The files in the folder `src` is basically source code. You do not need to worry about that).
+2. Unzip the archive, e.g. using [7-zip](http://www.7-zip.org/).
+3. Run the app by double-clicking the file `DARIAH Topics Explorer`.
 
 > If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
 
-**Topics Explorer** aims for simplicity and usability. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated topic models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook [introducing Topic Modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb).
+Linux user have to use the development version, but Windows and macOS users can of course also do this:
 
+1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the **source code** as ZIP archive.
+2. Unzip the archive, e.g. using `unzip` via the command-line.
+3. Make sure you have Python 3.6 and [Pipenv](https://docs.pipenv.org/) installed.
+4. Run `pipenv install`, and afterwards `pipenv shell`.
+5. To start the application, type `python topicsexplorer.py`, and press enter.
+
+## The application
 ![Demonstrator Screenshot](docs/images/screenshot.png)
 
+Topics Explorer aims for **simplicity and usability**. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated topic models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing [topic modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb).
 
-### Troubleshooting
+## Example visualization
+The following visualization is based on the distribution of 10 topics over a total of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). But first of all, the algorithm produces so-called topics:
+
++------------+------------+----------+-----------+--------------+-------------+
+|            | Key 1      | Key 2    | Key 3     | Key 4        | Key 5       |
++============+============+==========+===========+==============+=============+
+| Topic 1    | captain    | lord     | whom      | over         | young       |
++------------+------------+----------+-----------+--------------+-------------+
+| Topic 2    | phineas    | laura    | lord      | finn         | kennedy     |
++------------+------------+----------+-----------+--------------+-------------+
+| Topic 3    | jarndyce   | quite    | sir       | richard      | ada         |
++------------+------------+----------+-----------+--------------+-------------+
+| Topic 4    | jones      | indeed   | adams     | answered     | may         |
++------------+------------+----------+-----------+--------------+-------------+
+| Topic 5    | our        | these    | can       | honour       | without     |
++------------+------------+----------+-----------+--------------+-------------+
+| Topic 6    | lopez      | duke     | wharton   | course       | duchess     |
++------------+------------+----------+-----------+--------------+-------------+
+| Topic 7    | crawley    | george   | osborne   | rebecca      | amelia      |
++------------+------------+----------+-----------+--------------+-------------+
+| Topic 8    | peggotty   | aunt     | mother    | steerforth   | murdstone   |
++------------+------------+----------+-----------+--------------+-------------+
+| Topic 9    | thought    | way      | too       | down         | went        |
++------------+------------+----------+-----------+--------------+-------------+
+| Topic 10   | tom        | adam     | maggie    | work         | tulliver    |
++------------+------------+----------+-----------+--------------+-------------+
+
+These topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
+
+![Heatmap](docs/images/heatmap.png)
+
+> **DARIAH Topics Explorer** allows you to analyze and explore your own text corpora using topic models – without prior knowledge or special prerequisites.
+
+## Troubleshooting
 * Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
-* If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
-* Please use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues).
+* If you are confronted with any problems regarding the application, use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues) – but suggestions for improvements, wishes, or hints on typos are of course also welcome.
 
-
-## Working with the development version
-**Topics Explorer** basically consists of three layers with an user-interface built on top:
-
-<p align="center">
-  <img src="docs/images/layer.png" width=550px/>
-</p>
-
+## Developing
+If you want to run the development version, you can either `git clone` this repository, or download the [ZIP archive](https://github.com/DARIAH-DE/TopicsExplorer/archive/master.zip).
 
 ### Requirements
-Besides the standalone executables, you have the ability to run the development version. In this case, you will have to install some dependencies, but first of all:
-* At least Python 3.6, from [here](https://www.python.org/downloads/). Python 2 is *not* supported.
-
-You will need the following libraries:
-* [`dariah_topics`](https://github.com/DARIAH-DE/Topics) 0.0.6
-* [`lda`](https://github.com/lda-project/lda) 1.0.5
-* [`bokeh`](https://github.com/bokeh/bokeh) 0.12.13
-* [`flask`](https://github.com/pallets/flask) 0.12.2
-* [`lxml`](https://github.com/lxml/lxml) 4.1.1
-* [`pandas`](https://github.com/pandas-dev/pandas) 0.21.1
-* [`numpy`](https://github.com/numpy/numpy) 1.14.0
-* [`pyqt5`](https://github.com/baoboa/pyqt5) 5.9.2.
-
-You can install all dependencies using [`pipenv`](http://pipenv.readthedocs.io/en/latest/):
+You can install all dependencies using [Pipenv]](https://docs.pipenv.org/):
 
 ```
 pipenv install
 ```
 
-> If you are on a UNIX-based machine, remember using `python3` instead of `python`.
-
-So far, you could run the application via `python webapp.py` and go to `http://127.0.0.1:5000` in any web browser. If you want a more desktop app-like feeling, you can build *Layer 3* on top and run:
+After spawning a shell within the virtualenv (`pipenv shell`), you could run the application via `python webapp.py` and go to `http://127.0.0.1:5000` in any web browser. If you want a more desktop app-like feeling, you can wrap a Qt-based web engine around:
 
 ```
 python topicsexplorer.py
 ```
 
-
-### Contents
-* [`bokeh_templates`](bokeh_templates): HTML templates for `bokeh`. This is only relevant, if you want to freeze the scripts with PyInstaller.
-* [`hooks`](hooks): Necessary hook files. This is only relevant, if you want to freeze the Python part with PyInstaller.
-* [`static`](static) and [`templates`](templates): Static files (e.g. images, CSS, etc.) and HTML templates for the `flask` template engine.
-* [`test`](test): Unittest for `webapp.py`, testing all functions of the application.
-* [`webapp.py`](webapp.py): Contains 3rd party functions and communicates with the webserver.
-* [`topicsexplorer.py`](topicsexplorer.py): A Qt-based UI displaying the contents of the app by running `webapp.py`.
-* [`topicsexplorer.spec`](webapp.spec): The build script for PyInstaller containing metadata.
-
-
-### Troubleshooting
-* Please use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues).
-
-
-## Creating a standalone build
-To freeze the Python scripts with [PyInstaller](http://www.pyinstaller.org/), simply run:
+### Creating a standalone build
+To freeze the Python scripts and create a standalone executable with [PyInstaller](http://www.pyinstaller.org/), simply run:
 
 ```
+git checkout pyinstaller
+git merge origin/master
+git push origin pyinstaller
 pyinstaller topicsexplorer.spec
 ```
 
-<hr>
+## About DARIAH-DE
+[DARIAH-DE](https://de.dariah.eu) supports research in the humanities and cultural sciences with digital methods and procedures. The research infrastructure of DARIAH-DE consists of four pillars: teaching, research, research data and technical components. As a partner in [DARIAH-EU](http://dariah.eu/), DARIAH-DE helps to bundle and network state-of-the-art activities of the digital humanities. Scientists use DARIAH, for example, to make research data available across Europe. The exchange of knowledge and expertise is thus promoted across disciplines and the possibility of discovering new scientific discourses is encouraged.
 
-The application has been developed with support from the [DARIAH-DE](https://de.dariah.eu) initiative, the German branch of [DARIAH-EU](http://dariah.eu/), the European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been provided by the German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610J.
+This application has been developed with support from the DARIAH-DE initiative, the German branch of DARIAH-EU, the European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been provided by the German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610J.
 
 ![DARIAH-DE](https://raw.githubusercontent.com/DARIAH-DE/Topics/testing/docs/images/dariah-de_logo.png)
 ![BMBF](https://raw.githubusercontent.com/DARIAH-DE/Topics/testing/docs/images/bmbf_logo.png)
