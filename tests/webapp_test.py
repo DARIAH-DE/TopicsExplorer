@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import sys
-sys.path.insert(0, 'demonstrator')
-import demonstrator
+sys.path.insert(0, '.')
+import webapp
 from io import BytesIO
 import os
 import tempfile
@@ -37,14 +36,14 @@ def test_error():
 
 class DemonstratorTestCase(unittest.TestCase):
     def setUp(self):
-        self.db_fd, demonstrator.app.config['DATABASE'] = tempfile.mkstemp()
-        demonstrator.app.testing = True
-        self.app = demonstrator.app.test_client()
+        self.db_fd, webapp.app.config['DATABASE'] = tempfile.mkstemp()
+        webapp.app.testing = True
+        self.app = webapp.app.test_client()
         self.project_path = Path(__file__).absolute().parent.parent
 
     def tearDown(self):
         os.close(self.db_fd)
-        os.unlink(demonstrator.app.config['DATABASE'])
+        os.unlink(webapp.app.config['DATABASE'])
 
     def test_render_index(self):
         rv = self.app.get('/')

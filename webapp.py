@@ -40,12 +40,13 @@ else:
 @app.route('/')
 def index():
     """
-    Renders the main page.
+    Renders the main page. A warning pops up, if the machine is not
+    connected to the internet.
     """
     if utils.is_connected():
         return flask.render_template('index.html')
     else:
-        return flask.render_template('index.html', internet="warning")
+        return flask.render_template('index.html', internet='warning')
 
 
 @app.route('/help')
