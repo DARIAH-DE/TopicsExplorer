@@ -61,7 +61,6 @@ To freeze the Python scripts and create a standalone executable with [PyInstalle
 ```
 git checkout pyinstaller
 git merge origin/master
-git push origin pyinstaller
 pyinstaller topicsexplorer.spec
 ```
 
