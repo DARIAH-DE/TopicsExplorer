@@ -5,7 +5,7 @@ DARIAH Topics Explorer
    :maxdepth: 2
    :caption: Contents:
 
-This application introduces an **user-friendly topic modeling
+This application introduces a **user-friendly topic modeling
 workflow**, basically containing text data preprocessing, the actual
 modeling using `latent Dirichlet
 allocation <http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf>`__,
