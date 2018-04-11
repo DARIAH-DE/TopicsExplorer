@@ -7,16 +7,15 @@ name = "pypi"
 [packages]
 dariah-topics = {git = "git://github.com/DARIAH-DE/Topics.git@master#egg=dariah_topics"}
 lda = "==1.0.5"
-bokeh = "==0.12.13"
-Flask = "==0.12.2"
-lxml = "==4.1.1"
-pandas = "==0.21.1"
-numpy = "==1.14.0"
-pyqt5 = "==5.9.2"
+bokeh = "==0.12.15"
+flask = "==0.12.2"
+pandas = "==0.22.0"
+numpy = "==1.14.2"
+pyqt5 = "==5.10.1"
 
 
 [dev-packages]
-pytest = "==3.3.1"
+pytest = "==3.5.0"
 
 
 [requires]
