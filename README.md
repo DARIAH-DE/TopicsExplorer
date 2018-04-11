@@ -1,5 +1,5 @@
 # DARIAH Topics Explorer
-This application introduces an **user-friendly topic modeling workflow**, basically containing text data preprocessing, the actual modeling using [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), as well as various interactive visualizations.
+This application introduces a **user-friendly topic modeling workflow**, basically containing text data preprocessing, the actual modeling using [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), as well as various interactive visualizations.
 
 > If you do not know anything about topic modeling or programming in general, this is where you start.
 
