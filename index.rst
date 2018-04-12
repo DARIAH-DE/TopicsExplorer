@@ -33,7 +33,7 @@ from an “unidentified developer”, you can override it by holding control
 while double-clicking. The error message will still appear, but you will
 be given an option to run the file anyway.
 
-Linux user have to use the development version, and install some
+Linux user **have to** use the development version, and install some
 dependencies:
 
 #. Go to the
