@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 dariah_topics = {git = "git://github.com/DARIAH-DE/Topics.git@master"}
 lda = "==1.0.5"
-bokeh = "==0.12.15"
+bokeh = "==0.12.7"
 flask = "==0.12.2"
 pandas = "==0.22.0"
 numpy = "==1.14.2"
