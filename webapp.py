@@ -139,8 +139,6 @@ def modeling():
             INFO_4B = INFO_4B.format(parameter['Size of vocabulary, in tokens'])
             INFO_5B = INFO_5B.format(parameter['Number of topics'])
 
-            1 / 0
-
             yield "running", "Initializing LDA topic model ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
             model = utils.enthread(target=utils.lda_modeling,
                                    args=(document_term_arr,
