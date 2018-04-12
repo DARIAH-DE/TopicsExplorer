@@ -40,9 +40,13 @@ else:
 @app.route('/')
 def index():
     """
-    Renders the main page.
+    Renders the main page. A warning pops up, if the machine is not
+    connected to the internet.
     """
-    return flask.render_template('index.html')
+    if utils.is_connected():
+        return flask.render_template('index.html')
+    else:
+        return flask.render_template('index.html', internet='warning')
 
 
 @app.route('/help')
@@ -134,6 +138,8 @@ def modeling():
             INFO_3B = INFO_3B.format(parameter['Corpus size (raw), in tokens'])
             INFO_4B = INFO_4B.format(parameter['Size of vocabulary, in tokens'])
             INFO_5B = INFO_5B.format(parameter['Number of topics'])
+
+            1 / 0
 
             yield "running", "Initializing LDA topic model ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
             model = utils.enthread(target=utils.lda_modeling,

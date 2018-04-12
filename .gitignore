@@ -5,3 +5,6 @@ webapp.log
 static/topicmodeling.zip
 __pycache__/*
 Pipfile.lock
+.cache/
+tests/__pycache__
+.pytest_cache/

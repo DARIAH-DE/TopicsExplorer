@@ -1,5 +1,5 @@
 # DARIAH Topics Explorer
-This application introduces an **user-friendly topic modeling workflow**, basically containing text data preprocessing, the actual modeling using [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), as well as various interactive visualizations.
+This application introduces a **user-friendly topic modeling workflow**, basically containing text data preprocessing, the actual modeling using [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), as well as various interactive visualizations.
 
 > If you do not know anything about topic modeling or programming in general, this is where you start.
 
@@ -12,7 +12,7 @@ Windows and macOS users **do not** have to install additional software, except t
 
 > If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
 
-Linux user have to use the development version, but Windows and macOS users can of course also do this:
+Linux user **have to** use the development version, but Windows and macOS users can of course also do this:
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the **source code** as ZIP archive.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
@@ -38,6 +38,7 @@ The following visualization is based on the distribution of 10 topics over a tot
 ## Troubleshooting
 * Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
 * If you are confronted with any problems regarding the application, use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues) – but suggestions for improvements, wishes, or hints on typos are of course also welcome.
+* If you have problems with Pipenv, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment.
 
 ## Developing
 If you want to run the development version, you can either `git clone` this repository, or download the [ZIP archive](https://github.com/DARIAH-DE/TopicsExplorer/archive/master.zip).
@@ -46,23 +47,22 @@ If you want to run the development version, you can either `git clone` this repo
 Use [Pipenv](https://docs.pipenv.org/) to install the dependencies:
 
 ```
-pipenv install
+$ pipenv install
 ```
 
 After spawning a shell within the virtualenv (`pipenv shell`), you could run the application via `python webapp.py` and go to `http://127.0.0.1:5000` in any web browser. If you want a more desktop app-like feeling, you can wrap a Qt-based web engine around:
 
 ```
-python topicsexplorer.py
+$ python topicsexplorer.py
 ```
 
 ### Creating a standalone build
 To freeze the Python scripts and create a standalone executable with [PyInstaller](http://www.pyinstaller.org/), simply run:
 
 ```
-git checkout pyinstaller
-git merge origin/master
-git push origin pyinstaller
-pyinstaller topicsexplorer.spec
+$ git checkout pyinstaller
+$ git merge origin/master
+$ pyinstaller topicsexplorer.spec
 ```
 
 ## About DARIAH-DE
