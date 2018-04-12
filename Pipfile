@@ -3,7 +3,6 @@ url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
 dariah-topics = {git = "git://github.com/DARIAH-DE/Topics.git@master#egg=dariah_topics"}
 lda = "==1.0.5"
@@ -13,10 +12,8 @@ pandas = "==0.22.0"
 numpy = "==1.14.2"
 pyqt5 = "==5.10.1"
 
-
 [dev-packages]
 pytest = "==3.5.0"
-
 
 [requires]
 python_version = "3.6"
