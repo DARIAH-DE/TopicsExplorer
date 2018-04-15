@@ -1,70 +1,10 @@
-#!/usr/bin/env python3
-
-import pathlib
-import time
-import sys
-import shutil
-import logging
-import tempfile
-import utils
-import dariah_topics
-import flask
-import pandas as pd
-import numpy as np
-import bokeh.plotting
-import bokeh.embed
-import werkzeug.utils
-
-
-TEMPDIR = tempfile.mkdtemp()  # Storing logfile, dumping temporary data, etc.
-NUM_KEYS = 8  # The number of topic keys for the topics table
 # These messages are displayed during modeling:
 INFO_2A = "FYI: This might take a while..."
 INFO_3A = "In the meanwhile, have a look at"
 INFO_4A = "our Jupyter notebook introducing"
 INFO_5A = "topic modeling with MALLET."
 
-
-if getattr(sys, 'frozen', False):
-    # If the script is frozen by PyInstaller
-    root = pathlib.Path(sys._MEIPASS)
-    app = flask.Flask(import_name=__name__,
-                      template_folder=str(pathlib.Path(root, 'templates')),
-                      static_folder=str(pathlib.Path(root, 'static')))
-    bokeh_resources = str(pathlib.Path(root, 'static', 'bokeh_templates'))
-else:
-    app = flask.Flask(import_name=__name__)
-    bokeh_resources = str(pathlib.Path('static', 'bokeh_templates'))
-
-
-@app.route('/')
-def index():
-    """
-    Renders the main page. A warning pops up, if the machine is not
-    connected to the internet.
-    """
-    if utils.is_connected():
-        return flask.render_template('index.html')
-    else:
-        return flask.render_template('index.html', internet='warning')
-
-
-@app.route('/help')
-def help():
-    """
-    Renders the help page.
-    """
-    return flask.render_template('help.html')
-
-
-@app.route('/modeling', methods=['POST'])
-def modeling():
-    """
-    Streams the modeling page, printing useful information to screen.
-    The generated data will be dumped into the TEMPDIR (specified above).
-    """
-    @flask.stream_with_context
-    def create_model():
+def create_model():
         start = time.time()
         try:
             user_input = {'files': flask.request.files.getlist('files'),
@@ -90,7 +30,7 @@ def modeling():
                 if filename.suffix == '.txt':
                     text = file.read().decode('utf-8')
                 else:
-                    text = utils.process_xml(file)
+                    text = application.utils.process_xml(file)
                 tokens = list(dariah_topics.preprocessing.tokenize(text))
                 tokenized_corpus[filename.stem] = tokens
                 parameter['Corpus size (raw), in tokens'] += len(tokens)
@@ -140,7 +80,7 @@ def modeling():
             INFO_5B = INFO_5B.format(parameter['Number of topics'])
 
             yield "running", "Initializing LDA topic model ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
-            model = utils.enthread(target=utils.lda_modeling,
+            model = application.utils.enthread(target=application.utils.lda_modeling,
                                    args=(document_term_arr,
                                          user_input['num_topics'],
                                          user_input['num_iterations'],
@@ -148,7 +88,7 @@ def modeling():
             while True:
                 # During modeling the logfile is read continuously and the newest
                 # line is sent to the browser as information for the user:
-                msg = utils.read_logfile(str(pathlib.Path(TEMPDIR, 'topicmodeling.log')))
+                msg = application.utils.read_logfile(str(pathlib.Path(TEMPDIR, 'topicmodeling.log')))
                 if msg == None:
                     # When modeling is done, get the model:
                     model = model.get()
@@ -161,8 +101,8 @@ def modeling():
             yield "running", "Accessing topics ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
             topics = dariah_topics.postprocessing.show_topics(model=model,
                                                               vocabulary=vocabulary,
-                                                              num_keys=NUM_KEYS)
-            topics.columns = ['Key {0}'.format(i) for i in range(1, NUM_KEYS + 1)]
+                                                              num_keys=8)
+            topics.columns = ['Key {0}'.format(i) for i in range(1, 9)]
             topics.index = ['Topic {0}'.format(i) for i in range(1, user_input['num_topics'] + 1)]
 
             yield "running", "Accessing document topics distributions ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
@@ -195,7 +135,7 @@ def modeling():
 
             heatmap_script, heatmap_div = bokeh.embed.components(heatmap)
 
-            corpus_boxplot = utils.boxplot(corpus_stats)
+            corpus_boxplot = application.utils.boxplot(corpus_stats)
             corpus_boxplot_script, corpus_boxplot_div = bokeh.embed.components(corpus_boxplot)
             bokeh.plotting.output_file(str(pathlib.Path(TEMPDIR, 'corpus_statistics.html')))
             bokeh.plotting.save(corpus_boxplot)
@@ -204,7 +144,7 @@ def modeling():
                 height = 10 * 18
             else:
                 height = document_topics.shape[1] * 18
-            topics_barchart = utils.barchart(document_topics, height=height, topics=topics)
+            topics_barchart = application.utils.barchart(document_topics, height=height, topics=topics)
             topics_script, topics_div = bokeh.embed.components(topics_barchart)
             bokeh.plotting.output_file(str(pathlib.Path(TEMPDIR, 'topics_barchart.html')))
             bokeh.plotting.save(topics_barchart)
@@ -213,7 +153,7 @@ def modeling():
                 height = 10 * 18
             else:
                 height = document_topics.shape[0] * 18
-            documents_barchart = utils.barchart(document_topics.T, height=height)
+            documents_barchart = application.utils.barchart(document_topics.T, height=height)
             documents_script, documents_div = bokeh.embed.components(documents_barchart)
             bokeh.plotting.output_file(str(pathlib.Path(TEMPDIR, 'document_topics_barchart.html')))
             bokeh.plotting.save(documents_barchart)
@@ -251,51 +191,7 @@ def modeling():
                     'corpus_boxplot_script': corpus_boxplot_script,
                     'corpus_boxplot_div': corpus_boxplot_div,
                     'cwd': cwd}
-            utils.compress(data, str(pathlib.Path(TEMPDIR, 'data.pickle')))
+            application.utils.compress(data, str(pathlib.Path(TEMPDIR, 'data.pickle')))
             yield 'done', '', '', '', '', ''
         except Exception as error:
             yield 'error', str(error), '', '', '', ''
-
-    progress = create_model()
-
-    def stream_template(template_name, **context):
-        app.update_template_context(context)
-        t = app.jinja_env.get_template(template_name)
-        return t.stream(context)
-    return flask.Response(stream_template('modeling.html', info=progress))
-
-
-@app.route('/model')
-def model():
-    """
-    Reads the dumped data and renders the output page.
-    """
-    data_path = str(pathlib.Path(TEMPDIR, 'data.pickle'))
-    parameter_path = str(pathlib.Path(TEMPDIR, 'parameter.csv'))
-    topics_path = str(pathlib.Path(TEMPDIR, 'topics.csv'))
-
-    data = utils.decompress(data_path)
-    parameter = pd.read_csv(parameter_path, index_col=0, encoding='utf-8')
-    parameter.columns = ['']  # remove column names
-    topics = pd.read_csv(topics_path, index_col=0, encoding='utf-8')
-
-    data['parameter'] = [parameter.to_html(classes='parameter', border=0)]
-    data['topics'] = [topics.to_html(classes='topics')]
-    return flask.render_template('model.html', **data)
-
-
-@app.after_request
-def add_header(r):
-    """
-    Handles the cache.
-    """
-    r.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    r.headers['Pragma'] = 'no-cache'
-    r.headers['Expires'] = '0'
-    r.headers['Cache-Control'] = 'public, max-age=0'
-    return r
-
-
-if __name__ == '__main__':
-    app.debug = True
-    app.run()
