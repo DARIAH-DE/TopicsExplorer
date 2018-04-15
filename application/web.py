@@ -2,6 +2,7 @@
 
 import application.utils
 import application.config
+import application.modeling
 import pathlib
 import time
 import sys
@@ -52,7 +53,7 @@ def modeling():
         t = app.jinja_env.get_template(template_name)
         return t.stream(context)
 
-    stream = flask.stream_with_context(modeling.create_model())
+    stream = flask.stream_with_context(application.modeling.create_model(TEMPDIR))
     return flask.Response(stream_template('modeling.html', info=stream))
 
 

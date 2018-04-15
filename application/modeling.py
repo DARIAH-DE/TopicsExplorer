@@ -1,10 +1,43 @@
+import time
+import flask
+import pandas as pd
+import dariah_topics
+import logging
+import pathlib
+import lda
+import werkzeug.utils
+
 # These messages are displayed during modeling:
 INFO_2A = "FYI: This might take a while..."
 INFO_3A = "In the meanwhile, have a look at"
 INFO_4A = "our Jupyter notebook introducing"
 INFO_5A = "topic modeling with MALLET."
 
-def create_model():
+INFO_1B = "Iteration {0} of {1} ..."
+INFO_2B = "You have selected {0} text files,"
+INFO_3B = "containing {0} tokens,"
+INFO_4B = "and {0} unique types"
+INFO_5B = "to discover {0} topics."
+
+
+def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
+    """
+    Trains a LDA topic model and writes logging to a file.
+    """
+    file = str(pathlib.Path(tempdir, 'topicmodeling.log'))
+    handler = logging.FileHandler(file, 'w')
+    lda_log = logging.getLogger('lda')
+    lda_log.setLevel(logging.INFO)
+    lda_log.addHandler(handler)
+
+    model = lda.LDA(n_topics=n_topics, n_iter=n_iter)
+    model.fit(document_term_arr)
+    with open(file, 'a', encoding='utf-8') as f:
+        f.write('DONE')
+    return model
+
+
+def create_model(tempdir):
         start = time.time()
         try:
             user_input = {'files': flask.request.files.getlist('files'),
@@ -27,10 +60,7 @@ def create_model():
             tokenized_corpus = pd.Series()
             for file in user_input['files']:
                 filename = pathlib.Path(werkzeug.utils.secure_filename(file.filename))
-                if filename.suffix == '.txt':
-                    text = file.read().decode('utf-8')
-                else:
-                    text = application.utils.process_xml(file)
+                text = application.utils.remove_markup(file)
                 tokens = list(dariah_topics.preprocessing.tokenize(text))
                 tokenized_corpus[filename.stem] = tokens
                 parameter['Corpus size (raw), in tokens'] += len(tokens)
@@ -68,27 +98,22 @@ def create_model():
             parameter['Number of topics'] = user_input['num_topics']
             parameter['Number of iterations'] = user_input['num_iterations']
 
-            # These messages are displayed during modeling:
-            INFO_1B = "Iteration {0} of {1} ..."
-            INFO_2B = "You have selected {0} text files,"
-            INFO_3B = "containing {0} tokens"
-            INFO_4B = "and {0} unique types"
-            INFO_5B = "to generate {0} topics."
+
             INFO_2B = INFO_2B.format(parameter['Corpus size, in documents'])
             INFO_3B = INFO_3B.format(parameter['Corpus size (raw), in tokens'])
             INFO_4B = INFO_4B.format(parameter['Size of vocabulary, in tokens'])
             INFO_5B = INFO_5B.format(parameter['Number of topics'])
 
             yield "running", "Initializing LDA topic model ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
-            model = application.utils.enthread(target=application.utils.lda_modeling,
-                                   args=(document_term_arr,
-                                         user_input['num_topics'],
-                                         user_input['num_iterations'],
-                                         TEMPDIR))
+            model = application.utils.enthread(target=lda_modeling,
+                                               args=(document_term_arr,
+                                                     user_input['num_topics'],
+                                                     user_input['num_iterations'],
+                                                     tempdir))
             while True:
                 # During modeling the logfile is read continuously and the newest
                 # line is sent to the browser as information for the user:
-                msg = application.utils.read_logfile(str(pathlib.Path(TEMPDIR, 'topicmodeling.log')))
+                msg = application.utils.read_logfile(str(pathlib.Path(tempdir, 'topicmodeling.log')))
                 if msg == None:
                     # When modeling is done, get the model:
                     model = model.get()
@@ -130,14 +155,14 @@ def create_model():
                                               sizing_mode='scale_width',
                                               tools='hover, pan, reset, wheel_zoom, zoom_in, zoom_out')
 
-            bokeh.plotting.output_file(str(pathlib.Path(TEMPDIR, 'heatmap.html')))
+            bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'heatmap.html')))
             bokeh.plotting.save(heatmap)
 
             heatmap_script, heatmap_div = bokeh.embed.components(heatmap)
 
             corpus_boxplot = application.utils.boxplot(corpus_stats)
             corpus_boxplot_script, corpus_boxplot_div = bokeh.embed.components(corpus_boxplot)
-            bokeh.plotting.output_file(str(pathlib.Path(TEMPDIR, 'corpus_statistics.html')))
+            bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'corpus_statistics.html')))
             bokeh.plotting.save(corpus_boxplot)
 
             if document_topics.shape[1] < 10:
@@ -146,7 +171,7 @@ def create_model():
                 height = document_topics.shape[1] * 18
             topics_barchart = application.utils.barchart(document_topics, height=height, topics=topics)
             topics_script, topics_div = bokeh.embed.components(topics_barchart)
-            bokeh.plotting.output_file(str(pathlib.Path(TEMPDIR, 'topics_barchart.html')))
+            bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'topics_barchart.html')))
             bokeh.plotting.save(topics_barchart)
 
             if document_topics.shape[0] < 10:
@@ -155,7 +180,7 @@ def create_model():
                 height = document_topics.shape[0] * 18
             documents_barchart = application.utils.barchart(document_topics.T, height=height)
             documents_script, documents_div = bokeh.embed.components(documents_barchart)
-            bokeh.plotting.output_file(str(pathlib.Path(TEMPDIR, 'document_topics_barchart.html')))
+            bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'document_topics_barchart.html')))
             bokeh.plotting.save(documents_barchart)
 
 
@@ -173,12 +198,12 @@ def create_model():
                 parameter['Passed time, in minutes'] = passed_time
 
             parameter = pd.DataFrame(pd.Series(parameter))
-            topics.to_csv(str(pathlib.Path(TEMPDIR, 'topics.csv')), encoding='utf-8')
-            document_topics.to_csv(str(pathlib.Path(TEMPDIR, 'document_topics.csv')), encoding='utf-8')
-            parameter.to_csv(str(pathlib.Path(TEMPDIR, 'parameter.csv')), encoding='utf-8')
+            topics.to_csv(str(pathlib.Path(tempdir, 'topics.csv')), encoding='utf-8')
+            document_topics.to_csv(str(pathlib.Path(tempdir, 'document_topics.csv')), encoding='utf-8')
+            parameter.to_csv(str(pathlib.Path(tempdir, 'parameter.csv')), encoding='utf-8')
 
             cwd = str(pathlib.Path(*pathlib.Path.cwd().parts[:-1]))
-            shutil.make_archive(str(pathlib.Path(cwd, 'topicmodeling')), 'zip', TEMPDIR)
+            shutil.make_archive(str(pathlib.Path(cwd, 'topicmodeling')), 'zip', tempdir)
 
             data = {'heatmap_script': heatmap_script,
                     'heatmap_div': heatmap_div,
@@ -191,7 +216,7 @@ def create_model():
                     'corpus_boxplot_script': corpus_boxplot_script,
                     'corpus_boxplot_div': corpus_boxplot_div,
                     'cwd': cwd}
-            application.utils.compress(data, str(pathlib.Path(TEMPDIR, 'data.pickle')))
+            application.utils.compress(data, str(pathlib.Path(tempdir, 'data.pickle')))
             yield 'done', '', '', '', '', ''
         except Exception as error:
             yield 'error', str(error), '', '', '', ''

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import lzma
 import pickle
 import time
@@ -49,7 +47,7 @@ def decompress(filepath):
         return pickle.load(file)
 
 
-def process_xml(file):
+def remove_markup(file):
     """
     Removes markup from text.
     """
@@ -58,9 +56,9 @@ def process_xml(file):
     text = []
     for line in content:
         line = re.sub('(<.[^(><.)]+>)|<.?>', '', line)
-        line = re.sub('\\n','', line)
-        line = re.sub('[ ]{2,}',' ',line)
-        line = re.sub('<?(.*?)?>','', line)
+        line = re.sub('\\n', '', line)
+        line = re.sub('[ ]{2,}', ' ', line)
+        line = re.sub('<?(.*?)?>', '', line)
         text.append(line)
     return ''.join(text)
 
@@ -179,23 +177,6 @@ def read_logfile(logfile):
             return 0
         elif 'n_iter' in line:
             return 0
-
-
-def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
-    """
-    Trains a LDA topic model and writes logging to a file.
-    """
-    file = str(pathlib.Path(tempdir, 'topicmodeling.log'))
-    handler = logging.FileHandler(file, 'w')
-    lda_log = logging.getLogger('lda')
-    lda_log.setLevel(logging.INFO)
-    lda_log.addHandler(handler)
-
-    model = lda.LDA(n_topics=n_topics, n_iter=n_iter)
-    model.fit(document_term_arr)
-    with open(file, 'a', encoding='utf-8') as f:
-        f.write('DONE')
-    return model
 
 
 def enthread(target, args):
