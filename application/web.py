@@ -18,7 +18,7 @@ import werkzeug.utils
 
 
 TEMPDIR = tempfile.mkdtemp()  # Storing logfile, dumping temporary data, etc.
-app = application.config.create_app()  # Creating the Flask app
+app, bokeh_resources = application.config.create_app()  # Creating the app
 
 
 @app.route('/')
@@ -51,7 +51,7 @@ def modeling():
         app.update_template_context(context)
         t = app.jinja_env.get_template(template_name)
         return t.stream(context)
-    
+
     stream = flask.stream_with_context(modeling.create_model())
     return flask.Response(stream_template('modeling.html', info=stream))
 

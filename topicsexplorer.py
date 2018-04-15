@@ -11,7 +11,7 @@ DESCRIPTION = "Run DARIAH Topics Explorer either as a web application in "\
 
 parser = argparse.ArgumentParser(description=DESCRIPTION)
 parser.add_argument('--browser', action='store_true',
-                    help="Opens the application in the standard browser.")
+                    help="Opens the UI in the standard browser.")
 
 args = vars(parser.parse_args())
 

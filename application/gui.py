@@ -31,7 +31,7 @@ def provide_gui(application):
     index.html page.
     """
     title = 'Topics Explorer'
-    icon = str(pathlib.Path('static', 'img', 'page_icon.png'))
+    icon = str(pathlib.Path('application', 'static', 'img', 'page_icon.png'))
     width = 1200
     height = 660
 
