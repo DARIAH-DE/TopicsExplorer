@@ -25,16 +25,6 @@ Linux user **have to** use the development version, but Windows and macOS users 
 
 Topics Explorer aims for **simplicity and usability**. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated topic models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing [topic modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb).
 
-## Example visualization
-The following visualization is based on the distribution of 10 topics over a total of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). The topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
-
-<p align="center">
-  <img src="docs/images/heatmap.png"/>
-</p>
-
-
-> **DARIAH Topics Explorer** allows you to analyze and explore your own text corpora using topic models – without prior knowledge or special prerequisites.
-
 ## The example corpus
 An example corpus (10 British novels) is provided in the folder `british-fiction-corpus` in the directory `data`. If you use Git, you can include the corpus, which is actually only a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
 
@@ -49,6 +39,15 @@ $ cd data/british-fiction-corpus
 $ git submodule init
 $ git submodule update
 ```
+
+## Example visualization
+The following visualization is based on the distribution of 10 topics over a total of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). The topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
+
+<p align="center">
+  <img src="docs/images/heatmap.png"/>
+</p>
+
+> **DARIAH Topics Explorer** allows you to analyze and explore your own text corpora using topic models – without prior knowledge or special prerequisites.
 
 ## Troubleshooting
 * Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
