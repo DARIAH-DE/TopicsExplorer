@@ -50,6 +50,24 @@ def decompress(filepath):
         return pickle.load(file)
 
 
+def load_data(tempdir):
+    """
+    Loads the generated data.
+    """
+    data_path = str(pathlib.Path(tempdir, 'data.pickle'))
+    parameter_path = str(pathlib.Path(tempdir, 'parameter.csv'))
+    topics_path = str(pathlib.Path(tempdir, 'topics.csv'))
+
+    data = application.utils.decompress(data_path)
+    parameter = pd.read_csv(parameter_path, index_col=0, encoding='utf-8')
+    parameter.columns = ['']  # remove column names
+    topics = pd.read_csv(topics_path, index_col=0, encoding='utf-8')
+
+    data['parameter'] = [parameter.to_html(classes='parameter', border=0)]
+    data['topics'] = [topics.to_html(classes='topics')]
+    return data
+
+
 def remove_markup(content):
     """
     Removes markup from text.
@@ -220,17 +238,3 @@ def is_connected(host='8.8.8.8', port=53, timeout=3):
         return True
     except:
         return False
-
-def load_data(TEMPDIR):
-    data_path = str(pathlib.Path(TEMPDIR, 'data.pickle'))
-    parameter_path = str(pathlib.Path(TEMPDIR, 'parameter.csv'))
-    topics_path = str(pathlib.Path(TEMPDIR, 'topics.csv'))
-
-    data = application.utils.decompress(data_path)
-    parameter = pd.read_csv(parameter_path, index_col=0, encoding='utf-8')
-    parameter.columns = ['']  # remove column names
-    topics = pd.read_csv(topics_path, index_col=0, encoding='utf-8')
-
-    data['parameter'] = [parameter.to_html(classes='parameter', border=0)]
-    data['topics'] = [topics.to_html(classes='topics')]
-    return data

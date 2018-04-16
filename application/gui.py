@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys
 import pathlib
 import PyQt5.QtGui

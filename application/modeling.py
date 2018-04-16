@@ -1,28 +1,18 @@
-import time
 import application.utils
-import flask
-import pandas as pd
+import application.modeling
 import dariah_topics
-import numpy as np
-import logging
 import pathlib
+import logging
 import lda
-import bokeh.plotting
-import bokeh.embed
-import werkzeug.utils
-import pathlib
 import time
-import sys
-import shutil
-import logging
-import tempfile
-import dariah_topics
 import flask
-import pandas as pd
+import shutil
 import numpy as np
+import pandas as pd
 import bokeh.plotting
 import bokeh.embed
 import werkzeug.utils
+
 
 # These messages are displayed during modeling:
 INFO_2A = "FYI: This might take a while..."
@@ -48,9 +38,13 @@ def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
     return model
 
 
-def create_model(tempdir, bokeh_resources):
-    start = time.time()
+def workflow(tempdir, bokeh_resources):
+    """
+    Collects the user input, preprocesses the corpus, trains the LDA model,
+    creates visualizations, and dumps generated data.
+    """
     try:
+        start = time.time()
         user_input = {'files': flask.request.files.getlist('files'),
                       'num_topics': int(flask.request.form['num_topics']),
                       'num_iterations': int(flask.request.form['num_iterations'])}

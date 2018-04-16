@@ -42,7 +42,7 @@ def modeling():
         app.update_template_context(context)
         t = app.jinja_env.get_template(template_name)
         return t.stream(context)
-    stream = flask.stream_with_context(application.modeling.create_model(TEMPDIR, bokeh_resources))
+    stream = flask.stream_with_context(application.modeling.workflow(TEMPDIR, bokeh_resources))
     return flask.Response(stream_template('modeling.html', info=stream))
 
 
