@@ -9,6 +9,7 @@ import bokeh.plotting
 import bokeh.models
 import bokeh.layouts
 import lda
+import pandas as pd
 import threading
 import lxml
 import queue
@@ -65,8 +66,6 @@ def remove_markup(content):
         text = '\n'.join(text)
         text = re.sub('  ', '', text)
         text = re.sub('    ', '', text)
-        text = re.sub('\n{1,6}', '', text)
-        text = re.sub('\n{1,6}', '\n', text)
         text = re.sub('\n{1,6}', '\n', text)
         text = re.sub('\n \n', '\n', text)
         text = re.sub('\t\n', '', text)

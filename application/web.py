@@ -52,8 +52,7 @@ def modeling():
         app.update_template_context(context)
         t = app.jinja_env.get_template(template_name)
         return t.stream(context)
-
-    stream = flask.stream_with_context(application.modeling.create_model(TEMPDIR))
+    stream = flask.stream_with_context(application.modeling.create_model(TEMPDIR, bokeh_resources))
     return flask.Response(stream_template('modeling.html', info=stream))
 
 
@@ -62,7 +61,7 @@ def model():
     """
     Loads the dumped data, deletes the tempdir, and renders the model page.
     """
-    data = utils.load_data(TEMPDIR)
+    data = application.utils.load_data(TEMPDIR)
     shutil.rmtree(TEMPDIR)
     return flask.render_template('model.html', **data)
 
