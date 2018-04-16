@@ -2,6 +2,7 @@ import lzma
 import pickle
 import time
 import regex as re
+import application
 import pathlib
 import logging
 import bokeh.plotting
@@ -9,6 +10,7 @@ import bokeh.models
 import bokeh.layouts
 import lda
 import threading
+import lxml
 import queue
 import socket
 
@@ -47,20 +49,38 @@ def decompress(filepath):
         return pickle.load(file)
 
 
-def remove_markup(file):
+def remove_markup(content):
     """
     Removes markup from text.
     """
-    with open (file, 'r', encoding='utf-8') as file:
-        content = file.readlines()
-    text = []
-    for line in content:
-        line = re.sub('(<.[^(><.)]+>)|<.?>', '', line)
-        line = re.sub('\\n', '', line)
-        line = re.sub('[ ]{2,}', ' ', line)
-        line = re.sub('<?(.*?)?>', '', line)
-        text.append(line)
-    return ''.join(text)
+    try:
+        parser = lxml.etree.XMLParser(recover=True)
+        tree = lxml.etree.fromstring(content, parser=parser)
+        ns = dict(tei='http://www.tei-c.org/ns/1.0')
+        lxml.etree.strip_elements(tree, 'speaker', with_tail=False)
+        lxml.etree.strip_elements(tree, 'note', with_tail=False)
+        lxml.etree.strip_elements(tree, 'stage', with_tail=False)
+        lxml.etree.strip_elements(tree, 'head', with_tail=False)
+        text = tree.xpath('//text()')
+        text = '\n'.join(text)
+        text = re.sub('  ', '', text)
+        text = re.sub('    ', '', text)
+        text = re.sub('\n{1,6}', '', text)
+        text = re.sub('\n{1,6}', '\n', text)
+        text = re.sub('\n{1,6}', '\n', text)
+        text = re.sub('\n \n', '\n', text)
+        text = re.sub('\t\n', '', text)
+        return text
+    except:
+        text = []
+        for line in content:
+            line = re.sub('<.*?>', '', line)
+            line = re.sub('(<.[^(><.)]+>)|<.?>', '', line)
+            line = re.sub('\\n', '', line)
+            line = re.sub('[ ]{2,}', ' ', line)
+            line = re.sub('<?(.*?)?>', '', line)
+            text.append(line)
+        return ''.join(text)
 
 
 def boxplot(stats):
