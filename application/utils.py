@@ -1,14 +1,10 @@
-import lzma
 import pickle
 import time
 import regex as re
-import application
 import pathlib
-import logging
 import bokeh.plotting
 import bokeh.models
 import bokeh.layouts
-import lda
 import pandas as pd
 import threading
 import lxml
@@ -60,7 +56,7 @@ def load_data(tempdir):
     parameter_path = str(pathlib.Path(tempdir, 'parameter.csv'))
     topics_path = str(pathlib.Path(tempdir, 'topics.csv'))
 
-    data = application.utils.decompress(data_path)
+    data = decompress(data_path)
     parameter = pd.read_csv(parameter_path, index_col=0, encoding='utf-8')
     parameter.columns = ['']  # remove column names
     topics = pd.read_csv(topics_path, index_col=0, encoding='utf-8')
@@ -72,7 +68,7 @@ def load_data(tempdir):
 
 def remove_markup(content):
     """
-    Removes markup from text.
+    Removes markup from text. If lxml fails, a simple regex is used.
     """
     try:
         parser = lxml.etree.XMLParser(recover=True)

@@ -7,6 +7,7 @@ import lda
 import time
 import flask
 import shutil
+import sys
 import numpy as np
 import pandas as pd
 import bokeh.plotting
@@ -84,9 +85,11 @@ def workflow(tempdir, bokeh_resources):
         yield "running", "Removing stopwords and hapax legomena from corpus ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
         try:
             stopwords = dariah_topics.preprocessing.find_stopwords(document_term_matrix, user_input['mfw'])
+            cleaning = "removed the <b>{0} most frequent words</b>, based on a threshold".format(len(stopwords))
         except KeyError:
             stopwords = user_input['stopwords'].read().decode('utf-8')
             stopwords = dariah_topics.preprocessing.tokenize(stopwords)
+            cleaning = "removed the <b>{0} most frequent words</b>, based on an external stopwords list".format(len(stopwords))
         hapax_legomena = dariah_topics.preprocessing.find_hapax_legomena(document_term_matrix)
         features = set(stopwords).union(hapax_legomena)
         features = [token for token in features if token in document_term_matrix.columns]
@@ -110,7 +113,7 @@ def workflow(tempdir, bokeh_resources):
         INFO_2B = "You have selected {0} text files,"
         INFO_3B = "containing {0} tokens,"
         INFO_4B = "and {0} unique types"
-        INFO_5B = "to discover {0} topics."
+        INFO_5B = "to uncover {0} topics."
         INFO_2B = INFO_2B.format(parameter['Corpus size, in documents'])
         INFO_3B = INFO_3B.format(parameter['Corpus size (raw), in tokens'])
         INFO_4B = INFO_4B.format(parameter['Size of vocabulary, in tokens'])
@@ -214,10 +217,14 @@ def workflow(tempdir, bokeh_resources):
         topics.to_csv(str(pathlib.Path(tempdir, 'topics.csv')), encoding='utf-8')
         document_topics.to_csv(str(pathlib.Path(tempdir, 'document_topics.csv')), encoding='utf-8')
         parameter.to_csv(str(pathlib.Path(tempdir, 'parameter.csv')), encoding='utf-8')
-        cwd = str(pathlib.Path(*pathlib.Path.cwd().parts[:-1]))
+        if getattr(sys, 'frozen', False):
+            cwd = str(pathlib.Path(*pathlib.Path.cwd().parts[:-1]))
+        else:
+            cwd = str(pathlib.Path.cwd())
         shutil.make_archive(str(pathlib.Path(cwd, 'topicmodeling')), 'zip', tempdir)
 
-        data = {'heatmap_script': heatmap_script,
+        data = {'cleaning': cleaning,
+                'heatmap_script': heatmap_script,
                 'heatmap_div': heatmap_div,
                 'topics_script': topics_script,
                 'topics_div': topics_div,

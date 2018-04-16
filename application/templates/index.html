@@ -11,7 +11,7 @@
 <div id="contentInner">
   <form action="/modeling" method="POST" enctype="multipart/form-data">
     <p>The text mining technique <b>Topic Modeling</b> has become a popular statistical method for clustering documents. This application introduces a user-friendly workflow, basically containing data preprocessing, the actual modeling using <b>latent Dirichlet allocation</b>      (LDA), as well as various interactive visualizations to explore the model.</p>
-    <p>LDA, introduced in the context of text analysis in 2003, is an instance of a more general class of models called <b>mixed-membership models</b>. Involving a number of distributions and parameters, the model is typically performed using <b>Gibbs sampling</b>      with conjugate priors and is purely based on word frequencies.</p>
+    <p>LDA, introduced in the context of text analysis in 2003, is an instance of a more general class of models called <b>mixed-membership models</b>. Involving a number of distributions and parameters, the model is typically performed using <b>Gibbs sampling</b>      with conjugate priors, and is purely based on word frequencies.</p>
     <div class="alert alert-block">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
       <i class="fa fa-exclamation-circle"></i> This application is designed to introduce the technique in a gentle way and aims for simplicity. If you have a <b>very large corpus</b> (let's say more than 200 documents with more than 5000 words per document),
@@ -19,8 +19,7 @@
     </div>
     <br>
     <h2>1. Preprocessing</h2>
-    <p>A lot of harmful information, at least harmful for LDA, is sticking in your raw text collection. This is why preprocessing is a very crucial step for this workflow, and for <i>natural language processing</i> in general. First of all, your corpus will
-      be <b>tokenized</b>. This is the process of splitting a text into individual words (so-called <i>tokens</i>). Token frequencies are typical units of analysis when working with text corpora. It may come as a surprise that reducing a book to a list
+    <p>First of all, your corpus will be <b>tokenized</b>. This is the process of splitting a text into individual words (so-called <i>tokens</i>). Token frequencies are typical units of analysis when working with text corpora. It may come as a surprise that reducing a book to a list
       of token frequencies retains useful information, but practice has shown this to be the case. Normally, the most frequent tokens of a document tend to be <b>semantically insignificant words</b> (like <i>the</i> or <i>and</i>, for instance). Because
       you are trying to uncover hidden semantic structures of a text collection, you have to get rid of those insignificant words before modeling. This will be done while preprocessing.</p>
     <h3>1.1. Reading a Corpus of Documents</h3>
