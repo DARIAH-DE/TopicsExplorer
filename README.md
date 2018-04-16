@@ -35,6 +35,21 @@ The following visualization is based on the distribution of 10 topics over a tot
 
 > **DARIAH Topics Explorer** allows you to analyze and explore your own text corpora using topic models – without prior knowledge or special prerequisites.
 
+# The example corpus
+An example corpus (10 British novels) is provided. If you use Git, you can clone the corpus, which is actually only a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
+
+```
+$ git clone --recursive https://github.com/DARIAH-DE/TopicsExplorer.git
+```
+
+Or, if you've already cloned the repository:
+
+```
+$ cd data/british-fiction-corpus
+$ git submodule init
+$ git submodule update
+```
+
 ## Troubleshooting
 * Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
 * If you are confronted with any problems regarding the application, use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues) – but suggestions for improvements, wishes, or hints on typos are of course also welcome.
