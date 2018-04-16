@@ -14,6 +14,8 @@ import threading
 import lxml
 import queue
 import socket
+import random
+import string
 
 
 TOOLS = "hover, pan, reset, wheel_zoom, zoom_in, zoom_out"
@@ -74,7 +76,7 @@ def remove_markup(content):
     """
     try:
         parser = lxml.etree.XMLParser(recover=True)
-        tree = lxml.etree.fromstring(content, parser=parser)
+        tree = lxml.etree.parse(content, parser=parser)
         ns = dict(tei='http://www.tei-c.org/ns/1.0')
         lxml.etree.strip_elements(tree, 'speaker', with_tail=False)
         lxml.etree.strip_elements(tree, 'note', with_tail=False)
@@ -169,7 +171,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
             bar.visible = True
         else:
             bar.visible = False
-        plots[i] = bar
+        plots[random_string()] = bar
 
     fig.xgrid.grid_line_color = None
     fig.x_range.start = 0
@@ -238,3 +240,11 @@ def is_connected(host='8.8.8.8', port=53, timeout=3):
         return True
     except:
         return False
+
+
+def random_string():
+    """
+    Generates a 10 letter random string as identifier for different bokeh
+    plots.
+    """
+    return ''.join(random.choice(string.ascii_lowercase) for _ in range(10))

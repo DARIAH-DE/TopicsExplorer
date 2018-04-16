@@ -58,15 +58,16 @@ def workflow(tempdir, bokeh_resources):
         parameter['Corpus size, in documents'] = len(user_input['files'])
         parameter['Corpus size (raw), in tokens'] = 0
 
-        if parameter['Corpus size, in documents'] < 5:
+        if len(user_input['files']) < 5:
             raise Exception("Your corpus is too small. Please select at least five text files.")
 
         yield "running", "Reading and tokenizing corpus ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
         tokenized_corpus = pd.Series()
         for file in user_input['files']:
             filename = pathlib.Path(werkzeug.utils.secure_filename(file.filename))
-            content = file.read().decode('utf-8')
-            text = application.utils.remove_markup(content)
+            text = file.read().decode('utf-8')
+            if filename.suffix != '.txt':
+                text = application.utils.remove_markup(text)
             tokens = list(dariah_topics.preprocessing.tokenize(text))
             tokenized_corpus[filename.stem] = tokens
             parameter['Corpus size (raw), in tokens'] += len(tokens)
