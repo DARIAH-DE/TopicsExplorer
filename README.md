@@ -42,7 +42,7 @@ An example corpus (10 British novels) is provided in the folder `british-fiction
 $ git clone --recursive https://github.com/DARIAH-DE/TopicsExplorer.git
 ```
 
-Or, if you've already cloned the repository:
+Or, if you have already cloned the repository:
 
 ```
 $ cd data/british-fiction-corpus
@@ -65,10 +65,16 @@ Use [Pipenv](https://docs.pipenv.org/) to install the dependencies:
 $ pipenv install
 ```
 
-After spawning a shell within the virtualenv (`pipenv shell`), you could run the application via `python webapp.py` and go to `http://127.0.0.1:5000` in any web browser. If you want a more desktop app-like feeling, you can wrap a Qt-based web engine around:
+After spawning a shell within the virtualenv (`pipenv shell`), you can run the application via:
 
 ```
 $ python topicsexplorer.py
+```
+
+If you wish to access DARIAH Topics Explorer through your web browser, use the following command:
+
+```
+$ python topicsexplorer.py --browser
 ```
 
 ### Creating a standalone build
