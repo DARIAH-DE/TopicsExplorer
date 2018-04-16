@@ -169,7 +169,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
             bar.visible = True
         else:
             bar.visible = False
-        plots[option] = bar
+        plots[i] = bar
 
     fig.xgrid.grid_line_color = None
     fig.x_range.start = 0
