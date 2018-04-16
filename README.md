@@ -16,7 +16,7 @@ Linux user **have to** use the development version, but Windows and macOS users 
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the **source code** as ZIP archive.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
-3. Make sure you have Python 3.6 and [Pipenv](https://docs.pipenv.org/) installed.
+3. Make sure you have [Pipenv](https://docs.pipenv.org/) installed (if not: use `pip install pipenv`).
 4. Run `pipenv install`, and afterwards `pipenv shell`.
 5. To start the application, type `python topicsexplorer.py`, and press enter.
 
