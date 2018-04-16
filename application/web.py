@@ -1,24 +1,14 @@
 #!/usr/bin/env python3
 
-import application.utils
 import application.config
+import application.utils
 import application.modeling
-import pathlib
-import time
-import sys
-import shutil
-import logging
-import tempfile
-import dariah_topics
 import flask
-import pandas as pd
-import numpy as np
-import bokeh.plotting
-import bokeh.embed
-import werkzeug.utils
+import shutil
+import tempfile
 
 
-TEMPDIR = tempfile.mkdtemp()  # Storing logfile, dumping temporary data, etc.
+TEMPDIR = tempfile.mkdtemp()  # Dumping the logfile, temporary data, etc.
 app, bokeh_resources = application.config.create_app()  # Creating the app
 
 
@@ -45,8 +35,8 @@ def help():
 @app.route('/modeling', methods=['POST'])
 def modeling():
     """
-    Streams the modeling page, printing useful information to screen.
-    The generated data will be dumped into the tempdir (specified above).
+    Streams the modeling page, printing useful information to the UI.
+    The generated data will be dumped into a tempdir (specified above).
     """
     def stream_template(template_name, **context):
         app.update_template_context(context)
@@ -59,17 +49,17 @@ def modeling():
 @app.route('/model')
 def model():
     """
-    Loads the dumped data, deletes the tempdir, and renders the model page.
+    Loads the dumped data, deletes the temporary data, and renders the model page.
     """
     data = application.utils.load_data(TEMPDIR)
-    shutil.rmtree(TEMPDIR)
+    shutil.rmtree(TEMPDIR)  # Deleting the temporary data
     return flask.render_template('model.html', **data)
 
 
 @app.after_request
 def add_header(r):
     """
-    Clears the cache after the request.
+    Clears the cache after a request.
     """
     r.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     r.headers['Pragma'] = 'no-cache'
