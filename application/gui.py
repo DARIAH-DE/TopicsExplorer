@@ -1,10 +1,10 @@
+import application
 import sys
 import pathlib
 import PyQt5.QtGui
 import PyQt5.QtWidgets
 import PyQt5.QtWebEngineWidgets
 import PyQt5.QtCore
-import application.web
 
 
 PORT = 5000

@@ -1,5 +1,4 @@
-import application.utils
-import application.modeling
+import application
 import dariah_topics
 import pathlib
 import logging

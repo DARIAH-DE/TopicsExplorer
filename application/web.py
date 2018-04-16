@@ -1,8 +1,4 @@
-#!/usr/bin/env python3
-
-import application.config
-import application.utils
-import application.modeling
+import application
 import flask
 import shutil
 import tempfile

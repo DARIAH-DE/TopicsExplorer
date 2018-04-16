@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import argparse
 import application
+import argparse
 
 
 DESCRIPTION = "Run DARIAH Topics Explorer either as a standalone desktop "\
