@@ -15,7 +15,6 @@ def index():
     Renders the main page. A warning pops up, if the machine is not
     connected to the internet.
     """
-    raise werkzeug.exceptions.MethodNotAllowed
     if application.utils.is_connected():
         return flask.render_template('index.html')
     else:
@@ -56,6 +55,10 @@ def model():
 
 @app.errorhandler(werkzeug.exceptions.HTTPException)
 def handle_http_exception(e):
+    """
+    Handles any HTTP Exception, shows a Bootstrap modal with the error
+    message and renders the index.html again.
+    """
     return flask.render_template('index.html', http='error', error_message=e)
 
 for code in werkzeug.exceptions.default_exceptions:
