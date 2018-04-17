@@ -2,10 +2,12 @@ import application
 import flask
 import shutil
 import tempfile
+import pathlib
 import werkzeug.exceptions
 
 
 TEMPDIR = tempfile.mkdtemp()  # Dumping the logfile, temporary data, etc.
+ARCHIVEDIR = tempfile.mkdtemp()  # Dumping the ZIP archive
 app, bokeh_resources = application.config.create_app()  # Creating the app
 
 
@@ -39,7 +41,9 @@ def modeling():
         app.update_template_context(context)
         t = app.jinja_env.get_template(template_name)
         return t.stream(context)
-    stream = flask.stream_with_context(application.modeling.workflow(TEMPDIR, bokeh_resources))
+    stream = flask.stream_with_context(application.modeling.workflow(TEMPDIR,
+                                                                     ARCHIVEDIR,
+                                                                     bokeh_resources))
     return flask.Response(stream_template('modeling.html', info=stream))
 
 
@@ -49,8 +53,20 @@ def model():
     Loads the dumped data, deletes the temporary data, and renders the model page.
     """
     data = application.utils.load_data(TEMPDIR)
-    shutil.rmtree(TEMPDIR)  # Deleting the temporary data
+    shutil.rmtree(TEMPDIR)  # Removing the tempdir
     return flask.render_template('model.html', **data)
+
+
+@app.route('/model/download')
+def download_model_output():
+    """
+    Sends the generated data as ZIP archive to the user.
+    """
+    zip_archive = str(pathlib.Path(ARCHIVEDIR, 'topicmodeling.zip'))
+    return flask.send_file(filename_or_fp=zip_archive,
+                           mimetype='application/zip',
+                           attachment_filename='topicmodeling.zip',
+                           as_attachment=True)
 
 
 @app.errorhandler(werkzeug.exceptions.HTTPException)

@@ -38,7 +38,7 @@ def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
     return model
 
 
-def workflow(tempdir, bokeh_resources):
+def workflow(tempdir, archive_dir, bokeh_resources):
     """
     Collects the user input, preprocesses the corpus, trains the LDA model,
     creates visualizations, and dumps generated data.
@@ -216,12 +216,8 @@ def workflow(tempdir, bokeh_resources):
         topics.to_csv(str(pathlib.Path(tempdir, 'topics.csv')), encoding='utf-8')
         document_topics.to_csv(str(pathlib.Path(tempdir, 'document_topics.csv')), encoding='utf-8')
         parameter.to_csv(str(pathlib.Path(tempdir, 'parameter.csv')), encoding='utf-8')
-        if getattr(sys, 'frozen', False):
-            cwd = str(pathlib.Path(*pathlib.Path.cwd().parts[:-1]))
-        else:
-            cwd = str(pathlib.Path.cwd())
-        shutil.make_archive(str(pathlib.Path(cwd, 'topicmodeling')), 'zip', tempdir)
 
+        shutil.make_archive(str(pathlib.Path(archive_dir, 'topicmodeling')), 'zip', tempdir)
         data = {'cleaning': cleaning,
                 'heatmap_script': heatmap_script,
                 'heatmap_div': heatmap_div,
@@ -232,8 +228,7 @@ def workflow(tempdir, bokeh_resources):
                 'js_resources': js_resources,
                 'css_resources': css_resources,
                 'corpus_boxplot_script': corpus_boxplot_script,
-                'corpus_boxplot_div': corpus_boxplot_div,
-                'cwd': cwd}
+                'corpus_boxplot_div': corpus_boxplot_div}
         application.utils.compress(data, str(pathlib.Path(tempdir, 'data.pickle')))
         yield 'done', '', '', '', '', ''
     except Exception as error:
