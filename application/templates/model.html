@@ -8,7 +8,7 @@
     <a href="{{ url_for('help') }}"><i class="icon-question-sign icon-white"></i> Help</a>
   </li>
   <li>
-    <a href="http://127.0.0.1:5000/model/download"><i class="icon-download icon-white"></i> Download Graphics and Tables</a>
+    <a href="http://127.0.0.1:5000/model/download"><i class="icon-download icon-white"></i> Save Graphics and Tables to Download Folder</a>
   </li>
 </ul>
 {% endblock %}
@@ -32,7 +32,7 @@
   </p><br>
   <div class="alert alert-success">
           <button type="button" class="close" data-dismiss="alert">&times;</button>
-          <b>FYI:</b> All graphics and tables shown here are <b>available for download in a ZIP archive</b>. Just use the download button at the top of the toolbar.
+          <b>FYI:</b> All graphics and tables shown here are <b>available for download in a ZIP archive</b>. Just use the download button at the top of the toolbar. Once you clicked it, the file will be saved in your download folder.
         </div>
   <h2>2. Inspecting the Topic Model</h2>
   <p>Topic models are unsupervised. It is called <i>unsupervised</i>, because you did not have any labels describing the semantic structures or anything related, but only pure word frequencies. Since the examples given to the algorithm are unlabeled,

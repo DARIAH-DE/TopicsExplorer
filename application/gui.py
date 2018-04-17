@@ -41,6 +41,11 @@ def provide_gui(application):
     qtapp.aboutToQuit.connect(webapp.terminate)
 
     webview = PyQt5.QtWebEngineWidgets.QWebEngineView()
+    
+    def download_requested(item):
+        item.accept()
+
+    webview.page().profile().downloadRequested.connect(download_requested)
     webview.resize(width, height)
     webview.setWindowTitle(title)
     webview.setWindowIcon(PyQt5.QtGui.QIcon(icon))
