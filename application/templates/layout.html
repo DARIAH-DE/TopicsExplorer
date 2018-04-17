@@ -66,19 +66,34 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title" id="exampleModalLongTitle">You are not connected to the internet!</h3>
+          {% if internet == "warning" %}
+            <h3 class="modal-title" id="exampleModalLongTitle">You are not connected to the internet!</h3>
+          {% elif http == "error" %}
+            <h3 class="modal-title" id="exampleModalLongTitle">404: Something went wrong...</h3>
+          {% endif %}
         </div>
         <div class="modal-body">
-          To ensure that the application is fully functional, you <b>need a connection to the internet</b>. Complications <i>may</i> occur offline, but they do not have to. This has several influencing factors. However, the missing connection <b>can be a reason for errors</b>.
+          {% if internet == "warning" %}
+            To ensure that the application is fully functional, you <b>need a connection to the internet</b>. Complications <i>may</i> occur offline, but they do not have to. This has several influencing factors. However, the missing connection <b>can be a reason for errors</b>.
+          {% elif http == "error" %}
+            Looks like something didn't work out as expected. Maybe you can figure out this error message by yourself:<br><br>
+            <code>{{ error_message|safe }}</code><br><br>
+            In any case, it would be very useful for us if you write a bug report either on <a href="https://github.com/DARIAH-DE/TopicsExplorer/issues">GitHub</a>, or send an email to <a href="mailto:severin.simmler@stud-mail.uni-wuerzburg.de">Severin Simmler</a>. Please include the error message from above in your report, and at best some details about your corpus (esp. file format).
+            <br><br>
+          {% endif %}
           <br><br>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Got it!</button>
+          {% if internet == "warning" %}
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Got it!</button>
+          {% elif http == "error" %}
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Go back and try again</button>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
-  {% if internet == "warning" %}
+  {% if internet == "warning" or http == "error" %}
     <script>
       $('#errorModal').modal('show');
     </script>

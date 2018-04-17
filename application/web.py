@@ -2,6 +2,7 @@ import application
 import flask
 import shutil
 import tempfile
+import werkzeug.exceptions
 
 
 TEMPDIR = tempfile.mkdtemp()  # Dumping the logfile, temporary data, etc.
@@ -50,6 +51,11 @@ def model():
     data = application.utils.load_data(TEMPDIR)
     shutil.rmtree(TEMPDIR)  # Deleting the temporary data
     return flask.render_template('model.html', **data)
+
+
+@app.errorhandler(werkzeug.exceptions.HTTPException)
+def http_error(e):
+    return flask.render_template('index.html', http='error', error_message=e)
 
 
 @app.after_request
