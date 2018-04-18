@@ -111,7 +111,8 @@ body {
   color: #000000;
 }
 
-.sidebar-area, .primary-area {
+.sidebar-area,
+.primary-area {
   /** Bad for tables positioned in this primary-area */
   /*display: table-cell;*/
   vertical-align: top;
@@ -313,11 +314,18 @@ body {
  * @section typography
  */
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin-top: 0;
 }
 
-h4, h5, h6 {
+h4,
+h5,
+h6 {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: bold;
 }
@@ -365,7 +373,10 @@ figcaption {
   .footer {
     padding: 1em 10px 0;
   }
-  .wrapper, .container.main, .primary-area, .sidebar-area {
+  .wrapper,
+  .container.main,
+  .primary-area,
+  .sidebar-area {
     display: block;
     width: auto;
     -webkit-box-shadow: none;
@@ -373,16 +384,19 @@ figcaption {
     box-shadow: none;
     /* Opera 10.5, IE9, FF4+, Chrome 6+, iOS 5 */
   }
-  .sidebar-area, .primary-area {
+  .sidebar-area,
+  .primary-area {
     padding: 10px;
   }
-  #heroCarousel, .header-small-nav {
+  #heroCarousel,
+  .header-small-nav {
     display: none;
   }
   .site-logo {
     padding: 40px 0 20px;
   }
-  .span9.offset3.no-margin, .span9.no-margin {
+  .span9.offset3.no-margin,
+  .span9.no-margin {
     margin-left: 0;
     width: auto;
   }
@@ -416,7 +430,8 @@ figcaption {
     padding-left: 10px;
     padding-right: 10px;
   }
-  .navbar-inverse .brand, .navbar-inverse .nav>li>a.brand {
+  .navbar-inverse .brand,
+  .navbar-inverse .nav>li>a.brand {
     color: #fff;
   }
   .navbar .btn-navbar {
@@ -432,7 +447,8 @@ figcaption {
     box-shadow: none !important;
     text-shadow: none !important;
   }
-  a, a:visited {
+  a,
+  a:visited {
     text-decoration: underline;
   }
   a[href]:after {
@@ -444,10 +460,13 @@ figcaption {
   /*
 * Don't show links for images, or javascript/internal links
 */
-  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after {
+  .ir a:after,
+  a[href^="javascript:"]:after,
+  a[href^="#"]:after {
     content: "";
   }
-  pre, blockquote {
+  pre,
+  blockquote {
     border: 1px solid #999;
     page-break-inside: avoid;
   }
@@ -455,7 +474,8 @@ figcaption {
     display: table-header-group;
     /* h5bp.com/t */
   }
-  tr, img {
+  tr,
+  img {
     page-break-inside: avoid;
   }
   img {
@@ -464,14 +484,21 @@ figcaption {
   @page {
     margin: 0.5cm;
   }
-  p, h2, h3 {
+  p,
+  h2,
+  h3 {
     orphans: 3;
     widows: 3;
   }
-  h2, h3 {
+  h2,
+  h3 {
     page-break-after: avoid;
   }
-  .main-content-wrapper, .primary-area, .sidebar-area, .row, .container {
+  .main-content-wrapper,
+  .primary-area,
+  .sidebar-area,
+  .row,
+  .container {
     display: block;
     width: auto;
     -webkit-box-shadow: none;
@@ -481,7 +508,8 @@ figcaption {
     /* padding: 2em 0; */
     margin: 0;
   }
-  .span9.offset3.no-margin, .span9.no-margin {
+  .span9.offset3.no-margin,
+  .span9.no-margin {
     margin-left: 0;
     width: auto;
   }
@@ -501,7 +529,19 @@ figcaption {
   /*
 * Hide Elements that are not needed in Print. Like menus and decoration
 */
-  .lang-nav, .header-small-nav, .header-main-nav, .copy-and-nav .nav, .btn i, .container.hero, .footer, .breadcrumb, .push, .navigation-wrapper, .navbar-static-top, .searchbar-dariah, .breadcrumb {
+  .lang-nav,
+  .header-small-nav,
+  .header-main-nav,
+  .copy-and-nav .nav,
+  .btn i,
+  .container.hero,
+  .footer,
+  .breadcrumb,
+  .push,
+  .navigation-wrapper,
+  .navbar-static-top,
+  .searchbar-dariah,
+  .breadcrumb {
     display: none;
   }
 }
@@ -514,9 +554,9 @@ figcaption {
 }
 
 .parameter * {
-    border: 0;
-    border-collapse: collapse;
-    padding-right: 20px;
+  border: 0;
+  border-collapse: collapse;
+  padding-right: 20px;
 }
 
 .dataframe {
@@ -524,7 +564,7 @@ figcaption {
 }
 
 .bk-plot-wrapper table {
-    margin: 0 auto;
+  margin: 0 auto;
 }
 
 .bk-root {
@@ -537,7 +577,7 @@ figcaption {
 }
 
 #navbar {
-position: fixed;
-width: 100%;
-z-index: 100;
+  position: fixed;
+  width: 100%;
+  z-index: 100;
 }

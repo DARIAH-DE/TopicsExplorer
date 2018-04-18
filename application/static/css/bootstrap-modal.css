@@ -13,12 +13,16 @@
 
 /* add a scroll bar to stop page from jerking around */
 
-.modal-open.page-overflow .page-container, .modal-open.page-overflow .page-container .navbar-fixed-top, .modal-open.page-overflow .page-container .navbar-fixed-bottom, .modal-open.page-overflow .modal-scrollable {
+.modal-open.page-overflow .page-container,
+.modal-open.page-overflow .page-container .navbar-fixed-top,
+.modal-open.page-overflow .page-container .navbar-fixed-bottom,
+.modal-open.page-overflow .modal-scrollable {
   overflow-y: scroll;
 }
 
 @media (max-width: 979px) {
-  .modal-open.page-overflow .page-container .navbar-fixed-top, .modal-open.page-overflow .page-container .navbar-fixed-bottom {
+  .modal-open.page-overflow .page-container .navbar-fixed-top,
+  .modal-open.page-overflow .page-container .navbar-fixed-bottom {
     overflow-y: visible;
   }
 }
@@ -78,7 +82,8 @@
   z-index: 940;
 }
 
-.modal-backdrop, .modal-backdrop.fade.in {
+.modal-backdrop,
+.modal-backdrop.fade.in {
   opacity: 0.7;
   filter: alpha(opacity=70);
   background: #000;
@@ -118,7 +123,9 @@
 }
 
 @media (max-width: 979px) {
-  .modal, .modal.container, .modal.modal-overflow {
+  .modal,
+  .modal.container,
+  .modal.modal-overflow {
     top: 1%;
     right: 1%;
     left: 1%;
@@ -128,18 +135,22 @@
     margin: 0 !important;
     padding: 0 !important;
   }
-  .modal.fade.in, .modal.container.fade.in, .modal.modal-overflow.fade.in {
+  .modal.fade.in,
+  .modal.container.fade.in,
+  .modal.modal-overflow.fade.in {
     top: 1%;
     bottom: auto;
   }
-  .modal-body, .modal-overflow .modal-body {
+  .modal-body,
+  .modal-overflow .modal-body {
     position: static;
     margin: 0;
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
   }
-  .modal-footer, .modal-overflow .modal-footer {
+  .modal-footer,
+  .modal-overflow .modal-footer {
     position: static;
   }
 }
@@ -169,49 +180,81 @@ Copyright (c) 2012 Dan Eden*/
 }
 
 @-webkit-keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     -webkit-transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     -webkit-transform: translateX(-10px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     -webkit-transform: translateX(10px);
   }
 }
 
 @-moz-keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     -moz-transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     -moz-transform: translateX(-10px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     -moz-transform: translateX(10px);
   }
 }
 
 @-o-keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     -o-transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     -o-transform: translateX(-10px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     -o-transform: translateX(10px);
   }
 }
 
 @keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-10px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(10px);
   }
 }

@@ -1,10 +1,3 @@
-@charset "UTF-8";
-/* Spacer for the content area of the pages (otherwise behind absolute top-bar)  */
-
-body {
-  /*padding-top: 70px;*/
-}
-
 body legend {
   font-size: 18px;
 }
@@ -89,7 +82,8 @@ hr {
 
 /* Buttons are hidden depending on the state of the model element */
 
-.model-list td.actionsLocked .modelLoading, .model-list td.actions .modelActions {
+.model-list td.actionsLocked .modelLoading,
+.model-list td.actions .modelActions {
   position: relative;
   display: block;
   width: auto;
@@ -99,7 +93,8 @@ hr {
   vertical-align: top;
 }
 
-.model-list td.actionsLocked .modelActions, .model-list td.actions .modelLoading {
+.model-list td.actionsLocked .modelActions,
+.model-list td.actions .modelLoading {
   position: absolute;
   display: inline;
   width: 0;
@@ -147,7 +142,8 @@ hr {
   overflow: hidden;
 }
 
-.fileupload-buttonbar .btn, .fileupload-buttonbar .toggle {
+.fileupload-buttonbar .btn,
+.fileupload-buttonbar .toggle {
   /*margin-bottom: 5px;*/
 }
 
@@ -290,7 +286,8 @@ hr {
   margin-right: 10px;
 }
 
-.group .radio input[type="radio"], .group .checkbox input[type="checkbox"] {
+.group .radio input[type="radio"],
+.group .checkbox input[type="checkbox"] {
   margin-left: -17px;
 }
 
@@ -362,28 +359,3 @@ noscript div {
   width: 100%;
   z-index: 101;
 }
-
-/*
-.group {
-    background: none repeat scroll 0 0 padding-box #FFFFFF;
-    border: 1px solid #DDDDDD;
-    border-radius: 5px 0 0 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    margin: 15px 0 15px -30px;
-    padding: 39px 19px 25px;
-    position: relative;
-}
-.group:after {
-    background-color: #F5F5F5;
-    border: 1px solid #DDDDDD;
-    border-radius: 4px 0 4px 0;
-    color: #000000;
-    content: attr(title);
-    font-size: 18px;
-    font-family: "MuseoSansRounded700";
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-    left: -1px;
-    padding: 3px 7px;
-    position: absolute;
-    top: -1px;
-}*/
