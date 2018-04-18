@@ -8,17 +8,18 @@
   <meta name="author" content="DARIAH-DE">
   <meta name="description" content="Topics Explorer">
 
-  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}" type="text/css" media="screen, projection" />
-  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-responsive.css')}}" type="text/css" media="screen, projection" />
-  <link rel="stylesheet" href="{{url_for('static', filename='css/application.css')}}" type="text/css" media="screen, projection" />
-  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-customization.css')}}" type="text/css" media="screen, projection" />
-  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-modal.css')}}" type="text/css" media="screen, projection" />
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-responsive.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/application.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-customization.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-modal.css')}}" type="text/css" media="screen, projection"/>
   <link rel="stylesheet" href="{{url_for('static', filename='css/font-awesome.css')}}">
 
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/globalmenu.js')}}"></script>
 
+  {% if bokeh_resources|safe == "include" %}
     <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-min.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-tables-min.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-widgets-min.css')}}">
@@ -30,8 +31,9 @@
 
     {% block bokeh_scripts%}
     {% endblock %}
+  {% endif %}
 
-  <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='img/page_icon.png')}}" />
+  <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='img/page_icon.png')}}"/>
 </head>
 
 <body>
@@ -46,7 +48,9 @@
               <div class="nav-collapse collapse">
                 <ul class="nav" />
                 <li>
-                  <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/dariah_white.png') }}" height="80" width="80"/></a>
+                  <a href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='img/dariah_white.png') }}" height="80" width="80" />
+                  </a>
                 </li>
                 </ul>
                 {% block navigation %}
@@ -58,7 +62,10 @@
       </div>
     </div>
   </div>
-  <br><br><br><br>
+  <br>
+  <br>
+  <br>
+  <br>
   <div id="content_layout" class="container-fluid">
     <div class="row-fluid">
       <div class="span10 offset1 main-content-wrapper no-margin">
@@ -89,27 +96,30 @@
             To ensure that the application is fully functional, you <b>need a connection to the internet</b>. Complications <i>may</i> occur offline, but they do not have to. This has several influencing factors. However, the missing connection <b>can be a reason for errors</b>.
           {% elif http == "error" %}
             Looks like something didn't work out as expected. Maybe you can figure out this error message by yourself:
-            <br><br>
+            <br>
+            <br>
             <b>{{ error_message|safe }}</b>
-            <br><br>
+            <br>
+            <br>
             In any case, it would be very useful for us if you write a bug report either on <a href="https://github.com/DARIAH-DE/TopicsExplorer/issues">GitHub</a>, or send an email to <a href="mailto:severin.simmler@stud-mail.uni-wuerzburg.de">Severin Simmler</a>. Please include the error message from above in your report, and at best some details about your corpus (esp. file format).
           {% endif %}
-          <br><br>
+          <br>
+          <br>
         </div>
         <div class="modal-footer">
           {% if internet == "warning" %}
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Got it!</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Got it!</button>
           {% elif http == "error" %}
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Go back and try again</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Go back and try again</button>
           {% endif %}
         </div>
       </div>
     </div>
   </div>
   {% if internet == "warning" or http == "error" %}
-    <script>
-      $('#errorModal').modal('show');
-    </script>
+  <script>
+    $('#errorModal').modal('show');
+  </script>
   {% endif %}
 </body>
 

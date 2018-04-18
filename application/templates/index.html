@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+
 {% block navigation %}
 <ul class="nav pull-right">
   <li>
@@ -6,59 +7,59 @@
   </li>
 </ul>
 {% endblock %}
+
 {% block content %}
 <h1>Topics – Easy Topic Modeling</h1>
 <div id="contentInner">
   <form action="/modeling" method="POST" enctype="multipart/form-data">
-    <p>The text mining technique <b>Topic Modeling</b> has become a popular statistical method for clustering documents. This application introduces a user-friendly workflow, basically containing data preprocessing, the actual modeling using <b>latent Dirichlet allocation</b>      (LDA), as well as various interactive visualizations to explore the model.</p>
-    <p>LDA, introduced in the context of text analysis in 2003, is an instance of a more general class of models called <b>mixed-membership models</b>. Involving a number of distributions and parameters, the model is typically performed using <b>Gibbs sampling</b>      with conjugate priors, and is purely based on word frequencies.</p>
+    <p>The text mining technique <b>Topic Modeling</b> has become a popular statistical method for clustering documents. This application presents a workflow consisting of data preprocessing, the actual modeling with <b>latent Dirichlet allocation</b> (LDA), and the visualization of the model output to explore the semantic content of your text collection.</p>
+    <p>LDA, introduced in the context of text analysis in 2003, is an instance of a more general class of models called <b>mixed-membership models</b>. Involving a number of parameters, the model is purely based on <b>word frequencies</b>, and typically performed using <b>Gibbs sampling</b> with conjugate priors.</p>
     <div class="alert alert-block">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <i class="fa fa-exclamation-circle"></i> This application is designed to introduce the technique in a gentle way and aims for simplicity. If you have a <b>very large corpus</b> (let's say more than 200 documents with more than 5000 words per document),
-      you may wish to use more sophisticated models such as those implemented in <b>MALLET</b>, which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing topic modeling with MALLET, available via <a href="https://github.com/DARIAH-DE/Topics">GitHub</a>.
+      <i class="fa fa-exclamation-circle"></i> This application is designed to introduce the technique particularly gently and aims for <b>simplicity</b> and <b>usability</b>. If you have a <b>very large text corpus</b> (let’s say more than 200 documents with more than 5000 words per document), you may wish to use more sophisticated models such as those implemented in <b>MALLET</b>, which is known to be more robust than standard LDA. Have a look at our <a href="https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb">Jupyter notebook</a> introducing topic modeling with MALLET.
     </div>
-    <br>
     <h2>1. Preprocessing</h2>
-    <p>First of all, your corpus will be <b>tokenized</b>. This is the process of splitting a text into individual words (so-called <i>tokens</i>). Token frequencies are typical units of analysis when working with text corpora. It may come as a surprise that reducing a book to a list
-      of token frequencies retains useful information, but practice has shown this to be the case. Normally, the most frequent tokens of a document tend to be <b>semantically insignificant words</b> (like <i>the</i> or <i>and</i>, for instance). Because
-      you are trying to uncover hidden semantic structures of a text collection, you have to get rid of those insignificant words before modeling. This will be done while preprocessing.</p>
+    <p>Your text corpus is tokenized first. This splits a text into individual words, so-called <i>tokens</i>. Token frequencies are typical units of analysis when working with text corpora. It may come as a surprise that reducing a book to a list of token frequencies retains useful information, but practice has shown this to be the case. Usually the most common tokens in a document are <b>semantically insignificant words</b> like <i>the</i> or <i>and</i>. Because you are trying to uncover hidden semantic structures of a text collection, you have to get rid of these words before modeling. This is done during preprocessing.</p>
     <h3>1.1. Reading a Corpus of Documents</h3>
-    <p>For this workflow, you will need a corpus (a set of texts) as plain text (<b>.txt</b>) or XML (<b>.xml</b>). TEI encoded XML is fully supported to process only the text part. Use the button below to select multiple text files. To gain better results,
-      <b>choose at least five documents</b> (but the more the better).
+    <p>For this workflow you need a text corpus (i.e. a collection of text files) as plain text (<b>.txt</b>) or as XML (<b>.xml</b>). Use the button below to select the files. To guarantee usable results, select <b>at least five documents</b> (but the more, the better).
       <div class="alert alert-info">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <b>Tip:</b> The <a href="https://textgridrep.org">TextGrid Repository</a> is a great place to start searching for text data. It's Open Access and provides a lot of literary texts in valid and well-formed TEI XML.
+        <b>Tip:</b> The <a href="https://textgridrep.org">TextGrid Repository</a> is a good starting point for searching for text data. It is Open Access and offers a lot of literary texts in valid and well-formed TEI XML.
       </div>
     </p>
-    <input type="file" name="files" accept=".txt, .xml" multiple required/><br><br>
+    <input type="file" name="files" accept=".txt, .xml" multiple required/>
+    <br>
+    <br>
     <h3>1.2. Tokenization</h3>
-    <p>An important preprocessing step is tokenization. Without identifying tokens, it is difficult to extract necessary information, such as token frequencies in general, or <b>most frequent words</b>, also known as <i>stopwords</i>. In this application,
-      one token consists of one or more characters, optionally followed by exactly one punctuation (a hyphen or something related), followed by one or more characters. For example, the phrase “her father's arm-chair” will be tokenized as <code>["her", "father's", "arm-chair"]</code>.</p>
+    <p>An important preprocessing step is tokenization. Without identifying words as separate units, it is impossible to determine necessary information such as word frequencies. In this application, a token consists of one consists of one or more characters, optionally followed by exactly one punctuation (e.g. a hyphen), followed by one or more characters. For example, the phrase “her father's arm-chair” is tokenized as <code>["her", "father's", "arm-chair"]</code>.</p>
     <h3>1.3. Cleaning the Corpus</h3>
-    <p>Stopwords are harmful for LDA and have to be removed from the corpus. In case you want to <b>determine stopwords individually</b> based on your corpus, define a threshold for most frequent words in the line below.</p>
+    <p>The most common words in a document are also called stopwords. As described above, stopwords are harmful to the LDA model and must be removed before modeling. If you want to determine and remove the stopwords individually based on your corpus, you can define a threshold value here for the <i>n</i> most common words to be deleted.</p>
     <div class="alert alert-info">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <b>Tip:</b> Be careful with removing most frequent words – you might remove words quite important for LDA. Anyway, to gain better results, it is highly recommended to use an <b>external stopwords list</b>. This application was shipped with stopword
-      lists for English, German, Spanish, and French.
+      <b>Tip:</b> Be careful with removing the <i>n</i> most common words. Depending on corpus size and defined threshold value, you could remove words that are quite important for the model. Therefore it is recommended to select a curated, external stopword list. This application was delivered with lists for English, German, Spanish, and French.
     </div>
     <input type="number" name="mfw_threshold" value="150" min="1">
-    <p>Alternatively, upload your own tokens-to-remove list here:</p>
-    <input type="file" name="stopword_list"><br><br>
+    <p>If you select your own stopword list here, the defined threshold value above will be ignored.</p>
+    <input type="file" name="stopword_list">
+    <br>
+    <br>
     <h2>2. Modeling</h2>
-    <p>In this workflow, we are relying on an implementation by Allen Riddell, which is lightweight, fast and provides basic LDA. You have to specify some <b>model parameters</b> in this section, first of all the number of topics. The best number depends
-      on what you are looking for in the model. The default will provide a <b>broad overview</b> of the contents of the corpus. The number of topics should also depend to some degree on the size of the text collection, but 100 to 200 will produce reasonably
-      <b>fine-grained results</b>.</p>
+    <p>In this application, we are relying on an implementation by Allen Riddell, which is lightweight, fast and provides basic LDA. You have to specify some <b>model parameters</b> in this section, first of all the number of topics. The best number depends on what you are looking for in the model. The default value gives a <b>broad overview</b> of the contents of the corpus. The number of topics should also depend to some degree on the size of the text collection, but 100 to 200 will produce reasonably <b>fine-grained results</b>.</p>
     <input type="number" name="num_topics" value="10" min="1" required>
-    <p>An iteration is a process of repeating the same action multiple times to achieve a specific goal. This is how LDA works. The number of sampling iterations should be a <b>trade-off</b> between the time taken to complete sampling and the quality of
-      the model. The default value produces quite good results, but feel free to increase the number of iterations.</p>
-    <input type="number" name="num_iterations" value="200" min="10" required><br>
+    <p>An iteration is a process of repeating the same action multiple times to achieve a specific goal. This is how LDA works.
+      The number of sampling iterations should be a
+      <b>trade-off</b> between the time taken to complete sampling and the quality of the model. The default value produces
+      quite good results, but feel free to increase the number of iterations.</p>
+    <input type="number" name="num_iterations" value="200" min="10" required>
+    <br>
     <br>
     <h2>3. Visualizing</h2>
-    <p>When using LDA to explore text collections, we are typically interested in examining texts in terms of their <b>constituent topics</b> (instead of word frequencies). Because the number of topics is so much smaller than the number of unique vocabulary
-      elements (say, 10 versus 10,000), a range of data visualization methods become available. As you will see, all of the provided visualizations are <b>interactive</b>.</p>
+    <p>When using LDA to explore text collections, one is typically interested in examining texts in terms of their <b>constituent topics</b> (instead of word frequencies). Because the number of topics is so much smaller than the number of unique vocabulary elements (say, 10 versus 10.000), a range of data visualization methods become available. As you will see, all of the provided visualizations are <b>interactive</b>.</p>
     <br>
     <div class="center_button">
-      <button class="button" type="submit"><b>Train<br>Topic Model</b></button>
+      <button class="button" type="submit">
+        <b>Train<br>Topic Model</b>
+      </button>
     </div>
     <br>
   </form>
