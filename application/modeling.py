@@ -219,14 +219,13 @@ def workflow(tempdir, archive_dir, bokeh_resources):
 
         shutil.make_archive(str(pathlib.Path(archive_dir, 'topicmodeling')), 'zip', tempdir)
         data = {'cleaning': cleaning,
+                'bokeh_resources': 'include',
                 'heatmap_script': heatmap_script,
                 'heatmap_div': heatmap_div,
                 'topics_script': topics_script,
                 'topics_div': topics_div,
                 'documents_script': documents_script,
                 'documents_div': documents_div,
-                'js_resources': js_resources,
-                'css_resources': css_resources,
                 'corpus_boxplot_script': corpus_boxplot_script,
                 'corpus_boxplot_div': corpus_boxplot_div}
         application.utils.compress(data, str(pathlib.Path(tempdir, 'data.pickle')))

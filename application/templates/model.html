@@ -12,15 +12,15 @@
   </li>
 </ul>
 {% endblock %}
-{% block content %}
-<head>
-  {{ js_resources|safe }}
-  {{ css_resources|safe }}
+
+{% block bokeh_scripts %}
   {{ corpus_boxplot_script|safe }}
   {{ heatmap_script|safe }}
   {{ topics_script|safe }}
   {{ documents_script|safe }}
-</head>
+{% endblock %}
+
+{% block content %}
 <h1>Topics – Easy Topic Modeling</h1>
 <div id="contentInner" style="text-align:justify;">
   <h2>1. Corpus and Parameter Summary</h2>
