@@ -8,7 +8,7 @@ import werkzeug.exceptions
 
 TEMPDIR = tempfile.mkdtemp()  # Dumping the logfile, temporary data, etc.
 ARCHIVEDIR = tempfile.mkdtemp()  # Dumping the ZIP archive
-app, bokeh_resources = application.config.create_app()  # Creating the app
+app = application.config.create_app()  # Creating the app
 
 
 @app.route('/')
@@ -42,8 +42,7 @@ def modeling():
         t = app.jinja_env.get_template(template_name)
         return t.stream(context)
     stream = flask.stream_with_context(application.modeling.workflow(TEMPDIR,
-                                                                     ARCHIVEDIR,
-                                                                     bokeh_resources))
+                                                                     ARCHIVEDIR))
     return flask.Response(stream_template('modeling.html', info=stream))
 
 

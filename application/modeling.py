@@ -38,7 +38,7 @@ def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
     return model
 
 
-def workflow(tempdir, archive_dir, bokeh_resources):
+def workflow(tempdir, archive_dir):
     """
     Collects the user input, preprocesses the corpus, trains the LDA model,
     creates visualizations, and dumps generated data.
@@ -198,11 +198,6 @@ def workflow(tempdir, archive_dir, bokeh_resources):
         documents_script, documents_div = bokeh.embed.components(documents_barchart)
         bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'document_topics_barchart.html')))
         bokeh.plotting.save(documents_barchart)
-
-        with open(str(pathlib.Path(bokeh_resources, 'render_js.txt')), 'r', encoding='utf-8') as file:
-            js_resources = file.read()
-        with open(str(pathlib.Path(bokeh_resources, 'render_css.txt')), 'r', encoding='utf-8') as file:
-            css_resources = file.read()
 
         end = time.time()
         passed_time = round((end - start) / 60)
