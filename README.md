@@ -53,6 +53,7 @@ The following visualization is based on the distribution of 10 topics over a tot
 * Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
 * If you are confronted with any problems regarding the application, use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues) – but suggestions for improvements, wishes, or hints on typos are of course also welcome.
 * If you have problems with Pipenv, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment.
+* If you the application fails after pulling from GitHub, try updating the requirements in your virtual environment with `pipenv update`.
 
 ## Developing
 If you want to run the development version, you can either `git clone` this repository, or download the [ZIP archive](https://github.com/DARIAH-DE/TopicsExplorer/archive/master.zip).
@@ -64,7 +65,9 @@ Use [Pipenv](https://docs.pipenv.org/) to install the dependencies:
 $ pipenv install
 ```
 
-After spawning a shell within the virtualenv (`pipenv shell`), you can run the application via:
+### Running the application
+
+After spawning a shell within the virtual environment, with `pipenv shell`, you can run the application with:
 
 ```
 $ python topicsexplorer.py
