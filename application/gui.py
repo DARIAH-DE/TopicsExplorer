@@ -43,6 +43,14 @@ def provide_gui(application):
     webview = PyQt5.QtWebEngineWidgets.QWebEngineView()
     
     def download_requested(item):
+        options = PyQt5.QtWidgets.QFileDialog.Options()
+        options |= PyQt5.QtWidgets.QFileDialog.DontUseNativeDialog
+        path = PyQt5.QtWidgets.QFileDialog.getSaveFileName(None,
+                                                           "Select destination folder and file name",
+                                                           "",
+                                                           "Zip files (*.zip)",
+                                                           options=options)[0]
+        item.setPath(path + '.zip')
         item.accept()
 
     webview.page().profile().downloadRequested.connect(download_requested)
