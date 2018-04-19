@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8">
+  <title>Topics Explorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="DARIAH-DE">
+  <meta name="description" content="Topics Explorer">
+
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-responsive.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/application.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-customization.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-modal.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/font-awesome.css')}}">
+
+  <script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/globalmenu.js')}}"></script>
+
+  {% if bokeh_resources|safe == "include" %}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-tables-min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-widgets-min.css')}}">
+
+    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh-gl.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh-tables.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh-widgets.min.js')}}"></script>
+
+    {% block bokeh_scripts%}
+    {% endblock %}
+  {% endif %}
+
+  <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='img/page_icon.png')}}"/>
+</head>
+
+<body>
+  <div id="content">
+    <div id="navbar">
+      <div class="navbar navbar-inverse navbar-static-top navbar-dariah" id="top" />
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <div class="row-fluid">
+            <div class="span1"></div>
+            <div class="span10">
+              <div class="nav-collapse collapse">
+                <ul class="nav" />
+                <li>
+                  <a href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='img/dariah_white.png') }}" height="80" width="80" />
+                  </a>
+                </li>
+                </ul>
+                {% block navigation %}
+                {% endblock %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>
+  <br>
+  <br>
+  <div id="content_layout" class="container-fluid">
+    <div class="row-fluid">
+      <div class="span10 offset1 main-content-wrapper no-margin">
+        <div id="content" class="primary-area">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <div id="footer" class="span10 offset1 no-margin footer">
+        <span>&copy; 2017-2018 DARIAH-DE</span>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="errorModal" role="dialog" aria-labelledby="errorModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          {% if internet == "warning" %}
+            <h3 class="modal-title" id="exampleModalLongTitle">You are not connected to the internet!</h3>
+          {% elif http == "error" %}
+            <h3 class="modal-title" id="exampleModalLongTitle">Oops! I'm very sorry, but something went wrong...</h3>
+          {% endif %}
+        </div>
+        <div class="modal-body">
+          {% if internet == "warning" %}
+            To ensure that the application is fully functional, you <b>need a connection to the internet</b>. Complications <i>may</i> occur offline, but they do not have to. This has several influencing factors. However, the missing connection <b>can be a reason for errors</b>.
+          {% elif http == "error" %}
+            Looks like something didn't work out as expected. Maybe you can figure out this error message by yourself:
+            <br>
+            <br>
+            <b>{{ error_message|safe }}</b>
+            <br>
+            <br>
+            In any case, it would be very useful for us if you write a bug report either on <a href="https://github.com/DARIAH-DE/TopicsExplorer/issues">GitHub</a>, or send an email to <a href="mailto:severin.simmler@stud-mail.uni-wuerzburg.de">Severin Simmler</a>. Please include the error message from above in your report, and at best some details about your corpus (esp. file format).
+          {% endif %}
+          <br>
+          <br>
+        </div>
+        <div class="modal-footer">
+          {% if internet == "warning" %}
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Got it!</button>
+          {% elif http == "error" %}
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Go back and try again</button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if internet == "warning" or http == "error" %}
+  <script>
+    $('#errorModal').modal('show');
+  </script>
+  {% endif %}
+</body>
+
+</html>

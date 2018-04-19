@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8">
+  <title>Topics Explorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="DARIAH-DE">
+  <meta name="description" content="Topics Explorer">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <style>
+    body {
+      background-image: url("https://raw.githubusercontent.com/DARIAH-DE/TopicsExplorer/testing/application/static/img/paper-pattern1-0.jpg");
+    }
+
+    #status {
+      width: 430px;
+      height: 330px;
+      background-color: white;
+      padding: 20px 20px 20px 20px;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      border-radius: 6px;
+      font-family: Arial, Sans-Serif;
+      font-size: 14px;
+      max-width: 100%;
+      max-height: 100%;
+      overflow: auto;
+    }
+
+    #progress {
+      margin: 20px 5px 5px 5px;
+      padding: 5px 5px 5px 5px;
+      background-color: #D9EDF7;
+      border: solid;
+      border-color: #BCE8F1;
+      border-radius: 6px;
+      border-width: 1px;
+      color: #3A87AD;
+    }
+
+    .disableforerror {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <form action="/">
+    <div class="modal fade" id="errorModal" role="dialog" aria-labelledby="errorModalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title" id="exampleModalLongTitle">Oops! I'm very sorry, but something went wrong...</h3>
+          </div>
+          <div class="modal-body">
+            Looks like something didn't work out as expected. Maybe you can figure out this error message by yourself:
+            <br>
+            <br>
+            <b id="error">There was an internal error.</b>
+            <br>
+            <br> In any case, it would be very useful for us if you write a bug report either on
+            <a href="https://github.com/DARIAH-DE/TopicsExplorer/issues">GitHub</a>, or send an email to
+            <a href="mailto:severin.simmler@stud-mail.uni-wuerzburg.de">Severin Simmler</a>. Please include the error message from above in your report, and at best some details about
+            your corpus (esp. file format).
+            <br>
+            <br>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-secondary">Go back and try again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <center>
+    <div id="status">
+      <img style="width: 120px; height: 120px;" src="https://raw.githubusercontent.com/DARIAH-DE/TopicsExplorer/testing/application/static/img/dariah_wait.gif">
+      <br>
+      <br>
+      <b>
+        <div id="log">Collecting user input ...</div>
+      </b>
+      <div id="progress">
+        <b>FYI: This might take a while...</b>
+        <br> In the meanwhile, have a look at
+        <br> our Jupyter notebook introducing
+        <br> topic modeling with MALLET.
+      </div>
+
+      {% for identifier, title, message1, message2, message3, message4 in info %}
+      <script>
+        {% if "running" == identifier %}
+          $("#log").text("{{ title }}")
+          $("#progress").html("{{ message1 }}<br>{{ message2 }}<br>{{ message3 }}<br>{{ message4 }}")
+        {% elif "done" == identifier %}
+          window.location.replace("{{ url_for('model') }}");
+        {% elif "error" == identifier %}
+          $("#status").addClass("disableforerror");
+          $("#error").text("{{ title }}")
+          $('#errorModal').modal({keyboard: false, backdrop: 'static'})
+          $('#errorModal').modal('show');
+        {% endif %}
+      </script>
+      {% endfor %}
+    </div>
+  </center>
+</body>
+
+</html>
