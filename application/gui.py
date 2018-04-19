@@ -30,8 +30,6 @@ def provide_gui(application):
     """
     title = 'Topics Explorer'
     icon = str(pathlib.Path('application', 'static', 'img', 'page_icon.png'))
-    width = 1200
-    height = 660
 
     qtapp = PyQt5.QtWidgets.QApplication(sys.argv)
 
@@ -47,14 +45,14 @@ def provide_gui(application):
     
     def download_requested(item):
         path = PyQt5.QtWidgets.QFileDialog.getSaveFileName(None,
-                                                           "Select destination folder and file name",
-                                                           "",
-                                                           "Zip files (*.zip)")[0]
+                                                           'Select destination folder and file name',
+                                                           '',
+                                                           'Zip files (*.zip)')[0]
         item.setPath('{path}.{ext}'.format(path=path, ext='zip'))
         item.accept()
 
     webview.page().profile().downloadRequested.connect(download_requested)
-    webview.resize(size.width() - 50, size.height() - 100)
+    webview.resize(size.width() - 80, size.height() - 150)
     webview.setWindowTitle(title)
     webview.setWindowIcon(PyQt5.QtGui.QIcon(icon))
 
