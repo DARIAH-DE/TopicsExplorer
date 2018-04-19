@@ -35,6 +35,9 @@ def provide_gui(application):
 
     qtapp = PyQt5.QtWidgets.QApplication(sys.argv)
 
+    screen = qtapp.primaryScreen()
+    size = screen.size()
+
     webapp = FlaskThread(application)
     webapp.start()
 
@@ -54,7 +57,7 @@ def provide_gui(application):
         item.accept()
 
     webview.page().profile().downloadRequested.connect(download_requested)
-    webview.resize(width, height)
+    webview.resize(size.width() - 50, size.height() - 100)
     webview.setWindowTitle(title)
     webview.setWindowIcon(PyQt5.QtGui.QIcon(icon))
 
