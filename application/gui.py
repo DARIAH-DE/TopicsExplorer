@@ -53,7 +53,7 @@ def provide_gui(application):
                                                            "",
                                                            "Zip files (*.zip)",
                                                            options=options)[0]
-        item.setPath(path + '.zip')
+        item.setPath('{path}.{ext}'.format(path=path, ext='zip'))
         item.accept()
 
     webview.page().profile().downloadRequested.connect(download_requested)
