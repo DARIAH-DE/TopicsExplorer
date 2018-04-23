@@ -54,6 +54,7 @@ The following visualization is based on the distribution of 10 topics over a tot
 ## Troubleshooting
 * Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
 * If you are confronted with any problems regarding the application, use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues) – but suggestions for improvements, wishes, or hints on typos are of course also welcome.
+* If you are unable to run Pipenv, e.g. `-bash: pipenv: command not found`, try `python -m pipenv` instead of only `pipenv`.
 * If you have problems with Pipenv, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment.
 * If the application fails after pulling from GitHub, try updating the requirements in your virtual environment with `pipenv update`.
 
