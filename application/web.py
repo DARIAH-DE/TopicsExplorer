@@ -6,10 +6,7 @@ import pathlib
 import werkzeug.exceptions
 
 
-TEMPDIR = tempfile.mkdtemp()  # Dumping the logfile, temporary data, etc.
-ARCHIVEDIR = tempfile.mkdtemp()  # Dumping the ZIP archive
 app = application.config.create_app()  # Creating the app
-
 
 @app.route('/')
 def index():
@@ -17,6 +14,20 @@ def index():
     Renders the main page. A warning pops up, if the machine is not
     connected to the internet.
     """
+    global TEMPDIR
+    global ARCHIVEDIR
+
+    TEMPDIR = tempfile.mkdtemp()  # Dumping the logfile, temporary data, etc.
+    ARCHIVEDIR = tempfile.mkdtemp()  # Dumping the ZIP archive
+
+    def unlink_content(directory):
+        for p in pathlib.Path(directory).rglob('*'):
+            if p.is_file():
+                p.unlink()
+    
+    unlink_content(TEMPDIR)
+    unlink_content(ARCHIVEDIR)
+
     if application.utils.is_connected():
         return flask.render_template('index.html')
     else:
