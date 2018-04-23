@@ -28,7 +28,7 @@ Linux users **have to** use the source code and install some dependencies, but W
  This application is designed to introduce the technique particularly gently and aims for **simplicity and usability**. If you have a very large text corpus (let’s say more than 200 documents with more than 5000 words per document), you may wish to use more sophisticated models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing [topic modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb).
 
 ## The sample corpus
-An sample corpus (10 British novels) is provided in the folder `british-fiction-corpus` in the directory `data`. If you use Git, you can include the corpus, which is actually only a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
+A sample corpus (10 British novels) is provided in the folder `british-fiction-corpus` in the directory `data`. If you use Git, you can include the corpus, which is actually only a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
 
 ```
 $ git clone --recursive https://github.com/DARIAH-DE/TopicsExplorer.git
