@@ -1,5 +1,5 @@
 # DARIAH Topics Explorer
-The text mining technique **Topic Modeling** has become a popular statistical method for clustering documents. This application presents a workflow consisting of data preprocessing, the actual modeling with [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), and the visualization of the model output to explore the semantic content of your text collection.
+This application presents **a user-friendly topic modeling workflow** consisting of data preprocessing, the actual modeling with [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), and the visualization of the model output to explore the semantic content of your text collection.
 
 > If you do not know anything about topic modeling or programming in general, this is where you start.
 
