@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-dariah_topics = {git = "git://github.com/DARIAH-DE/Topics.git@master"}
+dariah_topics = {git = "git://github.com/DARIAH-DE/Topics.git@explorer"}
 lda = "==1.0.5"
 bokeh = "==0.12.7"
 lxml = "==4.2.1"
