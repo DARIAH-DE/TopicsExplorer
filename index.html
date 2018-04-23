@@ -43,14 +43,13 @@
             <h1>DARIAH Topics Explorer<a class="headerlink" href="#dariah-topics-explorer" title="Permalink to this headline">¶</a></h1>
             <div class="toctree-wrapper compound">
             </div>
-            <p>This application introduces a <strong>user-friendly topic modeling workflow</strong>, basically containing text data preprocessing, the actual modeling using <a class="reference external" href="http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf">latent Dirichlet allocation</a>,
-              as well as various interactive visualizations.</p>
+            <p>This application presents a <strong>user-friendly topic modeling workflow</strong> consisting of data preprocessing, the actual modeling with <a class="reference external" href="http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf">latent Dirichlet allocation</a>, and the visualization of the model output to explore the semantic content of your text collection.</p>
             <div class="admonition note">
               <p class="last">If you do not know anything about topic modeling or programming in general, this is where you start.</p><br>
             </div>
             <div class="section" id="getting-started">
               <h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
-              <p>Windows and macOS users <strong>do not</strong> have to install additional software, except the application itself:</p>
+              <p>Windows and macOS users <strong>do not</strong> have to install additional software. The application itself is <a class="reference external" href="https://en.wikipedia.org/wiki/Portable_application">portable</a>.</p>
               <ol class="arabic simple">
                 <li>Go to the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases">release-section</a> and download the ZIP archive for your OS.</li>
                 <li>Unzip the archive, e.g. using <a class="reference external" href="http://www.7-zip.org">7-zip</a>.</li>
@@ -61,7 +60,7 @@
                 <p class="last">If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to
                   run the file anyway.</p>
               </div>
-              <p>Linux users <strong>have to</strong> use the development version, and install some dependencies:</p>
+              <p>Linux users <strong>have to</strong> use the source code and install some dependencies, but Windows and macOS users can of course also do this:</p>
               <ol class="arabic simple">
                 <li>Go to the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases">release-section</a> and download the <strong>source code</strong> as ZIP archive.</li>
                 <li>Unzip the archive, e.g. using <code>unzip</code> via the command-line.</li>
@@ -69,6 +68,10 @@
                 <li>Run <code>pipenv install</code>, and afterwards <code>pipenv shell</code>.</li>
                 <li>To start the application, type <code>python topicsexplorer.py</code>, and press enter.</li>
               </ol>
+              <div class="admonition note">
+                <p class="first admonition-title">Note</p>
+                <p class="last">If you want to use a sample corpus, you must clone the repository with Git (<strong>not</strong> download the source code from <strong>the release-section</strong>). See also section <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer#the-sample-corpus">The sample corpus</a> on GitHub.</p>
+              </div>
             </div>
             <div class="section" id="the-application">
               <h2>The application<a class="headerlink" href="#about-this-application" title="Permalink to this headline">¶</a></h2>
