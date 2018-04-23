@@ -29,7 +29,7 @@ def provide_gui(application):
     index.html page.
     """
     title = 'Topics Explorer'
-    icon = str(pathlib.Path('application', 'static', 'img', 'page_icon.png'))
+    icon = str(pathlib.Path('application', 'static', 'img', 'app_icon.png'))
 
     qtapp = PyQt5.QtWidgets.QApplication(sys.argv)
 
