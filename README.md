@@ -1,10 +1,10 @@
 # DARIAH Topics Explorer
-This application introduces a **user-friendly topic modeling workflow**, basically containing text data preprocessing, the actual modeling using [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), as well as various interactive visualizations.
+The text mining technique **Topic Modeling** has become a popular statistical method for clustering documents. This application presents a workflow consisting of data preprocessing, the actual modeling with [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), and the visualization of the model output to explore the semantic content of your text collection.
 
 > If you do not know anything about topic modeling or programming in general, this is where you start.
 
 ## Getting started
-Windows and macOS users **do not** have to install additional software, except the application itself:
+Windows and macOS users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the ZIP archive for your OS.
 2. Unzip the archive, e.g. using [7-zip](http://www.7-zip.org/).
@@ -23,7 +23,7 @@ Linux users **have to** use the development version, but Windows and macOS users
 ## The application
 ![Demonstrator Screenshot](docs/images/screenshot.png)
 
-Topics Explorer aims for **simplicity and usability**. If you are working with a large corpus (let's say more than 200 documents, 5000 tokens each document) you may wish to use more sophisticated topic models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing [topic modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb).
+ This application is designed to introduce the technique particularly gently and aims for **simplicity and usability**. If you have a very large text corpus (let’s say more than 200 documents with more than 5000 words per document), you may wish to use more sophisticated models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing [topic modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb).
 
 ## The example corpus
 An example corpus (10 British novels) is provided in the folder `british-fiction-corpus` in the directory `data`. If you use Git, you can include the corpus, which is actually only a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
