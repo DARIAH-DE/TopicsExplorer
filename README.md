@@ -20,7 +20,7 @@ Linux users **have to** use the development version, but Windows and macOS users
 4. Run `pipenv install`, and afterwards `pipenv shell`.
 5. To start the application, type `python topicsexplorer.py`, and press enter.
 
-> If you want to use the sample corpus, you must clone the repository with Git. See also section [The sample corpus](#the-sample-corpus).
+> If you are on Linux and want to use the sample corpus, you must clone the repository with Git (**not** download the source code from **the release-section**). See also section [The sample corpus](#the-sample-corpus).
 
 ## The application
 ![Demonstrator Screenshot](docs/images/screenshot.png)
