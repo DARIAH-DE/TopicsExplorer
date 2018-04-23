@@ -163,8 +163,7 @@ def workflow(tempdir, archive_dir):
                 height = document_topics.shape[0] * 28
             document_topics_heatmap = document_topics
 
-        fig = dariah_topics.visualization.PlotDocumentTopics(document_topics_heatmap,
-                                                             enable_notebook=False)
+        fig = dariah_topics.visualization.PlotDocumentTopics(document_topics_heatmap)
         heatmap = fig.interactive_heatmap(height=height,
                                           sizing_mode='scale_width',
                                           tools='hover, pan, reset, wheel_zoom, zoom_in, zoom_out')
