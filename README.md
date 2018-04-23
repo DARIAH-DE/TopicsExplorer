@@ -12,7 +12,7 @@ Windows and macOS users **do not** have to install additional software. The appl
 
 > If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
 
-Linux users **have to** use the development version, but Windows and macOS users can of course also do this:
+Linux users **have to** use the source code and install some dependencies, but Windows and macOS users can of course also do this:
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the **source code** as ZIP archive.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
@@ -20,7 +20,7 @@ Linux users **have to** use the development version, but Windows and macOS users
 4. Run `pipenv install`, and afterwards `pipenv shell`.
 5. To start the application, type `python topicsexplorer.py`, and press enter.
 
-> If you are on Linux and want to use the sample corpus, you must clone the repository with Git (**not** download the source code from **the release-section**). See also section [The sample corpus](#the-sample-corpus).
+> If you want to use the sample corpus, you must clone the repository with Git (**not** download the source code from **the release-section**). See also section [The sample corpus](#the-sample-corpus).
 
 ## The application
 ![Demonstrator Screenshot](docs/images/screenshot.png)
