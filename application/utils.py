@@ -186,8 +186,8 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     else:
         menu = [(select, option) for select, option in zip(document_topics.index, options)]
         label = "Select document to display proportions"
-    dropdown = bokeh.models.widgets.Dropdown(label=label, menu=menu, callback=callback)
-    return bokeh.layouts.column(dropdown, fig, sizing_mode='scale_width')
+    dropdown = bokeh.models.widgets.AutocompleteInput(completions=["dickens", "hallo"], callback=callback)
+    return bokeh.layouts.column(fig, dropdown, sizing_mode='scale_width')
 
 
 def read_logfile(logfile):
