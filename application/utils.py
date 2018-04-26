@@ -15,7 +15,7 @@ import string
 
 
 TOOLS = "hover, pan, reset, wheel_zoom, zoom_in, zoom_out"
-JAVASCRIPT = """
+JAVASCRIPT = r"""
              var autocomplete = cb_obj.value;
              var names = %s;
              var exclude = /[!#$&\'"()*+,-\s./:;<=>?@^_`{|}~]/g
@@ -32,6 +32,7 @@ JAVASCRIPT = """
              }
              """
 
+JAVASCRIPT = r"console.log(1)"
 
 def compress(data, filepath):
     """
@@ -188,6 +189,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     textfield = bokeh.models.widgets.AutocompleteInput(completions=options,
                                                        placeholder=title,
                                                        callback=callback)
+    
     return bokeh.layouts.layout([[fig, textfield]], sizing_mode='scale_width')
 
 
