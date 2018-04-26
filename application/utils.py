@@ -16,17 +16,18 @@ import string
 
 TOOLS = "hover, pan, reset, wheel_zoom, zoom_in, zoom_out"
 JAVASCRIPT = """
-             var f = cb_obj.value;
-             var options = %s;
+             var autocomplete = cb_obj.value;
+             var names = %s;
+             var exclude = /[!#$&\'"()*+,-\s./:;<=>?@^_`{|}~]/g
 
-             for (var i in options) {
-                 if (f == options[i]) {
-                     console.log("Visible: " + options[i])
-                     eval(options[i]).visible = true;
+             for (var i in names) {
+                 var a = autocomplete.replace(exclude, "");
+                 var b = names[i].replace(exclude, "");
+                 if (a == b) {
+                     eval(a).visible = true;
                  }
                  else {
-                     console.log("Unvisible: " + options[i])
-                     eval(options[i]).visible = false;
+                     eval(a).visible = false;
                  }
              }
              """
@@ -155,20 +156,21 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
                                 toolbar_location='right', sizing_mode='scale_width',
                                 logo=None)
 
+    
     plots = {}
+
     options = document_topics.index.tolist()
     for i, option in enumerate(options):
-        x_axis = document_topics.iloc[i]
+        x_axis = document_topics.loc[option]
         source = bokeh.models.ColumnDataSource(dict(Describer=y_range, Proportion=x_axis))
-        option = re.sub(' ', '_', option)
         bar = fig.hbar(y='Describer', right='Proportion', source=source,
                        height=0.5, color='#053967')
         if i == 0:
             bar.visible = True
         else:
             bar.visible = False
-        plots[random_string()] = bar
-
+        plots[exclude_punctuations(option)] = bar
+    
     fig.xgrid.grid_line_color = None
     fig.x_range.start = 0
     fig.select_one(bokeh.models.HoverTool).tooltips = [('Proportion', '@Proportion')]
@@ -176,18 +178,17 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     fig.xaxis.major_label_text_font_size = '9pt'
     fig.yaxis.major_label_text_font_size = '9pt'
 
-    options = list(plots.keys())
-    callback = bokeh.models.CustomJS(args=plots, code=script % options)
-
     if topics is not None:
-        selection = [' '.join(topics.iloc[i].tolist()) + ' ...' for i in range(topics.shape[0])]
-        menu = [(select, option) for select, option in zip(selection, options)]
-        label = "Select topic to display proportions"
+        what = 'topic'
     else:
-        menu = [(select, option) for select, option in zip(document_topics.index, options)]
-        label = "Select document to display proportions"
-    dropdown = bokeh.models.widgets.AutocompleteInput(completions=["dickens", "hallo"], callback=callback)
-    return bokeh.layouts.column(fig, dropdown, sizing_mode='scale_width')
+        what = 'document'
+    title = 'Type a {} + press enter'.format(what)
+
+    callback = bokeh.models.CustomJS(args=plots, code=script % options)
+    textfield = bokeh.models.widgets.AutocompleteInput(completions=options,
+                                                       placeholder=title,
+                                                       callback=callback)
+    return bokeh.layouts.layout([[fig, textfield]], sizing_mode='scale_width')
 
 
 def read_logfile(logfile):
@@ -238,9 +239,9 @@ def is_connected(host='8.8.8.8', port=53, timeout=3):
         return False
 
 
-def random_string():
+def exclude_punctuations(s):
     """
-    Generates a 10 letter random string as identifier for different bokeh
-    plots.
+    Excludes punctuations from a string.
     """
-    return ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
+    exclude = set(string.punctuation)
+    return ''.join(ch for ch in s if ch not in exclude)
