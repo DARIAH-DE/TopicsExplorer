@@ -179,18 +179,18 @@ def workflow(tempdir, archive_dir):
         bokeh.plotting.save(corpus_boxplot)
 
         if document_topics.shape[1] < 10:
-            height = 10 * 30
+            height = 300
         else:
-            height = document_topics.shape[1] * 30
+            height = document_topics.shape[1] * 20
         topics_barchart, auto_warning_t = application.utils.barchart(document_topics, height=height, topics=topics)
         topics_script, topics_div = bokeh.embed.components(topics_barchart)
         bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'topics_barchart.html')))
         bokeh.plotting.save(topics_barchart)
 
         if document_topics.shape[0] < 10:
-            height = 10 * 30
+            height = 300
         else:
-            height = document_topics.shape[0] * 30
+            height = document_topics.shape[0] * 20
         documents_barchart, auto_warning_d = application.utils.barchart(document_topics.T, height=height)
         documents_script, documents_div = bokeh.embed.components(documents_barchart)
         bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'document_topics_barchart.html')))

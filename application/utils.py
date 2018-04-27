@@ -24,6 +24,7 @@ JAVASCRIPT = """
                  if (f == options[i]) {
                      console.log("Visible: " + options[i])
                      eval(options[i]).visible = true;
+                     eval(options[i]).title.text = "HALLo";
                  }
                  else {
                      console.log("Unvisible: " + options[i])
@@ -154,7 +155,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     y_range = document_topics.columns.tolist()
     fig = bokeh.plotting.figure(y_range=y_range, plot_height=height, tools=tools,
                                 toolbar_location='right', sizing_mode='scale_width',
-                                logo=None)
+                                logo=None, title=document_topics.index.tolist()[0])
 
     plots = {}
     options = document_topics.index.tolist()
