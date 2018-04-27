@@ -179,7 +179,7 @@ def workflow(tempdir, archive_dir):
         bokeh.plotting.save(corpus_boxplot)
 
         if document_topics.shape[1] < 15:
-            height = 600
+            height = 580
         else:
             height = document_topics.shape[1] * 25
         topics_barchart, auto_warning_t = application.utils.barchart(document_topics, height=height, topics=topics)
@@ -188,7 +188,7 @@ def workflow(tempdir, archive_dir):
         bokeh.plotting.save(topics_barchart)
 
         if document_topics.shape[0] < 15:
-            height = 600
+            height = 580
         else:
             height = document_topics.shape[0] * 25
         documents_barchart, auto_warning_d = application.utils.barchart(document_topics.T, height=height)
