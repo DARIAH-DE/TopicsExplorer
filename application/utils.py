@@ -16,19 +16,21 @@ import string
 
 TOOLS = "hover, pan, reset, wheel_zoom, zoom_in, zoom_out"
 JAVASCRIPT = """
-             var exclude = /[!#$&\'"()*+,-\s./:;<=>?@^_`{|}~]/g;
-             var textfield = textfield.value.replace(exclude, "");
+             var f = cb_obj.value;
              var options = %s;
 
              for (var i in options) {
-                 if (textfield == options[i].replace(exclude, "")) {
-                     eval(textfield).visible = true;
+                 if (f == options[i]) {
+                     console.log("Visible: " + options[i])
+                     eval(options[i]).visible = true;
                  }
                  else {
-                     eval(textfield).visible = false;
+                     console.log("Unvisible: " + options[i])
+                     eval(options[i]).visible = false;
                  }
              }
              """
+
 
 def compress(data, filepath):
     """

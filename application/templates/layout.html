@@ -8,22 +8,26 @@
   <meta name="author" content="DARIAH-DE">
   <meta name="description" content="Topics Explorer">
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}" type="text/css" media="screen, projection"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-responsive.css') }}" type="text/css" media="screen, projection"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/application.css') }}" type="text/css" media="screen, projection"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-customization.css') }}" type="text/css" media="screen, projection"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-modal.css') }}" type="text/css" media="screen, projection"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css') }}">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-responsive.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/application.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-customization.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-modal.css')}}" type="text/css" media="screen, projection"/>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/font-awesome.css')}}">
 
-  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-1.8.2.js') }}"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/globalmenu.js')}}"></script>
 
   {% if bokeh_resources|safe == "include" %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bokeh-0.12.7.min.css') }}" type="text/css" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bokeh-widgets-0.12.7.min.css') }}" type="text/css" />
-            
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bokeh-0.12.7.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bokeh-widgets-0.12.7.min.js') }}"></script>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-tables-min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-widgets-min.css')}}">
+
+    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh-gl.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh-tables.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh-widgets.min.js')}}"></script>
 
     {% block bokeh_scripts%}
     {% endblock %}
