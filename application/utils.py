@@ -153,44 +153,39 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
                                 toolbar_location='right', sizing_mode='scale_width',
                                 logo=None)
 
-    
     plots = {}
     options = document_topics.index.tolist()
-    
     for i, option in enumerate(options):
-        x_axis = document_topics.loc[option].tolist()
+        x_axis = document_topics.iloc[i]
         source = bokeh.models.ColumnDataSource(dict(Describer=y_range, Proportion=x_axis))
+        option = re.sub(' ', '_', option)
         bar = fig.hbar(y='Describer', right='Proportion', source=source,
                        height=0.5, color='#053967')
-        bar = fig.hbar(y=[1,2,3,4,5], height=0.5, right=x_axis, color='#053967')
-
         if i == 0:
             bar.visible = True
         else:
             bar.visible = False
-        print(x_axis)
-        plots[exclude_punctuations(option)] = bar
-    """
+        plots[random_string()] = bar
+
     fig.xgrid.grid_line_color = None
     fig.x_range.start = 0
     fig.select_one(bokeh.models.HoverTool).tooltips = [('Proportion', '@Proportion')]
     fig.xaxis.axis_label = 'Proportion'
     fig.xaxis.major_label_text_font_size = '9pt'
     fig.yaxis.major_label_text_font_size = '9pt'
-    """
+
+    options = list(plots.keys())
+    callback = bokeh.models.CustomJS(args=plots, code=script % options)
 
     if topics is not None:
-        what = 'topic'
+        selection = [' '.join(topics.iloc[i].tolist()) + ' ...' for i in range(topics.shape[0])]
+        menu = [(select, option) for select, option in zip(selection, options)]
+        label = "Select topic to display proportions"
     else:
-        what = 'document'
-    title = 'Type a {} + press enter'.format(what)
-
-    #callback = bokeh.models.CustomJS(args=plots, code=script % options)
-    #textfield = bokeh.models.widgets.AutocompleteInput(completions=options,
-    #                                                   placeholder=title,
-    #                                                   callback=callback)
-    #callback.args['textfield'] = textfield
-    return bokeh.layouts.row([fig], sizing_mode='scale_width')
+        menu = [(select, option) for select, option in zip(document_topics.index, options)]
+        label = "Select document to display proportions"
+    dropdown = bokeh.models.widgets.Dropdown(label=label, menu=menu, callback=callback)
+    return bokeh.layouts.column(dropdown, fig, sizing_mode='scale_width')
 
 
 def read_logfile(logfile):
@@ -241,9 +236,9 @@ def is_connected(host='8.8.8.8', port=53, timeout=3):
         return False
 
 
-def exclude_punctuations(s):
+def random_string():
     """
-    Excludes punctuations from a string.
+    Generates a 10 letter random string as identifier for different bokeh
+    plots.
     """
-    exclude = set(string.punctuation)
-    return ''.join(ch for ch in s if ch not in exclude)
+    return ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
