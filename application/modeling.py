@@ -168,8 +168,6 @@ def workflow(tempdir, archive_dir):
                                           sizing_mode='scale_width',
                                           tools='hover, pan, reset, wheel_zoom, zoom_in, zoom_out')
 
-        yield "running", "Dumping generated data ...", INFO_2B, INFO_3B, INFO_4B, INFO_5B
-
         bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'heatmap.html')))
         bokeh.plotting.save(heatmap)
 
@@ -183,7 +181,7 @@ def workflow(tempdir, archive_dir):
         if document_topics.shape[1] < 10:
             height = 10 * 30
         else:
-            height = document_topics.shape[1] * 30
+            height = document_topics.shape[1] * 35
         topics_barchart = application.utils.barchart(document_topics, height=height, topics=topics)
         topics_script, topics_div = bokeh.embed.components(topics_barchart)
         bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'topics_barchart.html')))
@@ -192,7 +190,7 @@ def workflow(tempdir, archive_dir):
         if document_topics.shape[0] < 10:
             height = 10 * 30
         else:
-            height = document_topics.shape[0] * 30
+            height = document_topics.shape[0] * 35
         documents_barchart = application.utils.barchart(document_topics.T, height=height)
         documents_script, documents_div = bokeh.embed.components(documents_barchart)
         bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'document_topics_barchart.html')))
@@ -212,6 +210,7 @@ def workflow(tempdir, archive_dir):
         parameter.to_csv(str(pathlib.Path(tempdir, 'parameter.csv')), encoding='utf-8')
 
         shutil.make_archive(str(pathlib.Path(archive_dir, 'topicmodeling')), 'zip', tempdir)
+
         data = {'cleaning': cleaning,
                 'bokeh_resources': 'include',
                 'heatmap_script': heatmap_script,
@@ -221,7 +220,9 @@ def workflow(tempdir, archive_dir):
                 'documents_script': documents_script,
                 'documents_div': documents_div,
                 'corpus_boxplot_script': corpus_boxplot_script,
-                'corpus_boxplot_div': corpus_boxplot_div}
+                'corpus_boxplot_div': corpus_boxplot_div,
+                'first_topic': list(document_topics.index)[0],
+                'first_document': list(document_topics.columns)[0]}
         application.utils.compress(data, str(pathlib.Path(tempdir, 'data.pickle')))
         yield 'done', '', '', '', '', ''
     except Exception as error:

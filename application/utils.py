@@ -11,13 +11,14 @@ import lxml
 import queue
 import socket
 import random
-import string
 
 
 TOOLS = "hover, pan, reset, wheel_zoom, zoom_in, zoom_out"
 JAVASCRIPT = """
              var f = cb_obj.value;
              var options = %s;
+             f = f.replace(/[!\"#$&\'()*+,-.:;<=>?@^_`{}~]/g, "");
+             f = f.replace(/\s/g, "");
 
              for (var i in options) {
                  if (f == options[i]) {
@@ -158,7 +159,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     plots = {}
     options = document_topics.index.tolist()
     for i, option in enumerate(options):
-        x_axis = document_topics.iloc[i]
+        x_axis = document_topics.loc[option]
         source = bokeh.models.ColumnDataSource(dict(Describer=y_range, Proportion=x_axis))
         option = re.sub(' ', '_', option)
         bar = fig.hbar(y='Describer', right='Proportion', source=source,
@@ -167,7 +168,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
             bar.visible = True
         else:
             bar.visible = False
-        plots[random_string()] = bar
+        plots[exclude_punctuations(option)] = bar
 
     fig.xgrid.grid_line_color = None
     fig.x_range.start = 0
@@ -179,7 +180,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     options = list(plots.keys())
     callback = bokeh.models.CustomJS(args=plots, code=script % options)
 
-    if len(options) < 15:
+    if len(options) < 20:
         if topics is not None:
             selection = [' '.join(topics.iloc[i].tolist()) + ' ...' for i in range(topics.shape[0])]
             menu = [(select, option) for select, option in zip(selection, options)]
@@ -190,8 +191,12 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
         dropdown = bokeh.models.widgets.Dropdown(label=label, menu=menu, callback=callback)
         return bokeh.layouts.column(dropdown, fig, sizing_mode='scale_width')
     else:
-        textfield = bokeh.models.widgets.AutocompleteInput(completions=["aaaaa", "bbbbb", "aaabbb"],
-                                                           placeholder="Do it",
+        if topics is not None:
+            what = 'topic'
+        else:
+            what = 'document'
+        textfield = bokeh.models.widgets.AutocompleteInput(completions=options,
+                                                           placeholder="Type a {} name".format(what),
                                                            css_classes=['customTextInput'],
                                                            callback=callback)
         return bokeh.layouts.row(fig, textfield, sizing_mode='scale_width')
@@ -245,9 +250,10 @@ def is_connected(host='8.8.8.8', port=53, timeout=3):
         return False
 
 
-def random_string():
+def exclude_punctuations(s):
     """
-    Generates a 10 letter random string as identifier for different bokeh
-    plots.
+    Excludes punctuations from a string.
     """
-    return ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
+    exclude = set('!"#$&\'()*+,-.:;<=>?@^_`{}~')
+    s = ''.join(c for c in s if c not in exclude)
+    return re.sub(' ', '', s)
