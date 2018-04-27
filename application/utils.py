@@ -179,15 +179,22 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     options = list(plots.keys())
     callback = bokeh.models.CustomJS(args=plots, code=script % options)
 
-    if topics is not None:
-        selection = [' '.join(topics.iloc[i].tolist()) + ' ...' for i in range(topics.shape[0])]
-        menu = [(select, option) for select, option in zip(selection, options)]
-        label = "Select topic to display proportions"
+    if len(options) < 15:
+        if topics is not None:
+            selection = [' '.join(topics.iloc[i].tolist()) + ' ...' for i in range(topics.shape[0])]
+            menu = [(select, option) for select, option in zip(selection, options)]
+            label = "Select topic to display proportions"
+        else:
+            menu = [(select, option) for select, option in zip(document_topics.index, options)]
+            label = "Select document to display proportions"
+        dropdown = bokeh.models.widgets.Dropdown(label=label, menu=menu, callback=callback)
+        return bokeh.layouts.column(dropdown, fig, sizing_mode='scale_width')
     else:
-        menu = [(select, option) for select, option in zip(document_topics.index, options)]
-        label = "Select document to display proportions"
-    dropdown = bokeh.models.widgets.Dropdown(label=label, menu=menu, callback=callback)
-    return bokeh.layouts.column(dropdown, fig, sizing_mode='scale_width')
+        textfield = bokeh.models.widgets.AutocompleteInput(completions=["aaaaa", "bbbbb", "aaabbb"],
+                                                           placeholder="Do it",
+                                                           css_classes=['customTextInput'],
+                                                           callback=callback)
+        return bokeh.layouts.row(fig, textfield, sizing_mode='scale_width')
 
 
 def read_logfile(logfile):

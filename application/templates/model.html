@@ -9,7 +9,7 @@
     <a href="{{ url_for('help') }}"> <i class="icon-question-sign icon-white"></i> Help</a>
   </li>
   <li>
-    <a href="http://127.0.0.1:5000/model/download"> <i class="icon-download icon-white"></i> Save Graphics and Tables</a>
+    <a href="{{url_for('static', filename='topicmodeling.zip')}}"> <i class="icon-download icon-white"></i> Save Graphics and Tables</a>
   </li>
 </ul>
 {% endblock %}
@@ -62,12 +62,18 @@
   <h3>2.3. Distribution of Topics</h3>
   <p>In the following graphic you can access <i>one</i> dimension of the information displayed in the heatmap above. This might be a more clear approach, if you are interested in a specific topic, or, more precisely, how the topic is distributed over the documents of your corpus. Use the dropdown menu to select a topic. <b>The default distribution you can see here is that of the first topic.</b>
   </p>
+  <br>
+  <div class="bars">
   {{ topics_div|safe }}
+  </div>
   <br>
   <h3>2.4. Distribution of Documents</h3>
   <p>Similar to the above barchart, you can access the <i>other</i> dimension displayed in the heatmap. So, if you are intereseted in a specific <i>document</i>, you have the ability to select it via the dropdown menu and inspect its proportions. <b>The default distribution you can see here is that of the first document.</b>
   </p>
+  <br>
+  <div class="bar">
   {{ documents_div|safe }}
+  </div>
   <br>
   <h2>2. Delving Deeper into Topic Modeling</h2>
   <p>We want to introduce users with little or no programming experience to digital methods. If this little insight into the text mining technique topic modeling has aroused your interest, and you want to delve deeper into the <b>technical parts</b>, we provide the same convenient, modular workflow which can be entirely controlled from within a well documented <a href="http://jupyter.org/">Jupyter notebook</a>, integrating a total of three popular LDA implementations.</p>
