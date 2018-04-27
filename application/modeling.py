@@ -181,8 +181,8 @@ def workflow(tempdir, archive_dir):
         if document_topics.shape[1] < 10:
             height = 10 * 30
         else:
-            height = document_topics.shape[1] * 35
-        topics_barchart = application.utils.barchart(document_topics, height=height, topics=topics)
+            height = document_topics.shape[1] * 30
+        topics_barchart, auto_warning_t = application.utils.barchart(document_topics, height=height, topics=topics)
         topics_script, topics_div = bokeh.embed.components(topics_barchart)
         bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'topics_barchart.html')))
         bokeh.plotting.save(topics_barchart)
@@ -190,8 +190,8 @@ def workflow(tempdir, archive_dir):
         if document_topics.shape[0] < 10:
             height = 10 * 30
         else:
-            height = document_topics.shape[0] * 35
-        documents_barchart = application.utils.barchart(document_topics.T, height=height)
+            height = document_topics.shape[0] * 30
+        documents_barchart, auto_warning_d = application.utils.barchart(document_topics.T, height=height)
         documents_script, documents_div = bokeh.embed.components(documents_barchart)
         bokeh.plotting.output_file(str(pathlib.Path(tempdir, 'document_topics_barchart.html')))
         bokeh.plotting.save(documents_barchart)
@@ -222,7 +222,9 @@ def workflow(tempdir, archive_dir):
                 'corpus_boxplot_script': corpus_boxplot_script,
                 'corpus_boxplot_div': corpus_boxplot_div,
                 'first_topic': list(document_topics.index)[0],
-                'first_document': list(document_topics.columns)[0]}
+                'first_document': list(document_topics.columns)[0],
+                'autocomplete_warning_t': auto_warning_t,
+                'autocomplete_warning_d': auto_warning_d}
         application.utils.compress(data, str(pathlib.Path(tempdir, 'data.pickle')))
         yield 'done', '', '', '', '', ''
     except Exception as error:

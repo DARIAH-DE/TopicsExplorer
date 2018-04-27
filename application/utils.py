@@ -181,6 +181,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
     callback = bokeh.models.CustomJS(args=plots, code=script % options)
 
     if len(options) < 20:
+        auto_warning = 'not'
         if topics is not None:
             selection = [' '.join(topics.iloc[i].tolist()) + ' ...' for i in range(topics.shape[0])]
             menu = [(select, option) for select, option in zip(selection, options)]
@@ -189,17 +190,18 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
             menu = [(select, option) for select, option in zip(document_topics.index, options)]
             label = "Select document to display proportions"
         dropdown = bokeh.models.widgets.Dropdown(label=label, menu=menu, callback=callback)
-        return bokeh.layouts.column(dropdown, fig, sizing_mode='scale_width')
+        return bokeh.layouts.column(dropdown, fig, sizing_mode='scale_width'), auto_warning
     else:
+        auto_warning = 'include'
         if topics is not None:
             what = 'topic'
         else:
             what = 'document'
-        textfield = bokeh.models.widgets.AutocompleteInput(completions=options,
+        textfield = bokeh.models.widgets.AutocompleteInput(completions=document_topics.index.tolist(),
                                                            placeholder="Type a {} name".format(what),
                                                            css_classes=['customTextInput'],
                                                            callback=callback)
-        return bokeh.layouts.row(fig, textfield, sizing_mode='scale_width')
+        return bokeh.layouts.row(fig, textfield, sizing_mode='scale_width'), auto_warning
 
 
 def read_logfile(logfile):

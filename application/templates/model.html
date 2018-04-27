@@ -64,19 +64,31 @@
   </p>
   <div class="bars">
   {{ topics_div|safe }}
-  </div>
   <br>
+  {% if autocomplete_warning_t|safe == "include" %}
+    <div class="alert alert-danger">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <b>Watch out!</b> The autocompletion is still a bit buggy and <b>serves more as a writing aid</b>. If you click on the suggestion, not much happens yet. However, the text field must contain the complete name and <b>you have to press enter</b>, otherwise it will not work. Sorry. But we're working on it.
+    </div>
+  {% endif %}
   <div class="alert alert-success">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <b>FYI:</b> The proportions you can see here by default are those of the first topic: <b>{{ first_topic|safe }}</b>. But you can of course take a closer look at each topic by using the widget.
   </div>
   <br>
+  </div>
   <h3>2.4. Distribution of Documents</h3>
   <p>Similar to the above barchart, you can access the <i>other</i> dimension displayed in the heatmap. So, if you are intereseted in a specific <i>document</i>, you have the ability to select it via the widget and inspect its proportions.
   </p>
   <div class="bar">
   {{ documents_div|safe }}
   <br>
+  {% if autocomplete_warning_d|safe == "include" %}
+    <div class="alert alert-danger">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <b>Watch out!</b> The autocompletion is still a bit buggy and <b>serves more as a writing aid</b>. If you click on the suggestion, not much happens yet. However, the text field must contain the complete name and <b>you have to press enter</b>, otherwise it will not work. Sorry. But we're working on it.
+    </div>
+  {% endif %}
   <div class="alert alert-success">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <b>FYI:</b> The proportions you can see here by default are those of the first document: <b>{{ first_document|safe }}</b>. Here you can also have a closer look at the distribution of the topics for each document using the widget.
