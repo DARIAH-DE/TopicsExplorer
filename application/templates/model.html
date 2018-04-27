@@ -9,7 +9,7 @@
     <a href="{{ url_for('help') }}"> <i class="icon-question-sign icon-white"></i> Help</a>
   </li>
   <li>
-    <a href="http://127.0.0.1:5000/model/download"> <i class="icon-download icon-white"></i> Save Graphics and Tables</a>
+    <a href="{{url_for('static', filename='topicmodeling.zip')}}"> <i class="icon-download icon-white"></i> Save Graphics and Tables</a>
   </li>
 </ul>
 {% endblock %}
@@ -48,27 +48,53 @@
     </div>
   </p>
   <h3>2.1. Topics</h3>
-  <p>Each topic is a probability distribution over the vocabulary found in the corpus. The top words (so-called <i>keys</i>) shown in the table below are those words most likely to be found in each topic, and describe the semantic structures of your corpus – ideally in a meaningful way. Lists of the top keys associated with each topic are often all that is needed when the corpus is large and the inferred topics make sense in light of prior knowledge of the corpus.</p>
+  <p>Each topic is a probability distribution over the vocabulary found in the corpus. The top words (so-called <i>keys</i>) shown in the table below are those words <b>most likely to be found in each topic</b>, and describe the semantic structures of your corpus – ideally in a meaningful way. Lists of the top keys associated with each topic are often all that is needed when the corpus is large and the inferred topics make sense in light of prior knowledge of the corpus.</p>
   <br>
   {% for table in topics %}
     {{ table|safe }}
   {% endfor %}
   <br>
   <h3>2.2. Topics and Documents</h3>
-  <p>Each document <i>consists</i> to a certain extent of each topic  (this is the theoretical assumption of topic models). The proportions can be visualized in a heatmap. This displays the kind of information that is probably most useful to literary scholars. Going beyond pure exploration, this visualization can be used to show thematic developments over a set of texts as well as a single text, akin to a dynamic topic model. What also can become apparent here, is that some topics correlate highly with a specific author or group of authors, while other topics correlate highly with a specific text or group of texts. All in all, this displays two of LDA’s properties – its use as a distant reading tool that aims to get at text meaning, and its use as a provider of data that can be further used in computational analysis, such as document classification or authorship attribution.</p>
+  <p>Each document <i>consists</i> to a certain extent of each topic  (this is the theoretical assumption of topic models). The proportions can be visualized in a heatmap. This displays the kind of information that is <b>probably most useful to literary scholars</b>. Going beyond pure exploration, this visualization can be used to show <b>thematic developments</b> over a set of texts as well as a single text, akin to a dynamic topic model. What also can become apparent here, is that some topics correlate highly with a <b>specific author or group of authors</b>, while other topics correlate highly with a <b>specific text or group of texts</b>. All in all, this displays two of LDA’s properties – its use as a <b>distant reading tool</b> that aims to get at text meaning, and its use as a provider of data that can be further used in computational analysis, such as document classification or authorship attribution.</p>
   {{ heatmap_div|safe }}
   <br>
   <br>
   <h3>2.3. Distribution of Topics</h3>
-  <p>In the following graphic you can access <i>one</i> dimension of the information displayed in the heatmap above. This might be a more clear approach, if you are interested in a specific topic, or, more precisely, how the topic is distributed over the documents of your corpus. Use the dropdown menu to select a topic. <b>The default distribution you can see here is that of the first topic.</b>
+  <p>In the following graphic you can access <i>one</i> dimension of the information displayed in the heatmap above. This might be a more clear approach, if you are interested in a specific topic, or, more precisely, how the topic is distributed over the documents of your corpus. You can use the widget to select a specific topic.
   </p>
+  <div class="bars">
   {{ topics_div|safe }}
   <br>
+  {% if autocomplete_warning_t|safe == "include" %}
+    <div class="alert alert-danger">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <b>Watch out!</b> The autocompletion is still a bit buggy and <b>serves more as a writing aid</b>. If you click on the suggestion, not much happens yet. However, the text field must contain the complete name and <b>you have to press enter</b>, otherwise it will not work. Sorry. But we're working on it.
+    </div>
+  {% endif %}
+  <div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <b>FYI:</b> The proportions you can see here by default are those of the first topic: <b>{{ first_topic|safe }}</b>. But you can of course take a closer look at each topic by using the widget.
+  </div>
+  <br>
+  </div>
   <h3>2.4. Distribution of Documents</h3>
-  <p>Similar to the above barchart, you can access the <i>other</i> dimension displayed in the heatmap. So, if you are intereseted in a specific <i>document</i>, you have the ability to select it via the dropdown menu and inspect its proportions. <b>The default distribution you can see here is that of the first document.</b>
+  <p>Similar to the above barchart, you can access the <i>other</i> dimension displayed in the heatmap. So, if you are intereseted in a specific <i>document</i>, you have the ability to select it via the widget and inspect its proportions.
   </p>
+  <div class="bar">
   {{ documents_div|safe }}
   <br>
+  {% if autocomplete_warning_d|safe == "include" %}
+    <div class="alert alert-danger">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <b>Watch out!</b> The autocompletion is still a bit buggy and <b>serves more as a writing aid</b>. If you click on the suggestion, not much happens yet. However, the text field must contain the complete name and <b>you have to press enter</b>, otherwise it will not work. Sorry. But we're working on it.
+    </div>
+  {% endif %}
+  <div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <b>FYI:</b> The proportions you can see here by default are those of the first document: <b>{{ first_document|safe }}</b>. Here you can also have a closer look at the distribution of the topics for each document using the widget.
+  </div>
+  <br>
+  </div>
   <h2>2. Delving Deeper into Topic Modeling</h2>
   <p>We want to introduce users with little or no programming experience to digital methods. If this little insight into the text mining technique topic modeling has aroused your interest, and you want to delve deeper into the <b>technical parts</b>, we provide the same convenient, modular workflow which can be entirely controlled from within a well documented <a href="http://jupyter.org/">Jupyter notebook</a>, integrating a total of three popular LDA implementations.</p>
   <p>All resources are available via <a href="https://github.com/DARIAH-DE/Topics">GitHub</a>.</p>

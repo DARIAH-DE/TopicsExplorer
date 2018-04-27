@@ -18,15 +18,19 @@ def index():
     global ARCHIVEDIR
 
     TEMPDIR = tempfile.mkdtemp()  # Dumping the logfile, temporary data, etc.
-    ARCHIVEDIR = tempfile.mkdtemp()  # Dumping the ZIP archive
+    ARCHIVEDIR = app.static_folder  # Dumping the ZIP archive
 
-    def unlink_content(directory):
-        for p in pathlib.Path(directory).rglob('*'):
+    def unlink_content(directory, only_zip=False):
+        if only_zip:
+            pattern = '*.zip'
+        else:
+            pattern = '*'
+        for p in pathlib.Path(directory).rglob(pattern):
             if p.is_file():
                 p.unlink()
     
     unlink_content(TEMPDIR)
-    unlink_content(ARCHIVEDIR)
+    unlink_content(ARCHIVEDIR, only_zip=True)
 
     if application.utils.is_connected():
         return flask.render_template('index.html')
@@ -65,18 +69,6 @@ def model():
     data = application.utils.load_data(TEMPDIR)
     shutil.rmtree(TEMPDIR)  # Removing the tempdir
     return flask.render_template('model.html', **data)
-
-
-@app.route('/model/download')
-def download_model_output():
-    """
-    Sends the generated data as ZIP archive to the user.
-    """
-    zip_archive = str(pathlib.Path(ARCHIVEDIR, 'topicmodeling.zip'))
-    return flask.send_file(filename_or_fp=zip_archive,
-                           mimetype='application/zip',
-                           attachment_filename='topicmodeling.zip',
-                           as_attachment=True)
 
 
 @app.errorhandler(werkzeug.exceptions.HTTPException)
