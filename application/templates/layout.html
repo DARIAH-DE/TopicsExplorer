@@ -19,14 +19,11 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
 
   {% if bokeh_resources|safe == "include" %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bokeh-min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bokeh-tables-min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bokeh-widgets-min.css') }}">
-
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bokeh.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bokeh-gl.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bokeh-tables.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bokeh-widgets.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bokeh-0.12.7.min.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bokeh-widgets-0.12.7.min.css') }}" type="text/css" />
+            
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bokeh-0.12.7.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bokeh-widgets-0.12.7.min.js') }}"></script>
 
     {% block bokeh_scripts%}
     {% endblock %}
