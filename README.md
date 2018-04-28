@@ -6,7 +6,7 @@ This application presents **a user-friendly topic modeling workflow** consisting
 ## Getting started
 Windows and macOS users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
 
-1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the ZIP archive for your OS.
+1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the ZIP archive for your OS.
 2. Unzip the archive, e.g. using [7-zip](http://www.7-zip.org/).
 3. Run the app by double-clicking the file `DARIAH Topics Explorer`.
 
@@ -14,7 +14,7 @@ Windows and macOS users **do not** have to install additional software. The appl
 
 Linux users **have to** use the source code and install some dependencies, but Windows and macOS users can of course also do this:
 
-1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases) and download the **source code** as ZIP archive.
+1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the **source code** as ZIP archive.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
 3. Make sure you have [Pipenv](https://docs.pipenv.org/) installed (if not: use `pip install pipenv`).
 4. Run `pipenv install`, and afterwards `pipenv shell`.
