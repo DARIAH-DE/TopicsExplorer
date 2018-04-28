@@ -87,7 +87,7 @@ def workflow(tempdir, archive_dir):
             cleaning = "removed the <b>{0} most frequent words</b>, based on a threshold".format(len(stopwords))
         except KeyError:
             stopwords = user_input['stopwords'].read().decode('utf-8')
-            stopwords = dariah_topics.preprocessing.tokenize(stopwords)
+            stopwords = list(dariah_topics.preprocessing.tokenize(stopwords))
             cleaning = "removed the <b>{0} most frequent words</b>, based on an external stopwords list".format(len(stopwords))
         hapax_legomena = dariah_topics.preprocessing.find_hapax_legomena(document_term_matrix)
         features = set(stopwords).union(hapax_legomena)

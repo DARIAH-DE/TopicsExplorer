@@ -67,7 +67,6 @@ def model():
     Loads the dumped data, deletes the temporary data, and renders the model page.
     """
     data = application.utils.load_data(TEMPDIR)
-    shutil.rmtree(TEMPDIR)  # Removing the tempdir
     return flask.render_template('model.html', **data)
 
 
