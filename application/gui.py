@@ -35,7 +35,7 @@ class WebPage(PyQt5.QtWebEngineWidgets.QWebEnginePage):
         ready_url = url.toEncoded().data().decode()
         is_clicked = kind == self.NavigationTypeLinkClicked
 
-        if is_clicked and (self.root_url not in ready_url or 'download' in ready_url):
+        if is_clicked and (self.root_url not in ready_url):
             PyQt5.QtGui.QDesktopServices.openUrl(url)
             return False
         return super(WebPage, self).acceptNavigationRequest(url, kind, is_main_frame)
