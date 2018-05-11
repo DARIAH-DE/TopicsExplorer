@@ -54,9 +54,10 @@ The following visualization is based on the distribution of 10 topics over a tot
 ## Troubleshooting
 * Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
 * If you are confronted with any problems regarding the application, use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues) – but suggestions for improvements, wishes, or hints on typos are of course also welcome.
-* If you are unable to run Pipenv, e.g. `-bash: pipenv: command not found`, try `python -m pipenv` instead of only `pipenv`.
-* If you have problems with Pipenv, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment.
+* If you are unable to run Pipenv, e.g. `-bash: pipenv: command not found`, try `python -m pipenv` instead of only `pipenv`. Use `python3` instead of `python` if you are on a Mac or on a Linux machine.
+* If you have problems with Pipenv, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment. Use `pip3` instead of `pip` if you are on a Mac or on a Linux machine.
 * If the application fails after pulling from GitHub, try updating the requirements in your virtual environment with `pipenv update`.
+* If you are on Ubuntu 18.04 and get the error `[1:1:0100/000000.576372:ERROR:broker_posix.cc(43)] Invalid node channel message` after running the `topicsexplorer.py`, run `sudo apt-get install libglvnd-dev` in your command-line and try again.
 
 ## Developing
 If you want to run the development version, you can either `git clone` this repository, or download the [ZIP archive](https://github.com/DARIAH-DE/TopicsExplorer/archive/master.zip).
