@@ -259,3 +259,9 @@ def exclude_punctuations(s):
     exclude = set('!"#$&\'()*+,-.:;<=>?@^_`{}~')
     s = ''.join(c for c in s if c not in exclude)
     return re.sub(' ', '', s)
+    
+
+def unlink_content(directory, pattern='*'):
+    for p in pathlib.Path(directory).rglob(pattern):
+        if p.is_file():
+            p.unlink()

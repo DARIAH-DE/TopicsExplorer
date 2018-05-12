@@ -208,8 +208,9 @@ def workflow(tempdir, archive_dir):
         topics.to_csv(str(pathlib.Path(tempdir, 'topics.csv')), encoding='utf-8')
         document_topics.to_csv(str(pathlib.Path(tempdir, 'document_topics.csv')), encoding='utf-8')
         parameter.to_csv(str(pathlib.Path(tempdir, 'parameter.csv')), encoding='utf-8')
-
-        shutil.make_archive(str(pathlib.Path(archive_dir, 'topicmodeling')), 'zip', tempdir)
+        
+        archive = str(pathlib.Path(archive_dir, 'topicmodeling'))
+        shutil.make_archive(archive, 'zip', tempdir)
 
         data = {'cleaning': cleaning,
                 'bokeh_resources': 'include',
