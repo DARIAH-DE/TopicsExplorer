@@ -132,8 +132,8 @@ def boxplot(stats):
     fig.segment(x_labels, upper.score, x_labels, q3.score, line_color='black')
     fig.segment(x_labels, lower.score, x_labels, q1.score, line_color='black')
 
-    fig.vbar(x_labels, 0.7, q2.score, q3.score, fill_color='#ffffff', line_color='black')
-    fig.vbar(x_labels, 0.7, q1.score, q2.score, fill_color='#ffffff', line_color='black')
+    fig.vbar(x_labels, 0.7, q2.score, q3.score, fill_color='#729fcf', line_color='black')
+    fig.vbar(x_labels, 0.7, q1.score, q2.score, fill_color='#729fcf', line_color='black')
 
     fig.rect(x_labels, lower.score, 0.2, 0.01, line_color='black')
     fig.rect(x_labels, upper.score, 0.2, 0.01, line_color='black')
