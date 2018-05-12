@@ -3,17 +3,17 @@ This application presents **a user-friendly topic modeling workflow** consisting
 
 > If you do not know anything about topic modeling or programming in general, this is where you start.
 
-## Overview
-* [Getting started]
-* The application
-* The sample corpus
-* Example visualization
-* Troubleshooting
-* Developing
-    * Requirements
-    * Running the application
-    * Creating a standalone build
-* About DARIAH-DE
+# Overview
+* [Getting started](#getting-started)
+* [The application](#the-application)
+* [The sample corpus](#the-sample-corpus)
+* [Example visualization](#example-visualization)
+* [Troubleshooting](#troubleshooting)
+* [Developing](#developing)
+    * [Requirements](#requirements)
+    * [Running the application](#running-the-application)
+    * [Creating a standalone build](#creating-a-standalone-build)
+* [About DARIAH-DE](#about-dariah-de)
 
 ## Getting started
 Windows and macOS users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
