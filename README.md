@@ -10,8 +10,6 @@ Windows and macOS users **do not** have to install additional software. The appl
 2. Unzip the archive, e.g. using [7-zip](http://www.7-zip.org/).
 3. Run the app by double-clicking the file `DARIAH Topics Explorer`.
 
-> If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
-
 Linux users **have to** use the source code and install some dependencies, but Windows and macOS users can of course also do this:
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the **source code** as ZIP archive.
@@ -20,7 +18,7 @@ Linux users **have to** use the source code and install some dependencies, but W
 4. Run `pipenv install`, and afterwards `pipenv shell`.
 5. To start the application, type `python topicsexplorer.py`, and press enter.
 
-> If you want to use the sample corpus, you must clone the repository with Git (**not** download the source code from **the release-section**). See also section [The sample corpus](#the-sample-corpus).
+> If you want to use the sample corpus, you must clone the repository with Git (**not** download the source code from the **release-section**). See also section [The sample corpus](#the-sample-corpus).
 
 ## The application
 ![Demonstrator Screenshot](docs/images/screenshot.png)
@@ -54,6 +52,7 @@ The following visualization is based on the distribution of 10 topics over a tot
 ## Troubleshooting
 * Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
 * If you are confronted with any problems regarding the application, use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues) – but suggestions for improvements, wishes, or hints on typos are of course also welcome.
+* If you run the standalone executable, are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
 * If you are unable to run Pipenv, e.g. `-bash: pipenv: command not found`, try `python -m pipenv` instead of only `pipenv`. Use `python3` instead of `python` if you are on a Mac or on a Linux machine.
 * If you have problems with Pipenv, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment. Use `pip3` instead of `pip` if you are on a Mac or on a Linux machine.
 * If the application fails after pulling from GitHub, try updating the requirements in your virtual environment with `pipenv update`.
