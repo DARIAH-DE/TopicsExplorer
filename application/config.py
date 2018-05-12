@@ -22,5 +22,4 @@ def create_app(**kwargs):
                           **kwargs)
     else:
         app = flask.Flask(import_name=__name__, **kwargs)
-    print(dumpdir, archivedir)
     return app, str(dumpdir), str(archivedir)
