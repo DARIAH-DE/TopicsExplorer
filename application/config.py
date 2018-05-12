@@ -5,8 +5,9 @@ import tempfile
 
 def create_app(**kwargs):
     """
-    Creates a Flask app. If the scripts were frozen with PyInstaller,
-    the paths to the template and static folder are adjusted accordingly.
+    Creates a Flask app and temporary folders. If the scripts were frozen with
+    PyInstaller, the paths to the template and static folder are adjusted
+    accordingly.
     """
     tempdir = tempfile.gettempdir()
     dumpdir = pathlib.Path(tempdir, 'topicsexplorerdump')

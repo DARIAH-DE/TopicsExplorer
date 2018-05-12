@@ -26,6 +26,9 @@ class WebPage(PyQt5.QtWebEngineWidgets.QWebEnginePage):
         self.root_url = root_url
 
     def home(self):
+        """
+        Loads the root URL.
+        """
         self.load(PyQt5.QtCore.QUrl(self.root_url))
 
     def acceptNavigationRequest(self, url, kind, is_main_frame):
@@ -42,6 +45,10 @@ class WebPage(PyQt5.QtWebEngineWidgets.QWebEnginePage):
 
 
 def init_gui(application, port=5000, argv=None):
+    """
+    Initializes the Qt web engine, starts the web application, and loads the
+    main page.
+    """
     if argv is None:
         argv = sys.argv
 
@@ -72,6 +79,9 @@ def init_gui(application, port=5000, argv=None):
     webview.setPage(page)
 
     def download_requested(item):
+        """
+        Opens a file dialog to save the ZIP archive.
+        """
         path = PyQt5.QtWidgets.QFileDialog.getSaveFileName(None,
                                                            'Select destination folder and file name',
                                                            '',
@@ -86,4 +96,7 @@ def init_gui(application, port=5000, argv=None):
 
 
 def run():
+    """
+    Calls the main function.
+    """
     sys.exit(init_gui(application.web.app))

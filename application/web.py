@@ -11,8 +11,8 @@ app, dumpdir, archivedir = application.config.create_app()
 @app.route('/')
 def index():
     """
-    Renders the main page. A warning pops up, if the machine is not
-    connected to the internet.
+    Renders the main page, and unlinks the content (if any) in the temporary
+    folders. A warning pops up, if the machine is not connected to the internet.
     """
     application.utils.unlink_content(dumpdir)
     application.utils.unlink_content(archivedir)
@@ -41,8 +41,7 @@ def modeling():
         app.update_template_context(context)
         t = app.jinja_env.get_template(template_name)
         return t.stream(context)
-    stream = flask.stream_with_context(application.modeling.workflow(dumpdir,
-                                                                     archivedir))
+    stream = flask.stream_with_context(application.modeling.workflow(dumpdir, archivedir))
     return flask.Response(stream_template('modeling.html', info=stream))
 
 
@@ -53,9 +52,13 @@ def model():
     """
     data = application.utils.load_data(dumpdir)
     return flask.render_template('model.html', **data)
-    
+
+
 @app.route('/download')
 def download():
+    """
+    Sends the ZIP archive.
+    """
     return flask.send_file(str(pathlib.Path(archivedir, 'topicmodeling.zip')))
 
 
