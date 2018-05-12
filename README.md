@@ -14,7 +14,7 @@ Linux users **have to** use the source code and install some dependencies, but W
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the **source code** as ZIP archive.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
-3. Make sure you have [Pipenv](https://docs.pipenv.org/) installed (if not: use `pip3 install pipenv`).
+3. Make sure you have [Pipenv](https://docs.pipenv.org/) installed (if not: use `pip3 install --user pipenv`).
 4. Run `pipenv install`, and afterwards `pipenv shell`.
 5. To start the application, type `python topicsexplorer.py`, and press enter.
 
