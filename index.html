@@ -51,26 +51,21 @@
               <h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
               <p>Windows and macOS users <strong>do not</strong> have to install additional software. The application itself is <a class="reference external" href="https://en.wikipedia.org/wiki/Portable_application">portable</a>.</p>
               <ol class="arabic simple">
-                <li>Go to the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases/latest">release-section</a> and download the ZIP archive for your OS.</li>
-                <li>Unzip the archive, e.g. using <a class="reference external" href="http://www.7-zip.org">7-zip</a>.</li>
+                <li>Go to the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases/latest">release-section</a> and download the archive for your OS.</li>
+                <li>Extract the content of the archive.</li>
                 <li>Run the app by double-clicking the file <strong>DARIAH Topics Explorer</strong>.</li>
               </ol>
-              <div class="admonition note">
-                <p class="first admonition-title">Note</p>
-                <p class="last">If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to
-                  run the file anyway.</p>
-              </div>
               <p>Linux users <strong>have to</strong> use the source code and install some dependencies, but Windows and macOS users can of course also do this:</p>
               <ol class="arabic simple">
                 <li>Go to the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases/latest">release-section</a> and download the <strong>source code</strong> as ZIP archive.</li>
                 <li>Unzip the archive, e.g. using <code>unzip</code> via the command-line.</li>
-                <li>Make sure you have <a class="reference external" href="https://docs.pipenv.org/">Pipenv</a> installed (if not: use <code>pip install pipenv</code>).</li>
-                <li>Run <code>pipenv install</code>, and afterwards <code>pipenv shell</code>.</li>
+                <li>Make sure you have <a class="reference external" href="https://docs.pipenv.org/">Pipenv</a> installed (if not: use <code>pip3 install --user pipenv</code>).</li>
+                <li>Run <code>pipenv install</code> within the extracted archive, and afterwards <code>pipenv shell</code>.</li>
                 <li>To start the application, type <code>python topicsexplorer.py</code>, and press enter.</li>
               </ol>
               <div class="admonition note">
                 <p class="first admonition-title">Note</p>
-                <p class="last">If you want to use a sample corpus, you must clone the repository with Git (<strong>not</strong> download the source code from <strong>the release-section</strong>). See also section <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer#the-sample-corpus">The sample corpus</a> on GitHub.</p>
+                <p class="last">If you want to use the sample corpus, you must clone the repository with Git (<strong>not</strong> download the source code from <strong>the release-section</strong>). See also section <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer#the-sample-corpus">The sample corpus</a> on GitHub.</p>
               </div>
             </div>
             <div class="section" id="the-application">
@@ -3795,10 +3790,17 @@
             <div class="section" id="troubleshooting">
               <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
               <ul class="simple">
-                <li>Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.</li>
-                <li>If you are confronted with any problems regarding the application, use <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/issues">GitHub issues</a> – but suggestions for improvements, wishes, or hints on typos
+                <li>Please be patient. Depending on corpus size and number of iterations, the process <strong>may take some time</strong>, meaning something between some seconds and some hours.</li>
+                <li>If you are confronted with <strong>any problems</strong> regarding the application, use <strong><a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/issues">GitHub issues</a></strong> – but suggestions for improvements, wishes, or hints on typos
                   are of course also welcome.</li>
+                <li>If you are on a <strong>Mac</strong> and get an error message saying that the file is from an <strong>“unidentified developer”</strong>, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to
+                  run the file anyway.</li>
+                <li>For more technical troubleshooting, have a look at the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer#the-sample-corpus">README</a> on GitHub.</li>
               </ul>
+            </div>
+            <div class="section" id="developing">
+              <h2>Developing<a class="headerlink" href="#developing" title="Permalink to this headline">¶</a></h2>
+              <p>If you are interested in the more technical parts, using the development version in general, or even want to contribute, please check out the <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer#developing">GitHub</a> page. 
             </div>
             <div class="section" id="about-dariah-de">
               <h2>About DARIAH-DE<a class="headerlink" href="#about-dariah-de" title="Permalink to this headline">¶</a></h2>
@@ -3824,6 +3826,7 @@
               <li><a class="reference internal" href="#the-application">The application</a></li>
               <li><a class="reference internal" href="#example-visualization">Example visualization</a></li>
               <li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
+              <li><a class="reference internal" href="#developing">Developing</a></li>
               <li><a class="reference internal" href="#about-dariah-de">About DARIAH-DE</a></li>
             </ul>
           </li>
