@@ -16,11 +16,7 @@ def index():
     """
     application.utils.unlink_content(dumpdir)
     application.utils.unlink_content(archivedir)
-
-    if application.utils.is_connected():
-        return flask.render_template('index.html')
-    else:
-        return flask.render_template('index.html', internet='warning')
+    return flask.render_template('index.html')
 
 
 @app.route('/help')
