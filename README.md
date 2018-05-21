@@ -1,26 +1,36 @@
 # DARIAH Topics Explorer
-This application presents **a user-friendly topic modeling workflow** consisting of data preprocessing, the actual modeling with [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), and the visualization of the model output to explore the semantic content of your text collection.
+This application presents a **user-friendly topic modeling workflow** consisting of data preprocessing, the actual modeling with [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), and the visualization of the model output to explore the semantic content of your text collection.
 
 > If you do not know anything about topic modeling or programming in general, this is where you start.
+
+# Overview
+* [Getting started](#getting-started)
+* [The application](#the-application)
+* [The sample corpus](#the-sample-corpus)
+* [Example visualization](#example-visualization)
+* [Troubleshooting](#troubleshooting)
+* [Developing](#developing)
+    * [Requirements](#requirements)
+    * [Running the application](#running-the-application)
+    * [Creating a standalone build](#creating-a-standalone-build)
+* [About DARIAH-DE](#about-dariah-de)
 
 ## Getting started
 Windows and macOS users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the ZIP archive for your OS.
-2. Unzip the archive, e.g. using [7-zip](http://www.7-zip.org/).
+2. Extract the content of the archive.
 3. Run the app by double-clicking the file `DARIAH Topics Explorer`.
-
-> If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
 
 Linux users **have to** use the source code and install some dependencies, but Windows and macOS users can of course also do this:
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the **source code** as ZIP archive.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
-3. Make sure you have [Pipenv](https://docs.pipenv.org/) installed (if not: use `pip install pipenv`).
+3. Make sure you have [Pipenv](https://docs.pipenv.org/) installed (if not: use `pip3 install --user pipenv`).
 4. Run `pipenv install`, and afterwards `pipenv shell`.
 5. To start the application, type `python topicsexplorer.py`, and press enter.
 
-> If you want to use the sample corpus, you must clone the repository with Git (**not** download the source code from **the release-section**). See also section [The sample corpus](#the-sample-corpus).
+> If you want to use the sample corpus, you must clone the repository with Git (**not** download the source code from the **release-section**). See also section [The sample corpus](#the-sample-corpus).
 
 ## The application
 ![Demonstrator Screenshot](docs/images/screenshot.png)
@@ -52,11 +62,20 @@ The following visualization is based on the distribution of 10 topics over a tot
 > **DARIAH Topics Explorer** allows you to analyze and explore your own text corpora using topic models – without prior knowledge or special prerequisites.
 
 ## Troubleshooting
-* Please be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
-* If you are confronted with any problems regarding the application, use [GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues) – but suggestions for improvements, wishes, or hints on typos are of course also welcome.
-* If you are unable to run Pipenv, e.g. `-bash: pipenv: command not found`, try `python -m pipenv` instead of only `pipenv`.
-* If you have problems with Pipenv, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment.
-* If the application fails after pulling from GitHub, try updating the requirements in your virtual environment with `pipenv update`.
+In general:
+* If you are confronted with **any problems** regarding the application, use **[GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues)** – but suggestions for improvements, wishes, or hints on typos are of course also welcome.
+* Please be patient. Depending on corpus size and number of iterations, the process **may take some time**, meaning something between some seconds and some hours.
+
+Regarding the standalone executable:
+* If the program displays an **error message at startup**, make sure that you have unpacked the archive.
+* If you are on a **Mac** and get an error message saying that the file is from an **“unidentified developer”**, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
+* On a **Windows** machine, if you are not able to start the program, if nothing happens for a long time, or if you get an error message, go to the `src` folder, search for the file `webapp.exe` and click on it.
+
+Regarding the source code or development version:
+* If you are unable to run **Pipenv**, e.g. `-bash: pipenv: command not found`, try `python -m pipenv` instead of only `pipenv`. Use `python3` instead of `python` if you are on a Mac or on a Linux machine.
+* If you have problems with **Pipenv**, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment. Use `pip3` instead of `pip` if you are on a Mac or on a Linux machine.
+* If the application fails after **pulling from GitHub**, try updating the requirements in your virtual environment with `pipenv update`.
+* If you are on **Ubuntu 18.04** and get the error `[1:1:0100/000000.576372:ERROR:broker_posix.cc(43)] Invalid node channel message` after running the `topicsexplorer.py`, run `sudo apt-get install libglvnd-dev` in your command-line and try again.
 
 ## Developing
 If you want to run the development version, you can either `git clone` this repository, or download the [ZIP archive](https://github.com/DARIAH-DE/TopicsExplorer/archive/master.zip).

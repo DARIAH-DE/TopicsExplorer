@@ -4,10 +4,11 @@ import application
 import argparse
 
 
-DESCRIPTION = "Run DARIAH Topics Explorer either as a standalone desktop "\
-              "application with its own window, or as a web application in a "\
-              "browser. If you do not specify any parameters, the desktop "\
-              "application is started."
+DESCRIPTION = """
+              Run DARIAH Topics Explorer either as a desktop application with 
+              its own window, or as a web application in a browser. If you do 
+              not specify any parameters, the desktop application is started.
+              """
 
 parser = argparse.ArgumentParser(description=DESCRIPTION)
 parser.add_argument('--browser', action='store_true',

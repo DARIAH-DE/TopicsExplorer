@@ -88,7 +88,7 @@ def workflow(tempdir, archive_dir):
         except KeyError:
             stopwords = user_input['stopwords'].read().decode('utf-8')
             stopwords = list(dariah_topics.preprocessing.tokenize(stopwords))
-            cleaning = "removed the <b>{0} most frequent words</b>, based on an external stopwords list".format(len(stopwords))
+            cleaning = "removed <b>{0} words</b>, based on an external stopwords list".format(len(stopwords))
         hapax_legomena = dariah_topics.preprocessing.find_hapax_legomena(document_term_matrix)
         features = set(stopwords).union(hapax_legomena)
         features = [token for token in features if token in document_term_matrix.columns]
@@ -208,8 +208,9 @@ def workflow(tempdir, archive_dir):
         topics.to_csv(str(pathlib.Path(tempdir, 'topics.csv')), encoding='utf-8')
         document_topics.to_csv(str(pathlib.Path(tempdir, 'document_topics.csv')), encoding='utf-8')
         parameter.to_csv(str(pathlib.Path(tempdir, 'parameter.csv')), encoding='utf-8')
-
-        shutil.make_archive(str(pathlib.Path(archive_dir, 'topicmodeling')), 'zip', tempdir)
+        
+        archive = str(pathlib.Path(archive_dir, 'topicmodeling'))
+        shutil.make_archive(archive, 'zip', tempdir)
 
         data = {'cleaning': cleaning,
                 'bokeh_resources': 'include',

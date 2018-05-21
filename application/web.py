@@ -6,31 +6,16 @@ import pathlib
 import werkzeug.exceptions
 
 
-app = application.config.create_app()  # Creating the app
+app, dumpdir, archivedir = application.config.create_app()
 
 @app.route('/')
 def index():
     """
-    Renders the main page. A warning pops up, if the machine is not
-    connected to the internet.
+    Renders the main page, and unlinks the content (if any) in the temporary
+    folders. A warning pops up, if the machine is not connected to the internet.
     """
-    global TEMPDIR
-    global ARCHIVEDIR
-
-    TEMPDIR = tempfile.mkdtemp()  # Dumping the logfile, temporary data, etc.
-    ARCHIVEDIR = app.static_folder  # Dumping the ZIP archive
-
-    def unlink_content(directory, only_zip=False):
-        if only_zip:
-            pattern = '*.zip'
-        else:
-            pattern = '*'
-        for p in pathlib.Path(directory).rglob(pattern):
-            if p.is_file():
-                p.unlink()
-    
-    unlink_content(TEMPDIR)
-    unlink_content(ARCHIVEDIR, only_zip=True)
+    application.utils.unlink_content(dumpdir)
+    application.utils.unlink_content(archivedir)
 
     if application.utils.is_connected():
         return flask.render_template('index.html')
@@ -56,8 +41,7 @@ def modeling():
         app.update_template_context(context)
         t = app.jinja_env.get_template(template_name)
         return t.stream(context)
-    stream = flask.stream_with_context(application.modeling.workflow(TEMPDIR,
-                                                                     ARCHIVEDIR))
+    stream = flask.stream_with_context(application.modeling.workflow(dumpdir, archivedir))
     return flask.Response(stream_template('modeling.html', info=stream))
 
 
@@ -66,8 +50,16 @@ def model():
     """
     Loads the dumped data, deletes the temporary data, and renders the model page.
     """
-    data = application.utils.load_data(TEMPDIR)
+    data = application.utils.load_data(dumpdir)
     return flask.render_template('model.html', **data)
+
+
+@app.route('/download')
+def download():
+    """
+    Sends the ZIP archive.
+    """
+    return flask.send_file(str(pathlib.Path(archivedir, 'topicmodeling.zip')))
 
 
 @app.errorhandler(werkzeug.exceptions.HTTPException)

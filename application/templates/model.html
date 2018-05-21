@@ -9,7 +9,7 @@
     <a href="{{ url_for('help') }}"> <i class="icon-question-sign icon-white"></i> Help</a>
   </li>
   <li>
-    <a href="{{url_for('static', filename='topicmodeling.zip')}}"> <i class="icon-download icon-white"></i> Save Graphics and Tables</a>
+    <a href="{{ url_for('download') }}"> <i class="icon-download icon-white"></i> Save Graphics and Tables</a>
   </li>
 </ul>
 {% endblock %}
@@ -30,7 +30,7 @@
       {{ table|safe }}
     {% endfor %}
     <br>
-    As you can see, your corpus is much smaller after cleaning. You {{ cleaning|safe }}. In addition so-called <i>hapax legomena</i> have been removed. In corpus linguistics, a hapax legomenon is a word that occurs only once within a context. So, if a word occurs only once in a document, it is very likely that the word is semantically insignificant – that is, not useful for the model.
+    As you can see, your corpus is much smaller after cleaning. You {{ cleaning|safe }}. In addition so-called <a href="https://en.wikipedia.org/wiki/Hapax_legomenon"><i>hapax legomena</i></a> have been removed. In corpus linguistics, a hapax legomenon is a word that occurs only once within a context. So, if a word occurs only once in a document, it is very likely that the word is semantically insignificant – that is, not useful for the model.
     <br>
     <br>
     <center>{{ corpus_boxplot_div|safe }}</center>
