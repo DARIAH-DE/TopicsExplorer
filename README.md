@@ -3,7 +3,7 @@ This application presents a **user-friendly topic modeling workflow** consisting
 
 > If you do not know anything about topic modeling or programming in general, this is where you start.
 
-# Overview
+## Overview
 * [Getting started](#getting-started)
 * [The application](#the-application)
 * [The sample corpus](#the-sample-corpus)
