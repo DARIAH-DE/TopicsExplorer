@@ -37,8 +37,9 @@ def modeling():
         app.update_template_context(context)
         t = app.jinja_env.get_template(template_name)
         return t.stream(context)
+    internet = application.utils.is_connected()
     stream = flask.stream_with_context(application.modeling.workflow(dumpdir, archivedir))
-    return flask.Response(stream_template('modeling.html', info=stream))
+    return flask.Response(stream_template('modeling.html', stream=stream, internet=internet))
 
 
 @app.route('/model')

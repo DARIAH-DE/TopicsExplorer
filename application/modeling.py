@@ -5,6 +5,7 @@ import logging
 import lda
 import time
 import flask
+import random
 import shutil
 import sys
 import numpy as np
@@ -50,30 +51,48 @@ def workflow(tempdir, archive_dir):
                       'num_iterations': int(flask.request.form['num_iterations'])}
 
         if flask.request.files.get('stopword_list', None):
+            #yield "running", "Collecting external stopwords list ...", len(user_input['files']), user_input['num_topics'], user_input['num_iterations']
             user_input['stopwords'] = flask.request.files['stopword_list']
         else:
+            #yield "running", "Collecting threshold for stopwords ...", len(user_input['files']), user_input['num_topics'], user_input['num_iterations']
             user_input['mfw'] = int(flask.request.form['mfw_threshold'])
 
         parameter = pd.Series()
         parameter['Corpus size, in documents'] = len(user_input['files'])
         parameter['Corpus size (raw), in tokens'] = 0
 
-        if len(user_input['files']) < 5:
+        yield "running", "Es funktioniert", "", "", "", "", "", ""
+        time.sleep(3)
+        yield "running", "Nice!!!", "", "", "", "", "", ""
+
+    except Exception as e:
+        print("e") 
+
+        """if len(user_input['files']) < 5:
             raise Exception("Your corpus is too small. Please select at least five text files.")
 
-        yield "running", "Reading and tokenizing corpus ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
+        yield "running", "Reading and tokenizing corpus ...", len(user_input['files']), user_input['num_topics'], user_input['num_iterations']
         tokenized_corpus = pd.Series()
         for file in user_input['files']:
             filename = pathlib.Path(werkzeug.utils.secure_filename(file.filename))
+            yield "running", "Tokenizing {0} ...".format(filename.stem), len(user_input['files']), user_input['num_topics'], user_input['num_iterations']
+            time.sleep(2)
             text = file.read().decode('utf-8')
             if filename.suffix != '.txt':
+                yield "running", "Removing markup from text ...", len(user_input['files']), user_input['num_topics'], user_input['num_iterations']
                 text = application.utils.remove_markup(text)
             tokens = list(dariah_topics.preprocessing.tokenize(text))
             tokenized_corpus[filename.stem] = tokens
             parameter['Corpus size (raw), in tokens'] += len(tokens)
             file.flush()
+        
+        excerpt_int = random.randint(0, len(tokenized_corpus) - 1)
+        excerpt = tokenized_corpus.iloc[excerpt_int]
+        token_int = random.randint(1, len(excerpt) - 71)
+        excerpt = '...' + ' '.join(excerpt[token_int:token_int + 70]) + '...'
 
-        yield "running", "Creating document-term matrix ...", INFO_2A, INFO_3A, INFO_4A, INFO_5A
+        yield "running", "Creating document-term matrix ...", excerpt, INFO_3A, INFO_4A, INFO_5A
+        time.sleep(5)
         document_labels = tokenized_corpus.index
         document_term_matrix = dariah_topics.preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
 
@@ -229,4 +248,4 @@ def workflow(tempdir, archive_dir):
         application.utils.compress(data, str(pathlib.Path(tempdir, 'data.pickle')))
         yield 'done', '', '', '', '', ''
     except Exception as error:
-        yield 'error', str(error), '', '', '', ''
+        yield 'error', str(error), '', '', '', ''"""
