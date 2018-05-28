@@ -69,6 +69,7 @@ In general:
 Regarding the standalone executable:
 * If the program displays an **error message at startup**, make sure that you have unpacked the archive.
 * If you are on a **Mac** and get an error message saying that the file is from an **“unidentified developer”**, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
+* You might get a similar error message as the one above on **Windows** systems: "Windows Defender SmartScreen prevented an unrecognized app from starting". If this is the case, please select "More Info" and then "Run anyway".
 * On a **Windows** machine, if you are not able to start the program, if nothing happens for a long time, or if you get an error message, go to the `src` folder, search for the file `webapp.exe` and click on it.
 
 Regarding the source code or development version:
