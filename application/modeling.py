@@ -240,4 +240,4 @@ def workflow(tempdir, archive_dir):
         application.utils.compress(data, str(pathlib.Path(tempdir, "data.pickle")))
         yield "done", "", "", "", "", "", ""
     except Exception as error:
-        yield "error", str(error)
+        yield "error", str(error), "", "", "", "", ""

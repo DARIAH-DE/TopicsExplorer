@@ -30,6 +30,11 @@
       color: #5C3566;
     }
 
+    a.try-again-button:hover {
+      color: white;
+      text-decoration: none;
+    }
+
     hr {
       border: none;
       height: 1px;
@@ -38,8 +43,21 @@
       margin-top: 15px;
     }
 
-    .display-none {
-      display: none;
+    .modal-title {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .try-again-button {
+      background-color: #555753;
+      font-family: Arial, Helvetica, sans-serif;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      padding: 1.5% 3%;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      cursor: pointer;
     }
 
     .wrapper {
@@ -157,16 +175,18 @@
     {% elif identifier == "done" %}
       window.location.replace("{{ url_for('model') }}");
     {% elif identifier == "error" %}
-      document.getElementById("inner-content").classList.add("display-none");
       var parent = document.getElementById("error-popup");
       parent.setAttribute("role", "dialog");
       parent.setAttribute("aria-hidden", "true");
       var newModalDialog = document.createElement("div");
+      parent.appendChild(newModalDialog);
       newModalDialog.setAttribute("class", "modal-dialog modal dialog centered");
       newModalDialog.setAttribute("role", "document");
       var newModalContent = document.createElement("div");
+      newModalDialog.appendChild(newModalContent);
       newModalContent.setAttribute("class", "modal-content");
       var newModalHeader = document.createElement("div");
+      newModalContent.appendChild(newModalHeader);
       newModalHeader.setAttribute("class", "modal-header");
       var newModalTitle = document.createElement("h3");
       newModalTitle.setAttribute("class", "modal-title");
@@ -174,19 +194,21 @@
       newModalHeader.appendChild(newModalTitle);
       var newModalBody = document.createElement("div");
       newModalBody.setAttribute("class", "modal-body");
-      newModalBody.innerHTML = "Looks like something didn't work out as expected. Maybe you can figure out this error message by yourself: <br><br><b>{{ state }}</b><br><br>In any case, it would be very useful for us if you write a bug report either on <a href='https://github.com/DARIAH-DE/TopicsExplorer/issues'>GitHub</a>, or send an email to <a href='mailto:severin.simmler@stud-mail.uni-wuerzburg.de'>Severin Simmler</a>. Please include the error message from above in your report, information about your operating system, and at best some details about your corpus (esp.file format).<br><br>";
+      newModalBody.innerHTML = "Looks like something didn't work out as expected. Maybe you can figure out this error message by yourself: <br><br><b>{{ state }}</b><br><br>In any case, it would be very useful for us if you write a bug report either on <a href='https://github.com/DARIAH-DE/TopicsExplorer/issues'>GitHub</a>, or send an email to <a href='mailto:severin.simmler@stud-mail.uni-wuerzburg.de'>Severin Simmler</a>. Please include the error message from above in your report, information about your operating system, and at best some details about your corpus (esp. file format).<br><br>";
       newModalContent.appendChild(newModalBody);
       var newModalFooter = document.createElement("div");
+      newModalBody.appendChild(newModalFooter);
       newModalFooter.setAttribute("class", "modal-footer");
-      var newButton = document.createElement("button")
-      newButton.setAttribute("class", "btn btn-secondary");
-      newButton.innerHTML = "<a href='{ url_for('index') }'>Go back and try again</a>";
+      var newButton = document.createElement("a");
+      newButton.setAttribute("class", "try-again-button");
+      newButton.setAttribute("href", "javascript:history.go(-1)");
+      newButton.text = "Go back and try again";
       newModalFooter.appendChild(newButton);
       
       $("#error-popup").modal({
         keyboard: false,
         backdrop: "static"
-      })
+      });
       $("#error-popup").modal("show");
     {% endif %}
   </script>
