@@ -58,9 +58,9 @@ def load_data(tempdir):
     topics_path = str(pathlib.Path(tempdir, "topics.csv"))
 
     data = decompress(data_path)
-    parameter = pd.read_csv(parameter_path, index_col=0, encoding="utf-8")
+    parameter = pd.read_csv(parameter_path, index_col=0, encoding="utf-8", sep=";")
     parameter.columns = [""]  # remove column names
-    topics = pd.read_csv(topics_path, index_col=0, encoding="utf-8")
+    topics = pd.read_csv(topics_path, index_col=0, encoding="utf-8", sep=";")
 
     data["parameter"] = [parameter.to_html(classes="parameter", border=0)]
     data["topics"] = [topics.to_html(classes="topics")]
