@@ -216,9 +216,9 @@ def workflow(tempdir, archive_dir):
 
         yield "running", "Dumping generated data ...", "", "", "", "", ""
         parameter = pd.DataFrame(pd.Series(parameter))
-        topics.to_csv(str(pathlib.Path(tempdir, "topics.csv")), encoding="utf-8")
-        document_topics.to_csv(str(pathlib.Path(tempdir, "document_topics.csv")), encoding="utf-8")
-        parameter.to_csv(str(pathlib.Path(tempdir, "parameter.csv")), encoding="utf-8")
+        topics.to_csv(str(pathlib.Path(tempdir, "topics.csv")), encoding="utf-8", sep=';')
+        document_topics.to_csv(str(pathlib.Path(tempdir, "document_topics.csv")), encoding="utf-8", sep=';')
+        parameter.to_csv(str(pathlib.Path(tempdir, "parameter.csv")), encoding="utf-8", sep=';')
         
         yield "running", "Making generated data ready for download ...", "", "", "", "", ""
         archive = str(pathlib.Path(archive_dir, "topicmodeling"))
