@@ -170,17 +170,17 @@ def workflow(tempdir, archive_dir):
                 height = document_topics.shape[0] * 28
             document_topics_heatmap = document_topics
 
-        yield "running", "Creating heatmap for document-topics distribution ...", "", "", "", "", ""
+        yield "running", "Creating heatmap ...", "", "", "", "", ""
         fig = dariah_topics.visualization.PlotDocumentTopics(document_topics_heatmap)
         heatmap = fig.interactive_heatmap(height=height,
                                           sizing_mode="scale_width",
-                                          tools="hover, pan, reset, wheel_zoom, zoom_in, zoom_out, save")
+                                          tools="hover, pan, reset, wheel_zoom, zoom_in, zoom_out")
         #bokeh.plotting.output_file(str(pathlib.Path(tempdir, "heatmap.html")))
         #bokeh.plotting.save(heatmap)
 
         heatmap_script, heatmap_div = bokeh.embed.components(heatmap)
 
-        yield "running", "Creating boxplot for corpus statistics ...", "", "", "", "", ""
+        yield "running", "Creating boxplot ...", "", "", "", "", ""
         corpus_boxplot = application.utils.boxplot(corpus_stats)
         corpus_boxplot_script, corpus_boxplot_div = bokeh.embed.components(corpus_boxplot)
         #bokeh.plotting.output_file(str(pathlib.Path(tempdir, "corpus_statistics.html")))
@@ -190,7 +190,7 @@ def workflow(tempdir, archive_dir):
             height = 580
         else:
             height = document_topics.shape[1] * 25
-        yield "running", "Creating barchart for topic-documents distribution ...", "", "", "", "", ""
+        yield "running", "Creating barcharts ...", "", "", "", "", ""
         topics_barchart = application.utils.barchart(document_topics, height=height, topics=topics)
         topics_script, topics_div = bokeh.embed.components(topics_barchart)
         #bokeh.plotting.output_file(str(pathlib.Path(tempdir, "topics_barchart.html")))
@@ -200,7 +200,6 @@ def workflow(tempdir, archive_dir):
             height = 580
         else:
             height = document_topics.shape[0] * 25
-        yield "running", "Creating barchart for document-topics distribution ...", "", "", "", "", ""
         documents_barchart = application.utils.barchart(document_topics.T, height=height)
         documents_script, documents_div = bokeh.embed.components(documents_barchart)
         #bokeh.plotting.output_file(str(pathlib.Path(tempdir, "document_topics_barchart.html")))
@@ -220,7 +219,7 @@ def workflow(tempdir, archive_dir):
         document_topics.to_csv(str(pathlib.Path(tempdir, "document_topics.csv")), encoding="utf-8", sep=';')
         parameter.to_csv(str(pathlib.Path(tempdir, "parameter.csv")), encoding="utf-8", sep=';')
         
-        yield "running", "Making generated data ready for download ...", "", "", "", "", ""
+        yield "running", "Zipping generated data ...", "", "", "", "", ""
         archive = str(pathlib.Path(archive_dir, "topicmodeling"))
         shutil.make_archive(archive, "zip", tempdir)
 
@@ -236,7 +235,7 @@ def workflow(tempdir, archive_dir):
                 "corpus_boxplot_div": corpus_boxplot_div,
                 "first_topic": list(document_topics.index)[0],
                 "first_document": list(document_topics.columns)[0]}
-        yield "running", "Everything went well! The results page is currently being created ...", "", "", "", "", ""
+        yield "running", "Building results page ...", "", "", "", "", ""
         application.utils.compress(data, str(pathlib.Path(tempdir, "data.pickle")))
         yield "done", "", "", "", "", "", ""
     except Exception as error:

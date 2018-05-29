@@ -13,7 +13,7 @@ import socket
 import random
 
 
-TOOLS = "hover, pan, reset, wheel_zoom, zoom_in, zoom_out, save"
+TOOLS = "hover, pan, reset, wheel_zoom, zoom_in, zoom_out"
 JAVASCRIPT = """
              var f = cb_obj.value;
              var options = %s;
