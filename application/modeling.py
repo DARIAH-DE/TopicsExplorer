@@ -46,7 +46,7 @@ def workflow(tempdir, archive_dir):
             yield "running", "Collecting external stopwords list ...", "", "", "", "", ""
             user_input["stopwords"] = flask.request.files["stopword_list"]
         else:
-            yield "running", "Collecting threshold value for stopwords ...", "", "", "", "", ""
+            yield "running", "Collecting threshold for stopwords ...", "", "", "", "", ""
             user_input["mfw"] = int(flask.request.form["mfw_threshold"])
 
         parameter = pd.Series()
@@ -69,12 +69,13 @@ def workflow(tempdir, archive_dir):
             tokens = list(dariah_topics.preprocessing.tokenize(text))
             tokenized_corpus[filename.stem] = tokens
             parameter["Corpus size (raw), in tokens"] += len(tokens)
-            file.flush()
         
         excerpt_int = random.randint(0, len(tokenized_corpus) - 1)
         excerpt = tokenized_corpus.iloc[excerpt_int]
         token_int = random.randint(1, len(excerpt) - 71)
         excerpt = "..." + " ".join(excerpt[token_int:token_int + 70]) + "..."
+
+        350
 
         yield "running", "Creating document-term matrix ...", excerpt, "", "", "", ""
         document_labels = tokenized_corpus.index
@@ -85,14 +86,13 @@ def workflow(tempdir, archive_dir):
         corpus_stats = pd.DataFrame({"score": np.array(document_term_matrix.sum(axis=1)),
                                      "group": group})
 
-        corpus_size = len(user_input["files"])
-        token_size = parameter["Corpus size (raw), in tokens"]
-        topic_size = user_input["num_topics"]
-        iteration_size = user_input["num_iterations"]
+        corpus_size = str(len(user_input["files"]))
+        token_size = str(parameter["Corpus size (raw), in tokens"])
+        topic_size = str(user_input["num_topics"])
+        iteration_size = str(user_input["num_iterations"])
 
-        yield "running", "Removing stopwords and hapax legomena from corpus ...", excerpt, corpus_size, token_size, topic_size, iteration_size
         try:
-            yield "running", "Determining {0} most frequent words from corpus ...".format(user_input["mfw"]), "", "", "", "", ""
+            yield "running", "Determining {0} most frequent words ...".format(user_input["mfw"]), "", "", "", "", ""
             stopwords = dariah_topics.preprocessing.find_stopwords(document_term_matrix, user_input["mfw"])
             cleaning = "removed the <b>{0} most frequent words</b>, based on a threshold value".format(user_input["mfw"])
         except KeyError:
@@ -114,16 +114,16 @@ def workflow(tempdir, archive_dir):
                                                          "group": group}))
         parameter["Corpus size (clean), in tokens"] = int(document_term_matrix.values.sum())
 
-        yield "running", "Accessing the values of the document-term matrix ...", "", "", "", "", ""
+        yield "running", "Accessing document-term matrix ...", "", "", "", "", ""
         document_term_arr = document_term_matrix.values.astype(int)
-        yield "running", "Accessing the vocabulary of the corpus ...", "", "", "", "", ""
+        yield "running", "Accessing vocabulary of the corpus ...", "", "", "", "", ""
         vocabulary = document_term_matrix.columns
 
         parameter["Size of vocabulary, in tokens"] = len(vocabulary)
         parameter["Number of topics"] = user_input["num_topics"]
         parameter["Number of iterations"] = user_input["num_iterations"]
 
-        yield "running", "Initializing LDA topic model (this step might take a while) ...", "", "", "", "", ""
+        yield "running", "Initializing LDA topic model ...", "", "", "", "", ""
         model = application.utils.enthread(target=lda_modeling,
                                            args=(document_term_arr,
                                                  user_input["num_topics"],
@@ -237,6 +237,6 @@ def workflow(tempdir, archive_dir):
                 "first_document": list(document_topics.columns)[0]}
         yield "running", "Everything went well! The results page is currently being created ...", "", "", "", "", ""
         application.utils.compress(data, str(pathlib.Path(tempdir, "data.pickle")))
-        yield "done"
+        yield "done", "", "", "", "", "", ""
     except Exception as error:
         yield "error", str(error)

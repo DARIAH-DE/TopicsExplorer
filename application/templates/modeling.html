@@ -135,7 +135,7 @@
   {% for identifier, state, excerpt, documents, tokens, topics, iterations in stream %}
   <script>
 
-    var corpus = "If you are interested in some facts and figures: Your corpus consists of {} documents, or {} tokens. You have selected {} topics at {} iterations."
+    var corpus = "If you are interested in some facts and figures: Your corpus consists of <b>{} documents</b>, or <b>{} tokens</b>. You have selected <b>{} topics</b> at <b>{} iterations</b>."
 
     String.prototype.format = function () {
       var i = 0,
