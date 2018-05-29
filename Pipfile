@@ -1,20 +1,28 @@
 [[source]]
+
 url = "https://pypi.org/simple/"
 verify_ssl = true
 name = "pypi"
 
+
 [packages]
-dariah_topics_light = "==1.0"
+
+dariah-topics-light = "==1.0"
 lda = "==1.0.5"
 bokeh = "==0.12.7"
 lxml = "==4.2.1"
 flask = "==0.12.2"
 pandas = "==0.22.0"
 numpy = "==1.14.2"
-pyqt5 = "==5.10.0"
+"pyqt5" = "==5.10.0"
+
 
 [dev-packages]
+
 pytest = "==3.5.0"
+pytest-cov = "*"
+
 
 [requires]
+
 python_version = "3.6"
