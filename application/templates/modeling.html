@@ -169,7 +169,7 @@
         document.getElementById("right-box-heading").innerText = "An excerpt from your corpus";
         document.getElementById("right-box-content").innerText = "{{ excerpt }}";
       {% endif %}
-      {% if tokens | length > 1 %}
+      {% if documents | length > 1 %}
         document.getElementById("left-box-content").innerHTML = corpus.format("{{ documents }}", "{{ tokens }}", "{{ topics }}", "{{ iterations }}");
       {% endif %}
     {% elif identifier == "done" %}

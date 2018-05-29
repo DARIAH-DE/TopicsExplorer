@@ -72,16 +72,14 @@ def workflow(tempdir, archive_dir):
         
         excerpt_int = random.randint(0, len(tokenized_corpus) - 1)
         excerpt = tokenized_corpus.iloc[excerpt_int]
-        token_int = random.randint(1, len(excerpt) - 71)
-        excerpt = "..." + " ".join(excerpt[token_int:token_int + 70]) + "..."
-
-        350
+        token_int = random.randint(1, len(excerpt) - 61)
+        excerpt = "..." + " ".join(excerpt[token_int:token_int + 60]) + "..."
 
         yield "running", "Creating document-term matrix ...", excerpt, "", "", "", ""
         document_labels = tokenized_corpus.index
         document_term_matrix = dariah_topics.preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
 
-        yield "running", "Determining corpus statistics ...", excerpt, "", "", "", ""
+        yield "running", "Determining corpus statistics ...", "", "", "", "", ""
         group = ["Document size (raw)" for i in range(parameter["Corpus size, in documents"])]
         corpus_stats = pd.DataFrame({"score": np.array(document_term_matrix.sum(axis=1)),
                                      "group": group})
@@ -92,7 +90,7 @@ def workflow(tempdir, archive_dir):
         iteration_size = str(user_input["num_iterations"])
 
         try:
-            yield "running", "Determining {0} most frequent words ...".format(user_input["mfw"]), "", "", "", "", ""
+            yield "running", "Determining {0} most frequent words ...".format(user_input["mfw"]), "", corpus_size, token_size, topic_size, iteration_size
             stopwords = dariah_topics.preprocessing.find_stopwords(document_term_matrix, user_input["mfw"])
             cleaning = "removed the <b>{0} most frequent words</b>, based on a threshold value".format(user_input["mfw"])
         except KeyError:
