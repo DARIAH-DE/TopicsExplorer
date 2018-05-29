@@ -22,7 +22,7 @@ body .narrow-modal {
   padding-bottom: 10px;
   padding-top: 15px;
   border-top: 1px solid #DDDDDD;
-  text-align: justify;
+  text-align: left;
 }
 
 hr {
