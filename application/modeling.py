@@ -132,7 +132,8 @@ def workflow(tempdir, archive_dir):
         while True:
             # During modeling the logfile is read continuously and the newest
             # line is sent to the UI as information for the user:
-            msg = application.utils.read_logfile(str(pathlib.Path(tempdir, "topicmodeling.log")))
+            msg = application.utils.read_logfile(str(pathlib.Path(tempdir, "topicmodeling.log")),
+                                                 total_iterations=iteration_size)
             if msg == None:
                 # When modeling is done, get the model:
                 model = model.get()

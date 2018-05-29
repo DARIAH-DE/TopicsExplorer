@@ -202,7 +202,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
         return bokeh.layouts.row(fig, textfield, sizing_mode="scale_width")
 
 
-def read_logfile(logfile):
+def read_logfile(logfile, total_iterations):
     """
     Reads a logfile and returns the current number of iterations.
     """
@@ -212,18 +212,21 @@ def read_logfile(logfile):
         text = file.readlines()
         line = text[-1][:-1]
 
+        wait = "Still initializing LDA topic model ..."
+        info = "Iteration {0} of {1} ..."
+
         if "likelihood" in line:
-            return pattern.findall(line)[0]
+            return info.format(pattern.findall(line)[0], total_iterations)
         elif "n_documents" in line:
-            return 0
+            return wait
         elif "vocab_size" in line:
-            return 0
+            return wait
         elif "n_words" in line:
-            return 0
+            return wait
         elif "n_topics" in line:
-            return 0
+            return wait
         elif "n_iter" in line:
-            return 0
+            return wait
 
 
 def enthread(target, args):
