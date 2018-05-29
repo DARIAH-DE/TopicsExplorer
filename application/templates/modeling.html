@@ -103,7 +103,7 @@
       </div>
     </div>
     <div class="box" id="main-box">
-      {% if internet == 'include' %}
+      {% if internet == "include" %}
         <img id="dariah-flower" src="https://raw.githubusercontent.com/DARIAH-DE/TopicsExplorer/testing/application/static/img/dariah_wait.gif">
         <div id="current-state">Collecting user input ...</div>
       {% else %}
@@ -132,33 +132,33 @@
     document.getElementById('right-box-content').innerHTML = blei[randInt];
   </script>
 
-  {% for identifier, state, excerpt, documents, tokens, types, topics, iterations in stream %}
+  {% for identifier, state, excerpt, documents, tokens, topics, iterations in stream %}
   <script>
 
-    var corpus = 'If you are interested in some facts and figures: Your corpus consists of {} documents, {} tokens, or {} types. You have selected {} topics at {} iterations.'
+    var corpus = "If you are interested in some facts and figures: Your corpus consists of {} documents, or {} tokens. You have selected {} topics at {} iterations."
 
     String.prototype.format = function () {
       var i = 0,
         args = arguments;
       return this.replace(/{}/g, function () {
-        return typeof args[i] != 'undefined' ? args[i++] : '';
+        return typeof args[i] != "undefined" ? args[i++] : "";
       });
     };
 
-    {% if identifier == 'running' %}
+    {% if identifier == "running" %}
+      document.getElementById("current-state").innerText = "{{ state }}";
       {% if excerpt | length > 1 %}
-        document.getElementById('right-box-heading').innerText = 'An excerpt from your corpus';
-        document.getElementById('right-box-content').innerText = '{{ excerpt }}';
+        document.getElementById("right-box-heading").innerText = "An excerpt from your corpus";
+        document.getElementById("right-box-content").innerText = "{{ excerpt }}";
       {% endif %}
-        document.getElementById('current-state').innerText = '{{ state }}';
       {% if tokens | length > 1 %}
-        document.getElementById('left-box-content').innerHTML = corpus.format({{ documents }}, {{ tokens }}, {{ types }}, {{ topics }}, {{ iterations }});
+        document.getElementById("left-box-content").innerHTML = corpus.format("{{ documents }}", "{{ tokens }}", "{{ topics }}", "{{ iterations }}");
       {% endif %}
-    {% elif identifier == 'done' %}
+    {% elif identifier == "done" %}
       window.location.replace("{{ url_for('model') }}");
-    {% elif identifier == 'error' %}
-      document.getElementById('inner-content').classList.add('display-none');
-      var parent = document.getElementById('error-popup');
+    {% elif identifier == "error" %}
+      document.getElementById("inner-content").classList.add("display-none");
+      var parent = document.getElementById("error-popup");
       parent.setAttribute("role", "dialog");
       parent.setAttribute("aria-hidden", "true");
       var newModalDialog = document.createElement("div");
@@ -170,24 +170,24 @@
       newModalHeader.setAttribute("class", "modal-header");
       var newModalTitle = document.createElement("h3");
       newModalTitle.setAttribute("class", "modal-title");
-      newModalTitle.innerText = 'Oops! I'm very sorry, but something went wrong...';
+      newModalTitle.innerText = "Oops! I'm very sorry, but something went wrong...";
       newModalHeader.appendChild(newModalTitle);
       var newModalBody = document.createElement("div");
       newModalBody.setAttribute("class", "modal-body");
-      newModalBody.innerHTML = 'Looks like something didn\'t work out as expected. Maybe you can figure out this error message by yourself: <br><br><b>{{ state }}</b><br><br>In any case, it would be very useful for us if you write a bug report either on <a href="https://github.com/DARIAH-DE/TopicsExplorer/issues">GitHub</a>, or send an email to <a href="mailto:severin.simmler@stud-mail.uni-wuerzburg.de">Severin Simmler</a>. Please include the error message from above in your report, information about your operating system, and at best some details about your corpus (esp.file format).<br><br>';
+      newModalBody.innerHTML = "Looks like something didn't work out as expected. Maybe you can figure out this error message by yourself: <br><br><b>{{ state }}</b><br><br>In any case, it would be very useful for us if you write a bug report either on <a href='https://github.com/DARIAH-DE/TopicsExplorer/issues'>GitHub</a>, or send an email to <a href='mailto:severin.simmler@stud-mail.uni-wuerzburg.de'>Severin Simmler</a>. Please include the error message from above in your report, information about your operating system, and at best some details about your corpus (esp.file format).<br><br>";
       newModalContent.appendChild(newModalBody);
       var newModalFooter = document.createElement("div");
       newModalFooter.setAttribute("class", "modal-footer");
       var newButton = document.createElement("button")
       newButton.setAttribute("class", "btn btn-secondary");
-      newButton.innerHTML = '<a href="{ url_for("index") }">Go back and try again</a>';
+      newButton.innerHTML = "<a href='{ url_for('index') }'>Go back and try again</a>";
       newModalFooter.appendChild(newButton);
       
-      $('#error-popup').modal({
+      $("#error-popup").modal({
         keyboard: false,
-        backdrop: 'static'
+        backdrop: "static"
       })
-      $('#error-popup').modal('show');
+      $("#error-popup").modal("show");
     {% endif %}
   </script>
   {% endfor %}
