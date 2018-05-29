@@ -106,6 +106,22 @@
     #current-state {
       font-weight: bold;
     }
+
+    #progressbar {
+      margin-top: 10px;
+      background-color: #F3F3F3;
+      border-radius: 2px;
+      padding: 3px;
+      height: 12px;
+    }
+    
+    #inner-progressbar {
+       background-color: #053967;
+       width: 0%;
+       height: 12px;
+       border-radius: 2px;
+    }
+
   </style>
 </head>
 
@@ -127,6 +143,9 @@
       {% else %}
         <div id="current-state" style="margin-top: 25px;">Collecting user input ...</div>
       {% endif %}
+      <div id="progressbar">
+          <div id="inner-progressbar"></div>
+      </div>
       <hr>
       <a href="javascript:history.go(-1)" id="abort-button">Abort</a>
     </div>
@@ -150,7 +169,7 @@
     document.getElementById('right-box-content').innerHTML = blei[randInt];
   </script>
 
-  {% for identifier, state, excerpt, documents, tokens, topics, iterations in stream %}
+  {% for identifier, state, percent, excerpt, documents, tokens, topics, iterations in stream %}
   <script>
 
     var corpus = "If you are interested in some facts and figures: Your corpus consists of <b>{} documents</b>, or <b>{} tokens</b>. You have selected <b>{} topics</b> at <b>{} iterations</b>."
@@ -165,6 +184,7 @@
 
     {% if identifier == "running" %}
       document.getElementById("current-state").innerText = "{{ state }}";
+      document.getElementById("inner-progressbar").setAttribute("style", "width: {{ percent }}%;")
       {% if excerpt | length > 1 %}
         document.getElementById("right-box-heading").innerText = "An excerpt from your corpus";
         document.getElementById("right-box-content").innerText = "{{ excerpt }}";

@@ -38,15 +38,18 @@ def workflow(tempdir, archive_dir):
     """
     try:
         start = time.time()
+        percent = 0
         user_input = {"files": flask.request.files.getlist("files"),
                       "num_topics": int(flask.request.form["num_topics"]),
                       "num_iterations": int(flask.request.form["num_iterations"])}
+        full = (29 + len(user_input["files"]) + (user_input["num_iterations"] / 10))
 
+        percent += 1
         if flask.request.files.get("stopword_list", None):
-            yield "running", "Collecting external stopwords list ...", "", "", "", "", ""
+            yield "running", "Collecting external stopwords list ...", percent / full, "", "", "", "", ""
             user_input["stopwords"] = flask.request.files["stopword_list"]
         else:
-            yield "running", "Collecting threshold for stopwords ...", "", "", "", "", ""
+            yield "running", "Collecting threshold for stopwords ...", percent / full, "", "", "", "", ""
             user_input["mfw"] = int(flask.request.form["mfw_threshold"])
 
         parameter = pd.Series()
@@ -56,16 +59,18 @@ def workflow(tempdir, archive_dir):
         if len(user_input["files"]) < 5:
             raise Exception("Your corpus is too small. Please select at least five text files.")
 
-        yield "running", "Reading and tokenizing corpus ...", "", "", "", "", ""
+        percent += 1
+        yield "running", "Reading and tokenizing corpus ...", percent / full, "", "", "", "", ""
         tokenized_corpus = pd.Series()
         for file in user_input["files"]:
             filename = pathlib.Path(werkzeug.utils.secure_filename(file.filename))
-            yield "running", "Reading {0} ...".format(filename.stem), "", "", "", "", ""
+            percent += 1
+            yield "running", "Reading {0} ...".format(filename.stem), percent / full, "", "", "", "", ""
             text = file.read().decode("utf-8")
             if filename.suffix != ".txt":
-                yield "running", "Removing markup from text ...", "", "", "", "", ""
+                yield "running", "Removing markup from text ...", percent / full, "", "", "", "", ""
                 text = application.utils.remove_markup(text)
-            yield "running", "Tokenizing {0} ...".format(filename.stem), "", "", "", "", ""
+            yield "running", "Tokenizing {0} ...".format(filename.stem), percent / full, "", "", "", "", ""
             tokens = list(dariah_topics.preprocessing.tokenize(text))
             tokenized_corpus[filename.stem] = tokens
             parameter["Corpus size (raw), in tokens"] += len(tokens)
@@ -75,11 +80,13 @@ def workflow(tempdir, archive_dir):
         token_int = random.randint(1, len(excerpt) - 61)
         excerpt = "..." + " ".join(excerpt[token_int:token_int + 60]) + "..."
 
-        yield "running", "Creating document-term matrix ...", excerpt, "", "", "", ""
+        percent += 1
+        yield "running", "Creating document-term matrix ...", percent / full, excerpt, "", "", "", ""
         document_labels = tokenized_corpus.index
         document_term_matrix = dariah_topics.preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
 
-        yield "running", "Determining corpus statistics ...", "", "", "", "", ""
+        percent += 1
+        yield "running", "Determining corpus statistics ...", percent / full, "", "", "", "", ""
         group = ["Document size (raw)" for i in range(parameter["Corpus size, in documents"])]
         corpus_stats = pd.DataFrame({"score": np.array(document_term_matrix.sum(axis=1)),
                                      "group": group})
@@ -90,38 +97,43 @@ def workflow(tempdir, archive_dir):
         iteration_size = str(user_input["num_iterations"])
 
         try:
-            yield "running", "Determining {0} most frequent words ...".format(user_input["mfw"]), "", corpus_size, token_size, topic_size, iteration_size
+            yield "running", "Determining {0} most frequent words ...".format(user_input["mfw"]), percent / full, "", corpus_size, token_size, topic_size, iteration_size
             stopwords = dariah_topics.preprocessing.find_stopwords(document_term_matrix, user_input["mfw"])
             cleaning = "removed the <b>{0} most frequent words</b>, based on a threshold value".format(user_input["mfw"])
         except KeyError:
-            yield "running", "Reading external stopwords list ...", "", "", "", "", ""
+            yield "running", "Reading external stopwords list ...", percent / full, "", "", "", "", ""
             stopwords = user_input["stopwords"].read().decode("utf-8")
             stopwords = list(dariah_topics.preprocessing.tokenize(stopwords))
             cleaning = "removed <b>{0} words</b>, based on an external stopwords list".format(len(stopwords))
         
-        yield "running", "Determining hapax legomena from corpus ...", "", "", "", "", ""
+        percent += 1
+        yield "running", "Determining hapax legomena from corpus ...", percent / full, "", "", "", "", ""
         hapax_legomena = dariah_topics.preprocessing.find_hapax_legomena(document_term_matrix)
         features = set(stopwords).union(hapax_legomena)
         features = [token for token in features if token in document_term_matrix.columns]
-        yield "running", "Removing a total of {0} words from your corpus ...".format(len(features)), "", "", "", "", ""
+        yield "running", "Removing a total of {0} words from your corpus ...".format(len(features)), percent / full, "", "", "", "", ""
         document_term_matrix = document_term_matrix.drop(features, axis=1)
 
-        yield "running", "Determining corpus statistics ...", "", "", "", "", ""
+        percent += 1
+        yield "running", "Determining corpus statistics ...", percent / full, "", "", "", "", ""
         group = ["Document size (clean)" for n in range(parameter["Corpus size, in documents"])]
         corpus_stats = corpus_stats.append(pd.DataFrame({"score": np.array(document_term_matrix.sum(axis=1)),
                                                          "group": group}))
         parameter["Corpus size (clean), in tokens"] = int(document_term_matrix.values.sum())
 
-        yield "running", "Accessing document-term matrix ...", "", "", "", "", ""
+        percent += 1
+        yield "running", "Accessing document-term matrix ...", percent / full, "", "", "", "", ""
         document_term_arr = document_term_matrix.values.astype(int)
-        yield "running", "Accessing vocabulary of the corpus ...", "", "", "", "", ""
+        percent += 1
+        yield "running", "Accessing vocabulary of the corpus ...", percent / full, "", "", "", "", ""
         vocabulary = document_term_matrix.columns
 
         parameter["Size of vocabulary, in tokens"] = len(vocabulary)
         parameter["Number of topics"] = user_input["num_topics"]
         parameter["Number of iterations"] = user_input["num_iterations"]
 
-        yield "running", "Initializing LDA topic model ...", "", "", "", "", ""
+        percent += 1
+        yield "running", "Initializing LDA topic model ...", percent / full, "", "", "", "", ""
         model = application.utils.enthread(target=lda_modeling,
                                            args=(document_term_arr,
                                                  user_input["num_topics"],
@@ -132,29 +144,30 @@ def workflow(tempdir, archive_dir):
             # line is sent to the UI as information for the user:
             msg = application.utils.read_logfile(str(pathlib.Path(tempdir, "topicmodeling.log")),
                                                  total_iterations=iteration_size)
+            percent += 1
             if msg == None:
                 # When modeling is done, get the model:
                 model = model.get()
                 break
             else:
-                yield "running", msg, "", "", "", "", ""
+                yield "running", msg, percent / full, "", "", "", "", ""
         
-        yield "running", "Determining the log-likelihood for the last iteration ...", "", "", "", "", ""
+        yield "running", "Determining the log-likelihood for the last iteration ...", percent / full, "", "", "", "", ""
         parameter["The model log-likelihood"] = round(model.loglikelihood())
 
-        yield "running", "Accessing topics ...", "", "", "", "", ""
+        yield "running", "Accessing topics ...", percent / full, "", "", "", "", ""
         topics = dariah_topics.postprocessing.show_topics(model=model,
                                                           vocabulary=vocabulary,
                                                           num_keys=8)
         topics.columns = ["Key {0}".format(i) for i in range(1, 9)]
         topics.index = ["Topic {0}".format(i) for i in range(1, user_input["num_topics"] + 1)]
 
-        yield "running", "Accessing document-topics distribution ...", "", "", "", "", ""
+        yield "running", "Accessing document-topics distribution ...", percent / full, "", "", "", "", ""
         document_topics = dariah_topics.postprocessing.show_document_topics(model=model,
                                                                             topics=topics,
                                                                             document_labels=document_labels)
 
-        yield "running", "Creating visualizations ...", "", "", "", "", ""
+        yield "running", "Creating visualizations ...", percent / full, "", "", "", "", ""
         if document_topics.shape[0] < document_topics.shape[1]:
             if document_topics.shape[1] < 20:
                 height = 20 * 28
@@ -168,7 +181,7 @@ def workflow(tempdir, archive_dir):
                 height = document_topics.shape[0] * 28
             document_topics_heatmap = document_topics
 
-        yield "running", "Creating heatmap ...", "", "", "", "", ""
+        yield "running", "Creating heatmap ...", percent / full, "", "", "", "", ""
         fig = dariah_topics.visualization.PlotDocumentTopics(document_topics_heatmap)
         heatmap = fig.interactive_heatmap(height=height,
                                           sizing_mode="scale_width",
@@ -178,7 +191,7 @@ def workflow(tempdir, archive_dir):
 
         heatmap_script, heatmap_div = bokeh.embed.components(heatmap)
 
-        yield "running", "Creating boxplot ...", "", "", "", "", ""
+        yield "running", "Creating boxplot ...", percent / full, "", "", "", "", ""
         corpus_boxplot = application.utils.boxplot(corpus_stats)
         corpus_boxplot_script, corpus_boxplot_div = bokeh.embed.components(corpus_boxplot)
         #bokeh.plotting.output_file(str(pathlib.Path(tempdir, "corpus_statistics.html")))
@@ -188,7 +201,7 @@ def workflow(tempdir, archive_dir):
             height = 580
         else:
             height = document_topics.shape[1] * 25
-        yield "running", "Creating barcharts ...", "", "", "", "", ""
+        yield "running", "Creating barcharts ...", percent / full, "", "", "", "", ""
         topics_barchart = application.utils.barchart(document_topics, height=height, topics=topics)
         topics_script, topics_div = bokeh.embed.components(topics_barchart)
         #bokeh.plotting.output_file(str(pathlib.Path(tempdir, "topics_barchart.html")))
@@ -211,13 +224,13 @@ def workflow(tempdir, archive_dir):
         else:
             parameter["Passed time, in minutes"] = passed_time
 
-        yield "running", "Dumping generated data ...", "", "", "", "", ""
+        yield "running", "Dumping generated data ...", percent / full, "", "", "", "", ""
         parameter = pd.DataFrame(pd.Series(parameter))
         topics.to_csv(str(pathlib.Path(tempdir, "topics.csv")), encoding="utf-8", sep=';')
         document_topics.to_csv(str(pathlib.Path(tempdir, "document_topics.csv")), encoding="utf-8", sep=';')
         parameter.to_csv(str(pathlib.Path(tempdir, "parameter.csv")), encoding="utf-8", sep=';')
         
-        yield "running", "Zipping generated data ...", "", "", "", "", ""
+        yield "running", "Zipping generated data ...", percent / full, "", "", "", "", ""
         archive = str(pathlib.Path(archive_dir, "topicmodeling"))
         shutil.make_archive(archive, "zip", tempdir)
 
@@ -233,8 +246,8 @@ def workflow(tempdir, archive_dir):
                 "corpus_boxplot_div": corpus_boxplot_div,
                 "first_topic": list(document_topics.index)[0],
                 "first_document": list(document_topics.columns)[0]}
-        yield "running", "Building results page ...", "", "", "", "", ""
+        yield "running", "Building results page ...", percent / full, "", "", "", "", ""
         application.utils.compress(data, str(pathlib.Path(tempdir, "data.pickle")))
-        yield "done", "", "", "", "", "", ""
+        yield "done", "", percent / full, "", "", "", "", ""
     except Exception as error:
-        yield "error", str(error), "", "", "", "", ""
+        yield "error", str(error), percent / full, "", "", "", "", ""
