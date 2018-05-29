@@ -224,9 +224,9 @@ def workflow(tempdir, archive_dir):
             parameter['Passed time, in minutes'] = passed_time
 
         parameter = pd.DataFrame(pd.Series(parameter))
-        topics.to_csv(str(pathlib.Path(tempdir, 'topics.csv')), encoding='utf-8')
-        document_topics.to_csv(str(pathlib.Path(tempdir, 'document_topics.csv')), encoding='utf-8')
-        parameter.to_csv(str(pathlib.Path(tempdir, 'parameter.csv')), encoding='utf-8')
+        topics.to_csv(str(pathlib.Path(tempdir, 'topics.csv')), encoding='utf-8', sep=';')
+        document_topics.to_csv(str(pathlib.Path(tempdir, 'document_topics.csv')), encoding='utf-8', sep=';')
+        parameter.to_csv(str(pathlib.Path(tempdir, 'parameter.csv')), encoding='utf-8', sep=';')
         
         archive = str(pathlib.Path(archive_dir, 'topicmodeling'))
         shutil.make_archive(archive, 'zip', tempdir)
