@@ -96,8 +96,8 @@ def init_gui(flask_app, port=PORT, argv=None, title=TITLE, icon=ICON):
     # 80% for height.
     screen = qtapp.primaryScreen()
     size = screen.size()
-    width = size.width() - (size.width() / 100 * 7)
-    height = size.height() - (size.height() / 100 * 20)
+    width = size.width() - size.width() / 100 * 7
+    height = size.height() - size.height() / 100 * 20
 
     # Applying settings and loading the main page.
     webview = PyQt5.QtWebEngineWidgets.QWebEngineView()

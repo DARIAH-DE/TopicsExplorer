@@ -12,7 +12,7 @@ app, dumpdir, archivedir = application.config.create_app()
 def index():
     """
     Renders the main page, and unlinks the content (if any) in the temporary
-    folders. A warning pops up, if the machine is not connected to the internet.
+    folders.
     """
     application.utils.unlink_content(dumpdir)
     application.utils.unlink_content(archivedir)
