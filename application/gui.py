@@ -100,7 +100,6 @@ def init_gui(application, port=PORT, argv=None, title=TITLE, icon=ICON):
     webview.show()
     return qtapp.exec_()
 
-
 def run():
     """
     Calls the main function.
