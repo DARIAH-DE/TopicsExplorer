@@ -197,7 +197,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
         else:
             what = "document"
         textfield = bokeh.models.widgets.AutocompleteInput(completions=document_topics.index.tolist(),
-                                                           placeholder="Type a {} and press enter".format(what),
+                                                           placeholder="Type a {}, press enter".format(what),
                                                            css_classes=["customTextInput"],
                                                            callback=callback)
         return bokeh.layouts.row(fig, textfield, sizing_mode="scale_width")
