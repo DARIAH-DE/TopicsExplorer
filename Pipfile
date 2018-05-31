@@ -14,12 +14,12 @@ lxml = "==4.2.1"
 flask = "==0.12.2"
 pandas = "==0.22.0"
 numpy = "==1.14.2"
-"pyqt5" = "==5.10.0"
+pyqt5 = "==5.10.0"
 
 
 [dev-packages]
 
-pytest = "==3.5.0"
+pytest = "*"
 pytest-cov = "*"
 
 
