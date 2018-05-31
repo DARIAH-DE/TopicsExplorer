@@ -20,7 +20,7 @@
     </div>
     <h2>1. Preprocessing</h2>
     <p>Your text corpus is tokenized first. This splits a text into individual words, so-called <i>tokens</i>. Token frequencies are typical units of analysis when working with text corpora. It may come as a surprise that reducing a book to a list of token frequencies retains useful information, but practice has shown this to be the case. Usually the most common tokens in a document are <b>semantically insignificant words</b> like <i>the</i> or <i>and</i>. Because you are trying to uncover hidden semantic structures of a text collection, you have to get rid of these words before modeling. This is done during preprocessing.</p>
-    <h3>1.1. Reading a Corpus of Documents</h3>
+    <h3>1.1. Reading a corpus of documents</h3>
     <p>For this workflow you need a text corpus (i.e. a collection of text files) as plain text (<b>.txt</b>) or as XML (<b>.xml</b>). Use the button below to select the files. To guarantee usable results, select <b>at least five documents</b> (but the more, the better).
       <div class="alert alert-info">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -32,7 +32,7 @@
     <br>
     <h3>1.2. Tokenization</h3>
     <p>An important preprocessing step is tokenization. Without identifying words as separate units, it is impossible to determine necessary information such as word frequencies. In this application, a token consists of one consists of one or more characters, optionally followed by exactly one punctuation (e.g. a hyphen), followed by one or more characters. For example, the phrase “her father's arm-chair” is tokenized as <code>["her", "father's", "arm-chair"]</code>.</p>
-    <h3>1.3. Cleaning the Corpus</h3>
+    <h3>1.3. Cleaning the corpus</h3>
     <p>The most common words in a document are also called stopwords. As described above, stopwords are harmful to the LDA model and must be removed before modeling. If you want to determine and remove the stopwords individually based on your corpus, you can define a threshold value here for the <i>n</i> most common words to be deleted.</p>
     <div class="alert alert-info">
       <button type="button" class="close" data-dismiss="alert">&times;</button>

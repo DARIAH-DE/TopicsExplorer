@@ -75,10 +75,13 @@ def workflow(tempdir, archive_dir):
             tokenized_corpus[filename.stem] = tokens
             parameter["Corpus size (raw), in tokens"] += len(tokens)
         
-        text = text.strip()
-        token_int = random.randint(0, len(text) - 251)
+        text = text.replace("\n", " ")
+        text = text.replace("\r", " ")
+        text = text.replace("\'", "")
+        text = text.replace("\"", "")
+        token_int = random.randint(0, len(text) - 351)
         try:
-            excerpt = "...{}...".format(text[token_int:token_int + 250])
+            excerpt = "...{}...".format(text[token_int:token_int + 350])
         except IndexError:
             excerpt = ""
 
@@ -103,7 +106,7 @@ def workflow(tempdir, archive_dir):
             stopwords = dariah_topics.preprocessing.find_stopwords(document_term_matrix, user_input["mfw"])
             cleaning = "removed the <b>{0} most frequent words</b>, based on a threshold value".format(user_input["mfw"])
         except KeyError:
-            yield "running", "Reading external stopwords list ...", progress / complete * 100, "", "", "", "", ""
+            yield "running", "Reading external stopwords list ...", progress / complete * 100, "", corpus_size, token_size, topic_size, iteration_size
             stopwords = user_input["stopwords"].read().decode("utf-8")
             stopwords = list(dariah_topics.preprocessing.tokenize(stopwords))
             cleaning = "removed <b>{0} words</b>, based on an external stopwords list".format(len(stopwords))
