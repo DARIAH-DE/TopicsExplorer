@@ -7,6 +7,12 @@ import PyQt5.QtWebEngineWidgets
 import PyQt5.QtCore
 
 
+if hasattr(PyQt5.QtCore.Qt, 'AA_EnableHighDpiScaling'):
+    PyQt5.QtWidgets.QApplication.setAttribute(PyQt5.QtCore.Qt.AA_EnableHighDpiScaling, True)
+ 
+if hasattr(PyQt5.QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+    PyQt5.QtWidgets.QApplication.setAttribute(PyQt5.QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
 class ApplicationThread(PyQt5.QtCore.QThread):
     def __init__(self, application, port=5000):
         super(ApplicationThread, self).__init__()
