@@ -30,7 +30,7 @@
       {{ table|safe }}
     {% endfor %}
     <br>
-    As you can see, your corpus is much smaller after cleaning. You {{ cleaning|safe }}. In addition so-called <a href="https://en.wikipedia.org/wiki/Hapax_legomenon"><i>hapax legomena</i></a> have been removed. In corpus linguistics, a hapax legomenon is a word that occurs only once within a context. So, if a word occurs only once in a document, it is very likely that the word is semantically insignificant – that is, not useful for the model.
+    As you can see, your corpus is much smaller after cleaning. You {{ cleaning|safe }}. In addition so-called <i>hapax legomena</i> have been removed. In corpus linguistics, a hapax legomenon is a word that occurs only once within a context. So, if a word occurs only once in a document, it is very likely that the word is semantically insignificant – that is, not useful for the model.
     <br>
     <br>
     <center>{{ corpus_boxplot_div|safe }}</center>
@@ -44,7 +44,7 @@
   <p>Topic models are unsupervised. It is called <i>unsupervised</i>, because you did not have any labels describing the semantic structures of your documents, but only pure word frequencies. Therefore, there is no automatic evaluation of how <i>good</i> the topics are. So, it is up to you by inspecting the model to decide whether you are satisfied with your models’ performance or not.
     <div class="alert alert-info">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <b>Tip:</b> The quantitative evaluation of topics (that is, a list of words as seen below) is a pretty challenging task. <b>Pointwise Mutual Information</b> (PMI) is one possibility to evaluate the semantic coherence of topics. We implemented two variants of PMI in the programming language Python, which is available via <a href="https://github.com/DARIAH-DE/Topics/dariah_topics/evaluation.py">GitHub</a>.
+      <b>Tip:</b> The quantitative evaluation of topics (that is, a list of words as seen below) is a pretty challenging task. <b>Pointwise Mutual Information</b> (PMI) is one possibility to evaluate the semantic coherence of topics. We implemented two variants of PMI in the programming language Python, which is available via GitHub.
     </div>
   </p>
   <h3>2.1. Topics</h3>
@@ -94,7 +94,7 @@
   <br>
   </div>
   <h2>2. Delving Deeper into Topic Modeling</h2>
-  <p>We want to introduce users with little or no programming experience to digital methods. If this little insight into the text mining technique topic modeling has aroused your interest, and you want to delve deeper into the <b>technical parts</b>, we provide the same convenient, modular workflow which can be entirely controlled from within a well documented <a href="http://jupyter.org/">Jupyter notebook</a>, integrating a total of three popular LDA implementations.</p>
-  <p>All resources are available via <a href="https://github.com/DARIAH-DE/Topics">GitHub</a>.</p>
+  <p>We want to introduce users with little or no programming experience to digital methods. If this little insight into the text mining technique topic modeling has aroused your interest, and you want to delve deeper into the <b>technical parts</b>, we provide the same convenient, modular workflow which can be entirely controlled from within a well documented Jupyter notebook, integrating a total of three popular LDA implementations.</p>
+  <p>All resources are available via GitHub. To prevent dead links in this application, it is probably safer if you search the internet for the GitHub repository yourself. The name of the organization is DARIAH-DE, the name of the repository Topics.</p>
 </div>
 {% endblock %}

@@ -25,6 +25,10 @@ class ApplicationThread(PyQt5.QtCore.QThread):
     def run(self):
         self.application.run(port=self.port, threaded=True)
 
+"""
+# This part allows you to open external links in the standard browser,
+# but has been discarded because dead links should be avoided in the 
+# application.
 
 class WebPage(PyQt5.QtWebEngineWidgets.QWebEnginePage):
     def __init__(self, root_url):
@@ -32,15 +36,9 @@ class WebPage(PyQt5.QtWebEngineWidgets.QWebEnginePage):
         self.root_url = root_url
 
     def home(self):
-        """
-        Loads the root URL.
-        """
         self.load(PyQt5.QtCore.QUrl(self.root_url))
 
     def acceptNavigationRequest(self, url, kind, is_main_frame):
-        """
-        Open external links in browser and internal links in the webview.
-        """
         ready_url = url.toEncoded().data().decode()
         is_clicked = kind == self.NavigationTypeLinkClicked
 
@@ -48,7 +46,7 @@ class WebPage(PyQt5.QtWebEngineWidgets.QWebEnginePage):
             PyQt5.QtGui.QDesktopServices.openUrl(url)
             return False
         return super(WebPage, self).acceptNavigationRequest(url, kind, is_main_frame)
-
+"""
 
 def init_gui(application, port=5000, argv=None):
     """
@@ -66,24 +64,17 @@ def init_gui(application, port=5000, argv=None):
     webapp.start()
     qtapp.aboutToQuit.connect(webapp.terminate)
 
-    window = PyQt5.QtWidgets.QMainWindow()
-
     screen = qtapp.primaryScreen()
     size = screen.size()
     width = size.width() - (size.width() / 100 * 7)
     height = size.height() - (size.height() / 100 * 20)
 
-    window.resize(width, height)
-    window.setWindowTitle(title)
-    window.setWindowIcon(PyQt5.QtGui.QIcon(icon))
-
-    webview = PyQt5.QtWebEngineWidgets.QWebEngineView(window)
-    window.setCentralWidget(webview)
-
-    page = WebPage("http://localhost:{}".format(port))
-    page.home()
-    webview.setPage(page)
-
+    webview = PyQt5.QtWebEngineWidgets.QWebEngineView()
+    webview.resize(width, height)
+    webview.setWindowTitle(title)
+    webview.setWindowIcon(PyQt5.QtGui.QIcon(icon))
+    webview.load(PyQt5.QtCore.QUrl("http://localhost:{}".format(port)))
+    
     def download_requested(item):
         """
         Opens a file dialog to save the ZIP archive.
@@ -96,8 +87,7 @@ def init_gui(application, port=5000, argv=None):
         item.accept()
 
     webview.page().profile().downloadRequested.connect(download_requested)
-
-    window.show()
+    webview.show()
     return qtapp.exec_()
 
 

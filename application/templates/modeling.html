@@ -133,7 +133,7 @@
       <hr>
       <div>
         <p id="left-box-content">How long this process takes depends on how large your selected text corpus is, and how many iterations you have selected.</p>
-        <p>In the meantime, take a look at the <a href="https://github.com/DARIAH-DE/Topics/blob/master/notebooks/IntroducingMallet.ipynb">Jupyter notebook</a> that deals with topic modeling with MALLET.</p>
+        <p>In the meantime, you could take a look at the Jupyter notebook that deals with topic modeling with MALLET on our GitHub page.</p>
       </div>
     </div>
     <div class="box" id="main-box">
@@ -172,7 +172,7 @@
   {% for identifier, state, percent, excerpt, documents, tokens, topics, iterations in stream %}
   <script>
 
-    var corpus = "If you are interested in some facts and figures: Your corpus consists of <b>{} documents</b>, or <b>{} tokens</b>. You have selected <b>{} topics</b> at <b>{} iterations</b>."
+    var corpus = "Your corpus consists of <b>{} documents</b>, or <b>{} tokens</b>. You have selected <b>{} topics</b> at <b>{} iterations</b>."
 
     String.prototype.format = function () {
       var i = 0,
