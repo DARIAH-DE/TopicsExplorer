@@ -66,20 +66,25 @@ def workflow(tempdir, archive_dir):
         for file in user_input["files"]:
             filename = pathlib.Path(werkzeug.utils.secure_filename(file.filename))
             percent += 1
-            yield "running", "Reading {0} ...".format(filename.stem), percent / full * 100, "", "", "", "", ""
+            yield "running", "Reading {0} ...".format(filename.stem[:20]), percent / full * 100, "", "", "", "", ""
             text = file.read().decode("utf-8")
             if filename.suffix != ".txt":
                 yield "running", "Removing markup from text ...", percent / full * 100, "", "", "", "", ""
                 text = application.utils.remove_markup(text)
-            yield "running", "Tokenizing {0} ...".format(filename.stem), percent / full * 100, "", "", "", "", ""
+            yield "running", "Tokenizing {0} ...".format(filename.stem[:20]), percent / full * 100, "", "", "", "", ""
             tokens = list(dariah_topics.preprocessing.tokenize(text))
             tokenized_corpus[filename.stem] = tokens
             parameter["Corpus size (raw), in tokens"] += len(tokens)
         
-        excerpt_int = random.randint(0, len(tokenized_corpus) - 1)
-        excerpt = tokenized_corpus.iloc[excerpt_int]
-        token_int = random.randint(1, len(excerpt) - 61)
-        excerpt = "..." + " ".join(excerpt[token_int:token_int + 60]) + "..."
+        text = text.replace("\n", "")
+        text = text.replace("\r", "")
+        text = text.replace("\'", "")
+        text = text.replace("\"", "")
+        token_int = random.randint(0, len(text) - 251)
+        try:
+            excerpt = "...{}...".format(text[token_int:token_int + 250])
+        except IndexError:
+            excerpt = ""
 
         percent += 1
         yield "running", "Creating document-term matrix ...", percent / full * 100, excerpt, "", "", "", ""
@@ -108,7 +113,7 @@ def workflow(tempdir, archive_dir):
             cleaning = "removed <b>{0} words</b>, based on an external stopwords list".format(len(stopwords))
         
         percent += 1
-        yield "running", "Determining hapax legomena from corpus ...", percent / full * 100, "", "", "", "", ""
+        yield "running", "Determining hapax legomena ...", percent / full * 100, "", "", "", "", ""
         hapax_legomena = dariah_topics.preprocessing.find_hapax_legomena(document_term_matrix)
         features = set(stopwords).union(hapax_legomena)
         features = [token for token in features if token in document_term_matrix.columns]
@@ -165,7 +170,7 @@ def workflow(tempdir, archive_dir):
         topics.index = ["Topic {0}".format(i) for i in range(1, user_input["num_topics"] + 1)]
 
         percent += 1
-        yield "running", "Accessing document-topics distribution ...", percent / full * 100, "", "", "", "", ""
+        yield "running", "Accessing distributions ...", percent / full * 100, "", "", "", "", ""
         document_topics = dariah_topics.postprocessing.show_document_topics(model=model,
                                                                             topics=topics,
                                                                             document_labels=document_labels)
@@ -191,8 +196,8 @@ def workflow(tempdir, archive_dir):
         heatmap = fig.interactive_heatmap(height=height,
                                           sizing_mode="scale_width",
                                           tools="hover, pan, reset, wheel_zoom, zoom_in, zoom_out")
-        #bokeh.plotting.output_file(str(pathlib.Path(tempdir, "heatmap.html")))
-        #bokeh.plotting.save(heatmap)
+        bokeh.plotting.output_file(str(pathlib.Path(tempdir, "heatmap.html")))
+        bokeh.plotting.save(heatmap)
 
         heatmap_script, heatmap_div = bokeh.embed.components(heatmap)
 
@@ -200,8 +205,8 @@ def workflow(tempdir, archive_dir):
         yield "running", "Creating boxplot ...", percent / full * 100, "", "", "", "", ""
         corpus_boxplot = application.utils.boxplot(corpus_stats)
         corpus_boxplot_script, corpus_boxplot_div = bokeh.embed.components(corpus_boxplot)
-        #bokeh.plotting.output_file(str(pathlib.Path(tempdir, "corpus_statistics.html")))
-        #bokeh.plotting.save(corpus_boxplot)
+        bokeh.plotting.output_file(str(pathlib.Path(tempdir, "corpus_statistics.html")))
+        bokeh.plotting.save(corpus_boxplot)
 
         if document_topics.shape[1] < 15:
             height = 580
@@ -212,8 +217,8 @@ def workflow(tempdir, archive_dir):
         yield "running", "Creating barcharts ...", percent / full * 100, "", "", "", "", ""
         topics_barchart = application.utils.barchart(document_topics, height=height, topics=topics)
         topics_script, topics_div = bokeh.embed.components(topics_barchart)
-        #bokeh.plotting.output_file(str(pathlib.Path(tempdir, "topics_barchart.html")))
-        #bokeh.plotting.save(topics_barchart)
+        bokeh.plotting.output_file(str(pathlib.Path(tempdir, "topics_barchart.html")))
+        bokeh.plotting.save(topics_barchart)
 
         if document_topics.shape[0] < 15:
             height = 580
@@ -221,8 +226,8 @@ def workflow(tempdir, archive_dir):
             height = document_topics.shape[0] * 25
         documents_barchart = application.utils.barchart(document_topics.T, height=height)
         documents_script, documents_div = bokeh.embed.components(documents_barchart)
-        #bokeh.plotting.output_file(str(pathlib.Path(tempdir, "document_topics_barchart.html")))
-        #bokeh.plotting.save(documents_barchart)
+        bokeh.plotting.output_file(str(pathlib.Path(tempdir, "document_topics_barchart.html")))
+        bokeh.plotting.save(documents_barchart)
 
         end = time.time()
         passed_time = round((end - start) / 60)

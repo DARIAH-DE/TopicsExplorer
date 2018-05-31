@@ -1,3 +1,4 @@
+import application
 import pathlib
 import sys
 import flask
@@ -9,11 +10,7 @@ def create_app(**kwargs):
     PyInstaller, the paths to the template and static folder are adjusted
     accordingly.
     """
-    tempdir = tempfile.gettempdir()
-    dumpdir = pathlib.Path(tempdir, "topicsexplorerdump")
-    archivedir = pathlib.Path(tempdir, "topicsexplorerdata")
-    dumpdir.mkdir(exist_ok=True)
-    archivedir.mkdir(exist_ok=True)
+    dumpdir, archivedir = application.utils.get_tempdirs(make=True)
     
     if getattr(sys, "frozen", False):
         root = pathlib.Path(sys._MEIPASS)

@@ -64,7 +64,7 @@ class WebPage(PyQt5.QtWebEngineWidgets.QWebEnginePage):
         return super(WebPage, self).acceptNavigationRequest(url, kind, is_main_frame)
 """
 
-def init_gui(application, port=PORT, argv=None, title=TITLE, icon=ICON):
+def init_gui(flask_app, port=PORT, argv=None, title=TITLE, icon=ICON):
     """
     Initializes the Qt web engine, starts the web application, and loads the
     main page.
@@ -74,9 +74,22 @@ def init_gui(application, port=PORT, argv=None, title=TITLE, icon=ICON):
     
     # Starting the Flask application.
     qtapp = PyQt5.QtWidgets.QApplication(argv)
-    webapp = ApplicationThread(application, port)
+    webapp = ApplicationThread(flask_app, port)
     webapp.start()
-    qtapp.aboutToQuit.connect(webapp.terminate)
+    
+    def cleanup(webapp=webapp):
+        """
+        Killing the Flask process and removing temporary
+        folders after user closed the window.
+        """
+        webapp.terminate()
+        dumpdir, archivedir = application.utils.get_tempdirs()
+        application.utils.unlink_content(dumpdir)
+        application.utils.unlink_content(archivedir)
+        dumpdir.rmdir()
+        archivedir.rmdir()
+    
+    qtapp.aboutToQuit.connect(cleanup)
 
     # Setting width and height individually based on the 
     # screen resolution: 93% of the screen for width,

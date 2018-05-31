@@ -10,6 +10,7 @@ import threading
 import lxml
 import queue
 import socket
+import tempfile
 import random
 
 
@@ -196,7 +197,7 @@ def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOL
         else:
             what = "document"
         textfield = bokeh.models.widgets.AutocompleteInput(completions=document_topics.index.tolist(),
-                                                           placeholder="Type a {} name".format(what),
+                                                           placeholder="Type a {} and press enter".format(what),
                                                            css_classes=["customTextInput"],
                                                            callback=callback)
         return bokeh.layouts.row(fig, textfield, sizing_mode="scale_width")
@@ -275,3 +276,16 @@ def unlink_content(directory, pattern="*"):
     for p in pathlib.Path(directory).rglob(pattern):
         if p.is_file():
             p.unlink()
+
+
+def get_tempdirs(make=False):
+    """
+    Gets paths (and makes) temporary folders.
+    """
+    tempdir = tempfile.gettempdir()
+    dumpdir = pathlib.Path(tempdir, "topicsexplorerdump")
+    archivedir = pathlib.Path(tempdir, "topicsexplorerdata")
+    if make:
+        dumpdir.mkdir(exist_ok=True)
+        archivedir.mkdir(exist_ok=True)
+    return dumpdir, archivedir
