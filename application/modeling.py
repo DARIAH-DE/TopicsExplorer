@@ -265,9 +265,10 @@ def workflow(tempdir, archive_dir):
         yield "running", "Building results page ...", progress / complete * 100, "", "", "", "", ""
         application.utils.compress(data, str(pathlib.Path(tempdir, "data.pickle")))
         yield "done", "", progress / complete * 100, "", "", "", "", ""
+    except UnicodeDecodeError:
+        message = "There must be something wrong in one or more of your text files. "\
+                  "Maybe not encoded in UTF-8? Or, maybe an unsupported file format? "\
+                  "You can use only plain text and XML."
+        yield "error", message, "", "", "", "", "", ""
     except Exception as error:
-        # Todo: except UnicodeDecodeError
-        # message = "There must be something wrong in one or more of your text files. "
-        #           "Maybe not encoded in UTF-8? Or, maybe an unsupported file format? "
-        #           "You can use only plain text and XML."
         yield "error", str(error), "", "", "", "", "", ""
