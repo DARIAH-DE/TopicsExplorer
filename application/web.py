@@ -8,7 +8,7 @@ import werkzeug.exceptions
 
 app, dumpdir, archivedir = application.config.create_app()
 
-@app.route('/')
+@app.route("/")
 def index():
     """
     Renders the main page, and unlinks the content (if any) in the temporary
@@ -16,18 +16,18 @@ def index():
     """
     application.utils.unlink_content(dumpdir)
     application.utils.unlink_content(archivedir)
-    return flask.render_template('index.html')
+    return flask.render_template("index.html")
 
 
-@app.route('/help')
+@app.route("/help")
 def help():
     """
     Renders the help page.
     """
-    return flask.render_template('help.html')
+    return flask.render_template("help.html")
 
 
-@app.route('/modeling', methods=['POST'])
+@app.route("/modeling", methods=["POST"])
 def modeling():
     """
     Streams the modeling page, printing useful information to the UI.
@@ -39,24 +39,24 @@ def modeling():
         return t.stream(context)
     internet = application.utils.is_connected()
     stream = flask.stream_with_context(application.modeling.workflow(dumpdir, archivedir))
-    return flask.Response(stream_template('modeling.html', stream=stream, internet=internet))
+    return flask.Response(stream_template("modeling.html", stream=stream, internet=internet))
 
 
-@app.route('/model')
+@app.route("/model")
 def model():
     """
     Loads the dumped data, deletes the temporary data, and renders the model page.
     """
     data = application.utils.load_data(dumpdir)
-    return flask.render_template('model.html', **data)
+    return flask.render_template("model.html", **data)
 
 
-@app.route('/download')
+@app.route("/download")
 def download():
     """
     Sends the ZIP archive.
     """
-    return flask.send_file(str(pathlib.Path(archivedir, 'topicmodeling.zip')))
+    return flask.send_file(str(pathlib.Path(archivedir, "topicmodeling.zip")))
 
 
 @app.errorhandler(werkzeug.exceptions.HTTPException)
@@ -65,7 +65,7 @@ def handle_http_exception(e):
     Handles any HTTP Exception, shows a Bootstrap modal with the error
     message and renders the index.html again.
     """
-    return flask.render_template('index.html', http='error', error_message=e)
+    return flask.render_template("index.html", http="error", error_message=e)
 
 for code in werkzeug.exceptions.default_exceptions:
     app.errorhandler(code)(handle_http_exception)
@@ -76,8 +76,8 @@ def add_header(r):
     """
     Clears the cache after a request.
     """
-    r.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    r.headers['Pragma'] = 'no-cache'
-    r.headers['Expires'] = '0'
-    r.headers['Cache-Control'] = 'public, max-age=0'
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers["Cache-Control"] = "public, max-age=0"
     return r

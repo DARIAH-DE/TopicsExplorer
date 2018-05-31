@@ -52,8 +52,8 @@ def init_gui(application, port=5000, argv=None):
     if argv is None:
         argv = sys.argv
 
-    title = 'Topics Explorer'
-    icon = str(pathlib.Path('application', 'static', 'img', 'app_icon.png'))
+    title = "Topics Explorer"
+    icon = str(pathlib.Path("application", "static", "img", "app_icon.png"))
 
     qtapp = PyQt5.QtWidgets.QApplication(argv)
     webapp = ApplicationThread(application, port)
@@ -74,7 +74,7 @@ def init_gui(application, port=5000, argv=None):
     webview = PyQt5.QtWebEngineWidgets.QWebEngineView(window)
     window.setCentralWidget(webview)
 
-    page = WebPage('http://localhost:{}'.format(port))
+    page = WebPage("http://localhost:{}".format(port))
     page.home()
     webview.setPage(page)
 
@@ -83,10 +83,10 @@ def init_gui(application, port=5000, argv=None):
         Opens a file dialog to save the ZIP archive.
         """
         path = PyQt5.QtWidgets.QFileDialog.getSaveFileName(None,
-                                                           'Select destination folder and file name',
-                                                           '',
-                                                           'Zip files (*.zip)')[0]
-        item.setPath('{path}.{ext}'.format(path=path, ext='zip'))
+                                                           "Select destination folder and file name",
+                                                           "",
+                                                           "Zip files (*.zip)")[0]
+        item.setPath("{path}.{ext}".format(path=path, ext="zip"))
         item.accept()
 
     webview.page().profile().downloadRequested.connect(download_requested)

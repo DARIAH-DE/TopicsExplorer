@@ -214,19 +214,20 @@ def read_logfile(logfile, total_iterations):
 
         wait = "Still initializing LDA topic model ..."
         info = "Iteration {0} of {1} ..."
+        i = pattern.findall(line)[0]
 
         if "likelihood" in line:
-            return info.format(pattern.findall(line)[0], total_iterations)
+            return i, info.format(i, total_iterations)
         elif "n_documents" in line:
-            return wait
+            return 0, wait
         elif "vocab_size" in line:
-            return wait
+            return 0, wait
         elif "n_words" in line:
-            return wait
+            return 0, wait
         elif "n_topics" in line:
-            return wait
+            return 0, wait
         elif "n_iter" in line:
-            return wait
+            return 0, wait
 
 
 def enthread(target, args):

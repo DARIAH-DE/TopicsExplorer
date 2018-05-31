@@ -10,16 +10,16 @@ def create_app(**kwargs):
     accordingly.
     """
     tempdir = tempfile.gettempdir()
-    dumpdir = pathlib.Path(tempdir, 'topicsexplorerdump')
-    archivedir = pathlib.Path(tempdir, 'topicsexplorerdata')
+    dumpdir = pathlib.Path(tempdir, "topicsexplorerdump")
+    archivedir = pathlib.Path(tempdir, "topicsexplorerdata")
     dumpdir.mkdir(exist_ok=True)
     archivedir.mkdir(exist_ok=True)
     
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         root = pathlib.Path(sys._MEIPASS)
         app = flask.Flask(import_name=__name__,
-                          template_folder=str(pathlib.Path(root, 'templates')),
-                          static_folder=str(pathlib.Path(root, 'static')),
+                          template_folder=str(pathlib.Path(root, "templates")),
+                          static_folder=str(pathlib.Path(root, "static")),
                           **kwargs)
     else:
         app = flask.Flask(import_name=__name__, **kwargs)
