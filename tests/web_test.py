@@ -30,7 +30,7 @@ class TestWebApplication:
         """
         cwd = pathlib.Path.cwd()
 
-        assert self.app.config['DEBUG'] == False
-        assert self.app.import_name == 'application.config'
-        assert self.app.template_folder == 'templates'
-        assert self.app.static_folder == str(pathlib.Path(cwd, 'application', 'static'))
+        assert self.app.config["DEBUG"] == False
+        assert self.app.import_name == "application.config"
+        assert self.app.template_folder == "templates"
+        assert self.app.static_folder == str(pathlib.Path(cwd, "application", "static"))
