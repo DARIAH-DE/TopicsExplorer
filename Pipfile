@@ -21,6 +21,7 @@ pyqt5 = "==5.10.0"
 
 pytest = "*"
 pytest-cov = "*"
+pytest-flask = "*"
 
 
 [requires]
