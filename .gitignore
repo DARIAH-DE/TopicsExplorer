@@ -11,3 +11,7 @@ tests/__pycache__
 application/__pycache__/*
 topicmodeling.zip
 .zip
+tests.xml
+htmlcov
+coverage.xml
+.coverage

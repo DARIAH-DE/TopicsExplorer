@@ -106,6 +106,22 @@
     #current-state {
       font-weight: bold;
     }
+
+    #progressbar {
+      margin-top: 10px;
+      background-color: #F3F3F3;
+      border-radius: 2px;
+      padding: 3px;
+      height: 12px;
+    }
+    
+    #inner-progressbar {
+       background-color: #053967;
+       width: 100%;
+       height: 12px;
+       border-radius: 2px;
+    }
+
   </style>
 </head>
 
@@ -117,7 +133,7 @@
       <hr>
       <div>
         <p id="left-box-content">How long this process takes depends on how large your selected text corpus is, and how many iterations you have selected.</p>
-        <p>In the meantime, take a look at the <a href="https://github.com/DARIAH-DE/Topics/blob/master/notebooks/IntroducingMallet.ipynb">Jupyter notebook</a> that deals with topic modeling with MALLET.</p>
+        <p>In the meantime, you could take a look at the Jupyter notebook that deals with topic modeling with MALLET on our GitHub page.</p>
       </div>
     </div>
     <div class="box" id="main-box">
@@ -127,6 +143,9 @@
       {% else %}
         <div id="current-state" style="margin-top: 25px;">Collecting user input ...</div>
       {% endif %}
+      <div id="progressbar">
+          <div id="inner-progressbar"></div>
+      </div>
       <hr>
       <a href="javascript:history.go(-1)" id="abort-button">Abort</a>
     </div>
@@ -137,23 +156,23 @@
   </div>
   <script>
     var blei = [
-      '“Topic modeling algorithms are statistical methods that analyze the words of the original texts to discover the themes that run through them, how those themes are connected to each other, and how they change over time.” (<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">Blei 2012</a>)',
-      '“Topic models are algorithms for discovering the main themes that pervade a large and otherwise unstructured collection of documents. Topic models can organize the collection according to the discovered themes.” (<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">Blei 2012</a>)',
-      '“Topic modeling algorithms can be applied to massive collections of documents. Recent advances in this field allow us to analyze streaming collections, like you might find from a Web API.” (<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">Blei 2012</a>)',
-      '“Topic modeling algorithms can be adapted to many kinds of data. Among other applications, they have been used to find patterns in genetic data, images, and social networks.” (<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">Blei 2012</a>)',
-      '“A topic is formally defined to be a distribution over a fixed vocabulary. It is assumed that these topics are specified before any data has been generated.” (<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">Blei 2012</a>)',
-      '“One assumption that LDA makes is the <i>bag of words</i> assumption, that the order of the words in the document does not matter.” (<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">Blei 2012</a>)',
-      '“With recent scientific advances in support of unsupervised machine learning topic models promise to be an important component for summarizing and understanding our growing digitized archive of information.” (<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">Blei 2012</a>)'
+      '“Topic modeling algorithms are statistical methods that analyze the words of the original texts to discover the themes that run through them, how those themes are connected to each other, and how they change over time.” (Blei 2012)',
+      '“Topic models are algorithms for discovering the main themes that pervade a large and otherwise unstructured collection of documents. Topic models can organize the collection according to the discovered themes.” (Blei 2012)',
+      '“Topic modeling algorithms can be applied to massive collections of documents. Recent advances in this field allow us to analyze streaming collections, like you might find from a Web API.” (Blei 2012)',
+      '“Topic modeling algorithms can be adapted to many kinds of data. Among other applications, they have been used to find patterns in genetic data, images, and social networks.” (Blei 2012)',
+      '“A topic is formally defined to be a distribution over a fixed vocabulary. It is assumed that these topics are specified before any data has been generated.” (Blei 2012)',
+      '“One assumption that LDA makes is the <i>bag of words</i> assumption, that the order of the words in the document does not matter.” (Blei 2012)',
+      '“With recent scientific advances in support of unsupervised machine learning topic models promise to be an important component for summarizing and understanding our growing digitized archive of information.” (Blei 2012)'
     ]
 
-    var randInt = Math.floor(Math.random() * (6 - 0 + 1)) + 0;
+    var randInt = Math.floor(Math.random() * 7);
     document.getElementById('right-box-content').innerHTML = blei[randInt];
   </script>
 
-  {% for identifier, state, excerpt, documents, tokens, topics, iterations in stream %}
+  {% for identifier, state, percent, excerpt, documents, tokens, topics, iterations in stream %}
   <script>
 
-    var corpus = "If you are interested in some facts and figures: Your corpus consists of <b>{} documents</b>, or <b>{} tokens</b>. You have selected <b>{} topics</b> at <b>{} iterations</b>."
+    var corpus = "Your corpus consists of <b>{} documents</b>, or <b>{} tokens</b>. You have selected <b>{} topics</b> at <b>{} iterations</b>."
 
     String.prototype.format = function () {
       var i = 0,
@@ -165,6 +184,7 @@
 
     {% if identifier == "running" %}
       document.getElementById("current-state").innerText = "{{ state }}";
+      document.getElementById("inner-progressbar").setAttribute("style", "width: {{ percent }}%;")
       {% if excerpt | length > 1 %}
         document.getElementById("right-box-heading").innerText = "An excerpt from your corpus";
         document.getElementById("right-box-content").innerText = "{{ excerpt }}";

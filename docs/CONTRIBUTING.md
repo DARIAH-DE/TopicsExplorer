@@ -1,28 +1,25 @@
-# Information for Contributors
+# Information for contributors
 
-## Development Environment
+## Development environment
 
-* [Code and Issues are at Github](http://github.com/DARIAH-DE/TopicsExplorer)
+* [Code and issues are on Github](http://github.com/DARIAH-DE/TopicsExplorer)
 
 ### Start hacking
 
 ```bash
 git clone -b testing git@github.com:DARIAH-DE/TopicsExplorer
 cd TopicsExplorer
-mkvirtualenv TopicsExplorer      # if you use virtualenvwrapper
-workon TopicsExplorer            # if you use virtualenvwrapper
-pip install -r requirement-dev.txt
+pipenv insall --dev
 ```
 
 ### Running the tests
 
-Installing from `requirements-dev.txt` also installs the testing framework `pytest`, which is configured in `setup.cfg`. You can run the tests locally from the command line:
+Appending `--dev` also installs the testing framework `pytest`. You can run the tests locally from the command-line:
 
-* `pytest` runs all unit tests (functions starting/ending with `test_` or `_test`, respectively) as well as all doctests. At the time of writing, these are 52 tests, taking ~3s in total.
-* `pytest --nbsmoke-run` additionally runs all Jupyter Notebooks and reports errors. This takes significantly longer (~90s).
+* `pytest` runs all unit tests (functions starting/ending with `test_` or `_test`, respectively).
 
 
-## Releasing / Pushing to Master
+## Releasing
 
 The _testing_ branch is the integration branch for current developments. The _master_ branch should always contain the latest stable version. 
 
