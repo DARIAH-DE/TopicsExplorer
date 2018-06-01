@@ -2,20 +2,29 @@
 
 import application
 import pathlib
+import tempfile
 import pytest
 
 
-@pytest.mark.skip("Tests require updating")
 class TestWebApplication:
     def setup_method(self):
         """
-        Creating a Flask app, and a bokeh resources path for each method of
-        the class.
+        Creating a Flask app and temporary folders.
         """
-        self.app, self.bokeh_resources = application.config.create_app()
+        self.app, self.dumpdir, self.archivedir = application.config.create_app()
+    
+    def test_temporary_folders(self):
+        """
+        Tests if temporary folders are set up correctly.
+        """
+        tempdir = tempfile.gettempdir()
+        correct_dumpdir = str(pathlib.Path(tempdir, "topicsexplorerdump"))
+        correct_archivedir = str(pathlib.Path(tempdir, "topicsexplorerdata"))
+        
+        assert self.dumpdir == correct_dumpdir
+        assert self.archivedir == correct_archivedir
 
-
-    def test_config(self):
+    def test_configs(self):
         """
         Tests if the config loads correctly.
         """
@@ -25,9 +34,3 @@ class TestWebApplication:
         assert self.app.import_name == 'application.config'
         assert self.app.template_folder == 'templates'
         assert self.app.static_folder == str(pathlib.Path(cwd, 'application', 'static'))
-        assert self.bokeh_resources == str(pathlib.Path('application', 'static', 'bokeh_templates'))
-
-
-    def test_index(self):
-        return None
-
