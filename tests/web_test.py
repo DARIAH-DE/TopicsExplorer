@@ -1,36 +1,47 @@
 #!/usr/bin/env python3
 
+import pytest
+import tempfile
 import application
 import pathlib
-import tempfile
-import pytest
+import io
+
+@pytest.fixture
+def app():
+    return application.web.app
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
 
 
-class TestWebApplication:
-    def setup_method(self):
-        """
-        Creating a Flask app and temporary folders.
-        """
-        self.app, self.dumpdir, self.archivedir = application.config.create_app()
-    
-    def test_temporary_folders(self):
-        """
-        Tests if temporary folders are set up correctly.
-        """
-        tempdir = tempfile.gettempdir()
-        correct_dumpdir = str(pathlib.Path(tempdir, "topicsexplorerdump"))
-        correct_archivedir = str(pathlib.Path(tempdir, "topicsexplorerdata"))
-        
-        assert self.dumpdir == correct_dumpdir
-        assert self.archivedir == correct_archivedir
+def test_index(client):
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert b"Easy Topic Modeling" in resp.data
 
-    def test_configs(self):
-        """
-        Tests if the config loads correctly.
-        """
-        cwd = pathlib.Path.cwd()
+def test_help(client):
+    resp = client.get("/help")
+    assert resp.status_code == 200
+    assert b"Help on Topics Explorer" in resp.data
 
-        assert self.app.config["DEBUG"] == False
-        assert self.app.import_name == "application.config"
-        assert self.app.template_folder == "templates"
-        assert self.app.static_folder == str(pathlib.Path(cwd, "application", "static"))
+def test_modeling(client):
+    resp = client.post("/modeling")
+    assert resp.status_code == 200
+    assert b"This may take a while..." in resp.data
+
+def test_model(client):
+    tempdir = pathlib.Path(tempfile.gettempdir(), "topicsexplorerdump")
+    filepath = pathlib.Path(tempdir, "data.pickle")
+    parameter = pathlib.Path(tempdir, "parameter.csv")
+    topics = pathlib.Path(tempdir, "topics.csv")
+    data = {"foo": "bar"}
+    application.utils.compress(data, str(filepath))
+    with parameter.open("w", encoding="utf-8") as file:
+        file.write("foo;bar\nfoo;bar")
+    with topics.open("w", encoding="utf-8") as file:
+        file.write("foo;bar\nfoo;bar")
+    resp = client.get("/model")
+    assert resp.status_code == 200
+    assert b"Inspecting the Topic Model" in resp.data
+    application.utils.unlink_content(tempdir)
