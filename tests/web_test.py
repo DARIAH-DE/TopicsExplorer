@@ -43,5 +43,5 @@ def test_model(client):
         file.write("foo;bar\nfoo;bar")
     resp = client.get("/model")
     assert resp.status_code == 200
-    assert b"Inspecting the Topic Model" in resp.data
+    assert b"Inspecting the topic model" in resp.data
     application.utils.unlink_content(tempdir)
