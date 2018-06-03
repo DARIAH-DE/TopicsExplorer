@@ -1,33 +1,47 @@
 #!/usr/bin/env python3
 
+import pytest
+import tempfile
 import application
 import pathlib
-import pytest
+import io
+
+@pytest.fixture
+def app():
+    return application.web.app
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
 
 
-@pytest.mark.skip("Tests require updating")
-class TestWebApplication:
-    def setup_method(self):
-        """
-        Creating a Flask app, and a bokeh resources path for each method of
-        the class.
-        """
-        self.app, self.bokeh_resources = application.config.create_app()
+def test_index(client):
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert b"Easy Topic Modeling" in resp.data
 
+def test_help(client):
+    resp = client.get("/help")
+    assert resp.status_code == 200
+    assert b"Help on Topics Explorer" in resp.data
 
-    def test_config(self):
-        """
-        Tests if the config loads correctly.
-        """
-        cwd = pathlib.Path.cwd()
+def test_modeling(client):
+    resp = client.post("/modeling")
+    assert resp.status_code == 200
+    assert b"This may take a while..." in resp.data
 
-        assert self.app.config['DEBUG'] == False
-        assert self.app.import_name == 'application.config'
-        assert self.app.template_folder == 'templates'
-        assert self.app.static_folder == str(pathlib.Path(cwd, 'application', 'static'))
-        assert self.bokeh_resources == str(pathlib.Path('application', 'static', 'bokeh_templates'))
-
-
-    def test_index(self):
-        return None
-
+def test_model(client):
+    tempdir = pathlib.Path(tempfile.gettempdir(), "topicsexplorerdump")
+    filepath = pathlib.Path(tempdir, "data.pickle")
+    parameter = pathlib.Path(tempdir, "parameter.csv")
+    topics = pathlib.Path(tempdir, "topics.csv")
+    data = {"foo": "bar"}
+    application.utils.compress(data, str(filepath))
+    with parameter.open("w", encoding="utf-8") as file:
+        file.write("foo;bar\nfoo;bar")
+    with topics.open("w", encoding="utf-8") as file:
+        file.write("foo;bar\nfoo;bar")
+    resp = client.get("/model")
+    assert resp.status_code == 200
+    assert b"Inspecting the Topic Model" in resp.data
+    application.utils.unlink_content(tempdir)
