@@ -30,7 +30,7 @@ You can also use the developer version:
 4. Run `pipenv install`, and afterwards `pipenv shell`.
 5. To start the application, type `python topicsexplorer.py`, and press enter.
 
-> If you want to use the sample corpus, you must clone the repository with Git (**not** download the source code from the **release-section**). See also section [The sample corpus](#the-sample-corpus).
+> If you want to use the sample corpus, you must clone the repository with Git (**not** download the source code from the **release-section**). See also section [The sample corpus](#the-sample-corpus). If you download one of the archives (except the source code) from the release section, the corpus is included.
 
 ## The application
 ![Demonstrator Screenshot](docs/images/screenshot.png)
@@ -51,8 +51,6 @@ $ cd data/british-fiction-corpus
 $ git submodule init
 $ git submodule update
 ```
-
-> If you download one of the archives (except the source code) from the release section, the corpus is included.
 
 ## Example visualization
 The following visualization is based on the distribution of 10 topics over a total of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). The topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
