@@ -16,21 +16,21 @@ This application presents a **user-friendly topic modeling workflow** consisting
 * [About DARIAH-DE](#about-dariah-de)
 
 ## Getting started
-Windows and macOS users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
+Windows, macOS, and Linux users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the ZIP archive for your OS.
 2. Extract the content of the archive.
 3. Run the app by double-clicking the file `DARIAH Topics Explorer`.
 
-Linux users **have to** use the source code and install some dependencies, but Windows and macOS users can of course also do this:
+You can also use the developer version:
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the **source code** as ZIP archive.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
-3. Make sure you have [Pipenv](https://docs.pipenv.org/) installed (if not: use `pip3 install --user pipenv`).
+3. Make sure you have [Pipenv](https://docs.pipenv.org/) installed (if not: use `pip install --user pipenv`).
 4. Run `pipenv install`, and afterwards `pipenv shell`.
 5. To start the application, type `python topicsexplorer.py`, and press enter.
 
-> If you want to use the sample corpus, you must clone the repository with Git (**not** download the source code from the **release-section**). See also section [The sample corpus](#the-sample-corpus).
+> If you want to use the sample corpus, you must clone the repository with Git (**not** download the source code from the **release-section**). See also section [The sample corpus](#the-sample-corpus). If you download one of the archives (except the source code) from the release section, the corpus is included.
 
 ## The application
 ![Demonstrator Screenshot](docs/images/screenshot.png)

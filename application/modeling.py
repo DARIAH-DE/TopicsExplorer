@@ -28,6 +28,7 @@ def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
     model.fit(document_term_arr)
     with open(filepath, "a", encoding="utf-8") as f:
         f.write("DONE")
+    logging.shutdown()
     return model
 
 
