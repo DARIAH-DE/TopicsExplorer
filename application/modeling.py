@@ -1,36 +1,33 @@
-import application
-import dariah_topics
-import pathlib
-import logging
-import lda
-import time
+
 import flask
-import random
-import shutil
-import sys
-import numpy as np
-import pandas as pd
-import bokeh.plotting
-import bokeh.embed
-import werkzeug.utils
+import cophi
 
 
-def lda_modeling(document_term_arr, n_topics, n_iter, tempdir):
+def get_forms(files, num_topics, num_iterations):
+    """Get forms values.
     """
-    Trains an LDA topic model and writes logging to a file.
-    """
-    filepath = str(pathlib.Path(tempdir, "topicmodeling.log"))
-    handler = logging.FileHandler(filepath, "w")
-    lda_log = logging.getLogger("lda")
-    lda_log.setLevel(logging.INFO)
-    lda_log.addHandler(handler)
-    model = lda.LDA(n_topics=n_topics, n_iter=n_iter)
-    model.fit(document_term_arr)
-    with open(filepath, "a", encoding="utf-8") as f:
-        f.write("DONE")
-    logging.shutdown()
-    return model
+    data = {"files": flask.request.files.getlist(files),
+            "num_topics": int(flask.request.form[num_topics]),
+            "num_iterations": int(flask.request.form[num_iterations])}
+    if flask.request.files.get("stopwords", None):
+        data["stopwords"] = flask.request.files["stopwords"]
+    else:
+        data["mfw"] = int(flask.request.form["mfw"])
+    return data
 
+def get_parameter():
+    pass
+
+def construct_corpus():
+    pass
+
+def get_documents(textfiles):
+    for textfile in textfiles:
+        filepath = pathlib.Path(werkzeug.utils.secure_filename(textfile.filename))
+        title = filepath.stem
+        suffix = filepath.suffix
+        content = textfile.read().decode("utf-8")
+        yield cophi.model.Document(content, title)
 
 def workflow(tempdir, archive_dir):
     """
@@ -38,30 +35,11 @@ def workflow(tempdir, archive_dir):
     creates visualizations, and dumps generated data.
     """
     try:
-        start = time.time()
-        progress = 0
-        user_input = {"files": flask.request.files.getlist("files"),
-                      "num_topics": int(flask.request.form["num_topics"]),
-                      "num_iterations": int(flask.request.form["num_iterations"])}
-        complete = (18 + len(user_input["files"]) + (user_input["num_iterations"]))
-
-        progress += 1
-        if flask.request.files.get("stopword_list", None):
-            yield "running", "Collecting external stopwords list ...", progress / complete * 100, "", "", "", "", ""
-            user_input["stopwords"] = flask.request.files["stopword_list"]
-        else:
-            yield "running", "Collecting threshold for stopwords ...", progress / complete * 100, "", "", "", "", ""
-            user_input["mfw"] = int(flask.request.form["mfw_threshold"])
 
         parameter = pd.Series()
         parameter["Corpus size, in documents"] = len(user_input["files"])
         parameter["Corpus size (raw), in tokens"] = 0
 
-        if len(user_input["files"]) < 5:
-            raise Exception("Your corpus is too small. Please select at least five text files.")
-
-        progress += 1
-        yield "running", "Reading and tokenizing corpus ...", progress / complete * 100, "", "", "", "", ""
         tokenized_corpus = pd.Series()
         for file in user_input["files"]:
             filename = pathlib.Path(werkzeug.utils.secure_filename(file.filename))

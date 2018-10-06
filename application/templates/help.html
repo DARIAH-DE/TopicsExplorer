@@ -1,43 +1,43 @@
 {% extends "layout.html" %}
 
-{% block navigation %}
-<ul class="nav pull-right">
-  <li>
-    <a href="javascript:history.go(-1)"><i class="icon-arrow-left icon-white"></i> Back</a>
-  </li>
-</ul>
-{% endblock %}
-
-{% block content %}
-<h1>Help on Topics Explorer</h1>
-<div id="contentInner">
-  <h2>Contact and Issues</h2>
-  <p>Please use the project’s issue tracker on <b>GitHub</b> for comments, bugs, and typos. If you do not have a GitHub account, you can write an email to <a href="mailto:pielstroem@biozentrum.uni-wuerzburg.de">Dr. Steffen Pielström</a> for general questions, or to <a href="mailto:severin.simmmler@stud-mail.uni-wuerzburg.de">Severin Simmler</a> for technical problems.</p>
-  <div class="alert alert-primary" role="alert">
-    To prevent dead links in this application, it is probably safer if you search the internet for the GitHub repository yourself. The name of the organization is <b>DARIAH-DE</b>, the name of the repository <b>TopicsExplorer</b>.
-  </div>
-    <h2>What is Topic Modeling?</h2>
-  <ul>
-    <li>
-      <b>David M. Blei, Andrew Ng, Michael Jordan</b>, Latent Dirichlet Allocation, <i>Journal of Machine Learning Research</i> 3 (2003), 993–1022.
-    </li>
-    <li>
-      <b>David M. Blei</b>, Probabilistic Topic Models, <i>Communication of the ACM</i> 55 (2012), 77–84.
-    </li>
-    <li>
-      <b>Thomas Griffiths, Mark Steyvers</b>, Finding Scientific Topics, <i>Proceedings of the National Academy of Sciences</i> 101 (2004), 228–235.
-    </li>
-    <li>
-      <b>Gregor Heinrich</b>, Parameter Estimation for Text Analysis, <i>Technical Report for the Fraunhofer IGD</i> (2008), 23–54.
-    </li>
-    <li>
-      <b>Michal Rosen-Zvi</b>, Learning Author-Topic Models from Text Corpora, <i>ACM Transactions on Information Systems</i> 28 (2010), 41–73.
-    </li>
-  </ul>
-  <br>
-  <h2>What is DARIAH-DE?</h2>
-  <p>DARIAH-DE supports research in the humanities and cultural sciences with digital methods and procedures. The research infrastructure of DARIAH-DE consists of four pillars: teaching, research, research data and technical components. As a partner in DARIAH-EU, DARIAH-DE helps to bundle and network state-of-the-art activities of the digital humanities. Scientists use DARIAH, for example, to make research data available across Europe. The exchange of knowledge and expertise is thus promoted across disciplines and the possibility of discovering new scientific discourses is encouraged.</p>
-  <p>This application has been developed with support from the DARIAH-DE initiative, the German branch of DARIAH-EU, the European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been provided by the German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610J.</p>
-  <p><img src="{{url_for('static', filename='img/dariah-de_logo.png')}}"/><img src="{{url_for('static', filename='img/bmbf_logo.png')}}"/></p>
-</div>
+{% block main %}
+<main class="main">
+    <div class="main_content">
+        <h2>Issues and Contact</h2>
+        <p>Please use the project’s <a href="https://github.com/DARIAH-DE/Topics/issues">issue tracker</a> on GitHub.
+            If you do not have a
+            GitHub account, you can write an email to <a href="mailto:pielstroem@biozentrum.uni-wuerzburg.de">Dr.
+                Steffen Pielström</a> for general questions or to <a href="mailto:severin.simmmler@stud-mail.uni-wuerzburg.de">Severin
+                Simmler</a> for technical problems.</p>
+        <h2>What is Topic Modeling?</h2>
+        <ul>
+            <li>
+                <b>David M. Blei, Andrew Ng, Michael Jordan</b>, Latent Dirichlet Allocation, <i>Journal of Machine
+                    Learning Research</i> 3 (2003), 993–1022.
+            </li>
+            <li>
+                <b>David M. Blei</b>, Probabilistic Topic Models, <i>Communication of the ACM</i> 55 (2012), 77–84.
+            </li>
+            <li>
+                <b>Thomas Griffiths, Mark Steyvers</b>, Finding Scientific Topics, <i>Proceedings of the National
+                    Academy of Sciences</i> 101 (2004), 228–235.
+            </li>
+            <li>
+                <b>Gregor Heinrich</b>, Parameter Estimation for Text Analysis, <i>Technical Report for the Fraunhofer
+                    IGD</i> (2008), 23–54.
+            </li>
+            <li>
+                <b>Michal Rosen-Zvi</b>, Learning Author-Topic Models from Text Corpora, <i>ACM Transactions on
+                    Information Systems</i> 28 (2010), 41–73.
+            </li>
+        </ul>
+        <h2>What is DARIAH-DE?</h2>
+        <p>DARIAH-DE supports research in the humanities and cultural sciences with digital methods and procedures. The
+            research infrastructure of DARIAH-DE consists of four pillars: teaching, research, research data and
+            technical components. As a partner in DARIAH-EU, DARIAH-DE helps to bundle and network state-of-the-art
+            activities of the digital humanities. Scientists use DARIAH, for example, to make research data available
+            across Europe. The exchange of knowledge and expertise is thus promoted across disciplines and the
+            possibility of discovering new scientific discourses is encouraged.</p>
+    </div>
+</main>
 {% endblock %}

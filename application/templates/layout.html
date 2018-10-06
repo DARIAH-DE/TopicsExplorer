@@ -1,125 +1,174 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 
 <head>
-  <meta charset="utf-8">
-  <title>Topics Explorer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="DARIAH-DE">
-  <meta name="description" content="Topics Explorer">
+    <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='favicon.ico')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="{{url_for('static', filename='js/script.js')}}" defer></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/globalmenu.js')}}"></script>
 
-  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}" type="text/css" media="screen, projection"/>
-  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-responsive.css')}}" type="text/css" media="screen, projection"/>
-  <link rel="stylesheet" href="{{url_for('static', filename='css/application.css')}}" type="text/css" media="screen, projection"/>
-  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-customization.css')}}" type="text/css" media="screen, projection"/>
-  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-modal.css')}}" type="text/css" media="screen, projection"/>
-  <link rel="stylesheet" href="{{url_for('static', filename='css/font-awesome.css')}}">
-
-  <script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2.js')}}"></script>
-  <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
-
-  {% if bokeh_resources|safe == "include" %}
-    <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-min.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-tables-min.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/bokeh-widgets-min.css')}}">
-
-    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh.min.js')}}"></script>
-    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh-gl.min.js')}}"></script>
-    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh-tables.min.js')}}"></script>
-    <script type="text/javascript" src="{{url_for('static', filename='js/bokeh-widgets.min.js')}}"></script>
-
-    {% block bokeh_scripts%}
-    {% endblock %}
-  {% endif %}
-
-  <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='img/page_icon.png')}}"/>
+    <title>DARIAH-DE :: Topics Explorer</title>
 </head>
 
-<body>
-  <div id="content">
-    <div id="navbar">
-      <div class="navbar navbar-inverse navbar-static-top navbar-dariah" id="top" />
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <div class="row-fluid">
-            <div class="span1"></div>
-            <div class="span10">
-              <div class="nav-collapse collapse">
-                <ul class="nav" />
-                <li>
-                  <a href="{{ url_for('index') }}">
-                    <img src="{{ url_for('static', filename='img/dariah_white.png') }}" height="80" width="80" />
-                  </a>
-                </li>
-                </ul>
-                {% block navigation %}
-                {% endblock %}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <br>
-  <br>
-  <br>
-  <br>
-  <div id="content_layout" class="container-fluid">
-    <div class="row-fluid">
-      <div class="span10 offset1 main-content-wrapper no-margin">
-        <div id="content" class="primary-area">
-          {% block content %}
-          {% endblock %}
-        </div>
-      </div>
-    </div>
-    <div class="row-fluid">
-      <div id="footer" class="span10 offset1 no-margin footer">
-        <span>&copy; 2017–2018, DARIAH-DE</span>
-      </div>
-    </div>
-  </div>
-  <div class="modal fade" id="error-popup"></div>
-  {% if http == "error" %}
-  <script>
-    var parent = document.getElementById("error-popup");
-    parent.setAttribute("role", "dialog");
-    parent.setAttribute("aria-hidden", "true");
-    var newModalDialog = document.createElement("div");
-    parent.appendChild(newModalDialog);
-    newModalDialog.setAttribute("class", "modal-dialog modal dialog centered");
-    newModalDialog.setAttribute("role", "document");
-    var newModalContent = document.createElement("div");
-    newModalDialog.appendChild(newModalContent);
-    newModalContent.setAttribute("class", "modal-content");
-    var newModalHeader = document.createElement("div");
-    newModalContent.appendChild(newModalHeader);
-    newModalHeader.setAttribute("class", "modal-header");
-    var newModalTitle = document.createElement("h3");
-    newModalTitle.setAttribute("class", "modal-title");
-    newModalTitle.innerText = "Oops! I'm very sorry, but something went wrong...";
-    newModalHeader.appendChild(newModalTitle);
-    var newModalBody = document.createElement("div");
-    newModalBody.setAttribute("class", "modal-body");
-    newModalBody.innerHTML = "Looks like something didn't work out as expected. Maybe you can figure out this error message by yourself: <br><br><b>{{ error_message }}</b><br><br>In any case, it would be very useful for us if you write a bug report either on <a href='https://github.com/DARIAH-DE/TopicsExplorer/issues'>GitHub</a>, or send an email to <a href='mailto:severin.simmler@stud-mail.uni-wuerzburg.de'>Severin Simmler</a>. Please include the error message from above in your report, information about your operating system, and at best some details about your corpus (esp. file format).<br><br>";
-    newModalContent.appendChild(newModalBody);
-    var newModalFooter = document.createElement("div");
-    newModalBody.appendChild(newModalFooter);
-    newModalFooter.setAttribute("class", "modal-footer");
-    var newButton = document.createElement("a");
-    newButton.setAttribute("class", "try-again-button");
-    newButton.setAttribute("href", "javascript:history.go(-1)");
-    newButton.text = "Go back and try again";
-    newModalFooter.appendChild(newButton);
-      
-    $("#error-popup").modal({
-      keyboard: false,
-      backdrop: "static"
-    });
-    $("#error-popup").modal("show");
-  </script>
-  {% endif %}
-</body>
+<body class="site">
+    <div class="site_wrap">
+        <header class="header">
+            <div class="wrap">
+                <nav class="nav">
+                    <button type="button" class="nav_toggle -main">
+                        <svg class="icon">
+                            <use xlink:href="#icon-menu"></use>
+                        </svg>
+                    </button>
 
+                    <div class="nav_menu -main">
+                        <ul class="nav_list -level-1">
+                            <li class="nav_item -level-1 -home">
+                                <a class="nav_link" href="{{url_for('index')}}" title="Home">
+                                    <svg class="icon">
+                                        <use xlink:href="#icon-home"></use>
+                                    </svg>
+                                    <span class="sr-only">Home</span>
+                                </a>
+                            </li>
+                            <li class="nav_item -level-1">
+                                <a class="nav_link" href="{{url_for('help')}}">
+                                    Help
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <aside class="header_aside">
+                    <div class="search hidden">
+                        <a class="search_toggle" href="javascript:" title="Suchen">
+                            <svg class="icon">
+                                <use xlink:href="#icon-search"></use>
+                            </svg>
+                            <span class="sr-only">Search</span>
+                        </a>
+
+                        <form class="search_form" action="search" role="search">
+                            <label for="overlay-search-input" class="sr-only">Keyword</label>
+                            <input type="text" id="overlay-search-input" class="search_input" name="q" maxlength="99"
+                                placeholder="Keyword">
+                            <button type="submit" class="search_submit">
+                                <svg class="icon">
+                                    <use xlink:href="#icon-angle-right"></use>
+                                </svg>
+                                <span class="sr-only">Search</span>
+                            </button>
+                        </form>
+                    </div>
+                </aside>
+
+                <nav class="nav -right">
+                    <button type="button" class="nav_toggle -portal">
+                        <img class="nav_logo -large" src="{{url_for('static', filename='logos/dariah-logo-white.svg')}}"
+                            alt="DARIAH Portal">
+                        <img class="nav_logo -small" src="{{url_for('static', filename='logos/dariah-logo-white-small.svg')}}"
+                            alt="DARIAH Portal">
+                        <svg class="icon">
+                            <use xlink:href="#icon-angle-down"></use>
+                        </svg>
+                    </button>
+
+                    <div class="nav_menu -portal">
+                        <ul id="home_dropdown_menu" class="nav_list -level-2 -portal"></ul>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        {% block main %}
+        {% endblock %}
+
+    </div>
+    <footer class="footer">
+        <div class="wrap">
+            <div class="footer_left">
+                <div>
+                    <p>
+                        <a href="{{url_for('index')}}">Home</a>
+                        <a href="{{url_for('help')}}">Help</a>
+                    </p>
+                </div>
+                <div>
+                    <p>
+                        Unless stated otherwise all content of this site are licensed under
+                        <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>.
+                    </p>
+                </div>
+                <p>
+                    <a href="">
+                        DARIAH-DE
+                        <br>
+                        <small>Digital research infrastructure for humanities and cultural studies</small>
+                    </a>
+                </p>
+            </div>
+            <div class="footer_right">
+                <p>
+                    <a href="https://www.bmbf.de/">
+                        <img alt="Gefördert vom Bundesministerium für Bildung und Forschung" src="{{url_for('static', filename='logos//bmbf-logo.svg')}}"
+                            height="108">
+                    </a>
+                </p>
+                <p>
+                    <small>Project number 01UG1610A to J</small>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <svg xmlns="http://www.w3.org/2000/svg" class="hidden">
+        <symbol id="icon-menu" viewBox="0 0 17 17">
+            <path d="M16 3v2H1V3h15zM1 10h15V8H1v2zm0 5h15v-2H1v2z" />
+        </symbol>
+        <symbol id="icon-home" viewBox="0 0 17 17">
+            <path d="M14 16h-3v-6H6v6H3V7H2v10h13V7h-1v9zm-7 0v-5h3v5H7zm9.796-9.527l-.592.807L8.5 1.62.796 7.278l-.592-.806L8.5.38l8.296 6.093z" />
+        </symbol>
+        <symbol id="icon-angle-down" viewBox="0 0 17 17">
+            <path d="M16.354 5.075l-7.855 7.854L.646 5.075l.707-.707 7.145 7.146 7.148-7.147.708.708z" />
+        </symbol>
+        <symbol id="icon-world" viewBox="0 0 17 17">
+            <path d="M8.516 0c-4.687 0-8.5 3.813-8.5 8.5s3.813 8.5 8.5 8.5 8.5-3.813 8.5-8.5S13.202 0 8.516 0zM1.041 9h2.937c.044 1.024.211 2.031.513 3H1.888a7.426 7.426 0 0 1-.847-3zm2.937-1H1.041a7.426 7.426 0 0 1 .847-3h2.6a11.76 11.76 0 0 0-.51 3zm1.569-3h5.896c.33.965.522 1.972.569 3H4.978c.046-1.028.239-2.035.569-3zm-.569 4h7.035a10.82 10.82 0 0 1-.572 3H5.55a10.783 10.783 0 0 1-.572-3zm8.035 0h2.978a7.426 7.426 0 0 1-.847 3H12.5c.302-.969.469-1.976.513-3zm0-1a11.76 11.76 0 0 0-.51-3h2.641c.48.906.775 1.923.847 3h-2.978zm1.489-4h-2.354a12.19 12.19 0 0 0-1.55-2.7A7.52 7.52 0 0 1 14.502 4zM9.074 1.028c.824.897 1.484 1.9 1.972 2.972H5.944a11.3 11.3 0 0 1 1.97-2.97c.199-.015.398-.03.602-.03.188 0 .373.015.558.028zm-2.691.285A12.163 12.163 0 0 0 4.843 4H2.529a7.518 7.518 0 0 1 3.854-2.687zM2.529 13h2.317c.391.951.915 1.851 1.547 2.689A7.51 7.51 0 0 1 2.529 13zm5.397 2.97A11.355 11.355 0 0 1 5.948 13h5.094a11.328 11.328 0 0 1-1.979 2.972c-.181.013-.363.028-.547.028-.2 0-.395-.015-.59-.03zm2.661-.267A12.176 12.176 0 0 0 12.144 13h2.358a7.518 7.518 0 0 1-3.915 2.703z" />
+        </symbol>
+        <symbol id="icon-import" viewBox="0 0 17 17">
+            <path d="M8.5 13.677l-4.853-4.83.705-.709L8 11.769V.972h1v10.797l3.647-3.63.705.709L8.5 13.677zM16 9.03v6.47a.5.5 0 0 1-.5.5h-14a.5.5 0 0 1-.5-.5V9.025H0V15.5c0 .827.673 1.5 1.5 1.5h14c.827 0 1.5-.673 1.5-1.5V9.03h-1z" />
+        </symbol>
+        <symbol id="icon-search" viewBox="0 0 17 17">
+            <path d="M16.604 15.868l-5.173-5.173A6.468 6.468 0 0 0 13 6.472c0-3.584-2.916-6.5-6.5-6.5a6.466 6.466 0 0 0-4.598 1.903A6.457 6.457 0 0 0 0 6.472c0 3.584 2.916 6.5 6.5 6.5a6.47 6.47 0 0 0 4.224-1.569l5.173 5.173.707-.708zM6.5 11.972a5.506 5.506 0 0 1-5.5-5.5 5.455 5.455 0 0 1 1.61-3.889A5.462 5.462 0 0 1 6.5.972c3.032 0 5.5 2.467 5.5 5.5 0 3.032-2.468 5.5-5.5 5.5z" />
+        </symbol>
+        <symbol id="icon-angle-right" viewBox="0 0 17 17">
+            <path d="M13.207 8.472l-7.854 7.854-.707-.707 7.146-7.146-7.146-7.148.707-.707 7.854 7.854z" />
+        </symbol>
+        <symbol id="icon-book" viewBox="0 0 17 17">
+            <path d="M16.592 1.152a17.77 17.77 0 0 0-2.981-.244c-2.105 0-3.828.366-5.125 1.088C6.968 1.231 5.222.844 3.29.844c-1.681 0-2.866.302-2.915.315L0 1.257l.001 13.906.624-.161c.011-.002 1.12-.283 2.665-.283 1.447 0 2.771.24 3.96.703v.828h2.5v-.856c1.281-.488 2.747-.611 3.86-.611 1.562 0 2.786.225 2.798.227l.592.11V1.229l-.408-.077zM1 13.907V2.049a12.77 12.77 0 0 1 2.29-.205c1.761 0 3.339.36 4.71 1.044v11.776c-1.403-.617-2.977-.945-4.71-.945-.969 0-1.773.101-2.29.188zm15 .031a18.844 18.844 0 0 0-2.39-.154c-1.848 0-3.381.298-4.61.855V2.866c1.422-.78 3.271-.958 4.61-.958 1.023 0 1.902.097 2.39.164v11.866z" />
+        </symbol>
+        <symbol id="icon-comments" viewBox="0 0 17 17">
+            <path d="M17 1.5v7.969c0 .827-.673 1.5-1.5 1.5h-.508v-1h.508a.5.5 0 0 0 .5-.5V1.5a.5.5 0 0 0-.5-.5h-14a.5.5 0 0 0-.5.5v7.969a.5.5 0 0 0 .5.5H3v2.892l1.779-1.569.661.75L2 15.077v-4.108h-.5c-.827 0-1.5-.673-1.5-1.5V1.5C0 .673.673 0 1.5 0h14c.827 0 1.5.673 1.5 1.5zm-2.98 8.04v3.043c0 .827-.673 1.5-1.5 1.5h-.5v3.064l-3.667-3.064H7.5c-.827 0-1.5-.673-1.5-1.5V9.54c0-.827.673-1.5 1.5-1.5h5.02c.827 0 1.5.673 1.5 1.5zm-1 0a.5.5 0 0 0-.5-.5H7.5a.5.5 0 0 0-.5.5v3.043a.5.5 0 0 0 .5.5h1.217l2.303 1.926v-1.926h1.5a.5.5 0 0 0 .5-.5V9.54z" />
+        </symbol>
+        <symbol id="icon-agenda" viewBox="0 0 17 17">
+            <path d="M14 2V0H1v17h13v-2h2V2h-2zM2 16V1h2v15H2zm11 0H5V1h8v15zm2-2h-1v-3h1v3zm0-4h-1V7h1v3zm-1-4V3h1v3h-1zM6 4h5v1H6V4zm0 2h4v1H6V6z" />
+        </symbol>
+        <symbol id="icon-map-alt" viewBox="0 0 17 17">
+            <path d="M15 4v.069l-.013-.058-1.015.221C13.833 2.429 12.338 1 10.5 1 8.659 1 7.161 2.435 7.026 4.242L6 4.019V4H0v11h5.348l5.196 1.479L16 14.874V4h-1zm-4.5-2C11.879 2 13 3.122 13 4.5c0 1.806-1.719 4.209-2.5 5.207C9.719 8.709 8 6.306 8 4.5 8 3.122 9.121 2 10.5 2zM6 5.042l1.081.235c.412 2.269 2.406 4.788 2.919 5.406v4.602l-4-1.139V5.042zM1 5h4v9.017L1 14V5zm10 10.303v-4.621c.514-.619 2.513-3.145 2.921-5.416L15 5.032v9.094l-4 1.177zm.858-10.72c0-.749-.609-1.358-1.358-1.358a1.36 1.36 0 0 0 0 2.717 1.36 1.36 0 0 0 1.358-1.359zm-1.716 0a.358.358 0 1 1 .717 0 .358.358 0 0 1-.717 0z" />
+        </symbol>
+        <symbol id="icon-server" viewBox="0 0 17 17">
+            <path d="M17 3.5C17 1.227 12.62 0 8.5 0S0 1.227 0 3.5c0 .149.024.318.08.5H0v9.5C0 15.773 4.38 17 8.5 17s8.5-1.227 8.5-3.5V4h-.08a1.71 1.71 0 0 0 .08-.5zM8.5 1C12.793 1 16 2.32 16 3.5c0 .398-.388.835-1.093 1.229C13.488 5.525 11.093 6 8.5 6s-4.988-.475-6.407-1.271C1.388 4.335 1 3.898 1 3.5 1 2.32 4.207 1 8.5 1zm0 15C4.207 16 1 14.68 1 13.5v-1.633c.175.135.367.271.604.403 1.562.874 4.14 1.396 6.896 1.396.345 0 .687-.008 1.023-.024 2.361-.111 4.505-.607 5.872-1.372l.001-.001c.236-.133.43-.268.604-.403V13.5c0 1.18-3.207 2.5-7.5 2.5zm6.407-4.603c-1.42.795-3.814 1.27-6.407 1.27-.324 0-.646-.008-.962-.022-2.214-.102-4.203-.552-5.445-1.247C1.389 11.002 1 10.565 1 10.167V8.533c.175.135.368.271.605.403 1.561.874 4.139 1.396 6.895 1.396s5.334-.522 6.895-1.396c.237-.132.43-.268.605-.403v1.634c0 .398-.389.835-1.093 1.23zm-.001-3.334c-1.419.795-3.813 1.27-6.406 1.27s-4.987-.475-6.406-1.27C1.389 7.669 1 7.231 1 6.833V5.199c.175.136.367.271.604.404C3.166 6.478 5.743 7 8.5 7s5.334-.522 6.896-1.397c.237-.133.429-.268.604-.404v1.634c0 .398-.389.836-1.094 1.23z" />
+        </symbol>
+        <symbol id="icon-link" viewBox="0 0 17 17">
+            <path d="M12.983 6.94l-.938.938-.707-.707.938-.938c.975-.975.975-2.561 0-3.535s-2.561-.975-3.535 0L5.754 5.686c-.975.975-.975 2.561 0 3.535s2.561.975 3.535 0l.707.707c-.683.683-1.578 1.023-2.475 1.023s-1.792-.341-2.474-1.023a3.504 3.504 0 0 1 0-4.949l2.987-2.987a3.502 3.502 0 0 1 4.949 0 3.501 3.501 0 0 1 0 4.948zM6.042 8.034l-.13.129.705.709.131-.13c.975-.975 2.561-.975 3.535 0s.975 2.561 0 3.535L7.26 15.302c-.975.975-2.561.975-3.535 0s-.975-2.561 0-3.535l1.058-1.059-.707-.707-1.058 1.059a3.504 3.504 0 0 0 0 4.949c.683.683 1.578 1.023 2.475 1.023s1.792-.341 2.475-1.023l3.023-3.024a3.504 3.504 0 0 0 0-4.949 3.503 3.503 0 0 0-4.949-.002z" />
+        </symbol>
+        <symbol id="icon-info-alt" viewBox="0 0 17 17">
+            <path d="M8.5 0c-4.687 0-8.5 3.813-8.5 8.5s3.813 8.5 8.5 8.5 8.5-3.813 8.5-8.5-3.813-8.5-8.5-8.5zM8.5 16c-4.136 0-7.5-3.364-7.5-7.5s3.364-7.5 7.5-7.5 7.5 3.364 7.5 7.5-3.364 7.5-7.5 7.5zM9 12.369h0.979v1h-2.958v-1h0.979v-4.42h-0.946v-1h1.946v5.42zM7.185 4.986c0-0.545 0.441-0.986 0.986-0.986s0.985 0.441 0.985 0.986c0 0.543-0.44 0.984-0.985 0.984s-0.986-0.441-0.986-0.984z" />
+        </symbol>
+    </svg>
+</body>
 </html>
