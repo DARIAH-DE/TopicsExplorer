@@ -1,2 +1,27 @@
-(19:05:18)  * Debugger is active!
-(19:05:18)  * Debugger PIN: 274-463-027
+(23:01:21)  * Debugger is active!
+(23:01:21)  * Debugger PIN: 274-463-027
+(23:01:25) 127.0.0.1 - - [09/Oct/2018 23:01:25] "[37mGET / HTTP/1.1[0m" 200 -
+(23:01:25) 127.0.0.1 - - [09/Oct/2018 23:01:25] "[37mGET /static/img/logos/dariah-logo-white.svg HTTP/1.1[0m" 200 -
+(23:01:25) 127.0.0.1 - - [09/Oct/2018 23:01:25] "[37mGET /static/img/logos/dariah-logo-white-small.svg HTTP/1.1[0m" 200 -
+(23:01:25) 127.0.0.1 - - [09/Oct/2018 23:01:25] "[33mGET /static/css/fonts/Roboto-Light.woff2 HTTP/1.1[0m" 404 -
+(23:01:25) 127.0.0.1 - - [09/Oct/2018 23:01:25] "[33mGET /static/css/fonts/Roboto-LightItalic.woff2 HTTP/1.1[0m" 404 -
+(23:01:25) 127.0.0.1 - - [09/Oct/2018 23:01:25] "[33mGET /static/css/fonts/MuseoSansRounded-500-webfont.woff2 HTTP/1.1[0m" 404 -
+(23:01:25) 127.0.0.1 - - [09/Oct/2018 23:01:25] "[33mGET /static/css/fonts/Roboto-Light.woff HTTP/1.1[0m" 404 -
+(23:01:25) 127.0.0.1 - - [09/Oct/2018 23:01:25] "[33mGET /static/css/fonts/Roboto-LightItalic.woff HTTP/1.1[0m" 404 -
+(23:01:26) 127.0.0.1 - - [09/Oct/2018 23:01:26] "[33mGET /static/css/fonts/MuseoSansRounded-500-webfont.woff HTTP/1.1[0m" 404 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[37mGET / HTTP/1.1[0m" 200 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[36mGET /static/js/jquery-3.3.1.min.js HTTP/1.1[0m" 304 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[36mGET /static/js/globalmenu.js HTTP/1.1[0m" 304 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[36mGET /static/img/logos/dariah-logo-white-small.svg HTTP/1.1[0m" 304 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[33mGET /static/zipf.svg HTTP/1.1[0m" 404 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[36mGET /static/img/logos/dariah-logo-white.svg HTTP/1.1[0m" 304 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[37mGET /static/img/logos/bmbf-logo.svg HTTP/1.1[0m" 200 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[37mGET /static/img/grain.png HTTP/1.1[0m" 200 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[33mGET /static/css/fonts/Roboto-Light.woff2 HTTP/1.1[0m" 404 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[33mGET /static/css/fonts/MuseoSansRounded-500-webfont.woff2 HTTP/1.1[0m" 404 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[33mGET /static/css/fonts/Roboto-LightItalic.woff2 HTTP/1.1[0m" 404 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[33mGET /static/css/fonts/Roboto-Light.woff HTTP/1.1[0m" 404 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[33mGET /static/css/fonts/MuseoSansRounded-500-webfont.woff HTTP/1.1[0m" 404 -
+(23:05:20) 127.0.0.1 - - [09/Oct/2018 23:05:20] "[33mGET /static/css/fonts/Roboto-LightItalic.woff HTTP/1.1[0m" 404 -

@@ -3,9 +3,28 @@ import flask
 import cophi
 
 
+
+def workflow():
+    # Fetch user input:
+    data = get_forms("files", "num_topics", "num_iterations")
+    # Get Document objects:
+    documents = get_documents(data["files"])
+    # Construct Corpus object:
+    corpus = get_corpus(documents)
+    # Get stopwords:
+    stopwords = get_stopwords(data, corpus)
+    # Get hapax legomena:
+    hapax = get_hapax(corpus)
+    # Construct features to drop:
+    features = get_features(corpus, stopwords, hapax)
+    # Clean corpus:
+    corpus = get_clean_corpus(corpus, features)
+
+
 def get_forms(files, num_topics, num_iterations):
     """Get forms values.
     """
+    logging.info("Fetching input data...")
     data = {"files": flask.request.files.getlist(files),
             "num_topics": int(flask.request.form[num_topics]),
             "num_iterations": int(flask.request.form[num_iterations])}
@@ -15,125 +34,54 @@ def get_forms(files, num_topics, num_iterations):
         data["mfw"] = int(flask.request.form["mfw"])
     return data
 
-def get_parameter():
-    pass
-
-def construct_corpus():
-    pass
 
 def get_documents(textfiles):
+    logging.info("Start processing text files...")
     for textfile in textfiles:
         filepath = pathlib.Path(werkzeug.utils.secure_filename(textfile.filename))
         title = filepath.stem
+        logging.info("Reading {}...".format(title))
         suffix = filepath.suffix
         content = textfile.read().decode("utf-8")
+        # REMOVE MARKUP
         yield cophi.model.Document(content, title)
 
-def workflow(tempdir, archive_dir):
-    """
-    Collects the user input, preprocesses the corpus, trains the LDA model,
-    creates visualizations, and dumps generated data.
-    """
+
+def get_corpus(documents):
+    logging.info("Constructing document-term matrix...")
+    return cophi.model.Corpus(documents)
+
+
+def get_stopwords(data, corpus):
+    logging.info("Fetching stopwords...")
     try:
+        threshold = data["mfw"]
+        logging.info("Getting the {} most frequent words...".format(threshold))
+        stopwords = corpus.mfw(threshold)
+    except KeyError:
+        logging.info("Reading external stopwords list...")
+        textfile = data["stopwords"].read().decode("utf-8")
+        stopwords = textfile.split("\n")
+    return stopwords
 
-        parameter = pd.Series()
-        parameter["Corpus size, in documents"] = len(user_input["files"])
-        parameter["Corpus size (raw), in tokens"] = 0
 
-        tokenized_corpus = pd.Series()
-        for file in user_input["files"]:
-            filename = pathlib.Path(werkzeug.utils.secure_filename(file.filename))
-            progress += 1
-            yield "running", "Reading {0} ...".format(filename.stem[:20]), progress / complete * 100, "", "", "", "", ""
-            text = file.read().decode("utf-8")
-            if filename.suffix != ".txt":
-                yield "running", "Removing markup from text ...", progress / complete * 100, "", "", "", "", ""
-                text = application.utils.remove_markup(text)
-            yield "running", "Tokenizing {0} ...".format(filename.stem[:20]), progress / complete * 100, "", "", "", "", ""
-            tokens = list(dariah_topics.preprocessing.tokenize(text))
-            tokenized_corpus[filename.stem] = tokens
-            parameter["Corpus size (raw), in tokens"] += len(tokens)
-        
-        text = text.replace("\n", " ")
-        text = text.replace("\r", " ")
-        text = text.replace("\'", "")
-        text = text.replace("\"", "")
-        token_int = random.randint(0, len(text) - 351)
-        try:
-            excerpt = "...{}...".format(text[token_int:token_int + 350])
-        except IndexError:
-            excerpt = ""
+def get_hapax(corpus):
+    logging.info("Fetching hapax legomena...")
+    return corpus.hapax()
 
-        progress += 1
-        yield "running", "Creating document-term matrix ...", progress / complete * 100, excerpt, "", "", "", ""
-        document_labels = tokenized_corpus.index
-        document_term_matrix = dariah_topics.preprocessing.create_document_term_matrix(tokenized_corpus, document_labels)
 
-        progress += 1
-        yield "running", "Determining corpus statistics ...", progress / complete * 100, "", "", "", "", ""
-        group = ["Document size (raw)" for i in range(parameter["Corpus size, in documents"])]
-        corpus_stats = pd.DataFrame({"score": np.array(document_term_matrix.sum(axis=1)),
-                                     "group": group})
+def get_features(corpus, stopwords, hapax):
+    logging.info("Constructing a list of features to drop...")
+    features = set(stopwords).union(hapax)
+    return [feature for feature in features if feature in corpus.dtm.vocabulary]
 
-        corpus_size = str(len(user_input["files"]))
-        token_size = str(parameter["Corpus size (raw), in tokens"])
-        topic_size = str(user_input["num_topics"])
-        iteration_size = str(user_input["num_iterations"])
+def get_clean_corpus(corpus, features):
+    logging.info("Cleaning corpus...")
+    return corpus.drop(corpus.dtm, features)
 
-        try:
-            yield "running", "Determining {0} most frequent words ...".format(user_input["mfw"]), progress / complete * 100, "", corpus_size, token_size, topic_size, iteration_size
-            stopwords = dariah_topics.preprocessing.find_stopwords(document_term_matrix, user_input["mfw"])
-            cleaning = "removed the <b>{0} most frequent words</b>, based on a threshold value".format(user_input["mfw"])
-        except KeyError:
-            yield "running", "Reading external stopwords list ...", progress / complete * 100, "", corpus_size, token_size, topic_size, iteration_size
-            stopwords = user_input["stopwords"].read().decode("utf-8")
-            stopwords = list(dariah_topics.preprocessing.tokenize(stopwords))
-            cleaning = "removed <b>{0} words</b>, based on an external stopwords list".format(len(stopwords))
-        
-        progress += 1
-        yield "running", "Determining hapax legomena ...", progress / complete * 100, "", "", "", "", ""
-        hapax_legomena = dariah_topics.preprocessing.find_hapax_legomena(document_term_matrix)
-        features = set(stopwords).union(hapax_legomena)
-        features = [token for token in features if token in document_term_matrix.columns]
-        yield "running", "Removing a total of {0} words from your corpus ...".format(len(features)), progress / complete * 100, "", "", "", "", ""
-        document_term_matrix = document_term_matrix.drop(features, axis=1)
 
-        progress += 1
-        yield "running", "Determining corpus statistics ...", progress / complete * 100, "", "", "", "", ""
-        group = ["Document size (clean)" for n in range(parameter["Corpus size, in documents"])]
-        corpus_stats = corpus_stats.append(pd.DataFrame({"score": np.array(document_term_matrix.sum(axis=1)),
-                                                         "group": group}))
-        parameter["Corpus size (clean), in tokens"] = int(document_term_matrix.values.sum())
 
-        progress += 1
-        yield "running", "Accessing document-term matrix ...", progress / complete * 100, "", "", "", "", ""
-        document_term_arr = document_term_matrix.values.astype(int)
-        progress += 1
-        yield "running", "Accessing vocabulary of the corpus ...", progress / complete * 100, "", "", "", "", ""
-        vocabulary = document_term_matrix.columns
 
-        parameter["Size of vocabulary, in tokens"] = len(vocabulary)
-        parameter["Number of topics"] = user_input["num_topics"]
-        parameter["Number of iterations"] = user_input["num_iterations"]
-
-        progress += 1
-        yield "running", "Initializing LDA topic model ...", progress / complete * 100, "", "", "", "", ""
-        model = application.utils.enthread(target=lda_modeling,
-                                           args=(document_term_arr,
-                                                 user_input["num_topics"],
-                                                 user_input["num_iterations"],
-                                                 tempdir))
-        while True:
-            # During modeling the logfile is read continuously and the newest
-            # line is sent to the UI as information for the user:
-            i, msg = application.utils.read_logfile(str(pathlib.Path(tempdir, "topicmodeling.log")),
-                                                    total_iterations=iteration_size)
-            if msg == None:
-                # When modeling is done, get the model:
-                model = model.get()
-                break
-            else:
-                yield "running", msg, (progress + int(i)) / complete * 100, "", "", "", "", ""
         
         progress += user_input["num_iterations"] + 1
         yield "running", "Determining model log-likelihood ...", progress / complete * 100, "", "", "", "", ""

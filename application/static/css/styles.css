@@ -1003,7 +1003,7 @@ th {
 }
 
 .footer {
-    background: #f7f7f7 url(grain.png);
+    background: #f7f7f7 url(../img/grain.png);
     color: #1a1a1a;
     font-size: 14px;
     padding: 12px 24px;
@@ -1158,7 +1158,7 @@ th {
 }
 
 .highlight {
-    background: #f7f7f7 url(grain.png);
+    background: #f7f7f7 url(../img/grain.png);
     color: #1a1a1a;
     margin: 0 -24px;
     padding: 12px;

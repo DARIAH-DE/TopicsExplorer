@@ -15,4 +15,4 @@ def get_status(logfile):
     with pathlib.Path(logfile).open("r", encoding="utf-8") as logfile:
         messages = logfile.readlines()
         latest_message = messages[-1].strip()
-        return latest_messagey
+        return latest_message
