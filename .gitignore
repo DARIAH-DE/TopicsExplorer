@@ -14,3 +14,4 @@ tests.xml
 htmlcov
 coverage.xml
 .coverage
+.idea/*
