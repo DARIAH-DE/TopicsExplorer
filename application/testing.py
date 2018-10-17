@@ -4,7 +4,7 @@ import operator
 import pathlib
 import logging
 import sqlite3
-import threading
+import multiprocessing
 
 import flask
 import pandas as pd
@@ -15,16 +15,22 @@ import utils
 
 
 app = flask.Flask("topicsexplorer")
+global process
+process  = multiprocessing.Process()
 
 
 @app.route("/")
 def index():
-    """Set up database and render home page.
+    """Render home page.
 
     Note:
         Calling this function will drop all tables
             in the database – if any.
     """
+    # Kill modeling process, if any:
+    if process.is_alive():
+        logging.info("Restarting topic modeling...")
+        process.terminate()
     # Initialize logging:
     utils.init_logging()
     # Initialize database and create tables:
@@ -37,25 +43,29 @@ def index():
 def modeling():
     """Create topic model and render status page.
     """
+    process = multiprocessing.Process(target=workflow)
+    process.start()
+    return flask.render_template("modeling.html")
+    return flask.render_template("topic-presence.html", presence=relevance)
+
+def get_topic_descriptors(topics):
+    for topic in topics:
+        yield ", ".join(topic[:3])
+
+
+def workflow():
     # Get input data:
-    data = utils.get_data("corpus", "topics", "iterations", "stopwords", "mfw")
+    data = utils.get_data("corpus",
+                          "topics",
+                          "iterations",
+                          "stopwords",
+                          "mfw")
     # Insert data into textfiles table:
     utils.insert_into_textfiles(data["corpus"])
     # Preprocess data:
     dtm, vocabulary, titles, sizes = utils.preprocess(data)
     # Initialize topic model:
-    logging.info("NICE")
     model = lda.LDA(n_topics=data["topics"], n_iter=data["iterations"])
-    # Fit model:
-    x = StoppableThread(target=model.fit, args=(dtm,))
-    x.start()
-    print(x.isAlive())
-    import time
-    time.sleep(5)
-    x.stop()
-    print(x.isAlive())
-
-    """
     model.fit(dtm)
     # Get topics generator:
     topics = utils.get_topics(model, vocabulary)
@@ -72,15 +82,6 @@ def modeling():
     descriptors = list(get_topic_descriptors(topics))
     relevance = pd.Series(topic_weights_s, index=descriptors).to_dict().items()
     relevance = sorted(relevance, key=operator.itemgetter(1), reverse=True)
-    """
-    return flask.render_template("modeling.html")
-    return flask.render_template("topic-presence.html", presence=relevance)
-
-def get_topic_descriptors(topics):
-    for topic in topics:
-        yield ", ".join(topic[:3])
-
-
 
 
 @app.after_request
@@ -107,8 +108,9 @@ def help():
 
 
 
-@app.route("/topic-presence")
-def topic_presence():
+@app.route("/topic-presence/<topic>")
+def topic_presence(topic):
+    print(topic)
     return flask.render_template("topic-presence.html")
 
 

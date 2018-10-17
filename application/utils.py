@@ -95,15 +95,18 @@ def init_db(app):
 def get_data(corpus, topics, iterations, stopwords, mfw):
     """Get input data.
     """
+    logging.info("Fetching corpus and parameters...")
     # Get text files, number of topics and number of iterations:
     data = {"corpus": flask.request.files.getlist("corpus"),
             "topics": int(flask.request.form["topics"]),
             "iterations": int(flask.request.form["iterations"])}
     # Get stopword list, if user selected one:
     if flask.request.files.get("stopwords", None):
+        logging.info("Fetching external stopwords list...")
         data["stopwords"] = flask.request.files["stopwords"]
     # Use most frequent words threshold otherwise:
     else:
+        logging.info("Fetching threshold value for most frequent words...")
         data["mfw"] = int(flask.request.form["mfw"])
     return data
 
@@ -111,19 +114,23 @@ def get_data(corpus, topics, iterations, stopwords, mfw):
 def insert_into_textfiles(values):
     """Insert text files into table.
     """
+    logging.info("Connecting to database...")
     # Connect to database:
     db = get_db()
     # Insert values into table:
     for textfile in values:
         # Get title and text:
         title, text = load_textfile(textfile)
+        logging.info(f"Loading '{title}'...")
         # Execute SQL:
         db.execute("""
                    INSERT INTO textfiles (title, text) 
                    VALUES(?, ?);
                    """,
                    [title, text])
+    logging.info("Committing to database...")
     db.commit()
+    logging.info("Closing connection to database...")
     close_db()
 
 
@@ -153,6 +160,7 @@ def load_textfile(textfile):
     text = textfile.read().decode("utf-8")
     # If suffix implies any markup, remove it:
     if suffix in {".xml", ".html"}:
+        logging.info("Removing markup...")
         text = remove_markup(text)
     return title, text
 
@@ -168,25 +176,32 @@ def remove_markup(text):
 
 def get_stopwords(data, corpus):
     if "stopwords" in data:
-        _, stopwords = load_textfile(data["stopwords"]).split("\n")
+        _, stopwords = load_textfile(data["stopwords"])
+        stopwords = stopwords.split("\n")
     else:
         stopwords = corpus.mfw(data["mfw"])
     return stopwords
 
 
 def preprocess(data):
+    logging.info("Querying corpus from database...")
     # Query text files:
     textfiles = select_textfiles()
+    logging.info("Constructing document objetcs...")
     # Get cophi.model.Document object:
     documents = get_documents(textfiles)
+    logging.info("Constructing corpus object...")
     # Create cophi.model.Corpus object:
     corpus = cophi.model.Corpus(documents)
+    logging.info("Fetching stopwords...")
     # Get stopwords:
     stopwords = get_stopwords(data, corpus)
+    logging.info("Fetching hapax legomena...")
     # Get hapax legomena:
     hapax = corpus.hapax
     # Join both lists:
     features = set(stopwords).union(set(hapax))
+    logging.info("Cleaning corpus...")
     # Clean document-term matrix:
     dtm = corpus.drop(corpus.dtm, features)
     # Get sizes:
