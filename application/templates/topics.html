@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<main class="main">
+    <div class="main_content">
+        <h1>gestalten, dunst, nebel</h1>
+        <h4>Documents Distribution</h4>
+        <p class="chart">
+            <span data-balloon="gestalten, dunst, nebel" data-balloon-pos="down" class="block">
+                <span class="value">60%</span>
+            </span>
+            <span data-balloon="gestalten, dunst, nebel" data-balloon-pos="down" class="block">
+                <span class="value">20%</span>
+            </span>
+            <span data-balloon="gestalten, dunst, nebel" data-balloon-pos="down" class="block">
+                <span class="value">10%</span>
+            </span>
+            <span data-balloon="gestalten, dunst, nebel" data-balloon-pos="down" class="block">
+                <span class="value">7%</span>
+            </span>
+            <span data-balloon="gestalten, dunst, nebel" data-balloon-pos="down" class="block">
+                <span class="value">2%</span>
+            </span>
+            <span data-balloon="gestalten, dunst, nebel" data-balloon-pos="down" class="block">
+                <span class="value">1%</span>
+            </span>
+        </p>
+
+
+
+        <div class="row -narrow" style="border-top: none;">
+            <div class="column"">
+                <h4 style=" margin-top: 0px;">Top 3: Similar Topics</h4>
+                <p><button class="topic" style="width: 100%;">hässlich, schön, jung</button></p>
+                <p><button class="topic" style="width: 100%">haus, türe, fenster</button></p>
+                <p><button class="topic" style="width: 100%">laufen, hüpfen, gehen</button></p>
+                <h4>Related Words</h4>
+                <p><button class="topic" style="width: 100%">gestalten</button></p>
+                <p><button class="topic" style="width: 100%">dunst</button></p>
+                <p><button class="topic" style="width: 100%">nebel</button></p>
+                <p><button class="topic" style="width: 100%">tag</button></p>
+                <p><button class="topic" style="width: 100%">bild</button></p>
+                <p><button class="topic" style="width: 100%">glück</button></p>
+            </div>
+            <div class="column -wide">
+                <h4 style="margin-top: 0px;">Related Documents</h4>
+                <p><button class="topic" style="width: 100%">gestalten</button></p>
+                <p><button class="topic" style="width: 100%">dunst</button></p>
+                <p><button class="topic" style="width: 100%">nebel</button></p>
+                <p><button class="topic" style="width: 100%">tag</button></p>
+                <p><button class="topic" style="width: 100%">bild</button></p>
+                <p><button class="topic" style="width: 100%">glück</button></p>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        $('.value').each(function () {
+            var text = $(this).text();
+            $(this).parent().css('width', text);
+        });
+    </script>
+</main>
+
+{% endblock %}

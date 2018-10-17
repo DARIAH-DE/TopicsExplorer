@@ -4,11 +4,12 @@
 <head>
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='img/logos/favicon.ico')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/tooltip.css')}}">
     <meta charset="utf-8">
-    <meta name="description" content="">
+    <meta name="description" content="Explore your own text collection with a topic model – without prior knowledge.">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <script src="{{url_for('static', filename='js/script.js')}}" defer></script>
-    <script type="text/javascript" src="{{url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/script.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/jquery.js')}}"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/globalmenu.js')}}"></script>
 
     <title>DARIAH-DE :: Topics Explorer</title>
@@ -28,7 +29,7 @@
                     <div class="nav_menu -main">
                         <ul class="nav_list -level-1">
                             <li class="nav_item -level-1">
-                                <a class="nav_link" href="{{url_for('help')}}">
+                                <a class="nav_link" href="{{url_for('index')}}">
                                     Home
                                 </a>
                             </li>
@@ -95,14 +96,10 @@
                         <a href="{{url_for('help')}}">Help</a>
                     </p>
                 </div>
-                <div>
-                    <p>
-                        Unless stated otherwise all content of this site are licensed under
-                        <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>.
-                    </p>
+                <div><br><br>
                 </div>
                 <p>
-                    <a href="">
+                    <a href="https://de.dariah.eu/">
                         DARIAH-DE
                         <br>
                         <small>Digital research infrastructure for humanities and cultural studies</small>
@@ -168,4 +165,5 @@
         </symbol>
     </svg>
 </body>
+
 </html>

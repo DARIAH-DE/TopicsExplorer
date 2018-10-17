@@ -1,4 +1,5 @@
 /*! Using parts of normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+
 html {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -2823,4 +2824,48 @@ th {
 .site.-full-width .wrap,
 .site.-full-width .wrap.-narrow {
     max-width: none
+}
+
+.topic {
+    text-align: left;
+}
+
+@keyframes expand {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+.chart {
+    width: 0%;
+    animation: expand 1.5s ease forwards;
+}
+
+.block {
+    height: 50px;
+    float: left;
+    background-color: #213365;
+    border-left: solid 1px white;
+    opacity: 1;
+    transition: opacity, .3s ease;
+}
+
+.block:hover {
+    opacity: .9;
+}
+
+.value {
+    display: none;
+}
+
+.dariah-flower {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    width: 50px;
 }

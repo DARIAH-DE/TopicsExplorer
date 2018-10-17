@@ -1,19 +1,19 @@
-# DARIAH Topics Explorer
-This application presents a **user-friendly topic modeling workflow** consisting of data preprocessing, the actual modeling with [latent Dirichlet allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf), and the visualization of the model output to explore the semantic content of your text collection.
+# Explore your own text collection with a topic model – without prior knowledge.
+The text mining technique _topic modeling_ has become a popular procedure for clustering documents into semantic groups. This application provides a user-friendly workflow that preprocesses the text data, creates the model, and visualizes the output. All you need is a text corpus and a little time.
 
-> If you do not know anything about topic modeling or programming in general, this is where you start.
 
 ## Overview
 * [Getting started](#getting-started)
 * [The application](#the-application)
 * [The sample corpus](#the-sample-corpus)
-* [Example visualization](#example-visualization)
+* [Example visualization](#example-visualiztaion)
 * [Troubleshooting](#troubleshooting)
 * [Developing](#developing)
-    * [Requirements](#requirements)
-    * [Running the application](#running-the-application)
-    * [Creating a standalone build](#creating-a-standalone-build)
-* [About DARIAH-DE](#about-dariah-de)
+* [Creating a standalone build](#creating-a-standalone-build)
+* [What is topic modeling?](#what-is-topic-modeling?)
+* [What is DARIAH-DE?](#what-is-dariah-de?)
+* [License](#license)
+
 
 ## Getting started
 Windows, macOS, and Linux users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
@@ -22,29 +22,31 @@ Windows, macOS, and Linux users **do not** have to install additional software. 
 2. Extract the content of the archive.
 3. Run the app by double-clicking the file `DARIAH Topics Explorer`.
 
-You can also use the developer version:
+You can also use the source code:
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the **source code** as ZIP archive.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
 3. Make sure you have [Pipenv](https://docs.pipenv.org/) installed (if not: use `pip install --user pipenv`).
-4. Run `pipenv install`, and afterwards `pipenv shell`.
-5. To start the application, type `python topicsexplorer.py`, and press enter.
+4. Run `pipenv install` to set up a virtual environment.
+5. To start the application, type `pipenv run python topicsexplorer.py`, and press enter.
 
-> If you want to use the sample corpus, you must clone the repository with Git (**not** download the source code from the **release-section**). See also section [The sample corpus](#the-sample-corpus). If you download one of the archives (except the source code) from the release section, the corpus is included.
+> If you wish to use the sample corpus, you must clone the repository with Git. See also section [Sample Corpus](#the-sample-corpus). If you download one of the archives (except the source code) from the release section, the corpus is included.
 
-## The application
-![Demonstrator Screenshot](docs/images/screenshot.png)
 
- This application is designed to introduce the technique particularly gently and aims for **simplicity and usability**. If you have a very large text corpus (let’s say more than 200 documents with more than 5000 words per document), you may wish to use more sophisticated models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. Have a look at our Jupyter notebook introducing [topic modeling with MALLET](https://github.com/DARIAH-DE/Topics/blob/master/IntroducingMallet.ipynb).
+# The application
+![Application screenshot](docs/images/application-screenshot.png)
+
+This application is designed to introduce the technique particularly gently (e.g. for educational purpose). If you have a very large text corpus, you may wish to use more sophisticated models such as those implemented in [MALLET](http://mallet.cs.umass.edu/topics.php), which is known to be more robust than standard LDA. You might want to check out some [Jupyter notebooks](https://github.com/DARIAH-DE/Topics/notebooks) – you can experiment with the example corpus directly in the browser on Binder without installing anything.
+
 
 ## The sample corpus
-A sample corpus (10 British novels) is provided in the folder `british-fiction-corpus` in the directory `data`. If you use Git, you can include the corpus, which is actually only a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
+A [sample corpus](data/british-fiction-corpus) (10 British novels) is provided in this project. If you use Git, you can include the corpus, which is actually a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
 
 ```
 $ git clone --recursive https://github.com/DARIAH-DE/TopicsExplorer.git
 ```
 
-Or, if you have already cloned the repository:
+or if you have already cloned the repository:
 
 ```
 $ cd data/british-fiction-corpus
@@ -53,37 +55,24 @@ $ git submodule update
 ```
 
 ## Example visualization
-The following visualization is based on the distribution of 10 topics over a total of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). The topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
+This visualization is based on the distribution of 10 topics over a total of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). The topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a certain degree, of every topic. This distribution is visualized in a heatmap; the darker the blue, the higher the proportion.
 
-<p align="center">
-  <img src="docs/images/heatmap.png"/>
-</p>
+![Example visualization](docs/images/example-visualization.png)
 
-> **DARIAH Topics Explorer** allows you to analyze and explore your own text corpora using topic models – without prior knowledge or special prerequisites.
-
-## Troubleshooting
-In general:
-* If you are confronted with **any problems** regarding the application, use **[GitHub issues](https://github.com/DARIAH-DE/TopicsExplorer/issues)** – but suggestions for improvements, wishes, or hints on typos are of course also welcome.
-* Please be patient. Depending on corpus size and number of iterations, the process **may take some time**, meaning something between some seconds and some hours.
-
-Regarding the standalone executable:
-* If the program displays an **error message at startup**, make sure that you have unpacked the archive.
-* If you are on a **Mac** and get an error message saying that the file is from an **“unidentified developer”**, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
-* You might get a similar error message as the one above on **Windows** systems: **“Windows Defender SmartScreen prevented an unrecognized app from starting”**. If this is the case, please select “More Info” and then “Run anyway”.
-* On a **Windows** machine, if you are not able to start the program, if nothing happens for a long time, or if you get an error message, go to the `src` folder, search for the file `webapp.exe` and click on it.
-
-Regarding the source code or development version:
-* If you are unable to run **Pipenv**, e.g. `-bash: pipenv: command not found`, try `python -m pipenv` instead of only `pipenv`. Use `python3` instead of `python` if you are on a Mac or on a Linux machine.
-* If you have problems with **Pipenv**, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment. Use `pip3` instead of `pip` if you are on a Mac or on a Linux machine.
-* If the application fails after **pulling from GitHub**, try updating the requirements in your virtual environment with `pipenv update`.
-* If you are on Linux and face issues with installing the dependencies (something with the library `regex` like `Python.h not found` or `x86_64-linux-gnu-gcc` not found), try installing the package `python3-dev` with `apt-get` first.
-* If you are on **Ubuntu 18.04** and get the error `[1:1:0100/000000.576372:ERROR:broker_posix.cc(43)] Invalid node channel message` after running the `topicsexplorer.py`, run `sudo apt-get install libglvnd-dev` in your command-line and try again.
 
 ## Developing
-If you want to run the development version, you can either `git clone` this repository, or download the [ZIP archive](https://github.com/DARIAH-DE/TopicsExplorer/archive/master.zip).
+If you wish to use the application from source, you can either `git clone` this repository, or download the [ZIP archive](https://github.com/DARIAH-DE/TopicsExplorer/archive/master.zip).
 
 ### Requirements
-Use [Pipenv](https://docs.pipenv.org/) to install the dependencies:
+[Pipenv](https://docs.pipenv.org/) automatically creates and manages a virtualenv for this project. Install the tool as usual:
+
+```
+$ pip install pipenv
+```
+
+> This application requires Python 3.7 – it is highly recommended to use [pyenv](https://github.com/pyenv/pyenv) for managing Python versions. Pipenv and pyenv works hand-in-hand.
+
+To install the _project’s dependencies_:
 
 ```
 $ pipenv install
@@ -91,7 +80,7 @@ $ pipenv install
 
 ### Running the application
 
-After spawning a shell within the virtual environment, with `pipenv shell`, you can run the application with:
+After spawning a shell within the virtual environment, using `pipenv shell`, you can run the application with:
 
 ```
 $ python topicsexplorer.py
@@ -103,8 +92,28 @@ If you wish to access DARIAH Topics Explorer through your web browser, use the f
 $ python topicsexplorer.py --browser
 ```
 
+
+## Troubleshooting
+In general:
+* Use the project’s [issue tracker](https://github.com/DARIAH-DE/Topics/issues) on GitHub. Feature requests are also explicitly welcome.
+* Be patient. Depending on corpus size and number of iterations, the process may take some time, meaning something between some seconds and some hours.
+
+Regarding the standalone executable:
+* If the program displays an **error message at startup**, make sure that you have unpacked the archive.
+* If you are on a **Mac** and get an error message saying that the file is from an **“unidentified developer”**, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
+* You might get a similar error message as the one above on **Windows** systems: **“Windows Defender SmartScreen prevented an unrecognized app from starting”**. If this is the case, please select “More Info” and then “Run anyway”.
+* On a **Windows** machine, if you are not able to start the program, if nothing happens for a long time, or if you get an error message, go to the `src` folder, search for the file `webapp.exe` and click on it.
+
+Regarding the source code:
+* If you are unable to run **Pipenv**, e.g. `-bash: pipenv: command not found`, try `python -m pipenv` instead of only `pipenv`. Use `python3` instead of `python` if you are on a Mac or on a Linux machine.
+* If you have problems with **Pipenv**, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment. Use `pip3` instead of `pip` if you are on a Mac or on a Linux machine.
+* If the application fails after **pulling from GitHub**, try updating the requirements in your virtual environment with `pipenv update`.
+* If you are on Linux and face issues with installing the dependencies (something with the library `regex` like `Python.h not found` or `x86_64-linux-gnu-gcc` not found), try installing the package `python3-dev` with `apt-get` first.
+* If you are on **Ubuntu 18.04** and get the error `[1:1:0100/000000.576372:ERROR:broker_posix.cc(43)] Invalid node channel message` after running the `topicsexplorer.py`, run `sudo apt-get install libglvnd-dev` in your command-line and try again.
+
+
 ### Creating a standalone build
-To freeze the Python scripts and create a standalone executable with [PyInstaller](http://www.pyinstaller.org/), simply run:
+To freeze the Python scripts and create a standalone executable with [PyInstaller](http://www.pyinstaller.org/), run:
 
 ```
 $ git checkout pyinstaller
@@ -112,10 +121,23 @@ $ git merge origin/master
 $ pyinstaller topicsexplorer.spec
 ```
 
-## About DARIAH-DE
+
+## What is Topic Modeling?
+- **David M. Blei**, [Probabilisitic Topic Models](http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf), in : _Communications of the ACM_ 55 (2012).
+- **Megan R. Brett**, [Topic Modeling, A Basic Introduction](http://journalofdigitalhumanities.org/2-1/topic-modeling-a-basic-introduction-by-megan-r-brett/), in: _Journal of Digital Humanities_ 2, 2012.
+- **David M. Blei**, [Topic Modeling and Digital Humanities](http://journalofdigitalhumanities.org/2-1/topic-modeling-and-digital-humanities-by-david-m-blei/), in: _Journal of Digital Humanities_ 2 (2012).
+- **Matthew Jockers, David Mimno**, [Significant Themes in 19th-Century Literature](http://digitalcommons.unl.edu/englishfacpubs/105), in: _Poetics_ 41 (2013).
+- **Steffen Pielström, Severin Simmler, Thorsten Vitt, Fotis Jannidis**, [A Graphical User Interface for LDA Topic Modeling](https://dh2018.adho.org/a-graphical-user-interface-for-lda-topic-modeling/), in: _Proceedings of the 28th Digital Humanities Conference_ (2018).
+
+
+## What is DARIAH-DE?
 [DARIAH-DE](https://de.dariah.eu) supports research in the humanities and cultural sciences with digital methods and procedures. The research infrastructure of DARIAH-DE consists of four pillars: teaching, research, research data and technical components. As a partner in [DARIAH-EU](http://dariah.eu/), DARIAH-DE helps to bundle and network state-of-the-art activities of the digital humanities. Scientists use DARIAH, for example, to make research data available across Europe. The exchange of knowledge and expertise is thus promoted across disciplines and the possibility of discovering new scientific discourses is encouraged.
 
-This application has been developed with support from the DARIAH-DE initiative, the German branch of DARIAH-EU, the European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been provided by the German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610J.
+This application is developed with support from the DARIAH-DE initiative, the German branch of DARIAH-EU, the European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been provided by the German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610A to J.
 
-![DARIAH-DE](https://raw.githubusercontent.com/DARIAH-DE/Topics/testing/docs/images/dariah-de_logo.png)
-![BMBF](https://raw.githubusercontent.com/DARIAH-DE/Topics/testing/docs/images/bmbf_logo.png)
+![DARIAH-DE](docs/images/dariah-de-logo.png)
+![BMBF](docs/images/bmbf-logo.png)
+
+
+## License
+This project is licensed under [Apache 2.0](LICENSE). You can do what you like with the source code, as long as you include the original copyright, the full text of the Apache 2.0 license, and state significant changes. You cannot charge DARIAH-DE for damages, or use any of its trademarks like name or logos.

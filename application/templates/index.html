@@ -2,63 +2,77 @@
 
 {% block main %}
 <main class="main">
-	<div class="main_content">
-		<form action="/modeling" method="POST" enctype="multipart/form-data">
-			<h1>Explore your own text collection with a topic model – without prior knowledge.</h1>
-			<p>The text mining technique <i>topic modeling</i> has become a popular procedure for clustering documents into
-				semantic groups. This application provides a user-friendly workflow that preprocesses the text data, creates the
-				model, and visualizes the output. All you need is a text corpus and a little time.</p>
-			<blockquote>
-				Topic modeling algorithms are statistical methods that analyze the words of the original texts to discover the
-				themes that run through them, how those themes are connected to each other, and how they change over time.
-				<footer>
-					<cite>
-						<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">David Blei, Probabilistic Topic Models</a>
-					</cite>
-				</footer>
-			</blockquote>
-			<h2>1 Preprocessing</h2>
-			<p>The corpus is tokenized first. This splits a text into individual words, so-called <i>tokens</i>. Token
-				frequencies are typical units of analysis when working with text corpora. It may come as a surprise that reducing
-				a book to a list of token frequencies retains useful information, but practice has shown this to be the case.</p>
-			<p>You can select plain text or XML files, but it must be at least five.</p>
-			<p><input type="file" name="files" accept=".txt, .xml" multiple required /></p>
-			<p>The frequency distribution of the tokens in a corpus follows Zipf’s law, which implies that <i>few types</i>
-				occur <i>very frequently</i> and <i>many types very rarely</i>. To illustrate this, the plot ranks the 200 most
-				common words of 10 British novels:</p>
-			<p><img src="{{url_for('static', filename='zipf.svg')}}"></p>
-			<p>In topic modeling, we are only interested in words in the middle frequency range; the most common words are
-				usually meaningless function words, the rarest words so specific that they are of no use to the model.</p>
-			<p>You can either set a threshold for the most common words:</p>
-			<p><input type="number" name="mfw" value="100" min="1"></p>
-			<p>or select an external list of words to be removed:</p>
-			<p><input type="file" name="stopwords"></p>
-			<p>All words that appear only once will be removed automatically.</p>
-			<h2>2 Modeling</h2>
-			<p>A parameter is any characteristic that can help in defining or classifying a particular system – the topic
-				model. You will have to adjust two model parameters, the number of topics, i.e. how many semantic clusters should
-				be formed, and the number of iterations, i.e. how long the model will learn from the data.</p>
-			<blockquote>One assumption that topic models make is the bag of words assumption, that the order of the words in
-				the
-				document does not matter.<footer>
-					<cite>
-						<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">David Blei, Probabilistic Topic Models</a>
-					</cite>
-				</footer>
-			</blockquote>
-			<p>The ideal number of topics depends on what you are looking for in the model. The default value gives a broad
-				overview of the contents:</p>
-			<p><input type="number" name="topics" value="10" min="1" required></p>
-			<p>The number of sampling iterations should be a trade-off between the time taken to complete sampling and the
-				quality of the model:</p>
-			<p><input type="number" name="iterations" value="100" min="10" required></p>
-			<h2>3 Visualizing</h2>
-			<p>When using topic models to explore text collections, one is typically interested in examining texts in terms of
-				their constituent topics – instead of pure word frequencies. Because the number of topics is so much smaller than
-				the number of unique vocabulary elements (say, 10 versus 10.000), a range of data visualization methods become
-				available.</p>
-			<p><button type="button">Train Topic Model</button></p>
-		</form>
-	</div>
+    <div class="main_content">
+        <form action="/modeling" method="POST" enctype="multipart/form-data">
+            <h1>Explore your own text collection with a topic model – without prior knowledge.</h1>
+            <p>The text mining technique <i>topic modeling</i> has become a popular procedure for clustering documents into
+                semantic groups. This application provides a user-friendly workflow that preprocesses the text data, creates the
+                model, and visualizes the output. All you need is a text corpus and a little time.</p>
+            <blockquote>
+                Topic modeling algorithms are statistical methods that analyze the words of the original texts to discover the
+                themes that run through them, how those themes are connected to each other, and how they change over time.
+                <footer>
+                    <cite>
+                        <a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">David M. Blei</a>
+                    </cite>
+                </footer>
+            </blockquote>
+            <h2>1 Preprocessing</h2>
+            <p>The corpus is tokenized first. This splits a text into individual words, so-called <i>tokens</i>. Token
+                frequencies are typical units of analysis when working with text corpora. It may come as a surprise that reducing
+                a book to a list of token frequencies retains useful information, but practice has shown this to be the case.</p>
+            <blockquote>One assumption that topic models make is the bag of words assumption, that the order of the words in
+                the
+                document does not matter.<footer>
+                    <cite>
+                        <a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">David M. Blei</a>
+                    </cite>
+                </footer>
+            </blockquote>
+            <p>You can select any text files – markup will be stripped.</p>
+            <p><input type="file" name="corpus" accept=".txt, .xml" multiple required /></p>
+            <p>The frequency distribution of words in a corpus follows <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4176592/">Zipf’s
+                    law</a>, which implies that <i>few types</i> occur <i>very frequently</i> and <i>many types very rarely</i>. In
+                topic modeling, we are only interested in words in the middle frequency range; the most common words are usually
+                meaningless function words, and the rarest words so specific that they are of no use to the model.</p>
+            <p>You can either set a threshold for the most common words:</p>
+            <p><input type="number" name="mfw" value="100" min="1"></p>
+            <p>or select an external list of words to be removed:</p>
+            <p><input type="file" name="stopwords"></p>
+            <h2>2 Modeling</h2>
+            <p>A parameter is any characteristic that can help in defining or classifying a particular system – the topic
+                model. You will have to adjust two model parameters, the number of topics, i.e. how many semantic clusters should
+                be formed, and the number of iterations, i.e. how long the model will learn from the data.</p>
+            <blockquote>Latent Dirichlet allocation, a generative probabilistic topic model, is a three-level hierarchical
+                Bayesian model, in which each item of a collection is modeled as a finite mixture over an underlying set of topics.<footer>
+                    <cite>
+                        <a href="http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf">David M. Blei, Andrew Y. Ng, Michale I.
+                            Jordan</a>
+                    </cite>
+                </footer>
+            </blockquote>
+            <p>The ideal number of topics depends on what you are looking for in the model. The default value gives a broad
+                overview of the contents:</p>
+            <p><input type="number" name="topics" value="10" min="1" required></p>
+            <p>The number of sampling iterations should be a trade-off between the time taken to complete sampling and the
+                quality of the model:</p>
+            <p><input type="number" name="iterations" value="100" min="10" required></p>
+            <h2>3 Visualizing</h2>
+            <p>When using topic models to explore text collections, one is typically interested in examining texts in terms of
+                their constituent topics – instead of pure word frequencies. Because the number of topics is so much smaller than
+                the number of unique vocabulary elements (say, 10 versus 10.000), a range of data visualization methods become
+                available.</p>
+            <blockquote>Topic models are high-level statistical tools. A user must scrutinize numerical distributions to
+                understand and explore their results; the raw output of the model is not enough to create an easily explored
+                corpus.<footer>
+                    <cite>
+                        <a href="https://www.aaai.org/ocs/index.php/ICWSM/ICWSM12/paper/viewFile/4645/5021">Allison J. B. Chaney,
+                            David M. Blei</a>
+                    </cite>
+                </footer>
+            </blockquote>
+            <p><button type="submit">Train Topic Model</button></p>
+        </form>
+    </div>
 </main>
 {% endblock %}
