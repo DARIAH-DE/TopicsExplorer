@@ -1,6 +1,7 @@
 import pathlib
 import sqlite3
 import logging
+import json
 import datetime
 import tempfile
 from xml.etree import ElementTree
@@ -8,6 +9,7 @@ from xml.etree import ElementTree
 import flask
 import cophi
 import numpy as np
+import pandas as pd
 from werkzeug.utils import secure_filename
 
 TEMPDIR = tempfile.gettempdir()
@@ -134,13 +136,56 @@ def insert_into_textfiles(values):
     close_db()
 
 
+def insert_into_model(doc_topic, topics):
+    logging.info("Connecting to database...")
+    # Connect to database:
+    db = get_db()
+    # Insert values into table:
+    db.execute("""
+               INSERT INTO model (doc_topic, topics)
+               VALUES(?, ?);
+               """,
+               [doc_topic, topics])
+    logging.info("Committing to database...")
+    db.commit()
+    logging.info("Closing connection to database...")
+    close_db()
+
 def select_textfiles():
+    """
+    TODO: fetchone? fetchall? nothing?
+    """
     cursor = get_db().cursor()
     return cursor.execute("""
                           SELECT title, text 
                           FROM textfiles;
                           """)
 
+def select_doc_topic():
+    cursor = get_db().cursor()
+    response = cursor.execute("""
+                          SELECT doc_topic 
+                          FROM model;
+                          """)
+    return pd.read_json(response.fetchone()[0])
+
+
+def select_topics():
+    cursor = get_db().cursor()
+    response = cursor.execute("""
+                          SELECT topics 
+                          FROM model;
+                          """)
+    return json.loads(response.fetchone()[0])
+
+def select_document(title):
+    cursor = get_db().cursor()
+    response = cursor.execute("""
+                          SELECT text 
+                          FROM textfiles
+                          WHERE title is ?;
+                          """, [title])
+    return response.fetchone()[0]
 
 def get_documents(textfiles):
     for textfile in textfiles:
@@ -211,7 +256,7 @@ def preprocess(data):
 
 def get_topics(model, vocabulary, maximum=100):
     for i, distribution in enumerate(model.topic_word_):
-        yield np.array(vocabulary)[np.argsort(distribution)][:-maximum-1:-1]
+        yield list(np.array(vocabulary)[np.argsort(distribution)][:-maximum-1:-1])
 
 
 def get_similarities(matrix):
@@ -220,10 +265,7 @@ def get_similarities(matrix):
     return d / norm / norm.T
 
 def normalize(matrix, sizes):
-    # Multiply weights with word frequencies:
-    matrix = matrix * sizes.sum()
-    # Normalize with text lengths:
-    return matrix / sizes
+    return matrix * sizes
 
 
 def scale(vector):

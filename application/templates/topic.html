@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<main class="main">
+    <div class="main_content">
+        <h1>{{ topic }}</h1>
+        <div class="row -narrow" style="border-top: none;">
+            <div class="column"">
+                <h4 style=" margin-top: 0px;">Top 3: Similar Topics</h4>
+                {% for topic in similar_topics %}
+                    <p><button class="topic" style="width: 100%;">{{ topic }}</button></p>
+                {% endfor %}
+                <h4>Related Words</h4>
+                {% for word in related_words %}
+                    <p><button class="topic" style="width: 100%;">{{ word }}</button></p>
+                {% endfor %}
+            </div>
+            <div class="column -wide">
+                <h4 style="margin-top: 0px;">Related Documents</h4>
+                {% for document in related_documents %}
+                    <p><button class="topic" style="width: 100%;">{{ document }}</button></p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        $('.value').each(function () {
+            var text = $(this).text();
+            $(this).parent().css('width', text);
+        });
+    </script>
+</main>
+
+{% endblock %}

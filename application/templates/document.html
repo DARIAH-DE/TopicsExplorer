@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<main class="main">
+    <div class="main_content">
+        <h1>{{ title }}</h1>
+        <h4>Topics Distribution</h4>
+        <p class="chart">
+            {% for descriptor, value in distribution %}
+                <span data-balloon="{{ descriptor }}" data-balloon-pos="down" class="block">
+                    <span class="value">{{ value }}%</span>
+                </span>
+            {% endfor %}
+        </p>
+
+
+
+        <div class="row -narrow" style="border-top: none;">
+            <div class="column"">
+                <h4 style=" margin-top: 0px;">Top 3: Similar Documents</h4>
+                {% for document in similar_documents %}
+                    <p><button class="topic" style="width: 100%;">{{ document }}</button></p>
+                {% endfor %}
+                <h4>Related Topics</h4>
+                {% for topic in related_topics %}
+                    <p><button class="topic" style="width: 100%;">{{ topic }}</button></p>
+                {% endfor %}
+            </div>
+            <div class="column -wide">
+                <h4 style="margin-top: 0px;">Original Text</h4>
+                {% for paragraph in text %}
+                    <p style="text-align: justify;">{{ paragraph }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        $('.value').each(function () {
+            var text = $(this).text();
+            $(this).parent().css('width', text);
+        });
+    </script>
+</main>
+
+{% endblock %}

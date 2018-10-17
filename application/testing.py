@@ -3,6 +3,7 @@
 import operator
 import pathlib
 import logging
+import json
 import sqlite3
 import multiprocessing
 
@@ -46,7 +47,6 @@ def modeling():
     process = multiprocessing.Process(target=workflow)
     process.start()
     return flask.render_template("modeling.html")
-    return flask.render_template("topic-presence.html", presence=relevance)
 
 def get_topic_descriptors(topics):
     for topic in topics:
@@ -54,13 +54,15 @@ def get_topic_descriptors(topics):
 
 
 def workflow():
+    """Topic modeling workflow
+    """
     # Get input data:
     data = utils.get_data("corpus",
                           "topics",
                           "iterations",
                           "stopwords",
                           "mfw")
-    # Insert data into textfiles table:
+    # Insert documents into textfiles table:
     utils.insert_into_textfiles(data["corpus"])
     # Preprocess data:
     dtm, vocabulary, titles, sizes = utils.preprocess(data)
@@ -73,16 +75,17 @@ def workflow():
     topics = list(topics)
     # Get document-topic distribution:
     # (Rows -> documents, columns -> topics)
-    doc_topic = model.doc_topic_
-    # Get normalized document-topic distribution:
-    doc_topic_n = utils.normalize(doc_topic, sizes)
 
-    topic_weights = doc_topic_n.sum(axis=0)
-    topic_weights_s = utils.scale(topic_weights)
     descriptors = list(get_topic_descriptors(topics))
-    relevance = pd.Series(topic_weights_s, index=descriptors).to_dict().items()
-    relevance = sorted(relevance, key=operator.itemgetter(1), reverse=True)
+    doc_topic = get_doc_topic(model, titles, descriptors)
+    utils.insert_into_model(doc_topic, json.dumps(topics))
 
+
+def get_doc_topic(model, titles, descriptors):
+    doc_topic = pd.DataFrame(model.doc_topic_)
+    doc_topic.index = titles
+    doc_topic.columns = [descriptor.replace(", ", "-") for descriptor in descriptors]
+    return doc_topic.to_json()
 
 @app.after_request
 def add_header(r):
@@ -105,23 +108,50 @@ def help():
 
 
 
+@app.route("/topic-presence")
+def topic_presence():
+    doc_topic = utils.select_doc_topic()
+    doc_topic_n = doc_topic#utils.normalize(doc_topic, sizes)
+    topic_weights = doc_topic_n.sum(axis=0)
+    topic_weights_s = utils.scale(topic_weights)
+    descriptors = list(get_topic_descriptors(topics))
+    relevance = pd.Series(topic_weights_s, index=descriptors).to_dict().items()
+    presence = sorted(relevance, key=operator.itemgetter(1), reverse=True)
+    return flask.render_template("topic-presence.html", presence=presence)
 
 
+@app.route("/topics/<topic>")
+def topics(topic):
+    doc_topic = utils.select_doc_topic()
+    topicss = utils.select_topics()
+    topic1 = doc_topic[topic].sort_values(ascending=False)[:30]
+    related_docs = list(topic1.index)
+    loc = doc_topic.columns.get_loc(topic)
+    related_words = topicss[loc][:20]
+    s = utils.scale(topic1)
+    sim = pd.DataFrame(utils.get_similarities(doc_topic.values))[loc]
+    sim.index = doc_topic.columns
+    sim = sim.sort_values(ascending=False)[1:4]
+    similar_topics = [", ".join(topicss[doc_topic.columns.get_loc(topic)][:3]) for topic in sim.index]
 
-@app.route("/topic-presence/<topic>")
-def topic_presence(topic):
-    print(topic)
-    return flask.render_template("topic-presence.html")
+    return flask.render_template("topic.html", topic=", ".join(related_words[:3]), similar_topics=similar_topics, related_words=related_words, related_documents=related_docs)
 
 
-@app.route("/topics")
-def topics():
-    return flask.render_template("topics.html")
+@app.route("/documents/<title>")
+def documents(title):
+    doc_topic = utils.select_doc_topic().T
+    text = utils.select_document(title).split("\n\n")
+    topic1 = doc_topic[title].sort_values(ascending=False) * 100
+    distribution = list(topic1.to_dict().items())
+    loc = doc_topic.columns.get_loc(title)
+    sim = pd.DataFrame(utils.get_similarities(doc_topic.values))[loc]
+    sim.index = doc_topic.columns
+    sim = sim.sort_values(ascending=False)[1:4]
+    similar_topics = list(sim.index)
+    related_topics = topic1[:20].index
 
 
-@app.route("/documents")
-def documents():
-    return flask.render_template("documents.html")
+    return flask.render_template("document.html", title=title, text=text, distribution=distribution, similar_documents=similar_topics, related_topics=related_topics)
 
 
 @app.route("/api/status")
