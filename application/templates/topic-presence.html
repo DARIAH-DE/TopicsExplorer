@@ -5,15 +5,18 @@
     <div class="main_content">
         <h1>Relative presence of all topics in the corpus</h1>
         <p>This overview page is the entry point to exploring the text corpus. The topics are ranked by their relative
-            presence in the whole corpus and display each in a bar with width proportional to the topic’s presence score. You
-            can navigate through your corpus by clicking on the topics.</p>
-        {% for topic, width in presence %}
-            <p><button class="topic" style="width: {{ width }}%;">{{ topic }}</button></p>
+            presence in the whole corpus and display each in a bar with width proportional to the topic’s presence
+            score. You can navigate through your corpus by clicking on the topics.</p>
+        {% for topic, proportion in presence %}
+        <p><a href="{{ url_for('topics', topic=topic) }}"><button class="topic" style="width: {{ proportion }}%;">{{ topic }}</button></a></p>
         {% endfor %}
         <blockquote>Mathematically, the topic model has two goals in explaining the
-            documents. First, it wants its topics to place high probability on few terms. Second, it wants to attach documents
-            to as few topics as possible. These goals are at odds. With few terms assigned to each topic, the model captures the
-            observed words by using more topics per article. With few topics assigned to each article, the model captures the
+            documents. First, it wants its topics to place high probability on few terms. Second, it wants to attach
+            documents
+            to as few topics as possible. These goals are at odds. With few terms assigned to each topic, the model
+            captures the
+            observed words by using more topics per article. With few topics assigned to each article, the model
+            captures the
             observed words by using more terms per topic.<footer>
                 <cite>
                     <a href="http://journalofdigitalhumanities.org/2-1/topic-modeling-and-digital-humanities-by-david-m-blei/">David
@@ -21,7 +24,6 @@
                 </cite>
             </footer>
         </blockquote>
-
     </div>
 </main>
 {% endblock %}

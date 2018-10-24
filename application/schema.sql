@@ -2,11 +2,15 @@ DROP TABLE IF EXISTS textfiles;
 DROP TABLE IF EXISTS model;
 
 CREATE TABLE textfiles (
-  title TEXT UNIQUE NOT NULL,
-  text TEXT NOT NULL
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT UNIQUE,
+  content TEXT
 );
 
 CREATE TABLE model (
-  doc_topic TEXT NOT NULL,
-  topics TEXT NOT NULL
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  doc_topic TEXT,
+  topics TEXT,
+  doc_similarities TEXT,
+  topic_similarities TEXT
 );

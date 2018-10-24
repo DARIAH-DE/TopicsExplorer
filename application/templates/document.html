@@ -6,8 +6,8 @@
         <h1>{{ title }}</h1>
         <h4>Topics Distribution</h4>
         <p class="chart">
-            {% for descriptor, value in distribution %}
-                <span data-balloon="{{ descriptor }}" data-balloon-pos="down" class="block">
+            {% for topic, value in distribution %}
+                <span data-balloon="{{ topic }}" data-balloon-pos="down" class="block">
                     <span class="value">{{ value }}%</span>
                 </span>
             {% endfor %}
@@ -18,12 +18,12 @@
         <div class="row -narrow" style="border-top: none;">
             <div class="column"">
                 <h4 style=" margin-top: 0px;">Top 3: Similar Documents</h4>
-                {% for document in similar_documents %}
-                    <p><button class="topic" style="width: 100%;">{{ document }}</button></p>
+                {% for title in similar_documents %}
+                    <p><a href="{{ url_for('documents', title=title) }}"><button class="topic" style="width: 100%;">{{ title }}</button></a></p>
                 {% endfor %}
                 <h4>Related Topics</h4>
                 {% for topic in related_topics %}
-                    <p><button class="topic" style="width: 100%;">{{ topic }}</button></p>
+                    <p><a href="{{ url_for('topics', topic=topic) }}"><button class="topic" style="width: 100%;">{{ topic }}</button></a></p>
                 {% endfor %}
             </div>
             <div class="column -wide">

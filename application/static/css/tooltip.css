@@ -4,7 +4,6 @@ button[data-balloon] {
 
 [data-balloon] {
   position: relative;
-  cursor: pointer;
 }
 
 [data-balloon]:after {
