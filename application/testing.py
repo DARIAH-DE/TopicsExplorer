@@ -1,40 +1,41 @@
-#!/usr/bin/env python3
-
-import operator
-import pathlib
 import logging
-import json
-import sqlite3
 import multiprocessing
+import utils
+import workflow
+import database
 
 import flask
-import pandas as pd
-import numpy as np
-import lda
-
-import utils
 
 
-app, process = utils.init_app()
-
+app, process = utils.init_app("topicsexplorer")
 
 @app.route("/")
 def index():
+    """Home page.
+    """
     if process.is_alive():
         process.terminate()
-    utils.init_logging()
+    utils.init_logging(logging.DEBUG)
     utils.init_db(app)
     return flask.render_template("index.html")
 
-@app.route("/modeling", methods=["POST"])
-def modeling():
-    process = multiprocessing.Process(target=utils.workflow)
-    process.start()
-    return flask.render_template("modeling.html")
-
 @app.route("/help")
 def help():
+    """Help page.
+    """
     return flask.render_template("help.html")
+
+@app.route("/api/status")
+def status():
+    """API: Current modeling status.
+    """
+    return utils.get_status()
+
+@app.route("/modeling", methods=["POST"])
+def modeling():
+    process = multiprocessing.Process(target=workflow.wrapper)
+    process.start()
+    return flask.render_template("modeling.html")
 
 @app.route("/topic-presence")
 def topic_presence():
@@ -43,44 +44,44 @@ def topic_presence():
 
 @app.route("/topics/<topic>")
 def topics(topic):
-    doc_topic = utils.select_doc_topic()
-    topicss = utils.select_topics()
-    topic1 = doc_topic[topic].sort_values(ascending=False)[:30]
-    related_docs = list(topic1.index)
-    loc = doc_topic.columns.get_loc(topic)
-    related_words = topicss[loc][:20]
-    s = utils.scale(topic1)
-    sim = pd.DataFrame(utils.get_similarities(doc_topic.values))[loc]
-    sim.index = doc_topic.columns
-    sim = sim.sort_values(ascending=False)[1:4]
-    similar_topics = [", ".join(topicss[doc_topic.columns.get_loc(topic)][:3]) for topic in sim.index]
+    doc_topic, topics, topic_sim = database.select("topic-overview")
+    # Get related documents:
+    related_docs = doc_topic[topic].sort_values(ascending=False)[:30]
+    related_docs = list(related_docs.index)
 
-    return flask.render_template("topic.html", topic=", ".join(related_words[:3]), similar_topics=similar_topics, related_words=related_words, related_documents=related_docs)
+    # Get related words:
+    loc = doc_topic.columns.get_loc(topic)
+    related_words = topics[loc][:20]
+
+    # Get similar topics:
+    similar_topics = topic_sim[topic].sort_values(ascending=False)[1:4]
+    similar_topics = list(similar_topics.index)
+    return flask.render_template("topic.html",
+                                 topic=topic,
+                                 similar_topics=similar_topics,
+                                 related_words=related_words,
+                                 related_documents=related_docs)
 
 @app.route("/documents/<title>")
 def documents(title):
-    doc_topic = utils.select_doc_topic().T
-    text = utils.select_document(title).split("\n\n")
-    topic1 = doc_topic[title].sort_values(ascending=False) * 100
-    distribution = list(topic1.to_dict().items())
-    loc = doc_topic.columns.get_loc(title)
-    sim = pd.DataFrame(utils.get_similarities(doc_topic.values))[loc]
-    sim.index = doc_topic.columns
-    sim = sim.sort_values(ascending=False)[1:4]
-    similar_topics = list(sim.index)
-    related_topics = topic1[:20].index
+    text, doc_topic, topics, doc_sim = database.select("document-overview", title=title)
+    # TODO: how to deal with this?
+    text = text.split("\n\n")
 
+    # Get related topics:
+    related_topics = doc_topic[title].sort_values(ascending=False) * 100
+    distribution = list(related_topics.to_dict().items())
+    related_topics = related_topics[:20].index
 
-    return flask.render_template("document.html", title=title, text=text[:4], distribution=distribution, similar_documents=similar_topics, related_topics=related_topics)
-
-@app.route("/api/status")
-def status():
-    return utils.get_status()
-
-@app.route("/api/textfiles/<id>", methods=["GET"])
-def get_textfile():
-    cursor = get_db("database.db").cursor()
-    res = cur.execute("SELECT * FROM textfiles;")
+    # Get similar documents:
+    similar_docs = doc_sim[title].sort_values(ascending=False)[1:4]
+    similar_docs = list(similar_docs.index)
+    return flask.render_template("document.html",
+                                 title=title,
+                                 text=text,
+                                 distribution=distribution,
+                                 similar_documents=similar_docs,
+                                 related_topics=related_topics)
 
 @app.after_request
 def add_header(r):
