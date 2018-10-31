@@ -65,8 +65,6 @@ def topics(topic):
 @app.route("/documents/<title>")
 def documents(title):
     text, doc_topic, topics, doc_sim = database.select("document-overview", title=title)
-    # TODO: how to deal with this?
-    text = text.split("\n\n")
 
     # Get related topics:
     related_topics = doc_topic[title].sort_values(ascending=False) * 100
@@ -78,7 +76,7 @@ def documents(title):
     similar_docs = list(similar_docs.index)
     return flask.render_template("document.html",
                                  title=title,
-                                 text=text,
+                                 text=text[:5000] + "...",
                                  distribution=distribution,
                                  similar_documents=similar_docs,
                                  related_topics=related_topics)

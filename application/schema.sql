@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS model;
 
 CREATE TABLE textfiles (
   id INTEGER PRIMARY KEY,
-  title TEXT UNIQUE,
+  title TEXT,
   content TEXT
 );
 
