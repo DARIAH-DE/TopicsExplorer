@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block main %}
+<main class="main">
+    <div class="main_content">
+        <h1>Corpus</h1>
+        <p>I am 12 and what is this</p>
+        {% for title in titles %}
+        <p><a href="{{ url_for('documents', title=title) }}"><button class="click-button" style="width: 100%;">{{ title }}</button></a></p>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}

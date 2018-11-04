@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS textfiles;
+DROP TABLE IF EXISTS stopwords;
 DROP TABLE IF EXISTS model;
 
 CREATE TABLE textfiles (
@@ -7,10 +8,15 @@ CREATE TABLE textfiles (
   content TEXT
 );
 
+CREATE TABLE stopwords (
+  id INTEGER PRIMARY KEY,
+  content TEXT
+);
+
 CREATE TABLE model (
   id INTEGER PRIMARY KEY,
-  doc_topic TEXT,
+  document_topic TEXT,
   topics TEXT,
-  doc_sim TEXT,
-  topic_sim TEXT
+  document_similarities TEXT,
+  topic_similarities TEXT
 );

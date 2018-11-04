@@ -1,10 +1,14 @@
-import utils
-import lda
-import database
 import json
+import logging
+
 import cophi
+import lda
 import numpy as np
 import pandas as pd
+
+import database
+import utils
+
 
 def wrapper():
     """Wrapper for the topic modeling workflow.
@@ -21,15 +25,16 @@ def wrapper():
     # 2. Create model:
     model = create_model(dtm, data["topics"], data["iterations"])
     # 3. Get model output:
-    topics, descriptors, doc_topic = get_model_output(model, dtm)
+    topics, descriptors, document_topic = get_model_output(model, dtm)
     # 4. Calculate similarities:
-    topic_sim, doc_sim = get_similarities(doc_topic)
+    topic_similarities, document_similarities = get_similarities(document_topic)
 
-    data = {"doc_topic": doc_topic.to_json(force_ascii=False),
+    data = {"document_topic": document_topic.to_json(force_ascii=False),
             "topics": json.dumps(topics, ensure_ascii=False),
-            "doc_sim": doc_sim.to_json(force_ascii=False),
-            "topic_sim": topic_sim.to_json(force_ascii=False)}
+            "document_similarities": document_similarities.to_json(force_ascii=False),
+            "topic_similarities": topic_similarities.to_json(force_ascii=False)}
     database.insert_into("model", data)
+    logging.info("Done!")
 
 
 def preprocess(data):
@@ -44,6 +49,8 @@ def preprocess(data):
     hapax = corpus.hapax
     features = set(stopwords).union(set(hapax))
     dtm = corpus.drop(corpus.dtm, features)
+    # Save stopwords:
+    database.insert_into("stopwords", json.dumps(stopwords))
     return dtm
 
 
@@ -63,13 +70,13 @@ def get_model_output(model, dtm):
     topics = list(utils.get_topics(model, dtm.columns))
     descriptors = list(utils.get_topic_descriptors(topics))
     # Document-topic distribution:
-    doc_topic = utils.get_doc_topic(model, dtm.index, descriptors)
-    return topics, descriptors, doc_topic
+    document_topic = utils.get_document_topic(model, dtm.index, descriptors)
+    return topics, descriptors, document_topic
 
 
-def get_similarities(doc_topic):
+def get_similarities(document_topic):
     """Calculate similarities between vectors.
     """
-    topics = utils.get_cosine(doc_topic.values, doc_topic.columns)
-    documents = utils.get_cosine(doc_topic.T.values, doc_topic.index)
+    topics = utils.get_cosine(document_topic.values, document_topic.columns)
+    documents = utils.get_cosine(document_topic.T.values, document_topic.index)
     return topics, documents

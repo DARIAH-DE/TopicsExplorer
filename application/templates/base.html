@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/logos/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dariah-styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/barplot-tooltip.css') }}">
+    <meta charset="utf-8">
+    <meta name="description" content="Explore your own text collection with a topic model – without prior knowledge.">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/dariah-script.js') }}" defer></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/dariah-globalmenu.js') }}"></script>
+
+    <title>DARIAH-DE :: Topics Explorer</title>
+</head>
+
+<body class="site">
+    <div class="site_wrap">
+        <header class="header">
+            <div class="wrap">
+                <nav class="nav">
+                    <button type="button" class="nav_toggle -main">
+                        <svg class="icon">
+                            <use xlink:href="#icon-menu"></use>
+                        </svg> Navigation
+                    </button>
+                    <div class="nav_menu -main">
+                        <ul class="nav_list -level-1">
+                            {% if home %}
+                            <li class="nav_item -level-1">
+                                <a class="nav_link" href="{{ url_for('index') }}">Home</a>
+                            </li>
+                            {% endif %}
+                            {% if reset %}
+                            <li class="nav_item -level-1">
+                                <a class="nav_link" href="{{ url_for('index') }}">Reset</a>
+                            </li>
+                            {% endif %}
+                            {% if help %}
+                            <li class="nav_item -level-1">
+                                <a class="nav_link" href="{{ url_for('help') }}">Help</a>
+                            </li>
+                            {% endif %}
+                            {% if topic_overview %}
+                            <li class="nav_item -level-1">
+                                <a class="nav_link" href="{{ url_for('topic_overview') }}">Topic Overview</a>
+                            </li>
+                            {% endif %}
+                            {% if document_overview %}
+                            <li class="nav_item -level-1">
+                                <a class="nav_link" href="{{ url_for('document_overview') }}">Document Overview</a>
+                            </li>
+                            {% endif %}
+                            {% if go_back %}
+                            <li class="nav_item -level-1">
+                                <a class="nav_link" href="javascript:window.history.back()">Go Back</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </nav>
+                <aside class="header_aside">
+                    <div>
+                        {% if abort %}
+                        <li class="nav_item -level-1">
+                            <a class="nav_link" href="{{ url_for('index') }}">Abort</a>
+                        </li>
+                        {% endif %}
+                        {% if export_data %}
+                        <a class="nav_link" href="{{ url_for('export', filename='topicsexplorer-data.zip') }}">
+                            Export Data
+                        </a>
+                        {% endif %}
+                        <div class="search hidden">
+                            <a class="search_toggle" href="javascript:" title="Suchen">
+                                <svg class="icon">
+                                    <use xlink:href="#icon-search"></use>
+                                </svg>
+                                <span class="sr-only"></span>
+                            </a>
+                            <form class="search_form" action="search" role="search">
+                                <label for="overlay-search-input" class="sr-only"></label>
+                                <input type="text" id="overlay-search-input" class="search_input" name="q" maxlength="99"
+                                    placeholder="Suchbegriff">
+                                <button type="submit" class="search_submit">
+                                    <svg class="icon">
+                                        <use xlink:href="#icon-angle-right"></use>
+                                    </svg>
+                                    <span class="sr-only"></span>
+                                </button>
+                            </form>
+                        </div>
+                </aside>
+                <nav class="nav -right">
+                    <button type="button" class="nav_toggle -portal">
+                        <img class="nav_logo -large" src="{{ url_for('static', filename='img/logos/dariah-logo-white.svg') }}"
+                            alt="DARIAH Portal">
+                        <img class="nav_logo -small" src="{{ url_for('static', filename='img/logos/dariah-logo-white-small.svg') }}"
+                            alt="DARIAH Portal">
+                        <svg class="icon">
+                            <use xlink:href="#icon-angle-down"></use>
+                        </svg>
+                    </button>
+                    <div class="nav_menu -portal">
+                        <ul id="home_dropdown_menu" class="nav_list -level-2 -portal"></ul>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        {% block main %}
+        {% endblock %}
+
+    </div>
+    <footer class="footer">
+        <div class="wrap">
+            <div class="footer_left">
+                <div>
+                    <p>
+                        {% if home %}
+                        <a href="{{ url_for('index') }}">Home</a>
+                        {% endif %}
+                        {% if reset %}
+                        <a href="{{ url_for('index') }}">Reset</a>
+                        {% endif %}
+                        {% if help %}
+                        <a href="{{ url_for('help') }}">Help</a>
+                        {% endif %}
+                        {% if topic_overview %}
+                        <a href="">Topic Overview</a>
+                        {% endif %}
+                        {% if document_overview %}
+                        <a href="">Document Overview</a>
+                        {% endif %}
+                        {% if go_back %}
+                        <a href="javascript:window.history.back()">Go Back</a>
+                        {% endif %}
+                    </p>
+                </div>
+                <br>
+                <br>
+                <p>
+                    <a href="https://de.dariah.eu/en/">
+                        DARIAH-DE
+                        <br>
+                        <small>Digital research infrastructure for humanities and cultural studies</small>
+                    </a>
+                </p>
+            </div>
+            <div class="footer_right">
+                <p>
+                    <a href="https://www.bmbf.de/">
+                        <img alt="Gefördert vom Bundesministerium für Bildung und Forschung" src="{{ url_for('static', filename='img/logos/bmbf-logo.svg') }}"
+                            height="108">
+                    </a>
+                </p>
+                <p>
+                    <small>Project number 01UG1610A to J</small>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <svg xmlns="http://www.w3.org/2000/svg" class="hidden">
+        <symbol id="icon-menu" viewBox="0 0 17 17">
+            <path d="M16 3v2H1V3h15zM1 10h15V8H1v2zm0 5h15v-2H1v2z" />
+        </symbol>
+    </svg>
+</body>

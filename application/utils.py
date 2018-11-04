@@ -1,21 +1,27 @@
 from datetime import datetime
-from pathlib import Path
-from xml.etree import ElementTree
 import logging
-import sqlite3
+from pathlib import Path
+import shutil
+import tempfile
+from xml.etree import ElementTree
+
+import cophi
+import flask
 import numpy as np
 import pandas as pd
-import cophi
-
-import flask
 from werkzeug.utils import secure_filename
 
-import constants
 import database
 
 
+TEMPDIR = tempfile.gettempdir()
+DATABASE = Path(TEMPDIR, "topicsexplorer.db")
+LOGFILE = Path(TEMPDIR, "topicsexplorer.log")
+DATA_EXPORT = Path(TEMPDIR, "topicsexplorer-data")
+
+
 class DeadProcess:
-    """Provide dead process.
+    """Provide a dead process.
     """
     def is_alive(self):
         return False
@@ -35,7 +41,7 @@ def init_logging(level):
     """
     logging.basicConfig(level=level,
                         format="%(message)s",
-                        filename=constants.LOGFILE,
+                        filename=str(LOGFILE),
                         filemode="w")
     # Disable logging for Flask and Werkzeug:
     logging.getLogger("flask").setLevel(logging.ERROR)
@@ -56,9 +62,8 @@ def init_db(app):
 def get_status():
     """Read logfile and get most recent status.
     """
-    logfile = Path(constants.LOGFILE)
     now = datetime.now().strftime("%H:%M:%S")
-    with logfile.open("r", encoding="utf-8") as logfile:
+    with LOGFILE.open("r", encoding="utf-8") as logfile:
         messages = logfile.readlines()
         message = messages[-1].strip()
         message = format_logging(message)
@@ -157,13 +162,13 @@ def get_topic_descriptors(topics):
         yield ", ".join(topic[:3])
 
 
-def get_doc_topic(model, titles, descriptors):
+def get_document_topic(model, titles, descriptors):
     """Get document-topic distribution from topic model.
     """
-    doc_topic = pd.DataFrame(model.doc_topic_)
-    doc_topic.index = titles
-    doc_topic.columns = descriptors
-    return doc_topic
+    document_topic = pd.DataFrame(model.doc_topic_)
+    document_topic.index = titles
+    document_topic.columns = descriptors
+    return document_topic
 
 
 def get_cosine(matrix, descriptors):
@@ -178,14 +183,39 @@ def get_cosine(matrix, descriptors):
 def get_topic_presence():
     """Get topic presence in the corpus.
     """
-    doc_topic = database.select("doc_topic")
-    topic_presence = doc_topic.sum(axis=0).sort_values(ascending=False)
+    document_topic = database.select("document-topic")
+    topic_presence = document_topic.sum(axis=0).sort_values(ascending=False)
     proportions = scale(topic_presence)
     for topic, proportion in zip(topic_presence.index, proportions):
         yield topic, proportion
 
 
-def scale(vector, minimum=40, maximum=100):
+def scale(vector, minimum=50, maximum=100):
     """Min-max scaler for a vector.
     """
     return np.interp(vector, (vector.min(), vector.max()), (minimum, maximum))
+
+
+def export_data():
+    if DATA_EXPORT.exists():
+        unlink_content(DATA_EXPORT)
+    else:
+        DATA_EXPORT.mkdir()
+    model_output = database.select("model-output")
+    for name, data in model_output.items():
+        if name in {"stopwords"}:
+            with Path(DATA_EXPORT, "{}.txt".format(name)).open("w", encoding="utf-8") as file:
+                for word in data:
+                    file.write("{}\n".format(word))
+        else:
+            path = Path(DATA_EXPORT, "{}.csv".format(name))
+            data.to_csv(path, sep=";", encoding="utf-8")
+    shutil.make_archive(DATA_EXPORT, "zip", DATA_EXPORT)
+
+
+def unlink_content(directory, pattern="*"):
+    """Deletes the content of a directory.
+    """
+    for p in directory.rglob(pattern):
+        if p.is_file():
+            p.unlink()

@@ -2824,3 +2824,47 @@ th {
 .site.-full-width .wrap.-narrow {
     max-width: none
 }
+
+@keyframes expand {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+.chart {
+    width: 0%;
+    animation: expand 1.5s ease forwards;
+}
+
+.block {
+    height: 50px;
+    float: left;
+    background-color: #213365;
+    border-left: solid 1px white;
+    opacity: 1;
+    transition: opacity, .3s ease;
+}
+
+.block:hover {
+    opacity: .9;
+}
+
+.value {
+    display: none;
+}
+
+.dariah-flower {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    width: 50px;
+}
+
+.click-button {
+    text-align: left;
+}

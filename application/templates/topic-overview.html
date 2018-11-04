@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 
 {% block main %}
 <main class="main">
@@ -8,7 +8,7 @@
             presence in the whole corpus and display each in a bar with width proportional to the topic’s presence
             score. You can navigate through your corpus by clicking on the topics.</p>
         {% for topic, proportion in presence %}
-        <p><a href="{{ url_for('topics', topic=topic) }}"><button class="topic" style="width: {{ proportion }}%;">{{ topic }}</button></a></p>
+        <p><a href="{{ url_for('topics', topic=topic) }}"><button class="click-button" style="width: {{ proportion }}%;">{{ topic }}</button></a></p>
         {% endfor %}
         <blockquote>Mathematically, the topic model has two goals in explaining the
             documents. First, it wants its topics to place high probability on few terms. Second, it wants to attach
