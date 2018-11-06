@@ -1,3 +1,4 @@
+import json
 import logging
 import multiprocessing
 from pathlib import Path
@@ -29,27 +30,52 @@ def help():
     return flask.render_template("help.html",
                                  go_back=True)
 
-@web.route("/api/status")
-def status():
-    """API: Current modeling status.
-    """
-    return utils.get_status()
-
 @web.route("/modeling", methods=["POST"])
 def modeling():
+    """Modeling page.
+    """
     process = multiprocessing.Process(target=workflow.wrapper)
     process.start()
-    return flask.render_template("modeling.html", home=True, help=True, abort=True)
+    return flask.render_template("modeling.html",
+                                 help=True,
+                                 abort=True)
 
-@web.route("/topic-overview")
-def topic_overview():
+@web.route("/overview-topics")
+def overview_topics():
     presence = list(utils.get_topic_presence())
-    return flask.render_template("topic-overview.html", export_data=True, reset=True, help=True, document_overview=True, presence=presence)
+    return flask.render_template("overview-topics.html",
+                                 current="topics",
+                                 help=True,
+                                 reset=True,
+                                 topics=True,
+                                 documents=True,
+                                 document_topic_distributions=True,
+                                 export_data=True,
+                                 presence=presence)
 
-@web.route("/document-overview")
-def document_overview():
+@web.route("/overview-documents")
+def overview_documents():
     titles = sorted(database.select("titles"))
-    return flask.render_template("document-overview.html", export_data=True, reset=True, help=True, topic_overview=True, titles=titles)
+    return flask.render_template("overview-documents.html",
+                                 current="documents",
+                                 help=True,
+                                 reset=True,
+                                 topics=True,
+                                 documents=True,
+                                 document_topic_distributions=True,
+                                 export_data=True,
+                                 titles=titles)
+
+@web.route("/document-topic-distribution")
+def document_topic_distributions():
+    return flask.render_template("document-topic-distribution.html",
+                                 current="document-topic-distributions",
+                                 help=True,
+                                 reset=True,
+                                 topics=True,
+                                 documents=True,
+                                 document_topic_distributions=True,
+                                 export_data=True)
 
 @web.route("/topics/<topic>")
 def topics(topic):
@@ -65,11 +91,18 @@ def topics(topic):
     # Get similar topics:
     similar_topics = topic_similarites[topic].sort_values(ascending=False)[1:4]
     similar_topics = list(similar_topics.index)
-    return flask.render_template("topic.html",
+    return flask.render_template("detail-topic.html",
+                                 current="topics",
+                                 help=True,
+                                 reset=True,
+                                 topics=True,
+                                 documents=True,
+                                 document_topic_distributions=True,
+                                 export_data=True,
                                  topic=topic,
                                  similar_topics=similar_topics,
                                  related_words=related_words,
-                                 related_documents=related_docs, export_data=True, reset=True, help=True, topic_overview=True, document_overview=True, go_back=True)
+                                 related_documents=related_docs)
 
 @web.route("/documents/<title>")
 def documents(title):
@@ -83,12 +116,37 @@ def documents(title):
     # Get similar documents:
     similar_docs = document_similarites[title].sort_values(ascending=False)[1:4]
     similar_docs = list(similar_docs.index)
-    return flask.render_template("document.html",
+    return flask.render_template("detail-document.html",
+                                 current="documents",
+                                 help=True,
+                                 reset=True,
+                                 topics=True,
+                                 documents=True,
+                                 document_topic_distributions=True,
+                                 export_data=True,
                                  title=title,
                                  text=text[:5000] + "...",
                                  distribution=distribution,
                                  similar_documents=similar_docs,
-                                 related_topics=related_topics, export_data=True, reset=True, help=True, topic_overview=True, document_overview=True, go_back=True)
+                                 related_topics=related_topics)
+
+# API STUFF
+
+@web.route("/api/status")
+def status():
+    """API: Current modeling status.
+    """
+    return utils.get_status()
+
+@web.route("/api/document-topic")
+def document_topic_overview():
+    document_topic = database.select("document-topic")
+    x = list()
+    for key, value in document_topic.to_dict().items():
+        x.append({"name": key, "data": [{"x": title, "y": wert} for title, wert in value.items()]})
+    return json.dumps(x)
+
+
 
 @web.route("/export/<filename>")
 def export(filename):

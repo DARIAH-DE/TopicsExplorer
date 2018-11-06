@@ -7,7 +7,7 @@
 	function fetchStatus() {
 		$.get("{{ url_for('status') }}", function (data) {
 			if (data.includes("Done!")) {
-				window.location.replace("{{ url_for('topic_overview') }}");
+				window.location.replace("{{ url_for('overview_topics') }}");
 			} else {
 				$("#status").html(data);
 			}

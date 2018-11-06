@@ -2843,10 +2843,11 @@ th {
 .block {
     height: 50px;
     float: left;
-    background-color: #213365;
+    background-color: #494E7D;
     border-left: solid 1px white;
     opacity: 1;
     transition: opacity, .3s ease;
+    margin-bottom: 10px;
 }
 
 .block:hover {

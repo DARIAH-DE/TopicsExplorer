@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block main %}
+<main class="main">
+    <div class="main_content">
+        <h1>Document-topic distributions</h1>
+        <p id="document-topic-heatmap"></p>
+    </div>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/apexcharts.js') }}"></script>
+    <script>
+        function plotDocumentTopicHeatmap() {
+            // Get data from API
+            $.getJSON("{{ url_for('document_topic_overview') }}", function (data) {
+                var options = {
+                    chart: {
+                        toolbar: {
+                          show: true,
+                          tools: {
+                            download: true,
+                          }
+                        },
+                        height: 350,
+                        type: 'heatmap',
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    colors: ["#213365"],
+                    series: data,
+                    tooltip: {
+                        x: {
+                            show: true
+                        }
+                    },
+                    xaxis: {
+                        tooltip: {
+                            enabled: false,
+                        }
+                    },
+                    legend: {
+                        show: true
+                    }
+                }
+
+                var chart = new ApexCharts(
+                    document.querySelector("#document-topic-heatmap"),
+                    options
+                );
+                chart.render();
+                return true;
+            });
+        };
+
+        plotDocumentTopicHeatmap()
+    </script>
+</main>
+{% endblock %}

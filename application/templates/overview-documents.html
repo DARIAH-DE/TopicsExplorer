@@ -4,9 +4,9 @@
 <main class="main">
     <div class="main_content">
         <h1>Corpus</h1>
-        <p>I am 12 and what is this</p>
+        <p>Test.</p>
         {% for title in titles %}
-        <p><a href="{{ url_for('documents', title=title) }}"><button class="click-button" style="width: 100%;">{{ title }}</button></a></p>
+        <p><a style="width: 100%;" class="main_button" href="{{ url_for('documents', title=title) }}">{{ title }}</a></p>
         {% endfor %}
     </div>
 </main>
