@@ -3,12 +3,20 @@
 {% block main %}
 <main class="main">
     <div class="main_content">
-        <h1>Relative presence of all topics in the corpus</h1>
-        <p>This overview page is the entry point to exploring the text corpus. The topics are ranked by their relative
-            presence in the whole corpus and display each in a bar with width proportional to the topic’s presence
-            score. You can navigate through your corpus by clicking on the topics.</p>
+        <!-- The heading could be like "10 Topics in 300 Documents" or so... -->
+        <!-- TODO: Create a new endpoint which counts the documents. -->
+        <h1>Topics</h1>
+        <p>A topic is a probability distribution over the whole vocabulary of a text corpus. One value is
+            assigned to each word, which indicates how <i>relevant</i> the word is to that topic (to be exact, how
+            <i>likely</i> one word is to be found in a topic). After sorting those values in descending order, the first <i>n</i>
+            words represent a topic.</p>
+        <p>The topics are ranked by their relative presence in the corpus and display each in a bar with width
+            proportional to the topic’s presence
+            score. You can start exploring your topic model by clicking on the topics, or select one of the other tabs
+            in the navigation bar above.</p>
         {% for topic, proportion in presence %}
-        <p><a style="width: {{ proportion }}%;" class="main_button" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
+        <p><a style="width: {{ proportion }}%;" class="main_button" href="{{ url_for('topics', topic=topic) }}">{{
+                topic }}</a></p>
         {% endfor %}
         <blockquote>Mathematically, the topic model has two goals in explaining the
             documents. First, it wants its topics to place high probability on few terms. Second, it wants to attach

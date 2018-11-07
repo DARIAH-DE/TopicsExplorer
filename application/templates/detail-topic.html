@@ -10,7 +10,7 @@
                 {% for topic in similar_topics %}
                 <p><a class="main_button" style="width: 100%;" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
                 {% endfor %}
-                <h4>Related Words</h4>
+                <h4>Top 20: Related Words</h4>
                 <table>
                     {% for word in related_words %}
                     <tr>
@@ -20,7 +20,7 @@
                 </table>
             </div>
             <div class="column -wide">
-                <h4 style="margin-top: 0px;">Related Documents</h4>
+                <h4 style="margin-top: 0px;">Top 10: Related Documents</h4>
                 {% for title in related_documents %}
                 <p><a class="main_button" style="width: 100%;" href="{{ url_for('documents', title=title) }}">{{ title
                         }}</a></p>

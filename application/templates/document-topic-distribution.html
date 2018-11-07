@@ -3,29 +3,34 @@
 {% block main %}
 <main class="main">
     <div class="main_content">
-        <h1>Document-topic distributions</h1>
+        <h1>Document-Topic Distributions</h1>
+        <p>Each document consists to a certain extent of each topic, which is one of the theoretical assumptions of
+            topic models. Visualizing those proportions in a heatmap displays the kind of information that is probably
+            most useful to literary scholars. Going beyond pure exploration, it can be used to show thematic
+            developments over a set of texts as well as a single text, akin to a dynamic topic model.</p>
+        </p>
         <p id="document-topic-heatmap"></p>
     </div>
     <script type="text/javascript" src="{{ url_for('static', filename='js/apexcharts.js') }}"></script>
     <script>
         function plotDocumentTopicHeatmap() {
-            // Get data from API
+            // Get data from API endpoint
             $.getJSON("{{ url_for('document_topic_overview') }}", function (data) {
                 var options = {
                     chart: {
                         toolbar: {
-                          show: true,
-                          tools: {
-                            download: true,
-                          }
+                            show: true,
+                            tools: {
+                                download: true,
+                            }
                         },
-                        height: 350,
+                        height: 400,
                         type: 'heatmap',
                     },
                     dataLabels: {
                         enabled: false
                     },
-                    colors: ["#213365"],
+                    colors: ['#213365'],
                     series: data,
                     tooltip: {
                         x: {
@@ -36,21 +41,21 @@
                         tooltip: {
                             enabled: false,
                         }
-                    },
-                    legend: {
-                        show: true
                     }
                 }
 
+                // Get element
                 var chart = new ApexCharts(
-                    document.querySelector("#document-topic-heatmap"),
+                    document.querySelector('#document-topic-heatmap'),
                     options
                 );
+
+                // Render plot
                 chart.render();
-                return true;
             });
         };
 
+        // Call the function to plot heatmap
         plotDocumentTopicHeatmap()
     </script>
 </main>

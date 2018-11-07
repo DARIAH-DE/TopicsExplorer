@@ -116,6 +116,9 @@ def documents(title):
     # Get similar documents:
     similar_docs = document_similarites[title].sort_values(ascending=False)[1:4]
     similar_docs = list(similar_docs.index)
+
+    text = text[:5000] + "..."
+    text = text.split("\n\n")
     return flask.render_template("detail-document.html",
                                  current="documents",
                                  help=True,
@@ -125,7 +128,7 @@ def documents(title):
                                  document_topic_distributions=True,
                                  export_data=True,
                                  title=title,
-                                 text=text[:5000] + "...",
+                                 text=text,
                                  distribution=distribution,
                                  similar_documents=similar_docs,
                                  related_topics=related_topics)

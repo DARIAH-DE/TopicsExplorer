@@ -2847,15 +2847,10 @@ th {
     border-left: solid 1px white;
     opacity: 1;
     transition: opacity, .3s ease;
-    margin-bottom: 10px;
 }
 
 .block:hover {
     opacity: .9;
-}
-
-.value {
-    display: none;
 }
 
 .dariah-flower {
@@ -2864,8 +2859,4 @@ th {
     margin-right: auto;
     margin-bottom: 10px;
     width: 50px;
-}
-
-.click-button {
-    text-align: left;
 }

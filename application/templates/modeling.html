@@ -1,41 +1,46 @@
 {% extends "base.html" %}
 
 {% block main %}
-<script>
-	const interval = 1000;
-
-	function fetchStatus() {
-		$.get("{{ url_for('status') }}", function (data) {
-			if (data.includes("Done!")) {
-				window.location.replace("{{ url_for('overview_topics') }}");
-			} else {
-				$("#status").html(data);
-			}
-		});
-	}
-	setInterval(fetchStatus, interval);
-</script>
 <main class="main">
 	<div class="main_content">
 		<h1>This may take a while...</h1>
-		<p>How long this process takes depends on the size of the corpus and the number of iterations. This can
-			range from a few seconds to several hours.</p>
+		<p>How long this process takes depends on the size of the corpus and the number of iterations. This can range from a
+			few seconds to several hours.</p>
 		<p class="main_notice -big">
 			<img class="dariah-flower" src="{{url_for('static', filename='img/logos/dariah-rotate.gif')}}">
-			<span class="modeling-status" id="status">Just started topic modeling...</span>
+			<span class="modeling-status" id="status">Processing text files...</span>
 		</p>
 		<p>In the meantime you might want to check out some <a href="https://github.com/DARIAH-DE/Topics/tree/master/notebooks">Jupyter
-				notebooks</a>, where the same workflow as in this application is explained step by step – but a bit more
-			technically using the programming language Python. This makes you more flexible with everything and allows you to
-			use more sophisticated topic models. You can experiment with an example corpus directly in the browser on <a href="https://mybinder.org/v2/gh/DARIAH-DE/Topics/master?filepath=notebooks%2FIntroducingLda.ipynb">Binder</a>
+				notebooks</a>. These are suitable for beginners as well as for advanced users of the programming language Python.
+			Doing topic modeling in a programming language makes you a little bit more flexible with everything. You can
+			experiment with an example corpus directly in the browser on <a href="https://mybinder.org/v2/gh/DARIAH-DE/Topics/master?filepath=notebooks%2FIntroducingLda.ipynb">Binder</a>
 			without installing anything.</p>
 		<blockquote>With recent scientific advances in support of unsupervised machine learning topic models promise to be an
 			important component for summarizing and understanding our growing digitized archive of information.<footer>
 				<cite>
-					<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">David Blei</a>
+					<a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">David M. Blei</a>
 				</cite>
 			</footer>
 		</blockquote>
 	</div>
 </main>
+<script>
+	function fetchStatus() {
+		// Fetch current status from modeling process
+		$.get("{{ url_for('status') }}", function (data) {
+			if (data.includes("Very nice, great success!")) {
+				// Redirect to the topics overview page if modeling complete
+				window.location.replace("{{ url_for('overview_topics') }}");
+			} else {
+				// Or print current status to user interface
+				$("#status").html(data);
+			}
+		});
+	}
+
+	// Make every second a status request
+	const interval = 1000;
+	// Call the function with interval
+	setInterval(fetchStatus, interval);
+</script>
 {% endblock %}
