@@ -5,16 +5,20 @@ name = "pypi"
 
 
 [packages]
-flask = "*"
 cophi = "*"
-numpy = "*"
+lda = "==1.0.5"
+flask = "==1.0.2"
+pandas = "==0.22.0"
+numpy = "==1.14.2"
+pyqt5 = "==5.10.0"
 
 
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
+pytest-flask = "*"
 
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
 
