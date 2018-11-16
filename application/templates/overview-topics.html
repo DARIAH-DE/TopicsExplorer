@@ -10,11 +10,11 @@
             assigned to each word, which indicates how <i>relevant</i> the word is to that topic (to be exact, how
             <i>likely</i> one word is to be found in a topic). After sorting those values in descending order, the first <i>n</i>
             words represent a topic.</p>
-        <p>The topics are ranked by their relative presence in the corpus and display each in a bar with width
-            proportional to the topic’s presence
+        <p>The topics are ranked by their <i>numerical dominance</i> in the corpus and display each in a bar with width
+            proportional to the topic’s dominance
             score. You can start exploring your topic model by clicking on the topics, or select one of the other tabs
             in the navigation bar above.</p>
-        {% for topic, proportion in presence %}
+        {% for topic, proportion in proportions %}
         <p><a style="width: {{ proportion }}%;" class="main_button" href="{{ url_for('topics', topic=topic) }}">{{
                 topic }}</a></p>
         {% endfor %}

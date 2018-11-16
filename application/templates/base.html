@@ -10,8 +10,8 @@
     <meta name="description" content="Explore your own text collection with a topic model – without prior knowledge.">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-    <script type="text/javascript" src="{{ url_for('static', filename='js/dariah-script.js') }}" defer></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/dariah-script.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/dariah-globalmenu.js') }}"></script>
 
     <title>DARIAH-DE :: Topics Explorer</title>
@@ -59,6 +59,11 @@
                                 <a class="nav_link" href="{{ url_for('document_topic_distributions') }}">Document-Topic Distributions</a>
                             </li>
                             {% endif %}
+                            {% if parameter %}
+                            <li class="nav_item -level-1 {% if current == 'parameter' %}-current{% endif %}">
+                                <a class="nav_link" href="{{ url_for('parameter') }}">Parameter</a>
+                            </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </nav>
@@ -94,18 +99,12 @@
                     </div>
                 </aside>
                 <nav class="nav -right">
-                    <button type="button" class="nav_toggle -portal">
+                    <span class="nav_toggle -portal" style="margin-right: 24px; pointer-events: none;">
                         <img class="nav_logo -large" src="{{ url_for('static', filename='img/logos/dariah-logo-white.svg') }}"
                             alt="DARIAH Portal">
                         <img class="nav_logo -small" src="{{ url_for('static', filename='img/logos/dariah-logo-white-small.svg') }}"
                             alt="DARIAH Portal">
-                        <svg class="icon">
-                            <use xlink:href="#icon-angle-down"></use>
-                        </svg>
-                    </button>
-                    <div class="nav_menu -portal">
-                        <ul id="home_dropdown_menu" class="nav_list -level-2 -portal"></ul>
-                    </div>
+                    </span>
                 </nav>
             </div>
         </header>
@@ -142,7 +141,8 @@
                 <br>
                 <br>
                 <p>
-                    <a href="https://de.dariah.eu/en/">
+                        <a onclick="window.open('https://de.dariah.eu/en/', 'Main Page - DARIAH-DE - DARIAH', 'location=yes,height=550,width=1120,scrollbars=yes,status=yes');"
+                        href="#">
                         DARIAH-DE
                         <br>
                         <small>Digital research infrastructure for humanities and cultural studies</small>
@@ -151,7 +151,8 @@
             </div>
             <div class="footer_right">
                 <p>
-                    <a href="https://www.bmbf.de/">
+                    <a onclick="window.open('https://www.bmbf.de/', 'Bundesministerium für Bildung und Forschung - BMBF', 'location=yes,height=550,width=1120,scrollbars=yes,status=yes');"
+                        href="#">
                         <img alt="Funded by the Federal Ministry of Education and Research" src="{{ url_for('static', filename='img/logos/bmbf-logo.svg') }}"
                             height="108">
                     </a>

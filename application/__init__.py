@@ -1,1 +1,1 @@
-from application.views import web
+from application import views

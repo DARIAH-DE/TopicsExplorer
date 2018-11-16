@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from werkzeug.utils import secure_filename
 
-import database
+from application import database
 
 
 TEMPDIR = tempfile.gettempdir()
@@ -30,8 +30,10 @@ class DeadProcess:
 def init_app(name):
     """Initialize Flask application.
     """
-    app = flask.Flask(name)
-    global process
+    logging.debug("Initializing flask app...")
+    app = flask.Flask(name,
+                      template_folder=Path("application", "templates"),
+                      static_folder=Path("application", "static"))
     process  = DeadProcess()
     return app, process
 
@@ -51,6 +53,7 @@ def init_logging(level):
 def init_db(app):
     """Initialize SQLite database.
     """
+    logging.debug("Initializing database...")
     db = database.get_db()
     with app.open_resource("schema.sql") as schemafile:
         schema = schemafile.read().decode("utf-8")
@@ -59,37 +62,26 @@ def init_db(app):
     database.close_db()
 
 
-def get_status():
-    """Read logfile and get most recent status.
-    """
-    now = datetime.now().strftime("%H:%M:%S")
-    with LOGFILE.open("r", encoding="utf-8") as logfile:
-        messages = logfile.readlines()
-        message = messages[-1].strip()
-        message = format_logging(message)
-        return "{}<br>{}".format(now, message)
-
-
 def format_logging(message):
     """Format log messages.
     """
     if "n_documents" in message:
         n = message.split("n_documents: ")[1]
-        return "Number of documents: {}.".format(n)
+        return "Number of documents: {}".format(n)
     elif "vocab_size" in message:
         n = message.split("vocab_size: ")[1]
-        return "Number of types: {}.".format(n)
+        return "Number of types: {}".format(n)
     elif "n_words" in message:
         n = message.split("n_words: ")[1]
-        return "Number of tokens: {}.".format(n)
+        return "Number of tokens: {}".format(n)
     elif "n_topics" in message:
         n = message.split("n_topics: ")[1]
-        return "Number of topics: {}.".format(n)
+        return "Number of topics: {}".format(n)
     elif "n_iter" in message:
-        return "Initializing topic model."
+        return "Initializing topic model..."
     elif "log likelihood" in message:
-        iteration, likelihood = message.split("> log likelihood: ")
-        return "Iteration {}, log-likelihood: {}.".format(iteration[1:], likelihood)
+        iteration, _ = message.split("> log likelihood: ")
+        return "Iteration {}".format(iteration[1:])
     else:
         return message
 
@@ -109,6 +101,7 @@ def load_textfile(textfile):
 def remove_markup(text):
     """Parse XML and drop tags.
     """
+    logging.info("Removing markup...")
     tree = ElementTree.fromstring(text)
     plaintext = ElementTree.tostring(tree,
                                      encoding="utf8",
@@ -119,6 +112,7 @@ def remove_markup(text):
 def get_documents(textfiles):
     """Get Document objects.
     """
+    logging.info("Fetching documents...")
     for textfile in textfiles:
         title, content = textfile
         yield cophi.model.Document(content, title)
@@ -127,9 +121,10 @@ def get_documents(textfiles):
 def get_stopwords(data, corpus):
     """Get stopwords from file or corpus.
     """
+    logging.info("Fetching stopwords...")
     if "stopwords" in data:
         _, stopwords = load_textfile(data["stopwords"])
-        stopwords = stopwords.split("\n")
+        stopwords = cophi.model.Document(stopwords).tokens
     else:
         stopwords = corpus.mfw(data["mfw"])
     return stopwords
@@ -138,6 +133,7 @@ def get_stopwords(data, corpus):
 def get_data(corpus, topics, iterations, stopwords, mfw):
     """Get data from HTML forms.
     """
+    logging.info("Fetching user data...")
     data = {"corpus": flask.request.files.getlist("corpus"),
             "topics": int(flask.request.form["topics"]),
             "iterations": int(flask.request.form["iterations"])}
@@ -151,7 +147,7 @@ def get_data(corpus, topics, iterations, stopwords, mfw):
 def get_topics(model, vocabulary, maximum=100):
     """Get topics from topic model.
     """
-    for i, distribution in enumerate(model.topic_word_):
+    for distribution in model.topic_word_:
         yield list(np.array(vocabulary)[np.argsort(distribution)][:-maximum-1:-1])
 
 
@@ -159,7 +155,7 @@ def get_topic_descriptors(topics):
     """Get first three tokens of a topic as string.
     """
     for topic in topics:
-        yield ", ".join(topic[:3])
+        yield "{}, ...".format(", ".join(topic[:3]))
 
 
 def get_document_topic(model, titles, descriptors):
@@ -180,16 +176,6 @@ def get_cosine(matrix, descriptors):
     return pd.DataFrame(similarities, index=descriptors, columns=descriptors)
 
 
-def get_topic_presence():
-    """Get topic presence in the corpus.
-    """
-    document_topic = database.select("document-topic")
-    topic_presence = document_topic.sum(axis=0).sort_values(ascending=False)
-    proportions = scale(topic_presence)
-    for topic, proportion in zip(topic_presence.index, proportions):
-        yield topic, proportion
-
-
 def scale(vector, minimum=50, maximum=100):
     """Min-max scaler for a vector.
     """
@@ -197,12 +183,13 @@ def scale(vector, minimum=50, maximum=100):
 
 
 def export_data():
+    logging.info("Creating data archive...")
     if DATA_EXPORT.exists():
         unlink_content(DATA_EXPORT)
     else:
         DATA_EXPORT.mkdir()
-    model_output = database.select("model-output")
-    for name, data in model_output.items():
+    data_export = database.select("data_export")
+    for name, data in data_export.items():
         if name in {"stopwords"}:
             with Path(DATA_EXPORT, "{}.txt".format(name)).open("w", encoding="utf-8") as file:
                 for word in data:
@@ -216,6 +203,7 @@ def export_data():
 def unlink_content(directory, pattern="*"):
     """Deletes the content of a directory.
     """
+    logging.info("Cleaning up in data directory...")
     for p in directory.rglob(pattern):
         if p.is_file():
             p.unlink()

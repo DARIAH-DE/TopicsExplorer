@@ -27,10 +27,13 @@
 <script>
 	function fetchStatus() {
 		// Fetch current status from modeling process
-		$.get("{{ url_for('status') }}", function (data) {
+		$.get("{{ url_for('get_status') }}", function (data) {
 			if (data.includes("Very nice, great success!")) {
 				// Redirect to the topics overview page if modeling complete
 				window.location.replace("{{ url_for('overview_topics') }}");
+			} else if (data.includes("Redirect to error page.")) {
+				// Redirect to the topics overview page if modeling complete
+				window.location.replace("{{ url_for('error') }}");
 			} else {
 				// Or print current status to user interface
 				$("#status").html(data);

@@ -5,12 +5,8 @@
     <div class="main_content">
         <h1>{{ topic }}</h1>
         <div class="row -narrow" style="border-top: none;">
-            <div class="column"">
-                <h4 style=" margin-top: 0px;">Top 3: Similar Topics</h4>
-                {% for topic in similar_topics %}
-                <p><a class="main_button" style="width: 100%;" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
-                {% endfor %}
-                <h4>Top 20: Related Words</h4>
+            <div class="column">
+                <h4 style=" margin-top: 0px;">Top 25: Related Words</h4>
                 <table>
                     {% for word in related_words %}
                     <tr>
@@ -24,6 +20,10 @@
                 {% for title in related_documents %}
                 <p><a class="main_button" style="width: 100%;" href="{{ url_for('documents', title=title) }}">{{ title
                         }}</a></p>
+                {% endfor %}
+                <h4>Top 3: Similar Topics</h4>
+                {% for topic in similar_topics %}
+                <p><a class="main_button" style="width: 100%;" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
                 {% endfor %}
             </div>
         </div>

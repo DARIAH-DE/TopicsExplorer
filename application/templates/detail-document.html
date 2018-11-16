@@ -12,17 +12,17 @@
         </p>
         <div class="row -narrow" style="border-top: none;">
             <div class="column">
-                <h4 style=" margin-top: 0px;">Top 3: Similar Documents</h4>
-                {% for title in similar_documents %}
-                    <p><a class="main_button" style="width: 100%;" href="{{ url_for('documents', title=title) }}">{{ title }}</a></p>
-                {% endfor %}
-                <h4>Top 10: Related Topics</h4>
+                <h4 style=" margin-top: 0px;">Top 10: Related Topics</h4>
                 {% for topic in related_topics %}
                     <p><a class="main_button" style="width: 100%;" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
                 {% endfor %}
+                <h4>Top 3: Similar Documents</h4>
+                {% for title in similar_documents %}
+                    <p><a class="main_button" style="width: 100%;" href="{{ url_for('documents', title=title) }}">{{ title }}</a></p>
+                {% endfor %}
             </div>
             <div class="column -wide">
-                <h4 style="margin-top: 0px;">Excerpt: Original Text</h4>
+                <h4 style="margin-top: 0px;">Original Text</h4>
                 {% for paragraph in text %}
                     <p style="text-align: justify;">{{ paragraph }}</p>
                 {% endfor %}

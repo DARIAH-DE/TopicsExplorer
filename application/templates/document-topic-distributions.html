@@ -13,10 +13,39 @@
     </div>
     <script type="text/javascript" src="{{ url_for('static', filename='js/apexcharts.js') }}"></script>
     <script>
+        function formatData(data) {
+            var series = [];
+            for (var document in data) {
+                var values = {
+                    name: document,
+                    data: []
+                };
+                for (var topic in data[document]) {
+                    values['data'].push({
+                        x: topic,
+                        y: data[document][topic]
+                    });
+                }
+                series.push(values);
+            }
+            return series;
+        }
+
+        function getHeight(rows) {
+            if (rows.length < 20) {
+                return 600;
+            } else {
+                return 20 * rows.length;
+            }
+        };
+
         function plotDocumentTopicHeatmap() {
             // Get data from API endpoint
-            $.getJSON("{{ url_for('document_topic_overview') }}", function (data) {
-                var options = {
+            $.getJSON("{{ url_for('get_document_topic_distributions') }}", function (data) {
+                const series = formatData(data);
+                const height = getHeight(series);
+                console.log(height)
+                const options = {
                     chart: {
                         toolbar: {
                             show: true,
@@ -24,14 +53,14 @@
                                 download: true,
                             }
                         },
-                        height: 400,
                         type: 'heatmap',
+                        height: height,
                     },
                     dataLabels: {
                         enabled: false
                     },
                     colors: ['#213365'],
-                    series: data,
+                    series: series,
                     tooltip: {
                         x: {
                             show: true
@@ -42,10 +71,10 @@
                             enabled: false,
                         }
                     }
-                }
+                };
 
                 // Get element
-                var chart = new ApexCharts(
+                const chart = new ApexCharts(
                     document.querySelector('#document-topic-heatmap'),
                     options
                 );

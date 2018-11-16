@@ -3,7 +3,7 @@
 import argparse
 import webbrowser
 
-from application import testing
+import application
 
 
 NAME = "DARIAH Topics Explorer"
@@ -23,7 +23,4 @@ if __name__ == "__main__":
 
     if args.browser:
         #webbrowser.open("http://127.0.0.1:5000/")
-        testing.app.run(debug=args.debug)
-    else:
-        pass
-
+        application.views.web.run(debug=args.debug)

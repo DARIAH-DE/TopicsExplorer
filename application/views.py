@@ -14,15 +14,14 @@ from application import utils
 from application import workflow
 
 
-web, process = utils.init_app("topicsexplorer")
 utils.init_logging(logging.INFO)
+web, process = utils.init_app("topicsexplorer")
 
 
 @web.route("/")
 def index():
     """Home page.
     """
-    raise ValueError("OH OH")
     logging.debug("Calling home page endpoint...")
     if process.is_alive():
         logging.info("Terminating topic modeling process...")
@@ -52,12 +51,13 @@ def modeling():
     # Must be global to use it in the other function:
     global start
     start = time.time()
+    global process
     process = multiprocessing.Process(target=workflow.wrapper)
     logging.info("Initializing topic modeling process...")
     process.start()
     logging.debug("Rendering modeling page template...")
     return flask.render_template("modeling.html",
-                                 help=True,
+                                 reset=True,
                                  abort=True)
 
 
@@ -99,6 +99,7 @@ def overview_topics():
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
+                                 parameter=True,
                                  export_data=True,
                                  proportions=proportions)
 
@@ -119,6 +120,7 @@ def overview_documents():
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
+                                 parameter=True,
                                  export_data=True,
                                  titles=titles)
 
@@ -136,6 +138,7 @@ def document_topic_distributions():
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
+                                 parameter=True,
                                  export_data=True)
 
 
@@ -150,12 +153,12 @@ def topics(topic):
     topic_similarites = pd.read_json(get_topic_similarities())
 
     # Get related documents:
-    related_docs = document_topic[topic].sort_values(ascending=False)[:30]
+    related_docs = document_topic[topic].sort_values(ascending=False)[:10]
     related_docs = list(related_docs.index)
 
     # Get related words:
     loc = document_topic.columns.get_loc(topic)
-    related_words = topics[loc][:20]
+    related_words = topics[loc][:25]
 
     # Get similar topics:
     similar_topics = topic_similarites[topic].sort_values(ascending=False)[1:4]
@@ -168,6 +171,7 @@ def topics(topic):
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
+                                 parameter=True,
                                  export_data=True,
                                  topic=topic,
                                  similar_topics=similar_topics,
@@ -195,7 +199,7 @@ def documents(title):
     similar_docs = list(similar_docs.index)
 
     # Use only the first 5000 characters, or less:
-    text = text if len(text) < 5000 else "{}...".format(text[:5000])
+    text = text if len(text) < 5000 else "{}... To be continued.".format(text[:5000])
 
     # Split paragraphs:
     text = text.split("\n\n")
@@ -207,6 +211,7 @@ def documents(title):
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
+                                 parameter=True,
                                  export_data=True,
                                  title=title,
                                  text=text,
@@ -214,6 +219,18 @@ def documents(title):
                                  similar_documents=similar_docs,
                                  related_topics=related_topics)
 
+
+@web.route("/parameter")
+def parameter():
+    return flask.render_template("overview-parameter.html",
+                                 current="parameter",
+                                 parameter=True,
+                                 help=True,
+                                 reset=True,
+                                 topics=True,
+                                 documents=True,
+                                 document_topic_distributions=True,
+                                 export_data=True)
 
 # API endpoints:
 
@@ -295,15 +312,21 @@ def export(filename):
     return flask.send_file(filename_or_fp=str(path))
 
 
-@web.errorhandler(werkzeug.exceptions.HTTPException)
-def handle_http_exception(e):
-    """Error page.
-    """
+@web.route("/error")
+def error():
     with utils.LOGFILE.open("r", encoding="utf-8") as logfile:
         log = logfile.read().split("\n")[-20:]
         return flask.render_template("error.html",
                                      reset=True,
+                                     go_back=True,
                                      log="\n".join(log))
+
+
+@web.errorhandler(werkzeug.exceptions.HTTPException)
+def handle_http_exception(e):
+    """Error page.
+    """
+    return error()
 
 for code in werkzeug.exceptions.default_exceptions:
     web.errorhandler(code)(handle_http_exception)
