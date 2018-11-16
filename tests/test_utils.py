@@ -48,7 +48,7 @@ def test_format_logging():
     assert utils.format_logging(c) == "Number of tokens: 1"
     assert utils.format_logging(d) == "Number of topics: 1"
     assert utils.format_logging(e) == "Initializing topic model..."
-    assert utils.format_logging(f) == "Iteration 1, log-likelihood: 1"
+    assert utils.format_logging(f) == "Iteration 1"
     assert utils.format_logging(TEST_STRING) == TEST_STRING
 
 
@@ -86,7 +86,7 @@ def test_get_topics():
 def test_get_topic_descriptors():
     topics = [["very", "nice", "great", "success"]]
     descriptors = list(utils.get_topic_descriptors(topics))
-    assert descriptors == ["very, nice, great..."]
+    assert descriptors == ["very, nice, great, ..."]
 
 def test_get_document_topic():
     # TODO
@@ -98,4 +98,3 @@ def test_get_cosine():
     similarites = utils.get_cosine(matrix, descriptors)
     assert similarites.sum().sum() == 3.9611613513818402
 
-def 
