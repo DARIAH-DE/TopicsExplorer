@@ -32,8 +32,8 @@ def init_app(name):
     """
     logging.debug("Initializing flask app...")
     app = flask.Flask(name,
-                      template_folder=Path("application", "templates"),
-                      static_folder=Path("application", "static"))
+                      template_folder=str(Path("application", "templates")),
+                      static_folder=str(Path("application", "static")))
     process  = DeadProcess()
     return app, process
 
