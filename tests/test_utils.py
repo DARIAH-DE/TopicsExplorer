@@ -83,11 +83,6 @@ def test_get_topics():
     # TODO
     pass
 
-def test_get_topic_descriptors():
-    topics = [["very", "nice", "great", "success"]]
-    descriptors = list(utils.get_topic_descriptors(topics))
-    assert descriptors == ["very, nice, great, ..."]
-
 def test_get_document_topic():
     # TODO
     pass
