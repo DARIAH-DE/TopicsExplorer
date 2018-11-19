@@ -148,14 +148,8 @@ def get_topics(model, vocabulary, maximum=100):
     """Get topics from topic model.
     """
     for distribution in model.topic_word_:
-        yield list(np.array(vocabulary)[np.argsort(distribution)][:-maximum-1:-1])
-
-
-def get_topic_descriptors(topics):
-    """Get first three tokens of a topic as string.
-    """
-    for topic in topics:
-        yield "{}, ...".format(", ".join(topic[:3]))
+        words = list(np.array(vocabulary)[np.argsort(distribution)][:-maximum-1:-1])
+        yield "{}, ...".format(", ".join(words[:3])), words
 
 
 def get_document_topic(model, titles, descriptors):
@@ -207,3 +201,8 @@ def unlink_content(directory, pattern="*"):
     for p in directory.rglob(pattern):
         if p.is_file():
             p.unlink()
+
+
+def series2array(s):
+    for i, v in zip(s.index, s):
+        yield [i, v]

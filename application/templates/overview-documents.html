@@ -4,8 +4,8 @@
 <main class="main">
     <div class="main_content">
         <h1>Documents</h1>
-        {% for title in titles %}
-        <p><a style="width: 100%;" class="main_button" href="{{ url_for('documents', title=title) }}">{{ title }}</a></p>
+        {% for title, proportion in proportions %}
+        <p><a style="width: {{ proportion }}%;" class="main_button" href="{{ url_for('documents', title=title) }}">{{ title }}</a></p>
         {% endfor %}
     </div>
 </main>

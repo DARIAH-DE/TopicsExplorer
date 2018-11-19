@@ -17,13 +17,13 @@
             </div>
             <div class="column -wide">
                 <h4 style="margin-top: 0px;">Top 10: Related Documents</h4>
-                {% for title in related_documents %}
-                <p><a class="main_button" style="width: 100%;" href="{{ url_for('documents', title=title) }}">{{ title
+                {% for title, proportion in related_documents %}
+                <p><a class="main_button" style="width: {{ proportion }}%;" href="{{ url_for('documents', title=title) }}">{{ title
                         }}</a></p>
                 {% endfor %}
                 <h4>Top 3: Similar Topics</h4>
-                {% for topic in similar_topics %}
-                <p><a class="main_button" style="width: 100%;" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
+                {% for topic, proportion in similar_topics %}
+                <p><a class="main_button" style="width: {{ proportion }}%;" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
                 {% endfor %}
             </div>
         </div>

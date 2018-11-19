@@ -59,9 +59,9 @@
                                 <a class="nav_link" href="{{ url_for('document_topic_distributions') }}">Document-Topic Distributions</a>
                             </li>
                             {% endif %}
-                            {% if parameter %}
-                            <li class="nav_item -level-1 {% if current == 'parameter' %}-current{% endif %}">
-                                <a class="nav_link" href="{{ url_for('parameter') }}">Parameter</a>
+                            {% if parameters %}
+                            <li class="nav_item -level-1 {% if current == 'parameters' %}-current{% endif %}">
+                                <a class="nav_link" href="{{ url_for('parameters') }}">Parameters</a>
                             </li>
                             {% endif %}
                         </ul>
@@ -135,6 +135,9 @@
                         {% endif %}
                         {% if document_topic_distributions %}
                         <a href="{{ url_for('document_topic_distributions') }}">Document-Topic Distributions</a>
+                        {% endif %}
+                        {% if parameters %}
+                        <a href="{{ url_for('parameters') }}">Parameters</a>
                         {% endif %}
                     </p>
                 </div>

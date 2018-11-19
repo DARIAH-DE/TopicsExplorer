@@ -3,7 +3,10 @@
 {% block main %}
 <main class="main">
 	<div class="main_content">
-		<h1>Error</h1>
+		<h1>Something went wrong...</h1>
+		<p>It looks like something didn't work out the way it should. Below you see the last few lines of the logfile, maybe
+			you can solve the problem on your own. If not, open a new issue on <a onclick="window.open('https://github.com/DARIAH-DE/TopicsExplorer/issues', 'Issues · DARIAH-DE/TopicsExplorer', 'location=yes,height=550,width=1120,scrollbars=yes,status=yes');"
+			 href="#">GitHub</a>.</p>
 		<pre>{{ log }}</pre>
 	</div>
 </main>

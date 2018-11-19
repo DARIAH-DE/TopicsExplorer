@@ -56,8 +56,38 @@ def insert_into(table, data):
         _insert_into_stopwords(db, data)
     elif table in {"model"}:
         _insert_into_model(db, data)
+    elif table in {"parameters"}:
+        _insert_into_parameters(db, data)
     db.commit()
     close_db()
+
+def update(table, data):
+    db = get_db()
+    if table in {"textfiles"}:
+        _update_textfile_sizes(db, data)
+    db.commit()
+    close_db()
+
+
+def _update_textfile_sizes(db, data):
+    logging.info("Update textfile sizes in database...")
+    for title, size in data.items():
+        db.execute("""
+                   UPDATE textfiles 
+                   SET size = ? 
+                   WHERE title = ?; 
+                   """,
+                   [size, title])
+
+
+def _insert_into_parameters(db, data):
+    logging.info("Insert parameters into database...")
+    db.execute("""
+            INSERT INTO parameters (topics, iterations, documents, stopwords, hapax, tokens, types, log_likelihood)
+            VALUES(?, ?, ?, ?, ?, ?, ?, ?);
+            """,
+            [int(data["topics"]), int(data["iterations"]),
+                int(data["documents"]), int(data["stopwords"]), int(data["hapax"]), int(data["tokens"]), int(data["types"]), int(data["log_likelihood"])])
 
 
 def _insert_into_model(db, data):
@@ -90,8 +120,6 @@ def select(value, **kwargs):
     cursor = db.cursor()
     if value in {"textfiles"}:
         return _select_textfiles(cursor)
-    elif value in {"textfile_titles"}:
-        return _select_textfile_titles(cursor)
     elif value in {"token_freqs"}:
         return _select_token_freqs(cursor)
     elif value in {"document_topic_distributions"}:
@@ -108,6 +136,25 @@ def select(value, **kwargs):
         return _select_stopwords(cursor)
     elif value in {"data_export"}:
         return _select_data_export(cursor)
+    elif value in {"parameters"}:
+        return _select_parameters(cursor)
+    elif value in {"textfile_sizes"}:
+        return _select_textfile_sizes(cursor)
+
+def _select_textfile_sizes(cursor):
+    logging.info("Selecting textfile sizes from database...")
+    return cursor.execute("""
+                          SELECT title, size
+                          FROM textfiles;
+                          """).fetchall()
+
+
+def _select_parameters(cursor):
+    logging.info("Selecting parameters from database...")
+    return cursor.execute("""
+                           SELECT topics, iterations, documents, stopwords, hapax, tokens, types, log_likelihood 
+                           FROM parameters;
+                           """).fetchone()
 
 def _select_stopwords(cursor):
     logging.info("Selecting stopwords from database...")
@@ -138,16 +185,6 @@ def _select_token_freqs(cursor):
                           SELECT content 
                           FROM token_freqs;
                           """).fetchone()[0]
-
-def _select_textfile_titles(cursor):
-    """Select textfile titles from database.
-    """
-    logging.info("Selecting textfile titles from database...")
-    cursor.execute("""
-                   SELECT title 
-                   FROM textfiles;
-                   """)
-    return json.dumps([title[0] for title in cursor.fetchall()])
 
 
 def _select_textfiles(cursor):
@@ -184,7 +221,7 @@ def _select_textfile(cursor, title):
     return cursor.execute("""
                           SELECT content 
                           FROM textfiles
-                          WHERE title is ?;
+                          WHERE title = ?;
                           """, [title]).fetchone()[0]
 
 def _select_data_export(cursor):

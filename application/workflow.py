@@ -17,22 +17,24 @@ def wrapper():
     try:
         logging.info("Just started topic modeling.")
         data = utils.get_data("corpus",
-                            "topics",
-                            "iterations",
-                            "stopwords",
-                            "mfw")
+                              "topics",
+                              "iterations",
+                              "stopwords",
+                              "mfw")
         logging.info("Fetched user data...")
         database.insert_into("textfiles",
                             data["corpus"])
         logging.info("Inserted data into database.")
 
         # 1. Preprocess:
-        dtm, token_freqs = preprocess(data)
+        dtm, token_freqs, parameters = preprocess(data)
         logging.info("Successfully preprocessed data.")
         database.insert_into("token_freqs",
                             json.dumps(token_freqs))
         # 2. Create model:
         model = create_model(dtm, data["topics"], data["iterations"])
+        parameters["log_likelihood"] = model.loglikelihood()
+        database.insert_into("parameters", parameters)
         logging.info("Successfully created topic model.")
         # 3. Get model output:
         topics, descriptors, document_topic = get_model_output(model, dtm)
@@ -51,14 +53,14 @@ def wrapper():
     except xml.etree.ElementTree.ParseError as error:
         logging.error("ERROR: There is something wrong with your XML files.")
         logging.error("ERROR: {}".format(error))
-        logging.error("Redirect to error page.")
+        logging.error("Redirect to error page...")
     except UnicodeDecodeError:
         logging.error("ERROR: There is something wrong with your text files. "
                       "Are they UTF-8 encoded?")
-        logging.error("Redirect to error page.")
+        logging.error("Redirect to error page...")
     except Exception as error:
         logging.error("ERROR: {}".format(error))
-        logging.error("Redirect to error page.")
+        logging.error("Redirect to error page...")
 
 
 def preprocess(data):
@@ -68,6 +70,11 @@ def preprocess(data):
     textfiles = database.select("textfiles")
     documents = utils.get_documents(textfiles)
     corpus = cophi.model.Corpus(documents)
+    num_tokens = corpus.num_tokens
+    database.update("textfiles", num_tokens.to_dict())
+    # Get paramter:
+    D, W = corpus.dtm.shape
+    N = num_tokens.sum()
     # Cleaning corpus:
     stopwords = utils.get_stopwords(data, corpus)
     hapax = corpus.hapax
@@ -76,7 +83,15 @@ def preprocess(data):
     dtm = corpus.drop(corpus.dtm, features)
     # Save stopwords:
     database.insert_into("stopwords", json.dumps(stopwords))
-    return dtm, corpus.num_tokens.tolist()
+    # Save parameters:
+    parameters = {"topics": data["topics"],
+                 "iterations": data["iterations"],
+                 "documents": D,
+                 "stopwords": len(stopwords),
+                 "hapax": len(hapax),
+                 "tokens": N,
+                 "types": W}
+    return dtm, num_tokens.tolist(), parameters
 
 
 def create_model(dtm, topics, iterations):
@@ -94,8 +109,8 @@ def get_model_output(model, dtm):
     """
     logging.info("Fetching model output...")
     # Topics and their descriptors:
-    topics = list(utils.get_topics(model, dtm.columns))
-    descriptors = list(utils.get_topic_descriptors(topics))
+    topics = dict(utils.get_topics(model, dtm.columns))
+    descriptors = list(topics.keys())
     # Document-topic distribution:
     document_topic = utils.get_document_topic(model, dtm.index, descriptors)
     return topics, descriptors, document_topic

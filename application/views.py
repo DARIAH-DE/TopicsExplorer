@@ -14,7 +14,7 @@ from application import utils
 from application import workflow
 
 
-utils.init_logging(logging.INFO)
+utils.init_logging(logging.DEBUG)
 web, process = utils.init_app("topicsexplorer")
 
 
@@ -48,13 +48,14 @@ def modeling():
     """Modeling page.
     """
     logging.debug("Calling modeling page endpoint...")
-    # Must be global to use it in the other function:
+    # Must be global to use them anywhere:
     global start
-    start = time.time()
     global process
+    start = time.time()
     process = multiprocessing.Process(target=workflow.wrapper)
     logging.info("Initializing topic modeling process...")
     process.start()
+    logging.info("Started topic modeling process.")
     logging.debug("Rendering modeling page template...")
     return flask.render_template("modeling.html",
                                  reset=True,
@@ -66,31 +67,27 @@ def overview_topics():
     """Topics overview page.
     """
     logging.debug("Calling topics overview page endpoint...")
-    # Get document-topic distributions:
+    logging.info("Get document-topic distributions...")
     response = get_document_topic_distributions()
-    document_topic = pd.read_json(response, orient="index").iloc[:, :50]
+    document_topic = pd.read_json(response, orient="index")
 
-    # Get token frequencies:
+    logging.info("Get token frequencies...")
     response = get_token_frequencies()
     token_freqs = json.loads(response)
 
-    # Add frequencies to weights:
+    logging.info("Add frequencies to weights...")
     document_topic = document_topic.multiply(token_freqs, axis=0)
 
-    # Sum the weights:
+    logging.info("Sum the weights...")
     dominance = document_topic.sum(axis=0)
 
-    # Scale them:
+    logging.info("Scale weights...")
     proportions = utils.scale(dominance)
     proportions = pd.Series(proportions, index=dominance.index)
     proportions = proportions.sort_values(ascending=False)
 
-    def series2array(s):
-        for i, v in zip(s.index, s):
-            yield [i, v]
-
     # Convert pandas.Series to a 2-D array:
-    proportions = list(series2array(proportions))
+    proportions = list(utils.series2array(proportions))
     logging.debug("Rendering topics overview template...")
     return flask.render_template("overview-topics.html",
                                  current="topics",
@@ -99,7 +96,7 @@ def overview_topics():
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
-                                 parameter=True,
+                                 parameters=True,
                                  export_data=True,
                                  proportions=proportions)
 
@@ -109,10 +106,14 @@ def overview_documents():
     """Documents overview page.
     """
     logging.debug("Calling documents overview page endpoint...")
-    titles = get_textfile_titles()
-    # Parse and sort them:
-    titles = sorted(json.loads(titles))
-    logging.debug("Rendering documents overview page template...")
+    sizes = pd.DataFrame(get_textfile_sizes(), columns=["title", "size"])
+
+    proportions = utils.scale(sizes["size"])
+    proportions = pd.Series(proportions, index=sizes["title"])
+    proportions = proportions.sort_values(ascending=False)
+
+    # Convert pandas.Series to a 2-D array:
+    proportions = list(utils.series2array(proportions))
     return flask.render_template("overview-documents.html",
                                  current="documents",
                                  help=True,
@@ -120,9 +121,9 @@ def overview_documents():
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
-                                 parameter=True,
+                                 parameters=True,
                                  export_data=True,
-                                 titles=titles)
+                                 proportions=proportions)
 
 
 @web.route("/document-topic-distributions")
@@ -138,7 +139,7 @@ def document_topic_distributions():
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
-                                 parameter=True,
+                                 parameters=True,
                                  export_data=True)
 
 
@@ -147,22 +148,33 @@ def topics(topic):
     """Topic page.
     """
     logging.debug("Calling topic page endpoint...")
-    # Get data:
+    logging.info("Get topics...")
     topics = json.loads(get_topics())
+    logging.info("Get document-topic distributions...")
     document_topic = pd.read_json(get_document_topic_distributions(), orient="index")
+    logging.info("Get topic similarity matrix...")
     topic_similarites = pd.read_json(get_topic_similarities())
 
-    # Get related documents:
+    logging.info("Get related documents...")
     related_docs = document_topic[topic].sort_values(ascending=False)[:10]
-    related_docs = list(related_docs.index)
+    related_docs_proportions = utils.scale(related_docs, minimum=70)
+    related_docs_proportions = pd.Series(related_docs_proportions, index=related_docs.index)
+    related_docs_proportions = related_docs_proportions.sort_values(ascending=False)
 
-    # Get related words:
-    loc = document_topic.columns.get_loc(topic)
-    related_words = topics[loc][:25]
+    # Convert pandas.Series to a 2-D array:
+    related_docs_proportions = list(utils.series2array(related_docs_proportions))
 
-    # Get similar topics:
+    logging.info("Get related words...")
+    related_words = topics[topic][:25]
+
+    logging.info("Get similar topics...")
     similar_topics = topic_similarites[topic].sort_values(ascending=False)[1:4]
-    similar_topics = list(similar_topics.index)
+    similar_topics_proportions = utils.scale(similar_topics, minimum=70)
+    similar_topics_proportions = pd.Series(similar_topics_proportions, index=similar_topics.index)
+    similar_topics_proportions = similar_topics_proportions.sort_values(ascending=False)
+
+    # Convert pandas.Series to a 2-D array:
+    similar_topics_proportions = list(utils.series2array(similar_topics_proportions))
     logging.debug("Rendering topic page template...")
     return flask.render_template("detail-topic.html",
                                  current="topics",
@@ -171,12 +183,12 @@ def topics(topic):
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
-                                 parameter=True,
+                                 parameters=True,
                                  export_data=True,
                                  topic=topic,
-                                 similar_topics=similar_topics,
+                                 similar_topics=similar_topics_proportions,
                                  related_words=related_words,
-                                 related_documents=related_docs)
+                                 related_documents=related_docs_proportions)
 
 
 @web.route("/documents/<title>")
@@ -184,24 +196,36 @@ def documents(title):
     """Document page.
     """
     logging.debug("Calling document page endpoint...")
-    # Get data:
+    logging.info("Get textfiles...")
     text = get_textfile(title)
+    logging.info("Get document-topics distributions...")
     document_topic = pd.read_json(get_document_topic_distributions(), orient="index")
+    logging.info("Get document similarity matrix...")
     document_similarites = pd.read_json(get_document_similarities())
 
-    # Get related topics:
+    logging.info("Get related topics...")
     related_topics = document_topic.loc[title].sort_values(ascending=False) * 100
     distribution = list(related_topics.to_dict().items())
-    related_topics = list(related_topics[:20].index)
+    related_topics_proportions = utils.scale(related_topics, minimum=70)
+    related_topics_proportions = pd.Series(related_topics_proportions, index=related_topics.index)
+    related_topics_proportions = related_topics_proportions.sort_values(ascending=False)
 
-    # Get similar documents:
+    # Convert pandas.Series to a 2-D array:
+    related_topics_proportions = list(utils.series2array(related_topics_proportions))
+
+    logging.info("Get similar documents...")
     similar_docs = document_similarites[title].sort_values(ascending=False)[1:4]
-    similar_docs = list(similar_docs.index)
+    similar_docs_proportions = utils.scale(similar_docs, minimum=70)
+    similar_docs_proportions = pd.Series(similar_docs_proportions, index=similar_docs.index)
+    similar_docs_proportions = similar_docs_proportions.sort_values(ascending=False)
 
-    # Use only the first 5000 characters, or less:
+    # Convert pandas.Series to a 2-D array:
+    similar_docs_proportions = list(utils.series2array(similar_docs_proportions))
+
+    logging.debug("Use only the first 5000 characters (or less) from document...")
     text = text if len(text) < 5000 else "{}... To be continued.".format(text[:5000])
 
-    # Split paragraphs:
+    logging.debug("Split paragraphs...")
     text = text.split("\n\n")
     logging.debug("Rendering document page template...")
     return flask.render_template("detail-document.html",
@@ -211,26 +235,42 @@ def documents(title):
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
-                                 parameter=True,
+                                 parameters=True,
                                  export_data=True,
                                  title=title,
                                  text=text,
                                  distribution=distribution,
-                                 similar_documents=similar_docs,
-                                 related_topics=related_topics)
+                                 similar_documents=similar_docs_proportions,
+                                 related_topics=related_topics_proportions)
 
 
-@web.route("/parameter")
-def parameter():
-    return flask.render_template("overview-parameter.html",
-                                 current="parameter",
-                                 parameter=True,
+@web.route("/parameters")
+def parameters():
+    """Paramter page.
+    """
+    logging.debug("Calling parameters page endpoint...")
+    logging.info("Get parameters...")
+    data = json.loads(get_parameters())
+    info = {"n_topics": data[0],
+            "n_iterations": data[1],
+            "n_documents": data[2],
+            "n_stopwords": data[3],
+            "n_hapax": data[4],
+            "n_tokens": data[5],
+            "n_types": data[6],
+            "log_likelihood": data[7]}
+    logging.debug("Rendering parameters page template...")
+    return flask.render_template("overview-parameters.html",
+                                 current="parameters",
+                                 parameters=True,
                                  help=True,
                                  reset=True,
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
-                                 export_data=True)
+                                 export_data=True,
+                                 **info)
+
 
 # API endpoints:
 
@@ -282,13 +322,6 @@ def get_textfile(title):
     return database.select("textfile", title=title)
 
 
-@web.route("/api/textfiles/titles")
-def get_textfile_titles():
-    """Textfile titles.
-    """
-    return database.select("textfile_titles")
-
-
 @web.route("/api/stopwords")
 def get_stopwords():
     """Stopwords.
@@ -303,6 +336,20 @@ def get_token_frequencies():
     return database.select("token_freqs")
 
 
+@web.route("/api/parameters")
+def get_parameters():
+    """Model parameters.
+    """
+    return json.dumps(database.select("parameters"))
+
+
+@web.route("/api/textfile-sizes")
+def get_textfile_sizes():
+    """Textfile sizes.
+    """
+    return database.select("textfile_sizes")
+
+
 @web.route("/export/<filename>")
 def export(filename):
     """Data archive.
@@ -314,6 +361,9 @@ def export(filename):
 
 @web.route("/error")
 def error():
+    """Error page.
+    """
+    logging.error("Rendering error page...")
     with utils.LOGFILE.open("r", encoding="utf-8") as logfile:
         log = logfile.read().split("\n")[-20:]
         return flask.render_template("error.html",
