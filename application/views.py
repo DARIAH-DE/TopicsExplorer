@@ -206,12 +206,6 @@ def documents(title):
     logging.info("Get related topics...")
     related_topics = document_topic.loc[title].sort_values(ascending=False) * 100
     distribution = list(related_topics.to_dict().items())
-    related_topics_proportions = utils.scale(related_topics, minimum=70)
-    related_topics_proportions = pd.Series(related_topics_proportions, index=related_topics.index)
-    related_topics_proportions = related_topics_proportions.sort_values(ascending=False)
-
-    # Convert pandas.Series to a 2-D array:
-    related_topics_proportions = list(utils.series2array(related_topics_proportions))
 
     logging.info("Get similar documents...")
     similar_docs = document_similarites[title].sort_values(ascending=False)[1:4]
@@ -241,7 +235,7 @@ def documents(title):
                                  text=text,
                                  distribution=distribution,
                                  similar_documents=similar_docs_proportions,
-                                 related_topics=related_topics_proportions)
+                                 related_topics=related_topics.index)
 
 
 @web.route("/parameters")
