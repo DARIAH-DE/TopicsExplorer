@@ -1,7 +1,9 @@
 from datetime import datetime
+import json
 import logging
 from pathlib import Path
 import shutil
+import sys
 import tempfile
 from xml.etree import ElementTree
 
@@ -20,22 +22,20 @@ LOGFILE = Path(TEMPDIR, "topicsexplorer.log")
 DATA_EXPORT = Path(TEMPDIR, "topicsexplorer-data")
 
 
-class DeadProcess:
-    """Provide a dead process.
-    """
-    def is_alive(self):
-        return False
-
-
 def init_app(name):
     """Initialize Flask application.
     """
     logging.debug("Initializing flask app...")
+    if getattr(sys, "frozen", False):
+        logging.debug("Application is frozen.")
+        root = Path(sys._MEIPASS)
+    else:
+        logging.debug("Application is not frozen.")
+        root = Path("application")
     app = flask.Flask(name,
-                      template_folder=str(Path("application", "templates")),
-                      static_folder=str(Path("application", "static")))
-    process  = DeadProcess()
-    return app, process
+                      template_folder=str(Path(root, "templates")),
+                      static_folder=str(Path(root, "static")))
+    return app
 
 
 def init_logging(level):
@@ -182,7 +182,31 @@ def export_data():
         unlink_content(DATA_EXPORT)
     else:
         DATA_EXPORT.mkdir()
-    data_export = database.select("data_export")
+    model, stopwords = database.select("data_export")
+    document_topic, topics, document_similarities, topic_similarities = model
+
+    logging.info("Preparing document-topic distributions...")
+    document_topic = pd.read_json(document_topic, orient="index")
+    document_topic.columns = [col.replace(",", "").replace(" ...", "") for col in document_topic.columns]
+
+    logging.info("Preparing topics...")
+    topics = pd.read_json(topics, orient="index")
+    topics.index = ["Topic {}".format(n) for n in range(topics.shape[0])]
+    topics.columns = ["Word {}".format(n) for n in  range(topics.shape[1])]
+
+    logging.info("Preparing topic similarity matrix...")
+    topic_similarities = pd.read_json(topic_similarities)
+    topic_similarities.columns = [col.replace(",", "").replace(" ...", "") for col in topic_similarities.columns]
+    topic_similarities.index = [ix.replace(",", "").replace(" ...", "") for ix in topic_similarities.index]
+
+    logging.info("Preparing document similarity matrix...")
+    document_similarities = pd.read_json(document_similarities)
+    data_export = {"document-topic-distribution": document_topic,
+                   "topics": topics,
+                   "topic-similarities": topic_similarities,
+                   "document-similarities": document_similarities,
+                   "stopwords": json.loads(stopwords)}
+
     for name, data in data_export.items():
         if name in {"stopwords"}:
             with Path(DATA_EXPORT, "{}.txt".format(name)).open("w", encoding="utf-8") as file:

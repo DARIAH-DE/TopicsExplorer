@@ -1,4 +1,5 @@
 /*! Using parts of normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+
 html {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -227,35 +228,35 @@ h6 {
 
 @font-face {
     font-family: MuseoSansRounded;
-    src: url(fonts/MuseoSansRounded-500-webfont.woff2) format("woff2"), url(fonts/MuseoSansRounded-500-webfont.woff) format("woff");
+    src: url(../fonts/MuseoSansRounded-500-webfont.woff2) format("woff2"), url(../fonts/MuseoSansRounded-500-webfont.woff) format("woff");
     font-style: normal;
     font-weight: 400
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(fonts/Roboto-Light.woff2) format("woff2"), url(fonts/Roboto-Light.woff) format("woff");
+    src: url(../fonts/Roboto-Light.woff2) format("woff2"), url(../fonts/Roboto-Light.woff) format("woff");
     font-style: normal;
     font-weight: 400
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(fonts/Roboto-LightItalic.woff2) format("woff2"), url(fonts/Roboto-LightItalic.woff) format("woff");
+    src: url(../fonts/Roboto-LightItalic.woff2) format("woff2"), url(../fonts/Roboto-LightItalic.woff) format("woff");
     font-style: italic;
     font-weight: 400
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(fonts/Roboto-Medium.woff2) format("woff2"), url(fonts/Roboto-Medium.woff) format("woff");
+    src: url(../fonts/Roboto-Medium.woff2) format("woff2"), url(../fonts/Roboto-Medium.woff) format("woff");
     font-style: normal;
     font-weight: 700
 }
 
 @font-face {
     font-family: Roboto;
-    src: url(fonts/Roboto-MediumItalic.woff2) format("woff2"), url(fonts/Roboto-MediumItalic.woff) format("woff");
+    src: url(../fonts/Roboto-MediumItalic.woff2) format("woff2"), url(../fonts/Roboto-MediumItalic.woff) format("woff");
     font-style: italic;
     font-weight: 700
 }
@@ -1003,7 +1004,7 @@ th {
 }
 
 .footer {
-    background: #f7f7f7 url(grain.png);
+    background: #f7f7f7 url(../img/grain.png);
     color: #1a1a1a;
     font-size: 14px;
     padding: 12px 24px;
@@ -1158,7 +1159,7 @@ th {
 }
 
 .highlight {
-    background: #f7f7f7 url(grain.png);
+    background: #f7f7f7 url(../img/grain.png);
     color: #1a1a1a;
     margin: 0 -24px;
     padding: 12px;
@@ -2840,6 +2841,7 @@ th {
 .chart {
     width: 0%;
     animation: expand 1.5s ease forwards;
+    height: 80px;
 }
 
 .block {

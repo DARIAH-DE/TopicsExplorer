@@ -14,8 +14,11 @@ from application import utils
 from application import workflow
 
 
+# Initialize logging with logfile in tempdir:
 utils.init_logging(logging.DEBUG)
-web, process = utils.init_app("topicsexplorer")
+
+# Initialize Flask application:
+web = utils.init_app("topicsexplorer")
 
 
 @web.route("/")
@@ -23,11 +26,11 @@ def index():
     """Home page.
     """
     logging.debug("Calling home page endpoint...")
-    if process.is_alive():
+    if "process" in globals() and process.is_alive():
         logging.info("Terminating topic modeling process...")
         process.terminate()
     logging.debug("Initializing database...")
-    # And drop tables, if any exist:
+    # Initialize SQLite database:
     utils.init_db(web)
     logging.debug("Rendering home page template...")
     return flask.render_template("index.html",
@@ -43,12 +46,24 @@ def help():
                                  go_back=True)
 
 
+@web.route("/error")
+def error():
+    """Error page.
+    """
+    logging.error("Rendering error page...")
+    with utils.LOGFILE.open("r", encoding="utf-8") as logfile:
+        log = logfile.read().split("\n")[-20:]
+        return flask.render_template("error.html",
+                                     reset=True,
+                                     log="\n".join(log))
+
+
 @web.route("/modeling", methods=["POST"])
 def modeling():
     """Modeling page.
     """
     logging.debug("Calling modeling page endpoint...")
-    # Must be global to use them anywhere:
+    # Must be global to use anywhere:
     global start
     global process
     start = time.time()
@@ -58,7 +73,6 @@ def modeling():
     logging.info("Started topic modeling process.")
     logging.debug("Rendering modeling page template...")
     return flask.render_template("modeling.html",
-                                 reset=True,
                                  abort=True)
 
 
@@ -88,6 +102,9 @@ def overview_topics():
 
     # Convert pandas.Series to a 2-D array:
     proportions = list(utils.series2array(proportions))
+
+    corpus_size = get_corpus_size()
+    number_topics = get_number_of_topics()
     logging.debug("Rendering topics overview template...")
     return flask.render_template("overview-topics.html",
                                  current="topics",
@@ -98,7 +115,9 @@ def overview_topics():
                                  document_topic_distributions=True,
                                  parameters=True,
                                  export_data=True,
-                                 proportions=proportions)
+                                 proportions=proportions,
+                                 corpus_size=corpus_size,
+                                 number_topics=number_topics)
 
 
 @web.route("/overview-documents")
@@ -114,6 +133,8 @@ def overview_documents():
 
     # Convert pandas.Series to a 2-D array:
     proportions = list(utils.series2array(proportions))
+
+    corpus_size = get_corpus_size()
     return flask.render_template("overview-documents.html",
                                  current="documents",
                                  help=True,
@@ -123,7 +144,8 @@ def overview_documents():
                                  document_topic_distributions=True,
                                  parameters=True,
                                  export_data=True,
-                                 proportions=proportions)
+                                 proportions=proportions,
+                                 corpus_size=corpus_size)
 
 
 @web.route("/document-topic-distributions")
@@ -165,16 +187,10 @@ def topics(topic):
     related_docs_proportions = list(utils.series2array(related_docs_proportions))
 
     logging.info("Get related words...")
-    related_words = topics[topic][:25]
+    related_words = topics[topic][:15]
 
     logging.info("Get similar topics...")
     similar_topics = topic_similarites[topic].sort_values(ascending=False)[1:4]
-    similar_topics_proportions = utils.scale(similar_topics, minimum=70)
-    similar_topics_proportions = pd.Series(similar_topics_proportions, index=similar_topics.index)
-    similar_topics_proportions = similar_topics_proportions.sort_values(ascending=False)
-
-    # Convert pandas.Series to a 2-D array:
-    similar_topics_proportions = list(utils.series2array(similar_topics_proportions))
     logging.debug("Rendering topic page template...")
     return flask.render_template("detail-topic.html",
                                  current="topics",
@@ -186,7 +202,7 @@ def topics(topic):
                                  parameters=True,
                                  export_data=True,
                                  topic=topic,
-                                 similar_topics=similar_topics_proportions,
+                                 similar_topics=similar_topics.index,
                                  related_words=related_words,
                                  related_documents=related_docs_proportions)
 
@@ -209,15 +225,9 @@ def documents(title):
 
     logging.info("Get similar documents...")
     similar_docs = document_similarites[title].sort_values(ascending=False)[1:4]
-    similar_docs_proportions = utils.scale(similar_docs, minimum=70)
-    similar_docs_proportions = pd.Series(similar_docs_proportions, index=similar_docs.index)
-    similar_docs_proportions = similar_docs_proportions.sort_values(ascending=False)
 
-    # Convert pandas.Series to a 2-D array:
-    similar_docs_proportions = list(utils.series2array(similar_docs_proportions))
-
-    logging.debug("Use only the first 5000 characters (or less) from document...")
-    text = text if len(text) < 5000 else "{}... To be continued.".format(text[:5000])
+    logging.debug("Use only the first 10000 characters (or less) from document...")
+    text = text if len(text) < 10000 else "{}... This was an excerpt of the original text.".format(text[:10000])
 
     logging.debug("Split paragraphs...")
     text = text.split("\n\n")
@@ -234,7 +244,7 @@ def documents(title):
                                  title=title,
                                  text=text,
                                  distribution=distribution,
-                                 similar_documents=similar_docs_proportions,
+                                 similar_documents=similar_docs.index,
                                  related_topics=related_topics.index)
 
 
@@ -244,15 +254,8 @@ def parameters():
     """
     logging.debug("Calling parameters page endpoint...")
     logging.info("Get parameters...")
-    data = json.loads(get_parameters())
-    info = {"n_topics": data[0],
-            "n_iterations": data[1],
-            "n_documents": data[2],
-            "n_stopwords": data[3],
-            "n_hapax": data[4],
-            "n_tokens": data[5],
-            "n_types": data[6],
-            "log_likelihood": data[7]}
+    data = json.loads(get_parameters())[0]
+    info = json.loads(data)
     logging.debug("Rendering parameters page template...")
     return flask.render_template("overview-parameters.html",
                                  current="parameters",
@@ -344,26 +347,28 @@ def get_textfile_sizes():
     return database.select("textfile_sizes")
 
 
+@web.route("/api/corpus-size")
+def get_corpus_size():
+    """Corpus size.
+    """
+    return str(len(get_textfile_sizes()))
+
+
+@web.route("/api/number-topics")
+def get_number_of_topics():
+    """Number of topics.
+    """
+    return str(len(json.loads(get_topics())))
+
+
 @web.route("/export/<filename>")
 def export(filename):
     """Data archive.
     """
-    utils.export_data()
+    if "topicsexplorer-data.zip" in {filename}:
+        utils.export_data()
     path = Path(utils.TEMPDIR, filename)
     return flask.send_file(filename_or_fp=str(path))
-
-
-@web.route("/error")
-def error():
-    """Error page.
-    """
-    logging.error("Rendering error page...")
-    with utils.LOGFILE.open("r", encoding="utf-8") as logfile:
-        log = logfile.read().split("\n")[-20:]
-        return flask.render_template("error.html",
-                                     reset=True,
-                                     go_back=True,
-                                     log="\n".join(log))
 
 
 @web.errorhandler(werkzeug.exceptions.HTTPException)

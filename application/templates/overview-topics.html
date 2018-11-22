@@ -3,17 +3,14 @@
 {% block main %}
 <main class="main">
     <div class="main_content">
-        <!-- The heading could be like "10 Topics in 300 Documents" or so... -->
-        <!-- TODO: Create a new endpoint which counts the documents. -->
-        <h1>Topics</h1>
-        <p>A topic is a probability distribution over the whole vocabulary of a text corpus. One value is
+        <h1>A total of {{ number_topics }} topics in {{ corpus_size }} documents</h1>
+        <p>One topic is a probability distribution over the whole vocabulary of a text corpus. One value is
             assigned to each word, which indicates how <i>relevant</i> the word is to that topic (to be exact, how
             <i>likely</i> one word is to be found in a topic). After sorting those values in descending order, the first <i>n</i>
             words represent a topic.</p>
-        <p>The topics are ranked by their <i>numerical dominance</i> in the corpus and display each in a bar with width
-            proportional to the topic’s dominance
-            score. You can start exploring your topic model by clicking on the topics, or select one of the other tabs
-            in the navigation bar above.</p>
+        <p>Below the topics are ranked by their <i>numerical dominance</i> in the corpus; each bar displays a topic’s dominance score.
+            You can start exploring the topic model by <b>clicking on the topic bars</b> – or select one of the other tabs
+            in the above menu.</p>
         {% for topic, proportion in proportions %}
         <p><a style="width: {{ proportion }}%;" class="main_button" href="{{ url_for('topics', topic=topic) }}">{{
                 topic }}</a></p>

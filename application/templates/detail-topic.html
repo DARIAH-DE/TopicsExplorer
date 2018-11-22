@@ -4,9 +4,13 @@
 <main class="main">
     <div class="main_content">
         <h1>{{ topic }}</h1>
+        <p>
+
+    Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</p>
         <div class="row -narrow" style="border-top: none;">
             <div class="column">
-                <h4 style=" margin-top: 0px;">Top 25: Related Words</h4>
+                <h4 style=" margin-top: 0px;">Top 15: Related Words</h4>
                 <table>
                     {% for word in related_words %}
                     <tr>
@@ -14,16 +18,16 @@
                     </tr>
                     {% endfor %}
                 </table>
+                <h4>Top 3: Similar Topics</h4>
+                {% for topic in similar_topics %}
+                <p><a class="main_button" style="width: 100%;" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
+                {% endfor %}
             </div>
             <div class="column -wide">
                 <h4 style="margin-top: 0px;">Top 10: Related Documents</h4>
                 {% for title, proportion in related_documents %}
                 <p><a class="main_button" style="width: {{ proportion }}%;" href="{{ url_for('documents', title=title) }}">{{ title
                         }}</a></p>
-                {% endfor %}
-                <h4>Top 3: Similar Topics</h4>
-                {% for topic, proportion in similar_topics %}
-                <p><a class="main_button" style="width: {{ proportion }}%;" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
                 {% endfor %}
             </div>
         </div>

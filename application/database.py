@@ -83,11 +83,10 @@ def _update_textfile_sizes(db, data):
 def _insert_into_parameters(db, data):
     logging.info("Insert parameters into database...")
     db.execute("""
-            INSERT INTO parameters (topics, iterations, documents, stopwords, hapax, tokens, types, log_likelihood)
-            VALUES(?, ?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO parameters (content)
+            VALUES(?);
             """,
-            [int(data["topics"]), int(data["iterations"]),
-                int(data["documents"]), int(data["stopwords"]), int(data["hapax"]), int(data["tokens"]), int(data["types"]), int(data["log_likelihood"])])
+            [data])
 
 
 def _insert_into_model(db, data):
@@ -152,7 +151,7 @@ def _select_textfile_sizes(cursor):
 def _select_parameters(cursor):
     logging.info("Selecting parameters from database...")
     return cursor.execute("""
-                           SELECT topics, iterations, documents, stopwords, hapax, tokens, types, log_likelihood 
+                           SELECT content 
                            FROM parameters;
                            """).fetchone()
 
@@ -227,7 +226,7 @@ def _select_textfile(cursor, title):
 def _select_data_export(cursor):
     """Select model output from database.
     """
-    logging.info("Selectin stopwords from database...")
+    logging.info("Selecting stopwords from database...")
     stopwords = cursor.execute("""
                               SELECT content 
                               FROM stopwords;
@@ -238,23 +237,4 @@ def _select_data_export(cursor):
                            SELECT document_topic, topics, document_similarities, topic_similarities 
                            FROM model;
                            """).fetchone()
-    document_topic, topics, document_similarities, topic_similarities = model
-
-    logging.info("Preparing document-topic distributions...")
-    document_topic = pd.read_json(document_topic, orient="index")
-
-    logging.info("Preparing topics...")
-    topics = pd.read_json(topics)
-    topics.index = ["Topic {}".format(n) for n in topics.index]
-    topics.columns = ["Word {}".format(n) for n in topics.columns]
-
-    logging.info("Preparing topic similarity matrix...")
-    topic_similarities = pd.read_json(topic_similarities)
-
-    logging.info("Preparing document similarity matrix...")
-    document_similarities = pd.read_json(document_similarities)
-    return {"document-topic-distribution": document_topic,
-            "topics": topics,
-            "topic-similarities": topic_similarities,
-            "document-similarities": document_similarities,
-            "stopwords": json.loads(stopwords)}
+    return model, stopwords

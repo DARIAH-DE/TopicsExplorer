@@ -4,6 +4,10 @@
 <main class="main">
     <div class="main_content">
         <h1>{{ title }}</h1>
+        <p>
+
+    Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</p>
         <h4>Topic Distribution</h4>
         <p class="chart">
             {% for topic, value in distribution %}
@@ -17,8 +21,8 @@
                     <p><a class="main_button" style="width: 100%;" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
                 {% endfor %}
                 <h4>Top 3: Similar Documents</h4>
-                {% for title, proportion in similar_documents %}
-                    <p><a class="main_button" style="width: {{ proportion }}%;" href="{{ url_for('documents', title=title) }}">{{ title }}</a></p>
+                {% for title in similar_documents %}
+                    <p><a class="main_button" style="width: 100%;" href="{{ url_for('documents', title=title) }}">{{ title }}</a></p>
                 {% endfor %}
             </div>
             <div class="column -wide">

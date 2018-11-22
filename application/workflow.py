@@ -33,8 +33,8 @@ def wrapper():
                             json.dumps(token_freqs))
         # 2. Create model:
         model = create_model(dtm, data["topics"], data["iterations"])
-        parameters["log_likelihood"] = model.loglikelihood()
-        database.insert_into("parameters", parameters)
+        parameters["log_likelihood"] = int(model.loglikelihood())
+        database.insert_into("parameters", json.dumps(parameters))
         logging.info("Successfully created topic model.")
         # 3. Get model output:
         topics, descriptors, document_topic = get_model_output(model, dtm)
@@ -84,13 +84,13 @@ def preprocess(data):
     # Save stopwords:
     database.insert_into("stopwords", json.dumps(stopwords))
     # Save parameters:
-    parameters = {"topics": data["topics"],
-                 "iterations": data["iterations"],
-                 "documents": D,
-                 "stopwords": len(stopwords),
-                 "hapax": len(hapax),
-                 "tokens": N,
-                 "types": W}
+    parameters = {"n_topics": int(data["topics"]),
+                  "n_iterations": int(data["iterations"]),
+                  "n_documents": int(D),
+                  "n_stopwords": int(len(stopwords)),
+                  "n_hapax": int(len(hapax)),
+                  "n_tokens": int(N),
+                  "n_types": int(W)}
     return dtm, num_tokens.tolist(), parameters
 
 

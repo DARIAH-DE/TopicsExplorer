@@ -24,14 +24,7 @@ CREATE TABLE stopwords (
 
 CREATE TABLE parameters (
   id INTEGER PRIMARY KEY,
-  topics INTEGER,
-  iterations INTEGER,
-  stopwords INTEGER,
-  hapax INTEGER,
-  documents INTEGER,
-  tokens INTEGER,
-  types INTEGER,
-  log_likelihood INTEGER
+  content TEXT
 );
 
 CREATE TABLE model (

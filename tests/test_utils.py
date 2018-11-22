@@ -14,15 +14,9 @@ from application import utils
 TEST_STRING = "very-nice-great-success"
 
 
-def test_dead_process():
-    process = utils.DeadProcess()
-    assert process.is_alive() is False
-
 def test_init_app():
-    app, process = utils.init_app(TEST_STRING)
+    app = utils.init_app(TEST_STRING)
     assert app.name == TEST_STRING
-    assert isinstance(process, utils.DeadProcess)
-    assert process.is_alive() == False
 
 def test_init_logging():
     # TODO
