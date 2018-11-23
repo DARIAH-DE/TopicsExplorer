@@ -27,11 +27,12 @@ def close_db(e=None):
 def _insert_into_textfiles(db, data):
     for textfile in data:
         title, content = utils.load_textfile(textfile)
-        logging.info("Insert '{}' into database...".format(title))
-        db.execute("""
-                   INSERT INTO textfiles (title, content) 
-                   VALUES(?, ?);
-                   """, [title, content])
+        if content:
+            logging.info("Insert '{}' into database...".format(title))
+            db.execute("""
+                    INSERT INTO textfiles (title, content) 
+                    VALUES(?, ?);
+                    """, [title, content])
 
 
 def _insert_into_token_freqs(db, data):

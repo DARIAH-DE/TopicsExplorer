@@ -93,10 +93,13 @@ def load_textfile(textfile):
     filename = Path(secure_filename(textfile.filename))
     title = filename.stem
     suffix = filename.suffix
-    content = textfile.read().decode("utf-8")
-    if suffix in {".xml", ".html"}:
-        content = remove_markup(content)
-    return title, content
+    if suffix in {".txt", ".xml", ".html"}:
+        content = textfile.read().decode("utf-8")
+        if suffix in {".xml", ".html"}:
+            content = remove_markup(content)
+        return title, content
+    else:
+        return None, None
 
 
 def remove_markup(text):
