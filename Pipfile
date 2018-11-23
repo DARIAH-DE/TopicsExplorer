@@ -5,12 +5,12 @@ name = "pypi"
 
 
 [packages]
-cophi = "*"
-lda = "*"
-flask = "*"
-pandas = "*"
-numpy = "*"
-pyqt5 = "*"
+cophi = "==1.0.7"
+lda = "==1.1.0"
+Flask = "==1.0.2"
+pandas = "==0.23.4"
+numpy = "==1.15.4"
+PyQt5 = "==5.11.3"
 
 
 [dev-packages]
@@ -21,4 +21,3 @@ pytest-flask = "*"
 
 [requires]
 python_version = "3.6"
-
