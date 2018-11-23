@@ -1,9 +1,7 @@
 import logging
-import json
 import sqlite3
 
 import flask
-import pandas as pd
 
 from application import utils
 
@@ -27,8 +25,6 @@ def close_db(e=None):
 
 
 def _insert_into_textfiles(db, data):
-    """Insert data into textfiles table.
-    """
     for textfile in data:
         title, content = utils.load_textfile(textfile)
         logging.info("Insert '{}' into database...".format(title))
@@ -37,12 +33,14 @@ def _insert_into_textfiles(db, data):
                    VALUES(?, ?);
                    """, [title, content])
 
+
 def _insert_into_token_freqs(db, data):
     logging.info("Insert token frequencies into database...")
     db.execute("""
                INSERT INTO token_freqs (content) 
                VALUES(?);
                """, [data])
+
 
 def insert_into(table, data):
     """Insert data into database.
@@ -61,7 +59,10 @@ def insert_into(table, data):
     db.commit()
     close_db()
 
+
 def update(table, data):
+    """Update table in database.
+    """
     db = get_db()
     if table in {"textfiles"}:
         _update_textfile_sizes(db, data)
@@ -85,13 +86,10 @@ def _insert_into_parameters(db, data):
     db.execute("""
             INSERT INTO parameters (content)
             VALUES(?);
-            """,
-            [data])
+            """, [data])
 
 
 def _insert_into_model(db, data):
-    """Insert data into model table.
-    """
     logging.info("Insert topic model output into database...")
     db.execute("""
                INSERT INTO model (document_topic, topics, document_similarities, topic_similarities)
@@ -102,14 +100,11 @@ def _insert_into_model(db, data):
 
 
 def _insert_into_stopwords(db, data):
-    """Insert data into stopwords table.
-    """
     logging.info("Insert stopwords into database...")
     db.execute("""
                INSERT INTO stopwords (content)
                VALUES(?);
-               """,
-               [data])
+               """, [data])
 
 
 def select(value, **kwargs):
@@ -140,8 +135,9 @@ def select(value, **kwargs):
     elif value in {"textfile_sizes"}:
         return _select_textfile_sizes(cursor)
 
+
 def _select_textfile_sizes(cursor):
-    logging.info("Selecting textfile sizes from database...")
+    logging.info("Select textfile sizes from database...")
     return cursor.execute("""
                           SELECT title, size
                           FROM textfiles;
@@ -149,21 +145,23 @@ def _select_textfile_sizes(cursor):
 
 
 def _select_parameters(cursor):
-    logging.info("Selecting parameters from database...")
+    logging.info("Select parameters from database...")
     return cursor.execute("""
                            SELECT content 
                            FROM parameters;
                            """).fetchone()
 
+
 def _select_stopwords(cursor):
-    logging.info("Selecting stopwords from database...")
+    logging.info("Select stopwords from database...")
     return cursor.execute("""
                           SELECT content 
                           FROM stopwords;
                           """).fetchone()[0]
 
+
 def _select_document_similarities(cursor):
-    logging.info("Selecting document similarity matrix from database...")
+    logging.info("Select document similarity matrix from database...")
     return cursor.execute("""
                           SELECT document_similarities 
                           FROM model;
@@ -171,7 +169,7 @@ def _select_document_similarities(cursor):
 
 
 def _select_topic_similarities(cursor):
-    logging.info("Selecting topic similarity matrix from database...")
+    logging.info("Select topic similarity matrix from database...")
     return cursor.execute("""
                           SELECT topic_similarities 
                           FROM model;
@@ -179,7 +177,7 @@ def _select_topic_similarities(cursor):
 
 
 def _select_token_freqs(cursor):
-    logging.info("Selecting token frequencies from database...")
+    logging.info("Select token frequencies from database...")
     return cursor.execute("""
                           SELECT content 
                           FROM token_freqs;
@@ -187,20 +185,15 @@ def _select_token_freqs(cursor):
 
 
 def _select_textfiles(cursor):
-    """Select textfiles from database.
-    """
-    logging.info("Selecting textfiles from database...")
-    cursor.execute("""
+    logging.info("Select textfiles from database...")
+    return cursor.execute("""
                    SELECT title, content 
                    FROM textfiles;
-                   """)
-    return cursor.fetchall()
+                   """).fetchall()
 
 
 def _select_document_topic_distributions(cursor):
-    """Select document-topic matrix form database.
-    """
-    logging.info("Selecting document-topic distributions from database...")
+    logging.info("Select document-topic distributions from database...")
     return cursor.execute("""
                           SELECT document_topic 
                           FROM model;
@@ -208,7 +201,7 @@ def _select_document_topic_distributions(cursor):
 
 
 def _select_topics(cursor):
-    logging.info("Selecting topics from database...")
+    logging.info("Select topics from database...")
     return cursor.execute("""
                               SELECT topics 
                               FROM model;
@@ -216,23 +209,18 @@ def _select_topics(cursor):
 
 
 def _select_textfile(cursor, title):
-    logging.info("Selecting '{}' from database...".format(title))
+    logging.info("Select '{}' from database...".format(title))
     return cursor.execute("""
                           SELECT content 
                           FROM textfiles
                           WHERE title = ?;
                           """, [title]).fetchone()[0]
 
-def _select_data_export(cursor):
-    """Select model output from database.
-    """
-    logging.info("Selecting stopwords from database...")
-    stopwords = cursor.execute("""
-                              SELECT content 
-                              FROM stopwords;
-                              """).fetchone()[0]
 
-    logging.info("Selecting model output from database...")
+def _select_data_export(cursor):
+    stopwords = _select_stopwords(cursor)
+
+    logging.info("Select model output from database...")
     model = cursor.execute("""
                            SELECT document_topic, topics, document_similarities, topic_similarities 
                            FROM model;

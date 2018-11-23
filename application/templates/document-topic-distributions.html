@@ -5,30 +5,34 @@
     <div class="main_content">
         <h1>Document-Topic Distributions</h1>
         <p>Each document consists to a certain extent of each topic, which is one of the theoretical assumptions of
-            topic models. Visualizing those proportions in a heatmap displays the kind of information that is probably
-            most useful to literary scholars. Going beyond pure exploration, it can be used to show thematic
-            developments over a set of texts as well as a single text, akin to a dynamic topic model.</p>
+            topic models. Although some values are <i>too small</i> to be visualized here (and have therefore been
+            rounded to zero), they <i>are</i> actually greater than zero. Just export the data in the menu bar and take
+            a look at the document-topic matrix.
+        </p>
+        <p>Visualizing the document-topic proportions in a heatmap displays the kind of information that is probably
+            most useful. Going beyond pure exploration, it can be used to show thematic developments over a set of
+            texts, akin to a dynamic topic model.</p>
         </p>
         <p id="document-topic-heatmap"></p>
     </div>
     <script>
         function formatData(data) {
-            var series = [];
-            for (var document in data) {
-                var values = {
+            let series = [];
+            for (let document in data) {
+                let values = {
                     name: document,
                     data: []
                 };
-                for (var topic in data[document]) {
+                for (let topic in data[document]) {
                     values['data'].push({
                         x: topic,
                         y: data[document][topic]
                     });
-                }
+                };
                 series.push(values);
-            }
+            };
             return series;
-        }
+        };
 
         function getHeight(rows) {
             if (rows.length < 20) {
@@ -43,7 +47,6 @@
             $.getJSON("{{ url_for('get_document_topic_distributions') }}", function (data) {
                 const series = formatData(data);
                 const height = getHeight(series);
-                console.log(height)
                 const options = {
                     chart: {
                         toolbar: {

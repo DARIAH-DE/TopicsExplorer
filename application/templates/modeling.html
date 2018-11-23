@@ -8,7 +8,7 @@
             few seconds to several hours.</p>
         <p class="main_notice -big">
             <img class="dariah-flower" src="{{url_for('static', filename='img/logos/dariah-rotate.gif')}}">
-            <span class="modeling-status" id="status">Processing text files...</span>
+            <span class="modeling-status" id="status">Fetched all text files...</span>
         </p>
         <p>In the meantime you might want to check out some <a onclick="window.open('https://github.com/DARIAH-DE/Topics/tree/master/notebooks', 'Topics/notebooks at master · DARIAH-DE/Topics', 'location=yes,height=550,width=1120,scrollbars=yes,status=yes');"
              href="#">Jupyter notebooks</a>. These are suitable for beginners as well as for advanced users of the programming
@@ -29,22 +29,23 @@
 <script>
     function fetchStatus() {
         // Fetch current status from modeling process
-        $.get("{{ url_for('get_status') }}", function (data) {
-            if (data.includes("Very nice, great success!")) {
+        $.get("{{ url_for('get_status') }}", function (message) {
+            if (message.includes('Very nice, great success!')) {
                 // Redirect to the topics overview page if modeling complete
                 window.location.replace("{{ url_for('overview_topics') }}");
-            } else if (data.includes("Redirect to error page.")) {
+            } else if (message.includes('Redirect to error page.')) {
                 // Redirect to the error page if something went wrong
                 window.location.replace("{{ url_for('error') }}");
             } else {
                 // Or print current status to user interface
-                $("#status").html(data);
-            }
+                $('#status').html(message);
+            };
         });
-    }
+    };
 
     // Make every second a status request
     const interval = 1000;
+
     // Call the function with interval
     setInterval(fetchStatus, interval);
 </script>

@@ -25,7 +25,7 @@ DATA_EXPORT = Path(TEMPDIR, "topicsexplorer-data")
 def init_app(name):
     """Initialize Flask application.
     """
-    logging.debug("Initializing flask app...")
+    logging.debug("Initializing Flask app...")
     if getattr(sys, "frozen", False):
         logging.debug("Application is frozen.")
         root = Path(sys._MEIPASS)
@@ -45,7 +45,8 @@ def init_logging(level):
                         format="%(message)s",
                         filename=str(LOGFILE),
                         filemode="w")
-    # Disable logging for Flask and Werkzeug:
+    # Disable logging for Flask and Werkzeug
+    # (this would be a lot of spam, even level INFO):
     logging.getLogger("flask").setLevel(logging.ERROR)
     logging.getLogger("werkzeug").setLevel(logging.ERROR)
 
@@ -133,7 +134,7 @@ def get_stopwords(data, corpus):
 def get_data(corpus, topics, iterations, stopwords, mfw):
     """Get data from HTML forms.
     """
-    logging.info("Fetching user data...")
+    logging.info("Processing user data...")
     data = {"corpus": flask.request.files.getlist("corpus"),
             "topics": int(flask.request.form["topics"]),
             "iterations": int(flask.request.form["iterations"])}
@@ -147,6 +148,7 @@ def get_data(corpus, topics, iterations, stopwords, mfw):
 def get_topics(model, vocabulary, maximum=100):
     """Get topics from topic model.
     """
+    logging.info("Fetching topics from topic model...")
     for distribution in model.topic_word_:
         words = list(np.array(vocabulary)[np.argsort(distribution)][:-maximum-1:-1])
         yield "{}, ...".format(", ".join(words[:3])), words
@@ -155,6 +157,7 @@ def get_topics(model, vocabulary, maximum=100):
 def get_document_topic(model, titles, descriptors):
     """Get document-topic distribution from topic model.
     """
+    logging.info("Fetching document-topic distributions from topic model...")
     document_topic = pd.DataFrame(model.doc_topic_)
     document_topic.index = titles
     document_topic.columns = descriptors
@@ -164,6 +167,7 @@ def get_document_topic(model, titles, descriptors):
 def get_cosine(matrix, descriptors):
     """Calculate cosine similarity between columns.
     """
+    logging.info("Calculcating cosine similarity...")
     d = matrix.T @ matrix
     norm = (matrix * matrix).sum(0, keepdims=True) ** .5
     similarities = d / norm / norm.T
@@ -173,10 +177,13 @@ def get_cosine(matrix, descriptors):
 def scale(vector, minimum=50, maximum=100):
     """Min-max scaler for a vector.
     """
+    logging.debug("Scaling data from {} to {}...".format(minimum, maximum))
     return np.interp(vector, (vector.min(), vector.max()), (minimum, maximum))
 
 
 def export_data():
+    """Export model output to ZIP archive.
+    """
     logging.info("Creating data archive...")
     if DATA_EXPORT.exists():
         unlink_content(DATA_EXPORT)
@@ -228,5 +235,7 @@ def unlink_content(directory, pattern="*"):
 
 
 def series2array(s):
+    """Convert pandas Series to a 2-D array.
+    """
     for i, v in zip(s.index, s):
         yield [i, v]

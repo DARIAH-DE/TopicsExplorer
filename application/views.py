@@ -29,7 +29,6 @@ def index():
     if "process" in globals() and process.is_alive():
         logging.info("Terminating topic modeling process...")
         process.terminate()
-    logging.debug("Initializing database...")
     # Initialize SQLite database:
     utils.init_db(web)
     logging.debug("Rendering home page template...")
@@ -50,12 +49,12 @@ def help():
 def error():
     """Error page.
     """
-    logging.error("Rendering error page...")
     with utils.LOGFILE.open("r", encoding="utf-8") as logfile:
         log = logfile.read().split("\n")[-20:]
         return flask.render_template("error.html",
                                      reset=True,
-                                     log="\n".join(log))
+                                     log="\n".join(log),
+                                     tempdir=utils.TEMPDIR)
 
 
 @web.route("/modeling", methods=["POST"])
@@ -231,6 +230,10 @@ def documents(title):
 
     logging.debug("Split paragraphs...")
     text = text.split("\n\n")
+
+    n = get_number_of_topics()
+    top_topics = ["{} most relevant".format(n) if int(n) >= 10 else n,
+                  "Top {}".format(n)]
     logging.debug("Rendering document page template...")
     return flask.render_template("detail-document.html",
                                  current="documents",
@@ -245,7 +248,8 @@ def documents(title):
                                  text=text,
                                  distribution=distribution,
                                  similar_documents=similar_docs.index,
-                                 related_topics=related_topics.index)
+                                 related_topics=related_topics.index,
+                                 top_topics=top_topics)
 
 
 @web.route("/parameters")
@@ -373,7 +377,7 @@ def export(filename):
 
 @web.errorhandler(werkzeug.exceptions.HTTPException)
 def handle_http_exception(e):
-    """Error page.
+    """Handle errors..
     """
     return error()
 
@@ -383,6 +387,8 @@ for code in werkzeug.exceptions.default_exceptions:
 
 @web.after_request
 def add_header(r):
+    """Clear cache after request.
+    """
     r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     r.headers["Pragma"] = "no-cache"
     r.headers["Expires"] = "0"
@@ -392,6 +398,8 @@ def add_header(r):
 
 @web.teardown_appcontext
 def close_connection(exception):
+    """Close connection to SQLite database.
+    """
     db = getattr(flask.g, "_database", None)
     if db is not None:
         db.close()

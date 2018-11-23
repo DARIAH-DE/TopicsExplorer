@@ -4,7 +4,6 @@ DROP TABLE IF EXISTS stopwords;
 DROP TABLE IF EXISTS parameters;
 DROP TABLE IF EXISTS model;
 
-
 CREATE TABLE textfiles (
   id INTEGER PRIMARY KEY,
   title TEXT,

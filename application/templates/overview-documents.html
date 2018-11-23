@@ -5,10 +5,8 @@
     <div class="main_content">
         <h1>A total of {{ corpus_size }} documents</h1>
         <p>All documents of your corpus are listed here by their original filename. The longer the bar, the longer the
-            text of a document, taking pure word frequencies into account. At best, all documents are about the same
-            length. If you have some very large texts, but also very short ones, you should consider splitting the
-            large documents into smaller chunks and create a new topic model.</p>
-        <p>Explore your text corpus by <b>clicking on the document bars</b> – or select one of the other
+            text of a document, taking pure word frequencies into account. You should consider splitting the larger documents into smaller chunks and create a new topic model to see what happens to your model.</p>
+        <p>However, explore your text corpus by <b>clicking on the document bars</b> – or select one of the other
             tabs in the above menu.</p>
         {% for title, proportion in proportions %}
         <p>

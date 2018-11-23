@@ -4,8 +4,10 @@
 <main class="main">
     <div class="main_content" id="upload_content" style="display: none;">
         <h1>Your corpus must be quite extensive...</h1>
-        <p><b>Topics Explorer is fetching your text files at the moment</b>. This can take several seconds with large amounts of data. When
-            everything is imported, you will automatically be redirected to a page with some more information about what’s going on.</p>
+        <p><b>Topics Explorer is fetching your text files at the moment</b>. This can take several seconds with large
+            amounts of data. When
+            everything is imported, you will automatically be redirected to a page with some more information about
+            what’s going on.</p>
     </div>
     <div class="main_content" id="default_content">
         <form id="data" action="/modeling" method="POST" enctype="multipart/form-data">
@@ -44,16 +46,16 @@
                     law</a>, which implies that <i>few types</i> occur <i>very frequently</i>, and <i>many types</i>
                 occur <i>very
                     rarely</i>. In topic modeling, we are only interested in words in the middle frequency range; the
-                most common words are usually function words, and the rarest words so specific that they
+                most common words are usually empty function words, and the rarest words so specific that they
                 are of no use to the model.</p>
             <p>You can either set a threshold for the most common words to remove:</p>
             <p><input type="number" name="mfw" value="100" min="1"></p>
             <p>or select an external list of words to be removed (which is recommended):</p>
             <p><input type="file" name="stopwords"></p>
             <h2>2 Modeling</h2>
-            <p>A parameter is any characteristic that can help in defining or classifying a particular system – in this
-                case the topic model. You will have to adjust two model parameters: the number of topics, i.e. how <i>many</i>
-                semantic clusters should be formed, and the number of iterations, i.e. how <i>long</i> the model will
+            <p>A parameter is any characteristic that can help in defining or classifying a particular system – the
+                topic model. You will have to adjust two model parameters: the number of topics, i.e. how <i>many</i>
+                semantic clusters should be formed, and the number of iterations, i.e. how <i>long</i> the model should
                 learn from the data.</p>
             <blockquote>Latent Dirichlet allocation, a generative probabilistic topic model, is a three-level
                 hierarchical Bayesian model, in which each item of a collection is modeled as a finite mixture over an
@@ -93,12 +95,12 @@
     </div>
 </main>
 <script>
-    $("#data").submit(function (event) {
-        $("#default_content").css({
-            "display": "none"
+    $('#data').submit(function (event) {
+        $('#default_content').css({
+            'display': "none"
         });
-        $("#upload_content").css({
-            "display": "inline"
+        $('#upload_content').css({
+            'display': 'inline'
         });
     });
 </script>

@@ -15,22 +15,25 @@ def wrapper():
     """Wrapper for the topic modeling workflow.
     """
     try:
-        logging.info("Just started topic modeling.")
+        logging.info("Just started topic modeling workflow.")
         data = utils.get_data("corpus",
                               "topics",
                               "iterations",
                               "stopwords",
                               "mfw")
+        if len(data["corpus"]) < 10:
+            raise ValueError("Your corpus is too small. "
+                             "Please select at least 10 text files.")
         logging.info("Fetched user data...")
         database.insert_into("textfiles",
-                            data["corpus"])
+                             data["corpus"])
         logging.info("Inserted data into database.")
 
         # 1. Preprocess:
         dtm, token_freqs, parameters = preprocess(data)
         logging.info("Successfully preprocessed data.")
         database.insert_into("token_freqs",
-                            json.dumps(token_freqs))
+                             json.dumps(token_freqs))
         # 2. Create model:
         model = create_model(dtm, data["topics"], data["iterations"])
         parameters["log_likelihood"] = int(model.loglikelihood())
@@ -54,9 +57,10 @@ def wrapper():
         logging.error("ERROR: There is something wrong with your XML files.")
         logging.error("ERROR: {}".format(error))
         logging.error("Redirect to error page...")
-    except UnicodeDecodeError:
+    except UnicodeDecodeError as error:
         logging.error("ERROR: There is something wrong with your text files. "
                       "Are they UTF-8 encoded?")
+        logging.error("ERROR: {}".format(error))
         logging.error("Redirect to error page...")
     except Exception as error:
         logging.error("ERROR: {}".format(error))
