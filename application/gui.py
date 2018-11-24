@@ -1,35 +1,48 @@
-import application
-import pathlib
+from pathlib import Path
 import sys
-import PyQt5.QtGui
-import PyQt5.QtWidgets
-import PyQt5.QtWebEngineWidgets
-import PyQt5.QtCore
+
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
+from PyQt5 import QtWebEngineWidgets
+from PyQt5 import QtCore
+
+from application import views
 
 
-parent_dir = pathlib.Path(__file__).parent
-TITLE = "Topics Explorer"
-ICON = str(pathlib.Path(parent_dir, "static", "img", "app_icon.png"))
+PARENT = Path(__file__).parent
+TITLE = "Topics Explorer :: DARIAH-DE"
+ICON = str(Path(PARENT, "static", "img", "logos", "favicon-template.png"))
 PORT = 5000
 
-if hasattr(PyQt5.QtCore.Qt, "AA_EnableHighDpiScaling"):
-    PyQt5.QtWidgets.QApplication.setAttribute(PyQt5.QtCore.Qt.AA_EnableHighDpiScaling, True)
- 
-if hasattr(PyQt5.QtCore.Qt, "AA_UseHighDpiPixmaps"):
-    PyQt5.QtWidgets.QApplication.setAttribute(PyQt5.QtCore.Qt.AA_UseHighDpiPixmaps, True)
+# This is for high DPI scaling:
+if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
-def download_requested(item):
+
+def download_request(item):
+        """Opens a file dialog to save the ZIP archive.
         """
-        Opens a file dialog to save the ZIP archive.
-        """
-        path = PyQt5.QtWidgets.QFileDialog.getSaveFileName(None,
-                                                           "Select destination folder and file name",
-                                                           "",
-                                                           "Zip files (*.zip)")[0]
-        item.setPath("{path}.{ext}".format(path=path, ext="zip"))
+        mimetype = item.mimeType()
+        if "octet-stream" in mimetype:
+            ext = ".png"
+        elif "svg" in item.mimeType():
+            ext = ".svg"
+        elif "zip" in mimetype:
+            ext = ".zip"
+        else:
+            ext = ""
+
+        path = QtWidgets.QFileDialog.getSaveFileName(None,
+                                                    "Select destination folder and file name",
+                                                    "",
+                                                    "")[0]
+        item.setPath("{path}{ext}".format(path=path, ext=ext))
         item.accept()
 
-class ApplicationThread(PyQt5.QtCore.QThread):
+
+class ApplicationThread(QtCore.QThread):
     def __init__(self, application, port=PORT):
         super(ApplicationThread, self).__init__()
         self.application = application
@@ -39,82 +52,72 @@ class ApplicationThread(PyQt5.QtCore.QThread):
         self.wait()
 
     def run(self):
-        self.application.run(port=self.port, threaded=True)
+        self.application.run(port=self.port)
 
-"""
-# This part allows you to open external links in the standard browser,
-# but has been discarded because potential dead links should be avoided
-# in the application.
 
-class WebPage(PyQt5.QtWebEngineWidgets.QWebEnginePage):
+class WebPage(QtWebEngineWidgets.QWebEnginePage):
     def __init__(self, root_url):
         super(WebPage, self).__init__()
         self.root_url = root_url
 
     def home(self):
-        self.load(PyQt5.QtCore.QUrl(self.root_url))
+        self.load(QtCore.QUrl(self.root_url))
 
     def acceptNavigationRequest(self, url, kind, is_main_frame):
         ready_url = url.toEncoded().data().decode()
         is_clicked = kind == self.NavigationTypeLinkClicked
 
         if is_clicked and (self.root_url not in ready_url):
-            PyQt5.QtGui.QDesktopServices.openUrl(url)
+            QtGui.QDesktopServices.openUrl(url)
             return False
         return super(WebPage, self).acceptNavigationRequest(url, kind, is_main_frame)
-"""
 
-def init_gui(flask_app, port=PORT, argv=None, title=TITLE, icon=ICON):
-    """
-    Initializes the Qt web engine, starts the web application, and loads the
-    main page.
+
+def init_gui(application, port=PORT, argv=None, title=TITLE, icon=ICON):
+    """Initialize Qt web engine, start Flask application.
     """
     if argv is None:
         argv = sys.argv
+
+    # Starting the Flask application:
+    qtapp = QtWidgets.QApplication(argv)
+    web = ApplicationThread(application, port)
+    web.start()
     
-    # Starting the Flask application.
-    qtapp = PyQt5.QtWidgets.QApplication(argv)
-    webapp = ApplicationThread(flask_app, port)
-    webapp.start()
-    
-    def cleanup(webapp=webapp):
+    def kill(application=web):
+        """Kill the Flask process.
         """
-        Killing the Flask process and removing temporary
-        folders after user closed the window.
-        """
-        webapp.terminate()
-        dumpdir, archivedir = application.utils.get_tempdirs()
-        application.utils.unlink_content(dumpdir)
-        application.utils.unlink_content(archivedir)
-        dumpdir.rmdir()
-        archivedir.rmdir()
-    
-    qtapp.aboutToQuit.connect(cleanup)
+        application.terminate()
+
+    qtapp.aboutToQuit.connect(kill)
 
     # Setting width and height individually based on the 
     # screen resolution: 93% of the screen for width,
-    # 80% for height.
+    # 80% for height:
     screen = qtapp.primaryScreen()
     size = screen.size()
     width = size.width() - size.width() / 100 * 7
     height = size.height() - size.height() / 100 * 20
 
-    # Applying settings and loading the main page.
-    webview = PyQt5.QtWebEngineWidgets.QWebEngineView()
+    # Applying settings and loading the home page:
+    webview = QtWebEngineWidgets.QWebEngineView()
     webview.resize(width, height)
     webview.setWindowTitle(title)
-    webview.setWindowIcon(PyQt5.QtGui.QIcon(icon))
-    webview.load(PyQt5.QtCore.QUrl("http://localhost:{}".format(port)))
+    webview.setWindowIcon(QtGui.QIcon(icon))
     
-    # If the user clicks a download button, a window pops up.
-    webview.page().profile().downloadRequested.connect(download_requested)
+    page = WebPage('http://localhost:{}'.format(port))
+    page.home()
+    webview.setPage(page)
+    
+    # If the user clicks a download button, a window pops up:
+    webview.page().profile().downloadRequested.connect(download_request)
 
-    # Show the webview.
+    # Show the webview:
     webview.show()
     return qtapp.exec_()
 
+
 def run():
+    """Run Topics Explorer.
     """
-    Calls the main function.
-    """
-    sys.exit(init_gui(application.web.app))
+    sys.exit(init_gui(views.web))

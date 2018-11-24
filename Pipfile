@@ -1,29 +1,19 @@
 [[source]]
-
 url = "https://pypi.org/simple/"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
-dariah_topics_light = "==1.4"
-lda = "==1.0.5"
-bokeh = "==0.12.7"
-lxml = "==4.2.1"
-flask = "==1.0.2"
-pandas = "==0.22.0"
-numpy = "==1.14.2"
-pyqt5 = "==5.10.0"
-
+cophi = "==1.0.7"
+lda = "==1.1.0"
+Flask = "==1.0.2"
+pandas = "==0.23.4"
+numpy = "==1.15.4"
+PyQt5 = "==5.11.3"
 
 [dev-packages]
-
 pytest = "*"
 pytest-cov = "*"
-pytest-flask = "*"
-
 
 [requires]
-
 python_version = "3.6"
