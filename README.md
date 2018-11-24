@@ -142,7 +142,7 @@ Regarding the source code:
 This application is developed with support from the DARIAH-DE initiative, the German branch of DARIAH-EU, the European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been provided by the German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610A to J.
 
 <img src="docs/img/dariah-de-logo-en.svg" width="250px">
-<img src="docs/img/bmbf-logo.svg" width="150px" style="margin-left: 30px;">
+<img src="docs/img/bmbf-logo.svg" width="150px">
 
 
 ## License
