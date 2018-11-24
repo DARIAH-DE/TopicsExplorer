@@ -1,7 +1,7 @@
 # Explore your own text collection with a topic model – without prior knowledge.
 The text mining technique _topic modeling_ has become a popular procedure for clustering documents into semantic groups. This application introduces a user-friendly workflow which leads from raw text data to an interactive visualization of the topic model. All you need is a text corpus and a little time.
 
-> “Topic modeling algorithms are statistical methods that analyze the words of the original texts to discover the themes that run through them, how those themes are connected to each other, and how they change over time.” – [David M. Blei](http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf)
+> Topic modeling algorithms are statistical methods that analyze the words of the original texts to discover the themes that run through them, how those themes are connected to each other, and how they change over time. – [David M. Blei](http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf)
 
 
 ## Overview
@@ -66,13 +66,13 @@ Topics are probability distributions over the whole vocabulary of a text corpus.
 
 Below the topics are ranked by their _numerical dominance_ in the sample corpus; each bar displays a topic’s dominance score.
 
-![Topics overview](docs/img/topics-overview.png)
+<img src="docs/img/topics-overview.png" width="600px">
 
 Each document consists to a certain extent of each topic, which is one of the theoretical assumptions of topic models. Although some values are _too small_ to be visualized here (and have therefore been rounded to zero), they are actually _greater_ than zero.
 
 Visualizing the document-topic proportions in a heatmap displays the kind of information that is probably most useful. Going beyond pure exploration, it can be used to show thematic developments over a set of texts, akin to a dynamic topic model.
 
-![Document-topic distributions](docs/img/document-topic-distributions.png)
+<img src="docs/img/document-topic-distributions.png" width="600px">
 
 
 ## Source code
@@ -141,8 +141,8 @@ Regarding the source code:
 
 This application is developed with support from the DARIAH-DE initiative, the German branch of DARIAH-EU, the European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been provided by the German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610A to J.
 
-![DARIAH-DE](docs/img/dariah-de-logo-en.svg)
-![BMBF](docs/img/bmbf-logo.svg)
+<img src="docs/img/dariah-de-logo-en.svg" width="250px">
+<img src="docs/img/bmbf-logo.svg" width="150px" style="margin-left: 30px;">
 
 
 ## License
