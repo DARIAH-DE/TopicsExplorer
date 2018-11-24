@@ -6,8 +6,7 @@
         <h1>{{ title }}</h1>
         <p>Here you can see the distribution of all topics in the document – just hover the bar. In addition, the
             original text, the {{ top_topics[0] }} topics, and the three most similar documents are displayed. For the
-            latter, the <a onclick="window.open('https://en.wikipedia.org/wiki/Cosine_similarity', 'Cosine Similarity', 'location=yes,height=550,width=1120,scrollbars=yes,status=yes');"
-                href="#">cosine similarity</a> between all <i>document vectors</i> was calculated and ranked.</p>
+            latter, the <a href="https://en.wikipedia.org/wiki/Cosine_similarity">cosine similarity</a> between all <i>document vectors</i> was calculated and ranked.</p>
         <h4>Topic Distribution</h4>
         <p class="chart">
             {% for topic, value in distribution %}

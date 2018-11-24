@@ -104,7 +104,10 @@ def init_gui(application, port=PORT, argv=None, title=TITLE, icon=ICON):
     webview.resize(width, height)
     webview.setWindowTitle(title)
     webview.setWindowIcon(QtGui.QIcon(icon))
-    webview.load(QtCore.QUrl("http://localhost:{}".format(port)))
+    
+    page = WebPage('http://localhost:{}'.format(port))
+    page.home()
+    webview.setPage(page)
     
     # If the user clicks a download button, a window pops up:
     webview.page().profile().downloadRequested.connect(download_request)

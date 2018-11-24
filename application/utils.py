@@ -116,7 +116,7 @@ def remove_markup(text):
 def get_documents(textfiles):
     """Get Document objects.
     """
-    logging.info("Fetching documents...")
+    logging.info("Processing documents...")
     for textfile in textfiles:
         title, content = textfile
         yield cophi.model.Document(content, title)
