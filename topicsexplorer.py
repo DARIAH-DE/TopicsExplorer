@@ -15,8 +15,8 @@ if __name__ == "__main__":
                                      description=DESCRIPTION)
     parser.add_argument("--browser",
                         action="store_true",
-                        help="Use this parameter to open the UI in "
-                             "your default web browser.")
+                        help="Use this parameter to open the UI in your default web browser.")
+
     args = parser.parse_args()
 
     if args.browser:
