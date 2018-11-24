@@ -39,12 +39,11 @@ You can also use the source code:
 
 This application is designed to introduce topic modeling particularly gently (e.g. for educational purpose). If you have a very large text corpus, you may wish to use more _powerful_ tools like [MALLET](http://mallet.cs.umass.edu/topics.php), which is written in Java and can be completely controlled from the command-line. The topic modeling algorithm used in this application, _latent Dirichlet allocation_, was implemented by [Allen B. Riddell](https://www.ariddell.org/) using collapsed Gibbs sampling as described in [Pritchard et al. (2000)](http://www.genetics.org/content/155/2/945.full).
 
-
 You might want to check out some [Jupyter notebooks](https://github.com/DARIAH-DE/Topics/notebooks) for topic modeling in Python – experimenting with an example corpus on [Binder](https://mybinder.org/v2/gh/DARIAH-DE/Topics/master?filepath=notebooks%2FIntroducingLda.ipynb) does not require any software on your local machine.
 
 
 ## The sample corpus
-A [sample corpus](data/british-fiction-corpus) (10 British novels) is provided in this project. If you use Git, you can include the corpus, which is actually a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
+We provide a [sample corpus](data/british-fiction-corpus) (10 British novels) in this project. If you use Git, you can include the corpus, which is actually a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
 
 ```
 $ git clone --recursive https://github.com/DARIAH-DE/TopicsExplorer.git
@@ -59,15 +58,17 @@ $ git submodule update
 ```
 
 ## Example visualizations
-Following visualizaitons display the topic model output of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray and Anthony Trollope). All of the application’s visualizations are interactive.
+The following visualizations display the topic model output of 10 novels (written by Charles Dickens, George Eliot, Joseph Fielding, William Thackeray and Anthony Trollope).
+
+> Topics Explorer’s visualiztaions are interactive. You will be able to navigate through topics and documents, get similar topics and documents displayed, read excerpts from the original texts, and inspect the _document-topic distributions_ in a heatmap.
 
 Topics are probability distributions over the whole vocabulary of a text corpus. One value is assigned to each word, which indicates how _relevant_ the word is to that topic (to be exact, how _likely_ one word is to be found in a topic). After sorting those values in descending order, the first _n_ words represent a topic.
 
-Below the topics are ranked by their _numerical dominance_ in the corpus; each bar displays a topic’s dominance score.
+Below the topics are ranked by their _numerical dominance_ in the sample corpus; each bar displays a topic’s dominance score.
 
 ![Topics overview](docs/img/topics-overview.png)
 
-Each document consists to a certain extent of each topic, which is one of the theoretical assumptions of topic models. Although some values are _too small_ to be visualized here (and have therefore been rounded to zero), they are actually greater than zero. Just export the data in the menu bar and take a look at the document-topic matrix.
+Each document consists to a certain extent of each topic, which is one of the theoretical assumptions of topic models. Although some values are _too small_ to be visualized here (and have therefore been rounded to zero), they are actually _greater_ than zero.
 
 Visualizing the document-topic proportions in a heatmap displays the kind of information that is probably most useful. Going beyond pure exploration, it can be used to show thematic developments over a set of texts, akin to a dynamic topic model.
 
