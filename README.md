@@ -1,5 +1,4 @@
-# Freezing Topics Explorer
+This branch contains code for a convenience wrapper, which starts first the **frozen** backend, then the **frozen** frontend.
 
-Diese branch enthält Code und Dokumentation, um Topics Explorer in eine standalone application einzufrieren.
 
 > 
