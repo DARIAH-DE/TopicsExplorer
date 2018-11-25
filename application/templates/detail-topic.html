@@ -6,8 +6,8 @@
         <h1>{{ topic }}</h1>
         <p>On this page you can find the 15 most relevant words for this topic, as well as the 10 most relevant
             documents, whose bar width indicates the respective weight, and the three most similar topics, where the <a
-                href="https://en.wikipedia.org/wiki/Cosine_similarity">cosine similarity</a> between all <i>topic
-                vectors</i> was calculated and ranked.</p>
+                onclick="window.open('https://en.wikipedia.org/wiki/Cosine_similarity', 'Cosine Similarity', 'location=yes,height=550,width=1120,scrollbars=yes,status=yes');"
+                href="#">cosine similarity</a> between all <i>topic vectors</i> was calculated and ranked.</p>
         <div class="row -narrow" style="border-top: none;">
             <div class="column">
                 <h4 style=" margin-top: 0px;">Top 15: Related Words</h4>
@@ -26,8 +26,7 @@
             <div class="column -wide">
                 <h4 style="margin-top: 0px;">Top 10: Related Documents</h4>
                 {% for title, proportion in related_documents %}
-                <p><a class="main_button" style="width: {{ proportion }}%;" href="{{ url_for('documents', title=title) }}">{{
-                        title }}</a></p>
+                <p><a class="main_button" style="width: {{ proportion }}%;" href="{{ url_for('documents', title=title) }}">{{ title }}</a></p>
                 {% endfor %}
             </div>
         </div>

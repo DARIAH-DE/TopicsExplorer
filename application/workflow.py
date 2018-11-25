@@ -11,60 +11,53 @@ from application import database
 from application import utils
 
 
-def wrapper():
+def wrapper(data, app):
     """Wrapper for the topic modeling workflow.
     """
-    try:
-        logging.info("Just started topic modeling workflow.")
-        data = utils.get_data("corpus",
-                              "topics",
-                              "iterations",
-                              "stopwords",
-                              "mfw")
-        if len(data["corpus"]) < 10:
-            raise ValueError("Your corpus is too small. "
-                             "Please select at least 10 text files.")
-        logging.info("Fetched user data...")
-        database.insert_into("textfiles",
-                             data["corpus"])
-        logging.info("Inserted data into database.")
+    with app.app_context():
+        try:
+            logging.info("Just started topic modeling workflow.")
+            if len(data["corpus"]) < 10:
+                raise ValueError("Your corpus is too small. "
+                                    "Please select at least 10 text files.")
+            logging.info("Fetched user data...")
+    
+            # 1. Preprocess:
+            dtm, token_freqs, parameters = preprocess(data)
+            logging.info("Successfully preprocessed data.")
+            database.insert_into("token_freqs",
+                                    json.dumps(token_freqs))
+            # 2. Create model:
+            model = create_model(dtm, data["topics"], data["iterations"])
+            parameters["log_likelihood"] = int(model.loglikelihood())
+            database.insert_into("parameters", json.dumps(parameters))
+            logging.info("Successfully created topic model.")
+            # 3. Get model output:
+            topics, descriptors, document_topic = get_model_output(model, dtm)
+            logging.info("Got model output.")
+            # 4. Calculate similarities:
+            topic_similarities, document_similarities = get_similarities(document_topic)
+            logging.info("Successfully calculated topic and document similarities.")
 
-        # 1. Preprocess:
-        dtm, token_freqs, parameters = preprocess(data)
-        logging.info("Successfully preprocessed data.")
-        database.insert_into("token_freqs",
-                             json.dumps(token_freqs))
-        # 2. Create model:
-        model = create_model(dtm, data["topics"], data["iterations"])
-        parameters["log_likelihood"] = int(model.loglikelihood())
-        database.insert_into("parameters", json.dumps(parameters))
-        logging.info("Successfully created topic model.")
-        # 3. Get model output:
-        topics, descriptors, document_topic = get_model_output(model, dtm)
-        logging.info("Got model output.")
-        # 4. Calculate similarities:
-        topic_similarities, document_similarities = get_similarities(document_topic)
-        logging.info("Successfully calculated topic and document similarities.")
-
-        data = {"document_topic": document_topic.to_json(orient="index", force_ascii=False),
-                "topics": json.dumps(topics, ensure_ascii=False),
-                "document_similarities": document_similarities.to_json(force_ascii=False),
-                "topic_similarities": topic_similarities.to_json(force_ascii=False)}
-        database.insert_into("model", data)
-        logging.info("Successfully inserted data into database.")
-        logging.info("Very nice, great success!")
-    except xml.etree.ElementTree.ParseError as error:
-        logging.error("ERROR: There is something wrong with your XML files.")
-        logging.error("ERROR: {}".format(error))
-        logging.error("Redirect to error page...")
-    except UnicodeDecodeError as error:
-        logging.error("ERROR: There is something wrong with your text files. "
-                      "Are they UTF-8 encoded?")
-        logging.error("ERROR: {}".format(error))
-        logging.error("Redirect to error page...")
-    except Exception as error:
-        logging.error("ERROR: {}".format(error))
-        logging.error("Redirect to error page...")
+            data = {"document_topic": document_topic.to_json(orient="index", force_ascii=False),
+                    "topics": json.dumps(topics, ensure_ascii=False),
+                    "document_similarities": document_similarities.to_json(force_ascii=False),
+                    "topic_similarities": topic_similarities.to_json(force_ascii=False)}
+            database.insert_into("model", data)
+            logging.info("Successfully inserted data into database.")
+            logging.info("Very nice, great success!")
+        except xml.etree.ElementTree.ParseError as error:
+            logging.error("ERROR: There is something wrong with your XML files.")
+            logging.error("ERROR: {}".format(error))
+            logging.error("Redirect to error page...")
+        except UnicodeDecodeError as error:
+            logging.error("ERROR: There is something wrong with your text files. "
+                            "Are they UTF-8 encoded?")
+            logging.error("ERROR: {}".format(error))
+            logging.error("Redirect to error page...")
+        except Exception as error:
+            logging.error("ERROR: {}".format(error))
+            logging.error("Redirect to error page...")
 
 
 def preprocess(data):

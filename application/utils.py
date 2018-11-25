@@ -2,9 +2,12 @@ from datetime import datetime
 import json
 import logging
 from pathlib import Path
+import platform
 import shutil
 import sys
 import tempfile
+import threading
+import queue
 from xml.etree import ElementTree
 
 import cophi
@@ -20,6 +23,7 @@ TEMPDIR = tempfile.gettempdir()
 DATABASE = Path(TEMPDIR, "topicsexplorer.db")
 LOGFILE = Path(TEMPDIR, "topicsexplorer.log")
 DATA_EXPORT = Path(TEMPDIR, "topicsexplorer-data")
+OS = platform.system()
 
 
 def init_app(name):
@@ -58,11 +62,12 @@ def init_db(app):
     logging.debug("Initializing database...")
     db = database.get_db()
     if getattr(sys, "frozen", False):
+        logging.debug("Application is frozen.")
         root = Path(sys._MEIPASS)
     else:
-        root = Path(".")
-    with app.open_resource(str(Path(root, "schema.sql"))) as schemafile:
-        schema = schemafile.read().decode("utf-8")
+        root = "."
+    with Path(root, "schema.sql").open("r", encoding="utf-8") as schemafile:
+        schema = schemafile.read()
         db.executescript(schema)
     db.commit()
     database.close_db()
@@ -103,7 +108,6 @@ def load_textfile(textfile):
         if suffix in {".xml", ".html"}:
             content = remove_markup(content)
         return title, content
-    # If suffix not allowed, ignore file:
     else:
         return None, None
 
@@ -122,7 +126,7 @@ def remove_markup(text):
 def get_documents(textfiles):
     """Get Document objects.
     """
-    logging.info("Processing documents...")
+    logging.info("Fetching documents...")
     for textfile in textfiles:
         title, content = textfile
         yield cophi.model.Document(content, title)
@@ -248,3 +252,14 @@ def series2array(s):
     """
     for i, v in zip(s.index, s):
         yield [i, v]
+
+
+def enthread(target, args):
+    """Threads a process.
+    """
+    q = queue.Queue()
+    def wrapper():
+        q.put(target(*args))
+    t = threading.Thread(target=wrapper)
+    t.start()
+    return q

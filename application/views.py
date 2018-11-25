@@ -15,7 +15,7 @@ from application import workflow
 
 
 # Initialize logging with logfile in tempdir:
-utils.init_logging(logging.DEBUG)
+utils.init_logging(logging.INFO)
 
 # Initialize Flask application:
 web = utils.init_app("topicsexplorer")
@@ -26,9 +26,6 @@ def index():
     """Home page.
     """
     logging.debug("Calling home page endpoint...")
-    if "process" in globals() and process.is_alive():
-        logging.info("Terminating topic modeling process...")
-        process.terminate()
     # Initialize SQLite database:
     utils.init_db(web)
     logging.debug("Rendering home page template...")
@@ -64,15 +61,22 @@ def modeling():
     logging.debug("Calling modeling page endpoint...")
     # Must be global to use anywhere:
     global start
-    global process
     start = time.time()
-    process = multiprocessing.Process(target=workflow.wrapper)
-    logging.info("Initializing topic modeling process...")
-    process.start()
-    logging.info("Started topic modeling process.")
-    logging.debug("Rendering modeling page template...")
+    data = utils.get_data("corpus",
+                          "topics",
+                          "iterations",
+                          "stopwords",
+                          "mfw")
+    database.insert_into("textfiles",
+                         data["corpus"])
+    try:
+        process = utils.enthread(target=workflow.wrapper, args=(data, web))
+    except Exception as error:
+        logging.error("ERROR: {}".format(error))
+        logging.error("Redirect to error page...")
     return flask.render_template("modeling.html",
-                                 abort=True)
+                                 abort=True if utils.OS != "Windows" else False,
+                                 help=True)
 
 
 @web.route("/overview-topics")
