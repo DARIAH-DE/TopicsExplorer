@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import sys
 import webbrowser
 
 import application
@@ -21,6 +22,8 @@ if __name__ == "__main__":
 
     if args.browser:
         webbrowser.open("http://localhost:5000/")
+        application.views.web.run()
+    elif getattr(sys, "frozen", False):
         application.views.web.run()
     else:
         application.gui.run()
