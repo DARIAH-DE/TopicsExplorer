@@ -250,7 +250,8 @@
 
                 <aside class="header_aside">
                     <div class="account hidden">
-                        <a class="account_toggle -logged-out" href="?loggedin" data-real-href="https://de.dariah.eu/c/portal/login" title="Log in">
+                        <a class="account_toggle -logged-out" href="?loggedin" data-real-href="https://de.dariah.eu/c/portal/login"
+                            title="Log in">
                             <svg class="icon">
                                 <use xlink:href="#icon-import"></use>
                             </svg>
@@ -268,7 +269,8 @@
 
                         <form class="search_form" action="search" role="search">
                             <label for="overlay-search-input" class="sr-only">Suchbegriff</label>
-                            <input type="text" id="overlay-search-input" class="search_input" name="q" maxlength="99" placeholder="Suchbegriff">
+                            <input type="text" id="overlay-search-input" class="search_input" name="q" maxlength="99"
+                                placeholder="Suchbegriff">
                             <button type="submit" class="search_submit">
                                 <svg class="icon">
                                     <use xlink:href="#icon-angle-right"></use>
@@ -298,7 +300,8 @@
         <h1 class="logo">
             <a class="logo_link -large" href="" title="Home">
                 <img class="logo_logo -large" src="assets/logos/dariah-de-logo-de.svg" alt="DARIAH-DE">
-                <svg class="logo_logo -spike -large" xmlns="http://www.w3.org/2000/svg" width="518.74" height="246.549" viewBox="0 -12 518.74 246.549">
+                <svg class="logo_logo -spike -large" xmlns="http://www.w3.org/2000/svg" width="518.74" height="246.549"
+                    viewBox="0 -12 518.74 246.549">
                     <path d="M52.865 25.768c0-10.093 12.995-16.333 21.549-21.516 6.721 4.093 22.397 11.499 22.4 22.119.004 11.79-4.904 31.006-8.806 31.09-4.246.093-10.111-24.356-13.232-24.292-3.12.066-8.929 24.391-12.845 24.385-4.25-.006-9.066-20.801-9.066-31.786" />
                 </svg>
             </a>
@@ -307,254 +310,295 @@
         <main class="main">
             <div class="main_content">
                 <p>
-                    <a class="button2 u-pull-right" href="https://github.com/DARIAH-DE/TopicsExplorer">
-                        <img alt="DARIAH Topics Explorer on GitHub" src="assets/logos/github-mark.svg" style="float: right;" />
-                    </a>
-                    <h1>Allowing you to analyze and explore your own text corpora using topic models – without prior knowledge or
-                        special prerequisites.</h3>
-                        <p>This application presents a
-                            <strong>user-friendly topic modeling workflow</strong> consisting of data preprocessing, the actual modeling
-                            with
-                            <a class="reference external" href="http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf">latent Dirichlet
-                                allocation</a>, and the visualization of the model output to explore the semantic content of your
-                            text collection.</p>
-                        <p class="info-box">If you do not know anything about topic modeling or programming in general, this is where you
-                            start.</p>
-                        <h2>Summary</h2>
-                        <ul>
-                            <li>
-                                <a href="#getting started">Getting started</a>
-                            </li>
-                            <li>
-                                <a href="#application">The application</a>
-                            </li>
-                            <li>
-                                <a href="#troubleshooting">Troubleshooting</a>
-                            </li>
-                            <li>
-                                <a href="#developing">Developing</a>
-                            </li>
-                            <li>
-                                <a href="#about dariah-de">About DARIAH-DE</a>
-                            </li>
-                        </ul>
-                        <h2 id="getting started">Getting started</h2>
-                        <p>Windows, macOS, and Linux users
-                            <strong>do not</strong> have to install additional software. The application itself is
-                            <a class="reference external" href="https://en.wikipedia.org/wiki/Portable_application">portable</a>.</p>
-                        <ol class="arabic simple">
-                            <li>Go to the
-                                <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases/latest">release-section</a>
-                                and download the archive for your OS.</li>
-                            <li>Extract the content of the archive.</li>
-                            <li>Run the app by double-clicking the file
-                                <strong>DARIAH Topics Explorer</strong>.</li>
-                        </ol>
-                        <p>You can also use the developer version:</p>
-                        <ol class="arabic simple">
-                            <li>Go to the
-                                <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases/latest">release-section</a>
-                                and download the
-                                <strong>source code</strong> as ZIP archive.</li>
-                            <li>Unzip the archive, e.g. using
-                                <code>unzip</code> via the command-line.</li>
-                            <li>Make sure you have
-                                <a class="reference external" href="https://docs.pipenv.org/">Pipenv</a> installed (if not: use
-                                <code>pip install --user pipenv</code>).</li>
-                            <li>Run
-                                <code>pipenv install</code> within the extracted archive, and afterwards
-                                <code>pipenv shell</code>.</li>
-                            <li>To start the application, type
-                                <code>python topicsexplorer.py</code>, and press enter.</li>
-                        </ol>
-                        <br>
-                        <div>
-                            <h4 class="highlight center" style="padding-bottom: 0px; text-align: left;">Note</h4>
-                            <p class="highlight center" style="text-align: left;">If you want to use the sample corpus, you must clone the
-                                repository with Git (<strong>not</strong> download the source code from the
-                                <strong>release-section</strong>). See also section
-                                <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer#the-sample-corpus">The sample
-                                    corpus</a> on GitHub. If you download one of the archives (except the source code) from the release section,
-                                the corpus is included.</p>
-                        </div>
+                    <h1>Explore your own text collection with a topic model – without prior knowledge.</h1>
+                    <p>The text mining technique <i>topic modeling</i> has become a popular procedure for clustering
+                        documents
+                        into semantic groups. This application introduces a user-friendly workflow which leads from raw
+                        text
+                        data to an interactive visualization of the topic model. All you need is a text corpus and a
+                        little
+                        time.</p>
+                    <blockquote>Topic modeling algorithms are statistical methods that analyze the words of the
+                        original texts
+                        to discover the themes that run through them, how those themes are connected to each other, and
+                        how
+                        they change over time.
+                        <footer>
+                            <cite>
+                                <a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">David M. Blei</a>
+                            </cite>
+                        </footer>
+                    </blockquote>
+                </p>
+                <h2>Overview</h2>
+                <ul>
+                    <li>
+                        <a href="#getting started">Getting started</a>
+                    </li>
+                    <li>
+                        <a href="#the application">The application</a>
+                    </li>
+                    <li>
+                        <a href="#the sample corpus">The sample corpus</a>
+                    </li>
+                    <li>
+                        <a href="#example visualizations">Example visualizations</a>
+                    </li>
+                    <li>
+                        <a href="#troubleshooting">Troubleshooting</a>
+                    </li>
+                    <li>
+                        <a href="#developing">Developing</a>
+                    </li>
+                    <li>
+                        <a href="#what is topic modeling">What is topic modeling?</a>
+                    </li>
+                    <li>
+                        <a href="#what is dariah-de">What is DARIAH-DE?</a>
+                    </li>
+                    <li>
+                        <a href="#license">License</a>
+                    </li>
+                </ul>
+                <h2 id="getting started">Getting started</h2>
+                <p>Windows, macOS and Linux users
+                    <strong>do not</strong> have to install additional software. The application itself is
+                    <a class="reference external" href="https://en.wikipedia.org/wiki/Portable_application">portable</a>.</p>
+                <ol class="arabic simple">
+                    <li>Go to the
+                        <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases/latest">release-section</a>
+                        and download the archive for your OS.</li>
+                    <li>Extract the content of the archive.</li>
+                    <li>Run the app by double-clicking the file
+                        <strong>DARIAH Topics Explorer</strong>.</li>
+                </ol>
+                <p>You can also use the developer version:</p>
+                <ol class="arabic simple">
+                    <li>Go to the
+                        <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/releases/latest">release-section</a>
+                        and download the
+                        <strong>source code</strong> as ZIP archive.</li>
+                    <li>Unzip the archive, e.g. using
+                        <code>unzip</code> via the command-line.</li>
+                    <li>Make sure you have
+                        <a class="reference external" href="https://docs.pipenv.org/">Pipenv</a> installed (if not: use
+                        <code>pip install --user pipenv</code>).</li>
+                    <li>Run
+                        <code>pipenv install</code> within the extracted archive, and afterwards
+                        <code>pipenv shell</code>.</li>
+                    <li>To start the application, type
+                        <code>python topicsexplorer.py</code>, and press enter.</li>
+                </ol>
+                <br>
+                <div>
+                    <h4 class="highlight center" style="padding-bottom: 0px; text-align: left;">Note</h4>
+                    <p class="highlight center" style="text-align: left;">If you want to use the sample corpus, you
+                        must clone the
+                        repository with Git (<strong>not</strong> download the source code from the
+                        <strong>release-section</strong>). See also section
+                        <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer#the-sample-corpus">The
+                            sample
+                            corpus</a> on GitHub. If you download one of the archives (except the source code) from the
+                        release section,
+                        the corpus is included.</p>
+                </div>
 
-                        <br />
+                <br />
 
-                        <h2 id="application">The application</h2>
-                        <img style="width: 800px; margin: 0 auto;" alt="Screenshot of DARIAH Topics Explorer" src="assets/screenshot.png" />
-                        <p>Topics Explorer aims for
-                            <strong>simplicity and usability</strong>. If you are working with a large corpus (let’s say more than 200
-                            documents, 5000
-                            words each document), you may wish to use more sophisticated topic models such as those implemented in
-                            <a class="reference external" href="http://mallet.cs.umass.edu/topics.php">MALLET</a>, which is known to be more
-                            robust than standard LDA. Have a look at our Jupyter notebook introducing
-                            <a class="reference external" href="https://github.com/DARIAH-DE/Topics/blob/master/notebooks/IntroducingMallet.ipynb">topic
-                                modeling with MALLET</a>.</p>
+                <h2 id="application">The application</h2>
+                <img style="width: 800px; margin: 0 auto;" alt="Screenshot of DARIAH Topics Explorer" src="assets/screenshot.png" />
+                <p>Topics Explorer aims for
+                    <strong>simplicity and usability</strong>. If you are working with a large corpus (let’s say more
+                    than 200
+                    documents, 5000
+                    words each document), you may wish to use more sophisticated topic models such as those implemented
+                    in
+                    <a class="reference external" href="http://mallet.cs.umass.edu/topics.php">MALLET</a>, which is
+                    known to be more
+                    robust than standard LDA. Have a look at our Jupyter notebook introducing
+                    <a class="reference external" href="https://github.com/DARIAH-DE/Topics/blob/master/notebooks/IntroducingMallet.ipynb">topic
+                        modeling with MALLET</a>.</p>
 
 
-                        <h2 id="visualization">Example visualization</h2>
-                        <p>The following visualization is based on the distribution of 10 topics over a total of 10 novels (written by
-                            Charles
-                            Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). But first of all, the
-                            algorithm
-                            produces so-called topics:</p>
-                        <p>
-                            <center>
-                                <table border="0" class="dataframe">
-                                    <thead>
-                                        <tr style="text-align: right;">
-                                            <th></th>
-                                            <th>Key 1</th>
-                                            <th>Key 2</th>
-                                            <th>Key 3</th>
-                                            <th>Key 4</th>
-                                            <th>Key 5</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th>Topic 1</th>
-                                            <td>captain</td>
-                                            <td>lord</td>
-                                            <td>whom</td>
-                                            <td>over</td>
-                                            <td>young</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Topic 2</th>
-                                            <td>phineas</td>
-                                            <td>laura</td>
-                                            <td>lord</td>
-                                            <td>finn</td>
-                                            <td>kennedy</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Topic 3</th>
-                                            <td>jarndyce</td>
-                                            <td>quite</td>
-                                            <td>sir</td>
-                                            <td>richard</td>
-                                            <td>ada</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Topic 4</th>
-                                            <td>jones</td>
-                                            <td>indeed</td>
-                                            <td>adams</td>
-                                            <td>answered</td>
-                                            <td>may</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Topic 5</th>
-                                            <td>our</td>
-                                            <td>these</td>
-                                            <td>can</td>
-                                            <td>honour</td>
-                                            <td>without</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Topic 6</th>
-                                            <td>lopez</td>
-                                            <td>duke</td>
-                                            <td>wharton</td>
-                                            <td>course</td>
-                                            <td>duchess</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Topic 7</th>
-                                            <td>crawley</td>
-                                            <td>george</td>
-                                            <td>osborne</td>
-                                            <td>rebecca</td>
-                                            <td>amelia</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Topic 8</th>
-                                            <td>peggotty</td>
-                                            <td>aunt</td>
-                                            <td>mother</td>
-                                            <td>steerforth</td>
-                                            <td>murdstone</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Topic 9</th>
-                                            <td>thought</td>
-                                            <td>way</td>
-                                            <td>too</td>
-                                            <td>down</td>
-                                            <td>went</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Topic 10</th>
-                                            <td>tom</td>
-                                            <td>adam</td>
-                                            <td>maggie</td>
-                                            <td>work</td>
-                                            <td>tulliver</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </center>
-                        </p>
-                        <p>These topics describe the semantic structures of a text corpus. Every document of the corpus consists, to a
-                            certain
-                            degree, of every topic.</p>
-                        <h2 id="troubleshooting">Troubleshooting</h2>
-                        <ul class="simple">
-                            <li>If you are confronted with
-                                <strong>any problems</strong> regarding the application, use
-                                <strong>
-                                    <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/issues">GitHub issues</a>
-                                </strong> – but suggestions for improvements, wishes, or hints on typos are of course also welcome.</li>
-                            <li>Please be patient. Depending on corpus size and number of iterations, the process
-                                <strong>may take some time</strong>, meaning something between some seconds and some hours.</li>
-                            <li>If the program displays an
-                                <strong>error message at startup</strong>, make sure that you have
-                                <strong>unpacked</strong> the archive.</li>
-                            <li>If you are on a
-                                <strong>Mac</strong> and get an error message saying that the file is from an
-                                <strong>“unidentified developer”</strong>, you can override it by holding control while double-clicking. The
-                                error message
-                                will still appear, but you will be given an option to run the file anyway.</li>
-                            <li>You might get a similar error message as the one above on
-                                <strong>Windows</strong> systems:
-                                <strong>“Windows Defender SmartScreen prevented an unrecognized app from starting”</strong>. If this is the
-                                case, please
-                                select “More Info” and then “Run anyway”.</li>
-                            <li>On a
-                                <strong>Windows</strong> machine, if you are not able to start the program, if nothing happens for a long time,
-                                or if you
-                                get an error message, go to the
-                                <code>src</code> folder, search for the file
-                                <code>webapp.exe</code> and click on it.</li>
-                            <li>For more technical troubleshooting, have a look at the
-                                <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/blob/master/README.md">README</a>
-                                on GitHub.</li>
-                        </ul>
-                        <h2 id="developing">Developing</h2>
-                        <p>If you are interested in the more technical parts, using the development version in general, or even want to
-                            contribute,
-                            please check out the
-                            <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer#developing">GitHub</a> page.</p>
+                <h2 id="visualization">Example visualization</h2>
+                <p>The following visualization is based on the distribution of 10 topics over a total of 10 novels
+                    (written by
+                    Charles
+                    Dickens, George Eliot, Joseph Fielding, William Thackeray, and Anthony Trollope). But first of all,
+                    the
+                    algorithm
+                    produces so-called topics:</p>
+                <p>
+                    <center>
+                        <table border="0" class="dataframe">
+                            <thead>
+                                <tr style="text-align: right;">
+                                    <th></th>
+                                    <th>Key 1</th>
+                                    <th>Key 2</th>
+                                    <th>Key 3</th>
+                                    <th>Key 4</th>
+                                    <th>Key 5</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Topic 1</th>
+                                    <td>captain</td>
+                                    <td>lord</td>
+                                    <td>whom</td>
+                                    <td>over</td>
+                                    <td>young</td>
+                                </tr>
+                                <tr>
+                                    <th>Topic 2</th>
+                                    <td>phineas</td>
+                                    <td>laura</td>
+                                    <td>lord</td>
+                                    <td>finn</td>
+                                    <td>kennedy</td>
+                                </tr>
+                                <tr>
+                                    <th>Topic 3</th>
+                                    <td>jarndyce</td>
+                                    <td>quite</td>
+                                    <td>sir</td>
+                                    <td>richard</td>
+                                    <td>ada</td>
+                                </tr>
+                                <tr>
+                                    <th>Topic 4</th>
+                                    <td>jones</td>
+                                    <td>indeed</td>
+                                    <td>adams</td>
+                                    <td>answered</td>
+                                    <td>may</td>
+                                </tr>
+                                <tr>
+                                    <th>Topic 5</th>
+                                    <td>our</td>
+                                    <td>these</td>
+                                    <td>can</td>
+                                    <td>honour</td>
+                                    <td>without</td>
+                                </tr>
+                                <tr>
+                                    <th>Topic 6</th>
+                                    <td>lopez</td>
+                                    <td>duke</td>
+                                    <td>wharton</td>
+                                    <td>course</td>
+                                    <td>duchess</td>
+                                </tr>
+                                <tr>
+                                    <th>Topic 7</th>
+                                    <td>crawley</td>
+                                    <td>george</td>
+                                    <td>osborne</td>
+                                    <td>rebecca</td>
+                                    <td>amelia</td>
+                                </tr>
+                                <tr>
+                                    <th>Topic 8</th>
+                                    <td>peggotty</td>
+                                    <td>aunt</td>
+                                    <td>mother</td>
+                                    <td>steerforth</td>
+                                    <td>murdstone</td>
+                                </tr>
+                                <tr>
+                                    <th>Topic 9</th>
+                                    <td>thought</td>
+                                    <td>way</td>
+                                    <td>too</td>
+                                    <td>down</td>
+                                    <td>went</td>
+                                </tr>
+                                <tr>
+                                    <th>Topic 10</th>
+                                    <td>tom</td>
+                                    <td>adam</td>
+                                    <td>maggie</td>
+                                    <td>work</td>
+                                    <td>tulliver</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </center>
+                </p>
+                <p>These topics describe the semantic structures of a text corpus. Every document of the corpus
+                    consists, to a
+                    certain
+                    degree, of every topic.</p>
+                <h2 id="troubleshooting">Troubleshooting</h2>
+                <ul class="simple">
+                    <li>If you are confronted with
+                        <strong>any problems</strong> regarding the application, use
+                        <strong>
+                            <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/issues">GitHub
+                                issues</a>
+                        </strong> – but suggestions for improvements, wishes, or hints on typos are of course also
+                        welcome.</li>
+                    <li>Please be patient. Depending on corpus size and number of iterations, the process
+                        <strong>may take some time</strong>, meaning something between some seconds and some hours.</li>
+                    <li>If the program displays an
+                        <strong>error message at startup</strong>, make sure that you have
+                        <strong>unpacked</strong> the archive.</li>
+                    <li>If you are on a
+                        <strong>Mac</strong> and get an error message saying that the file is from an
+                        <strong>“unidentified developer”</strong>, you can override it by holding control while
+                        double-clicking. The
+                        error message
+                        will still appear, but you will be given an option to run the file anyway.</li>
+                    <li>You might get a similar error message as the one above on
+                        <strong>Windows</strong> systems:
+                        <strong>“Windows Defender SmartScreen prevented an unrecognized app from starting”</strong>. If
+                        this is the
+                        case, please
+                        select “More Info” and then “Run anyway”.</li>
+                    <li>On a
+                        <strong>Windows</strong> machine, if you are not able to start the program, if nothing happens
+                        for a long time,
+                        or if you
+                        get an error message, go to the
+                        <code>src</code> folder, search for the file
+                        <code>webapp.exe</code> and click on it.</li>
+                    <li>For more technical troubleshooting, have a look at the
+                        <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer/blob/master/README.md">README</a>
+                        on GitHub.</li>
+                </ul>
+                <h2 id="developing">Developing</h2>
+                <p>If you are interested in the more technical parts, using the development version in general, or even
+                    want to
+                    contribute,
+                    please check out the
+                    <a class="reference external" href="https://github.com/DARIAH-DE/TopicsExplorer#developing">GitHub</a>
+                    page.</p>
 
-                        <h2 id="about dariah">About DARIAH-DE</h2>
-                        <p>
-                            <a class="reference external" href="https://de.dariah.eu/">DARIAH-DE</a> supports research in the humanities and
-                            cultural sciences with digital methods and procedures. The research
-                            infrastructure of DARIAH-DE consists of four pillars: teaching, research, research data and technical
-                            components.
-                            As a partner in
-                            <a class="reference external" href="http://dariah.eu/">DARIAH-EU</a>, DARIAH-DE helps to bundle and network
-                            state-of-the-art activities of the digital humanities. Scientists
-                            use DARIAH, for example, to make research data available across Europe. The exchange of knowledge and expertise
-                            is
-                            thus promoted across disciplines and the possibility of discovering new scientific discourses is encouraged.</p>
-                        <p>This application has been developed with support from the DARIAH-DE initiative, the German branch of
-                            DARIAH-EU, the
-                            European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been provided by
-                            the
-                            German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610J.
-                        </p>
+                <h2 id="about dariah">About DARIAH-DE</h2>
+                <p>
+                    <a class="reference external" href="https://de.dariah.eu/">DARIAH-DE</a> supports research in the
+                    humanities and
+                    cultural sciences with digital methods and procedures. The research
+                    infrastructure of DARIAH-DE consists of four pillars: teaching, research, research data and
+                    technical
+                    components.
+                    As a partner in
+                    <a class="reference external" href="http://dariah.eu/">DARIAH-EU</a>, DARIAH-DE helps to bundle and
+                    network
+                    state-of-the-art activities of the digital humanities. Scientists
+                    use DARIAH, for example, to make research data available across Europe. The exchange of knowledge
+                    and expertise
+                    is
+                    thus promoted across disciplines and the possibility of discovering new scientific discourses is
+                    encouraged.</p>
+                <p>This application has been developed with support from the DARIAH-DE initiative, the German branch of
+                    DARIAH-EU, the
+                    European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been
+                    provided by
+                    the
+                    German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610J.
+                </p>
                 </p>
 
             </div>
@@ -587,7 +631,8 @@
             <div class="footer_right">
                 <p>
                     <a href="https://www.bmbf.de/">
-                        <img alt="Gefördert vom Bundesministerium für Bildung und Forschung" src="assets/logos/bmbf-logo.svg" height="108">
+                        <img alt="Gefördert vom Bundesministerium für Bildung und Forschung" src="assets/logos/bmbf-logo.svg"
+                            height="108">
                     </a>
                 </p>
                 <p>
