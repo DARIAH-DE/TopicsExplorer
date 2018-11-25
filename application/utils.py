@@ -47,8 +47,9 @@ def init_logging(level):
                         filemode="w")
     # Disable logging for Flask and Werkzeug
     # (this would be a lot of spam, even level INFO):
-    logging.getLogger("flask").setLevel(logging.ERROR)
-    logging.getLogger("werkzeug").setLevel(logging.ERROR)
+    if level > logging.DEBUG:
+        logging.getLogger("flask").setLevel(logging.ERROR)
+        logging.getLogger("werkzeug").setLevel(logging.ERROR)
 
 
 def init_db(app):
