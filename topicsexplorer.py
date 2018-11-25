@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 import sys
 import webbrowser
 
-import application
+from application import views
+try:
+    from application import gui
+except:
+    logging.warning("Module `gui` is not available.")
 
 
 NAME = "DARIAH Topics Explorer"
@@ -25,8 +30,12 @@ if __name__ == "__main__":
 
     if args.browser:
         webbrowser.open("http://localhost:5000/")
-        application.views.web.run()
+        views.web.run()
     elif getattr(sys, "frozen", False) or args.frozen:
-        application.views.web.run()
+        views.web.run()
     else:
-        application.gui.run()
+        try:
+            gui.run()
+        except NameError:
+            raise AttributeError("Frontend is not available. "
+                                 "Append parameter `--browser`.")
