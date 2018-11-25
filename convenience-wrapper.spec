@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['topicsexplorer-standalone.py'],
+a = Analysis(['convenience-wrapper.py'],
              pathex=[],
              binaries=[],
              datas=[],
