@@ -56,7 +56,11 @@ def init_db(app):
     """
     logging.debug("Initializing database...")
     db = database.get_db()
-    with app.open_resource("schema.sql") as schemafile:
+    if getattr(sys, "frozen", False):
+        root = Path(sys._MEIPASS)
+    else:
+        root = Path(".")
+    with app.open_resource(str(Path(root, "schema.sql")) as schemafile:
         schema = schemafile.read().decode("utf-8")
         db.executescript(schema)
     db.commit()
@@ -98,6 +102,7 @@ def load_textfile(textfile):
         if suffix in {".xml", ".html"}:
             content = remove_markup(content)
         return title, content
+    # If suffix not allowed, ignore file:
     else:
         return None, None
 
