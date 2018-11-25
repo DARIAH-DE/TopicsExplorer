@@ -23,7 +23,7 @@ Windows, macOS and Linux users **do not** have to install additional software. T
 2. Extract the content of the archive.
 3. Run the app by double-clicking the file `DARIAH Topics Explorer`.
 
-You can also use the source code:
+You can also use the source code (if you are no Windows user):
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the **source code** as ZIP archive.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
