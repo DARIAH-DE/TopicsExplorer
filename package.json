@@ -1,0 +1,65 @@
+{
+  "name": "dariah-topics-explorer-webengine",
+  "productName": "Topics Explorer :: DARIAH-DE",
+  "version": "2.0.0",
+  "description": "Explore your own text collection with a topic model – without prior knowledge.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint src --color"
+  },
+  "keywords": [
+    "lda",
+    "topic modeling",
+    "digital humanities"
+  ],
+  "author": "DARIAH-DE",
+  "license": "Apache 2.0",
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "electronPackagerConfig": {
+        "packageManager": "npm"
+      },
+      "electronWinstallerConfig": {
+        "name": "topics_explorer_webengine"
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "DARIAH-DE",
+        "name": "TopicsExplorer"
+      }
+    }
+  },
+  "dependencies": {
+    "electron-compile": "^6.4.3",
+    "electron-squirrel-startup": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "electron-forge": "^5.2.3",
+    "electron-prebuilt-compile": "3.0.10",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.11.1"
+  }
+}
