@@ -119,7 +119,7 @@ This can be _really_ hard, starting with the fact that you _have to_ create an e
 
 However, Python applications can be frozen with [PyInstaller](https://www.pyinstaller.org/). Competitor products like [cx_Freeze](https://anthony-tuininga.github.io/cx_Freeze/) or [py2exe](http://www.py2exe.org/)/[py2app](https://py2app.readthedocs.io/en/latest/) are no longer maintained, or are used much less often (which makes troubleshooting hard).
 
-The whole workflow consists of freezing backend and frontend separately. This is because there have been enormous problems with the packaging of [PyQt5](https://www.riverbankcomputing.com/software/pyqt/) (the Python-based frontend).
+The whole workflow consists of freezing backend and frontend separately. This is because there have been enormous problems with the packaging of [PyQt5](https://www.riverbankcomputing.com/software/pyqt/) (the Python-based frontend), and we are using a JavaScript-based frontend, [Electron](https://electronjs.org/), instead. To run Topics Explorer from source code, we still use PyQt5 because it works pretty well and we stick with one programming language.
 
 The backend is a [Flask](http://flask.pocoo.org/) application that is started with the script `topicsexplorer.py` and the parameter `--frozen` (or in the actually frozen application also without this parameter). The home page will be available at `http://localhost:5000`.
 
