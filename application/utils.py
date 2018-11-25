@@ -60,7 +60,7 @@ def init_db(app):
         root = Path(sys._MEIPASS)
     else:
         root = Path(".")
-    with app.open_resource(str(Path(root, "schema.sql")) as schemafile:
+    with app.open_resource(str(Path(root, "schema.sql"))) as schemafile:
         schema = schemafile.read().decode("utf-8")
         db.executescript(schema)
     db.commit()
