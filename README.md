@@ -159,12 +159,12 @@ dariah-topics-explorer-{version}-{os}/
 ├── LICENSE
 ├── README.md
 ├── sample-data/
-    ├── british-fiction-corpus/
-    └── stopwords/
+|   ├── british-fiction-corpus/
+|   └── stopwords/
 └── resources/
     ├── frontend/
-        ├── topics-explorer-frontend
-        └── ...
+    |   ├── topics-explorer-frontend
+    |   └── ...
     └── backend/
         ├── topics-explorer-backend
         └── ...
