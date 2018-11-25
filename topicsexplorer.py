@@ -17,13 +17,16 @@ if __name__ == "__main__":
     parser.add_argument("--browser",
                         action="store_true",
                         help="Use this parameter to open the UI in your default web browser.")
+    parser.add_argument("--frozen",
+                        action="store_true",
+                        help="Simulate a frozen application.")
 
     args = parser.parse_args()
 
     if args.browser:
         webbrowser.open("http://localhost:5000/")
         application.views.web.run()
-    elif getattr(sys, "frozen", False):
+    elif getattr(sys, "frozen", False) or args.frozen:
         application.views.web.run()
     else:
         application.gui.run()
