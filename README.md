@@ -10,7 +10,7 @@ The text mining technique _topic modeling_ has become a popular procedure for cl
 * [The sample corpus](#the-sample-corpus)
 * [Example visualizations](#example-visualiztaions)
 * [Troubleshooting](#troubleshooting)
-* [Source code](#source-code)
+* [Developing](#developing)
 * [What is topic modeling?](#what-is-topic-modeling?)
 * [What is DARIAH-DE?](#what-is-dariah-de?)
 * [License](#license)
@@ -75,11 +75,11 @@ Visualizing the document-topic proportions in a heatmap displays the kind of inf
 <img src="docs/img/document-topic-distributions.png" width="600px">
 
 
-## Source code
-If you wish to use the application from source, you can either `git clone` this repository, or download the [ZIP archive](https://github.com/DARIAH-DE/TopicsExplorer/archive/master.zip).
+## Developing
+As a very first step, `git clone` this repository and install the dependencies.
 
 
-### Requirements
+### Dependencies
 [Pipenv](https://docs.pipenv.org/) automatically creates and manages a virtualenv for this project. Install the tool as usual:
 
 ```
@@ -106,6 +106,68 @@ If you wish to access the application through your web browser, use the followin
 
 ```
 $ python topicsexplorer.py --browser
+```
+
+Simulating a frozen app and just starting the backend, run:
+
+```
+$ python topicsexplorer.py --frozen
+```
+
+### Freezing the backend
+This can be _really_ hard, starting with the fact that you _have to_ create an executable on the operating system you want it to run on.
+
+However, Python applications can be frozen with [PyInstaller](https://www.pyinstaller.org/). Competitor products like [cx_Freeze](https://anthony-tuininga.github.io/cx_Freeze/) or [py2exe](http://www.py2exe.org/)/[py2app](https://py2app.readthedocs.io/en/latest/) are no longer maintained, or are used much less often (which makes troubleshooting hard).
+
+The whole workflow consists of freezing backend and frontend separately. This is because there have been enormous problems with the packaging of [PyQt5](https://www.riverbankcomputing.com/software/pyqt/) (the Python-based frontend).
+
+The backend is a [Flask](http://flask.pocoo.org/) application that is started with the script `topicsexplorer.py` and the parameter `--frozen` (or in the actually frozen application also without this parameter). The home page will be available at `http://localhost:5000`.
+
+It is recommended to install the current [`develop`](https://github.com/pyinstaller/pyinstaller/tree/develop) branch from PyInstaller on GitHub. If you encounter problems, you should try different versions of the application’s dependencies.
+
+> Opening files with relative paths in the frozen app does not work. You will have to join paths with `sys._MEIPASS`, e.g. `pathlib.Path(sys._MEIPASS, "file.txt")`. In the code, however, this is already implemented in the corresponding places.
+
+PyInstaller creates a `*.spec` file in which the whole freezing process is configured. For example, if data needs to be copied (in this project: `schema.sql`), it is configured there. In general, you have the choice between a "closed" single executable, and a directory where the executable and resources are located. The application opens, obviously, in case of a directory _much faster_. It is also easier to copy data afterwards.
+
+To freeze the backend, merge `master` (or whatever branch you want to freeze) into the `freeze-backend` branch:
+
+```
+$ git checkout freeze-backend
+$ git rebase master
+```
+
+Now you can run the PyInstaller command:
+
+```
+$ pyinstaller topicsexplorer.spec
+```
+
+You can find the executable and all resources in `dist/topics-explorer-backend`.
+
+### Freezing the frontend
+This is _really_ easy. Checkout the `freeze-frontend` branch and follow the instructions in the README.
+
+
+### Putting it all together
+You now have a `topics-explorer-backend` folder containing the frozen Flask application in the form of an executable with all other resources, and a `topics-explorer-frontend` folder containing an executable with all resources. You could already deploy the application now, since you start the backend first, then the frontend. The `convenience-wrapper` branch contains a script that does just that for you. It starts a subprocess to start the backend, waits until `http://localhost:5000` is available, and then starts the frontend.
+
+Checkout the branch `convenience-wrapper`, and follow the instructions in the README. If your frozen application adheres to the following structure and everything works, congratulations, zip it and release it:
+
+```
+dariah-topics-explorer-{version}-{os}/
+├── DARIAH Topics Explorer
+├── LICENSE
+├── README.md
+├── sample-data/
+    ├── british-fiction-corpus/
+    └── stopwords/
+└── resources/
+    ├── frontend/
+        ├── topics-explorer-frontend
+        └── ...
+    └── backend/
+        ├── topics-explorer-backend
+        └── ...
 ```
 
 
