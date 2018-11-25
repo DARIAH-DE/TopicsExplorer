@@ -129,6 +129,8 @@ It is recommended to install the current [`develop`](https://github.com/pyinstal
 
 PyInstaller creates a `*.spec` file in which the whole freezing process is configured. For example, if data needs to be copied (in this project: `schema.sql`), it is configured there. In general, you have the choice between a "closed" single executable, and a directory where the executable and resources are located. The application opens, obviously, in case of a directory _much faster_. It is also easier to copy data afterwards.
 
+> It is strongly recommended to create a new, clean virtualenv from which the application will be frozen. Other packages that are not needed by the application itself may be packaged by PyInstaller, for whatever reason, which unnecessarily inflates the whole thing. It is also strongly recommended to delete the `gui.py` module, otherwise PyQt5 (~ 100 MB) will be frozen in any case.
+
 To freeze the backend, merge `master` (or whatever branch you want to freeze) into the `freeze-backend` branch:
 
 ```
