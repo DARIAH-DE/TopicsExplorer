@@ -10,6 +10,7 @@
     <script src="assets/script.js" defer></script>
     <script type="text/javascript" src="assets/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="assets/globalmenu.js"></script>
+    <script type="text/javascript" src="assets/apexcharts.min.js"></script>
 
     <title>DARIAH-DE :: Topics Explorer</title>
 </head>
@@ -544,7 +545,7 @@
                 </p>
                 <p>Each document consists to a certain extent of each topic, which is one of the theoretical assumptions of topic models. Although some values are too small to be visualized here (and have therefore been rounded to zero), they are actually greater than zero.</p>
                 <p>Visualizing the document-topic proportions in a heatmap displays the kind of information that is probably most useful. Going beyond pure exploration, it can be used to show thematic developments over a set of texts, akin to a dynamic topic model.</p>
-                <p>HIER DIE HEATMAP</p>
+                <p id="heatmap"></p>
                 <h2 id="troubleshooting">Troubleshooting</h2>
                 <ul class="simple">
                     <li>If you are confronted with
@@ -703,3 +704,51 @@ its trademarks like name or logos.</p>
         </symbol>
     </svg>
 </body>
+<script>
+
+        function plotDocumentTopicHeatmap() {
+            // Get data from API endpoint
+            const series = [{"name":"dickens_bleak","data":[{"x":"answered, young, good, ...","y":0.0390681573},{"x":"aunt, steerforth, mother, ...","y":0.0110239472},{"x":"kennedy, violet, lord, ...","y":0.000003176},{"x":"great, woman, poor, ...","y":0.1932001524},{"x":"course, house, duke, ...","y":0.0104522645},{"x":"thought, good, life, ...","y":0.2269611891},{"x":"young, play, days, ...","y":0.0090230579},{"x":"young, wife, ladies, ...","y":0.0186463825},{"x":"day, young, house, ...","y":0.4742456965},{"x":"mother, work, she's, ...","y":0.0173759766}]},{"name":"dickens_david","data":[{"x":"answered, young, good, ...","y":0.033269695},{"x":"aunt, steerforth, mother, ...","y":0.2700702216},{"x":"kennedy, violet, lord, ...","y":0.0000021944},{"x":"great, woman, poor, ...","y":0.1660324775},{"x":"course, house, duke, ...","y":0.0071121352},{"x":"thought, good, life, ...","y":0.2486965109},{"x":"young, play, days, ...","y":0.005751591},{"x":"young, wife, ladies, ...","y":0.0115887645},{"x":"day, young, house, ...","y":0.2441321045},{"x":"mother, work, she's, ...","y":0.0133443055}]},{"name":"eliot_adam","data":[{"x":"answered, young, good, ...","y":0.0290428485},{"x":"aunt, steerforth, mother, ...","y":0.0008955944},{"x":"kennedy, violet, lord, ...","y":0.000002414},{"x":"great, woman, poor, ...","y":0.1183608932},{"x":"course, house, duke, ...","y":0.0046372963},{"x":"thought, good, life, ...","y":0.2866167773},{"x":"young, play, days, ...","y":0.0031647556},{"x":"young, wife, ladies, ...","y":0.0088376584},{"x":"day, young, house, ...","y":0.1610404345},{"x":"mother, work, she's, ...","y":0.3874013277}]},{"name":"eliot_mill","data":[{"x":"answered, young, good, ...","y":0.0333355962},{"x":"aunt, steerforth, mother, ...","y":0.0038050304},{"x":"kennedy, violet, lord, ...","y":0.1738943009},{"x":"great, woman, poor, ...","y":0.1161230101},{"x":"course, house, duke, ...","y":0.0047214962},{"x":"thought, good, life, ...","y":0.3455110146},{"x":"young, play, days, ...","y":0.0047554394},{"x":"young, wife, ladies, ...","y":0.0088625641},{"x":"day, young, house, ...","y":0.1573979159},{"x":"mother, work, she's, ...","y":0.1515936323}]},{"name":"fielding_joseph","data":[{"x":"answered, young, good, ...","y":0.4556045622},{"x":"aunt, steerforth, mother, ...","y":0.0000034458},{"x":"kennedy, violet, lord, ...","y":0.0000034458},{"x":"great, woman, poor, ...","y":0.295444678},{"x":"course, house, duke, ...","y":0.0078942834},{"x":"thought, good, life, ...","y":0.164436098},{"x":"young, play, days, ...","y":0.0248475242},{"x":"young, wife, ladies, ...","y":0.005309948},{"x":"day, young, house, ...","y":0.0398022122},{"x":"mother, work, she's, ...","y":0.0066538024}]},{"name":"fielding_tom","data":[{"x":"answered, young, good, ...","y":0.477908788},{"x":"aunt, steerforth, mother, ...","y":0.000258296},{"x":"kennedy, violet, lord, ...","y":0.0000414062},{"x":"great, woman, poor, ...","y":0.2785870615},{"x":"course, house, duke, ...","y":0.0056213893},{"x":"thought, good, life, ...","y":0.1828400733},{"x":"young, play, days, ...","y":0.0167813554},{"x":"young, wife, ladies, ...","y":0.0038271191},{"x":"day, young, house, ...","y":0.0280990595},{"x":"mother, work, she's, ...","y":0.0060354516}]},{"name":"thackeray_lyndon","data":[{"x":"answered, young, good, ...","y":0.052774178},{"x":"aunt, steerforth, mother, ...","y":0.0000030138},{"x":"kennedy, violet, lord, ...","y":0.0000331515},{"x":"great, woman, poor, ...","y":0.2350471655},{"x":"course, house, duke, ...","y":0.0275790362},{"x":"thought, good, life, ...","y":0.1683825081},{"x":"young, play, days, ...","y":0.3938729996},{"x":"young, wife, ladies, ...","y":0.0562098791},{"x":"day, young, house, ...","y":0.0610017781},{"x":"mother, work, she's, ...","y":0.00509629}]},{"name":"thackeray_vanity","data":[{"x":"answered, young, good, ...","y":0.0340448878},{"x":"aunt, steerforth, mother, ...","y":0.0029226933},{"x":"kennedy, violet, lord, ...","y":0.000001425},{"x":"great, woman, poor, ...","y":0.2364674029},{"x":"course, house, duke, ...","y":0.0168450303},{"x":"thought, good, life, ...","y":0.1708457428},{"x":"young, play, days, ...","y":0.0862714642},{"x":"young, wife, ladies, ...","y":0.3231364446},{"x":"day, young, house, ...","y":0.1143156395},{"x":"mother, work, she's, ...","y":0.0151492697}]},{"name":"trollope_phineas","data":[{"x":"answered, young, good, ...","y":0.0165344103},{"x":"aunt, steerforth, mother, ...","y":0.0000023617},{"x":"kennedy, violet, lord, ...","y":0.1749114355},{"x":"great, woman, poor, ...","y":0.1326130084},{"x":"course, house, duke, ...","y":0.3379882859},{"x":"thought, good, life, ...","y":0.2768669406},{"x":"young, play, days, ...","y":0.01060649},{"x":"young, wife, ladies, ...","y":0.0056232582},{"x":"day, young, house, ...","y":0.043765056},{"x":"mother, work, she's, ...","y":0.0010887535}]},{"name":"trollope_prime","data":[{"x":"answered, young, good, ...","y":0.0207273445},{"x":"aunt, steerforth, mother, ...","y":0.0000024672},{"x":"kennedy, violet, lord, ...","y":0.000199847},{"x":"great, woman, poor, ...","y":0.1385630752},{"x":"course, house, duke, ...","y":0.4698403691},{"x":"thought, good, life, ...","y":0.3086057586},{"x":"young, play, days, ...","y":0.0131775678},{"x":"young, wife, ladies, ...","y":0.0070587945},{"x":"day, young, house, ...","y":0.037553971},{"x":"mother, work, she's, ...","y":0.0042708051}]}];
+            const height = 400;
+            const options = {
+                chart: {
+                    toolbar: {
+                        show: true,
+                        tools: {
+                            download: true,
+                        }
+                    },
+                    type: 'heatmap',
+                    height: height,
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                colors: ['#213365'],
+                series: series,
+                tooltip: {
+                    x: {
+                        show: true
+                    }
+                },
+                xaxis: {
+                    tooltip: {
+                        enabled: false,
+                    }
+                }
+            };
+
+            // Get element
+            const chart = new ApexCharts(
+                document.querySelector('#heatmap'),
+                options
+            );
+
+            // Render plot
+            chart.render();
+        };
+
+        // Call the function to plot heatmap
+        plotDocumentTopicHeatmap()
+
+</script>
