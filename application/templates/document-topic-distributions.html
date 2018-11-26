@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block main %}
+<main class="main">
+    <div class="main_content">
+        <h1>Document-Topic Distributions</h1>
+        <p>Each document consists to a certain extent of each topic, which is one of the theoretical assumptions of
+            topic models. Although some values are <i>too small</i> to be visualized here (and have therefore been
+            rounded to zero), they <i>are</i> actually greater than zero. Just export the data in the menu bar and take
+            a look at the document-topic matrix.
+        </p>
+        <p>Visualizing the document-topic proportions in a heatmap displays the kind of information that is probably
+            most useful. Going beyond pure exploration, it can be used to show thematic developments over a set of
+            texts, akin to a dynamic topic model.</p>
+        </p>
+        <p id="document-topic-heatmap"></p>
+    </div>
+    <script>
+        function formatData(data) {
+            let series = [];
+            for (let document in data) {
+                let values = {
+                    name: document,
+                    data: []
+                };
+                for (let topic in data[document]) {
+                    values['data'].push({
+                        x: topic,
+                        y: data[document][topic]
+                    });
+                };
+                series.push(values);
+            };
+            return series;
+        };
+
+        function getHeight(rows) {
+            if (rows.length < 20) {
+                return 600;
+            } else {
+                return 20 * rows.length;
+            }
+        };
+
+        function plotDocumentTopicHeatmap() {
+            // Get data from API endpoint
+            $.getJSON("{{ url_for('get_document_topic_distributions') }}", function (data) {
+                const series = formatData(data);
+                const height = getHeight(series);
+                const options = {
+                    chart: {
+                        toolbar: {
+                            show: true,
+                            tools: {
+                                download: true,
+                            }
+                        },
+                        type: 'heatmap',
+                        height: height,
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    colors: ['#213365'],
+                    series: series,
+                    tooltip: {
+                        x: {
+                            show: true
+                        }
+                    },
+                    xaxis: {
+                        tooltip: {
+                            enabled: false,
+                        }
+                    }
+                };
+
+                // Get element
+                const chart = new ApexCharts(
+                    document.querySelector('#document-topic-heatmap'),
+                    options
+                );
+
+                // Render plot
+                chart.render();
+            });
+        };
+
+        // Call the function to plot heatmap
+        plotDocumentTopicHeatmap()
+    </script>
+</main>
+{% endblock %}

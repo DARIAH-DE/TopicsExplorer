@@ -1,291 +1,250 @@
-import pickle
-import time
-import regex as re
-import pathlib
-import bokeh.plotting
-import bokeh.models
-import bokeh.layouts
-import pandas as pd
-import threading
-import lxml
-import queue
-import socket
+from datetime import datetime
+import json
+import logging
+from pathlib import Path
+import shutil
+import sys
 import tempfile
-import random
+from xml.etree import ElementTree
+
+import cophi
+import flask
+import numpy as np
+import pandas as pd
+from werkzeug.utils import secure_filename
+
+from application import database
 
 
-TOOLS = "hover, pan, reset, wheel_zoom, zoom_in, zoom_out"
-JAVASCRIPT = """
-             var f = cb_obj.value;
-             var options = %s;
-             f = f.replace(/[!\"#$&\'()*+,-.:;<=>?@^_`{}~]/g, "");
-             f = f.replace(/\s/g, "");
-
-             for (var i in options) {
-                 if (f == options[i]) {
-                     console.log("Visible: " + options[i])
-                     eval(options[i]).visible = true;
-                 }
-                 else {
-                     console.log("Unvisible: " + options[i])
-                     eval(options[i]).visible = false;
-                 }
-             }
-             """
+TEMPDIR = tempfile.gettempdir()
+DATABASE = Path(TEMPDIR, "topicsexplorer.db")
+LOGFILE = Path(TEMPDIR, "topicsexplorer.log")
+DATA_EXPORT = Path(TEMPDIR, "topicsexplorer-data")
 
 
-def compress(data, filepath):
+def init_app(name):
+    """Initialize Flask application.
     """
-    Dumps generated data.
+    logging.debug("Initializing Flask app...")
+    if getattr(sys, "frozen", False):
+        logging.debug("Application is frozen.")
+        root = Path(sys._MEIPASS)
+    else:
+        logging.debug("Application is not frozen.")
+        root = Path("application")
+    app = flask.Flask(name,
+                      template_folder=str(Path(root, "templates")),
+                      static_folder=str(Path(root, "static")))
+    return app
+
+
+def init_logging(level):
+    """Initialize logging.
     """
-    with open(filepath, "wb") as file:
-        pickle.dump(data, file)
+    logging.basicConfig(level=level,
+                        format="%(message)s",
+                        filename=str(LOGFILE),
+                        filemode="w")
+    # Disable logging for Flask and Werkzeug
+    # (this would be a lot of spam, even level INFO):
+    if level > logging.DEBUG:
+        logging.getLogger("flask").setLevel(logging.ERROR)
+        logging.getLogger("werkzeug").setLevel(logging.ERROR)
 
 
-def decompress(filepath):
+def init_db(app):
+    """Initialize SQLite database.
     """
-    Loads dumped data.
+    logging.debug("Initializing database...")
+    db = database.get_db()
+    if getattr(sys, "frozen", False):
+        root = Path(sys._MEIPASS)
+    else:
+        root = Path(".")
+    with app.open_resource(str(Path(root, "schema.sql"))) as schemafile:
+        schema = schemafile.read().decode("utf-8")
+        db.executescript(schema)
+    db.commit()
+    database.close_db()
+
+
+def format_logging(message):
+    """Format log messages.
     """
-    with open(filepath, "rb") as file:
-        return pickle.load(file)
+    if "n_documents" in message:
+        n = message.split("n_documents: ")[1]
+        return "Number of documents: {}".format(n)
+    elif "vocab_size" in message:
+        n = message.split("vocab_size: ")[1]
+        return "Number of types: {}".format(n)
+    elif "n_words" in message:
+        n = message.split("n_words: ")[1]
+        return "Number of tokens: {}".format(n)
+    elif "n_topics" in message:
+        n = message.split("n_topics: ")[1]
+        return "Number of topics: {}".format(n)
+    elif "n_iter" in message:
+        return "Initializing topic model..."
+    elif "log likelihood" in message:
+        iteration, _ = message.split("> log likelihood: ")
+        return "Iteration {}".format(iteration[1:])
+    else:
+        return message
 
 
-def load_data(tempdir):
+def load_textfile(textfile):
+    """Load text file, return title and content.
     """
-    Loads the generated data.
+    filename = Path(secure_filename(textfile.filename))
+    title = filename.stem
+    suffix = filename.suffix
+    if suffix in {".txt", ".xml", ".html"}:
+        content = textfile.read().decode("utf-8")
+        if suffix in {".xml", ".html"}:
+            content = remove_markup(content)
+        return title, content
+    # If suffix not allowed, ignore file:
+    else:
+        return None, None
+
+
+def remove_markup(text):
+    """Parse XML and drop tags.
     """
-    data_path = str(pathlib.Path(tempdir, "data.pickle"))
-    parameter_path = str(pathlib.Path(tempdir, "parameter.csv"))
-    topics_path = str(pathlib.Path(tempdir, "topics.csv"))
+    logging.info("Removing markup...")
+    tree = ElementTree.fromstring(text)
+    plaintext = ElementTree.tostring(tree,
+                                     encoding="utf8",
+                                     method="text")
+    return plaintext.decode("utf-8")
 
-    data = decompress(data_path)
-    parameter = pd.read_csv(parameter_path, index_col=0, encoding="utf-8", sep=";")
-    parameter.columns = [""]  # remove column names
-    topics = pd.read_csv(topics_path, index_col=0, encoding="utf-8", sep=";")
 
-    data["parameter"] = [parameter.to_html(classes="parameter", border=0)]
-    data["topics"] = [topics.to_html(classes="topics")]
+def get_documents(textfiles):
+    """Get Document objects.
+    """
+    logging.info("Processing documents...")
+    for textfile in textfiles:
+        title, content = textfile
+        yield cophi.model.Document(content, title)
+
+
+def get_stopwords(data, corpus):
+    """Get stopwords from file or corpus.
+    """
+    logging.info("Fetching stopwords...")
+    if "stopwords" in data:
+        _, stopwords = load_textfile(data["stopwords"])
+        stopwords = cophi.model.Document(stopwords).tokens
+    else:
+        stopwords = corpus.mfw(data["mfw"])
+    return stopwords
+
+
+def get_data(corpus, topics, iterations, stopwords, mfw):
+    """Get data from HTML forms.
+    """
+    logging.info("Processing user data...")
+    data = {"corpus": flask.request.files.getlist("corpus"),
+            "topics": int(flask.request.form["topics"]),
+            "iterations": int(flask.request.form["iterations"])}
+    if flask.request.files.get("stopwords", None):
+        data["stopwords"] = flask.request.files["stopwords"]
+    else:
+        data["mfw"] = int(flask.request.form["mfw"])
     return data
 
 
-def remove_markup(content):
+def get_topics(model, vocabulary, maximum=100):
+    """Get topics from topic model.
     """
-    Removes markup from text. If lxml fails, a simple regex is used.
+    logging.info("Fetching topics from topic model...")
+    for distribution in model.topic_word_:
+        words = list(np.array(vocabulary)[np.argsort(distribution)][:-maximum-1:-1])
+        yield "{}, ...".format(", ".join(words[:3])), words
+
+
+def get_document_topic(model, titles, descriptors):
+    """Get document-topic distribution from topic model.
     """
-    try:
-        parser = lxml.etree.XMLParser(recover=True)
-        tree = lxml.etree.parse(content, parser=parser)
-        ns = dict(tei="http://www.tei-c.org/ns/1.0")
-        lxml.etree.strip_elements(tree, "speaker", with_tail=False)
-        lxml.etree.strip_elements(tree, "note", with_tail=False)
-        lxml.etree.strip_elements(tree, "stage", with_tail=False)
-        lxml.etree.strip_elements(tree, "head", with_tail=False)
-        text = tree.xpath("//text()")
-        text = "\n".join(text)
-        text = re.sub("  ", "", text)
-        text = re.sub("    ", "", text)
-        text = re.sub("\n{1,6}", "\n", text)
-        text = re.sub("\n \n", "\n", text)
-        text = re.sub("\t\n", "", text)
-        return text
-    except:
-        text = []
-        for line in content:
-            line = re.sub("<.*?>", "", line)
-            line = re.sub("(<.[^(><.)]+>)|<.?>", "", line)
-            line = re.sub("\\n", "", line)
-            line = re.sub("[ ]{2,}", " ", line)
-            line = re.sub("<?(.*?)?>", "", line)
-            text.append(line)
-        return "".join(text)
+    logging.info("Fetching document-topic distributions from topic model...")
+    document_topic = pd.DataFrame(model.doc_topic_)
+    document_topic.index = titles
+    document_topic.columns = descriptors
+    return document_topic
 
 
-def boxplot(stats):
+def get_cosine(matrix, descriptors):
+    """Calculate cosine similarity between columns.
     """
-    Creates a boxplot for corpus statistics.
+    logging.info("Calculcating cosine similarity...")
+    d = matrix.T @ matrix
+    norm = (matrix * matrix).sum(0, keepdims=True) ** .5
+    similarities = d / norm / norm.T
+    return pd.DataFrame(similarities, index=descriptors, columns=descriptors)
+
+
+def scale(vector, minimum=50, maximum=100):
+    """Min-max scaler for a vector.
     """
-    x_labels = ["Document size (clean)", "Document size (raw)"]
-
-    groups = stats.groupby("group")
-    q1 = groups.quantile(q=0.25)
-    q2 = groups.quantile(q=0.5)
-    q3 = groups.quantile(q=0.75)
-    iqr = q3 - q1
-    upper = q3 + 1.5 * iqr
-    lower = q1 - 1.5 * iqr
-
-    def outliers(group):
-        cat = group.name
-        return group[(group.score > upper.loc[cat]["score"]) |
-                     (group.score < lower.loc[cat]["score"])]["score"]
-    out = groups.apply(outliers).dropna()
-
-    fig = bokeh.plotting.figure(tools="", background_fill_color="#EFE8E2",
-                                title="", x_range=x_labels, logo=None,
-                                sizing_mode="fixed", plot_width=500,
-                                plot_height=350)
-
-    qmin = groups.quantile(q=0.00)
-    qmax = groups.quantile(q=1.00)
-    upper.score = [min([x, y]) for (x, y) in zip(list(qmax.loc[:, "score"]), upper.score)]
-    lower.score = [max([x, y]) for (x, y) in zip(list(qmin.loc[:, "score"]), lower.score)]
-
-    fig.segment(x_labels, upper.score, x_labels, q3.score, line_color="black")
-    fig.segment(x_labels, lower.score, x_labels, q1.score, line_color="black")
-
-    fig.vbar(x_labels, 0.7, q2.score, q3.score, fill_color="#729fcf", line_color="black")
-    fig.vbar(x_labels, 0.7, q1.score, q2.score, fill_color="#729fcf", line_color="black")
-
-    fig.rect(x_labels, lower.score, 0.2, 0.01, line_color="black")
-    fig.rect(x_labels, upper.score, 0.2, 0.01, line_color="black")
-
-    fig.yaxis.axis_label = "Tokens"
-    fig.xgrid.grid_line_color = None
-    fig.ygrid.grid_line_color = "white"
-    fig.grid.grid_line_width = 2
-    fig.xaxis.major_label_text_font_size = "11pt"
-    fig.yaxis.major_label_text_font_size = "9pt"
-    return fig
+    logging.debug("Scaling data from {} to {}...".format(minimum, maximum))
+    return np.interp(vector, (vector.min(), vector.max()), (minimum, maximum))
 
 
-def barchart(document_topics, height, topics=None, script=JAVASCRIPT, tools=TOOLS):
+def export_data():
+    """Export model output to ZIP archive.
     """
-    Creates an interactive barchart for document-topics proportions.
-    """
-    y_range = document_topics.columns.tolist()
-    fig = bokeh.plotting.figure(y_range=y_range, plot_height=height, tools=tools,
-                                toolbar_location="right", sizing_mode="scale_width",
-                                logo=None)
-
-    plots = {}
-    options = document_topics.index.tolist()
-    for i, option in enumerate(options):
-        x_axis = document_topics.loc[option]
-        source = bokeh.models.ColumnDataSource(dict(Describer=y_range, Proportion=x_axis))
-        option = re.sub(" ", "_", option)
-        bar = fig.hbar(y="Describer", right="Proportion", source=source,
-                       height=0.5, color="#053967")
-        if i == 0:
-            bar.visible = True
-        else:
-            bar.visible = False
-        plots[exclude_punctuations(option)] = bar
-
-    fig.xgrid.grid_line_color = None
-    fig.x_range.start = 0
-    fig.select_one(bokeh.models.HoverTool).tooltips = [("Proportion", "@Proportion")]
-    fig.xaxis.axis_label = "Proportion"
-    fig.xaxis.major_label_text_font_size = "9pt"
-    fig.yaxis.major_label_text_font_size = "9pt"
-
-    options = list(plots.keys())
-    callback = bokeh.models.CustomJS(args=plots, code=script % options)
-
-    if len(options) < 11:
-        if topics is not None:
-            selection = [" ".join(topics.iloc[i].tolist()) + " ..." for i in range(topics.shape[0])]
-            menu = [(select, option) for select, option in zip(selection, options)]
-            label = "Select topic to display proportions"
-        else:
-            menu = [(select, option) for select, option in zip(document_topics.index, options)]
-            label = "Select document to display proportions"
-        dropdown = bokeh.models.widgets.Dropdown(label=label, menu=menu, callback=callback)
-        return bokeh.layouts.column(dropdown, fig, sizing_mode="scale_width")
+    logging.info("Creating data archive...")
+    if DATA_EXPORT.exists():
+        unlink_content(DATA_EXPORT)
     else:
-        if topics is not None:
-            what = "topic"
+        DATA_EXPORT.mkdir()
+    model, stopwords = database.select("data_export")
+    document_topic, topics, document_similarities, topic_similarities = model
+
+    logging.info("Preparing document-topic distributions...")
+    document_topic = pd.read_json(document_topic, orient="index")
+    document_topic.columns = [col.replace(",", "").replace(" ...", "") for col in document_topic.columns]
+
+    logging.info("Preparing topics...")
+    topics = pd.read_json(topics, orient="index")
+    topics.index = ["Topic {}".format(n) for n in range(topics.shape[0])]
+    topics.columns = ["Word {}".format(n) for n in  range(topics.shape[1])]
+
+    logging.info("Preparing topic similarity matrix...")
+    topic_similarities = pd.read_json(topic_similarities)
+    topic_similarities.columns = [col.replace(",", "").replace(" ...", "") for col in topic_similarities.columns]
+    topic_similarities.index = [ix.replace(",", "").replace(" ...", "") for ix in topic_similarities.index]
+
+    logging.info("Preparing document similarity matrix...")
+    document_similarities = pd.read_json(document_similarities)
+    data_export = {"document-topic-distribution": document_topic,
+                   "topics": topics,
+                   "topic-similarities": topic_similarities,
+                   "document-similarities": document_similarities,
+                   "stopwords": json.loads(stopwords)}
+
+    for name, data in data_export.items():
+        if name in {"stopwords"}:
+            with Path(DATA_EXPORT, "{}.txt".format(name)).open("w", encoding="utf-8") as file:
+                for word in data:
+                    file.write("{}\n".format(word))
         else:
-            what = "document"
-        textfield = bokeh.models.widgets.AutocompleteInput(completions=document_topics.index.tolist(),
-                                                           placeholder="Type a {}, press enter".format(what),
-                                                           css_classes=["customTextInput"],
-                                                           callback=callback)
-        return bokeh.layouts.row(fig, textfield, sizing_mode="scale_width")
+            path = Path(DATA_EXPORT, "{}.csv".format(name))
+            data.to_csv(path, sep=";", encoding="utf-8")
+    shutil.make_archive(DATA_EXPORT, "zip", DATA_EXPORT)
 
-
-def read_logfile(logfile, total_iterations):
-    """
-    Reads a logfile and returns the current number of iterations.
-    """
-    time.sleep(3)
-    pattern = re.compile("-?\d+")
-    with open(logfile, "r", encoding="utf-8") as file:
-        text = file.readlines()
-        line = text[-1][:-1]
-
-        wait = "Still initializing LDA topic model ..."
-        info = "Iteration {0} of {1} ..."
-
-        if "likelihood" in line:
-            i = pattern.findall(line)[0]
-            return i, info.format(i, total_iterations)
-        elif "n_documents" in line:
-            return 0, wait
-        elif "vocab_size" in line:
-            return 0, wait
-        elif "n_words" in line:
-            return 0, wait
-        elif "n_topics" in line:
-            return 0, wait
-        elif "n_iter" in line:
-            return 0, wait
-        else:
-            return 0, None
-
-
-def enthread(target, args):
-    """
-    Threads a process.
-    """
-    q = queue.Queue()
-    def wrapper():
-        q.put(target(*args))
-    t = threading.Thread(target=wrapper)
-    t.start()
-    return q
-
-
-def is_connected(host="8.8.8.8", port=53, timeout=3):
-    """
-    Checks if your machine is connected to the internet.
-    Host: 8.8.8.8 (google-public-dns-a.google.com)
-    OpenPort: 53/tcp
-    Service: domain (DNS/TCP)
-    """
-    try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return "include"
-    except:
-        return "exclude"
-
-
-def exclude_punctuations(s):
-    """
-    Excludes punctuations from a string.
-    """
-    exclude = set("!\"#$&'()*+,-.:;<=>?@^_`{}~")
-    s = "".join(c for c in s if c not in exclude)
-    return re.sub(" ", "", s)
-    
 
 def unlink_content(directory, pattern="*"):
+    """Deletes the content of a directory.
     """
-    Deletes the content of a directory.
-    """
-    for p in pathlib.Path(directory).rglob(pattern):
+    logging.info("Cleaning up in data directory...")
+    for p in directory.rglob(pattern):
         if p.is_file():
             p.unlink()
 
 
-def get_tempdirs(make=False):
+def series2array(s):
+    """Convert pandas Series to a 2-D array.
     """
-    Gets paths (and makes) temporary folders.
-    """
-    tempdir = tempfile.gettempdir()
-    dumpdir = pathlib.Path(tempdir, "topicsexplorerdump")
-    archivedir = pathlib.Path(tempdir, "topicsexplorerdata")
-    if make:
-        dumpdir.mkdir(exist_ok=True)
-        archivedir.mkdir(exist_ok=True)
-    return dumpdir, archivedir
+    for i, v in zip(s.index, s):
+        yield [i, v]

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block main %}
+<main class="main">
+    <div class="main_content">
+        <h1>{{ title }}</h1>
+        <p>Here you can see the distribution of all topics in the document – just hover the bar. In addition, the
+            original text, the {{ top_topics[0] }} topics, and the three most similar documents are displayed. For the
+            latter, the <a href="https://en.wikipedia.org/wiki/Cosine_similarity">cosine similarity</a> between all <i>document vectors</i> was calculated and ranked.</p>
+        <h4>Topic Distribution</h4>
+        <p class="chart">
+            {% for topic, value in distribution %}
+            <span data-balloon="{{ topic }}" data-balloon-pos="down" class="block" style="width: {{ value }}%;"></span>
+            {% endfor %}
+        </p>
+        <div class="row -narrow" style="border-top: none;">
+            <div class="column">
+                <h4 style=" margin-top: 0px;">{{ top_topics[1] }}: Related Topics</h4>
+                {% for topic in related_topics %}
+                <p><a class="main_button" style="width: 100%;" href="{{ url_for('topics', topic=topic) }}">{{ topic }}</a></p>
+                {% endfor %}
+                <h4>Top 3: Similar Documents</h4>
+                {% for title in similar_documents %}
+                <p><a class="main_button" style="width: 100%;" href="{{ url_for('documents', title=title) }}">{{ title
+                        }}</a></p>
+                {% endfor %}
+            </div>
+            <div class="column -wide">
+                <h4 style="margin-top: 0px;">Original Text</h4>
+                {% for paragraph in text %}
+                <p style="text-align: justify;">{{ paragraph }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

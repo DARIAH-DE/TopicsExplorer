@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block main %}
+<main class="main">
+    <div class="main_content">
+        <h1>A total of {{ corpus_size }} documents</h1>
+        <p>All documents of your corpus are listed here by their original filename. The longer the bar, the longer the
+            text of a document, taking pure word frequencies into account. You should consider splitting the larger documents into smaller chunks and create a new topic model to see what happens to your model.</p>
+        <p>However, explore your text corpus by <b>clicking on the document bars</b> – or select one of the other
+            tabs in the above menu.</p>
+        {% for title, proportion in proportions %}
+        <p>
+            <a style="width: {{ proportion }}%;" class="main_button" href="{{ url_for('documents', title=title) }}">{{ title }}</a>
+        </p>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}

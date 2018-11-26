@@ -1,237 +1,49 @@
-<!doctype html>
-<html lang="de">
+{% extends "base.html" %}
 
-<head>
-  <meta charset="utf-8">
-  <title>Topics Explorer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="DARIAH-DE">
-  <meta name="description" content="Topics Explorer">
-
-  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}" type="text/css" media="screen, projection"/>
-  
-  <script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.2.js')}}"></script>
-  <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
-
-  <style>
-    body {
-      background: #F3F3F3;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 14px;
-      line-height: 18px;
-      color: #2E3436;
-    }
-
-    a {
-      color: #75507B;
-    }
-
-    a:hover {
-      color: #5C3566;
-    }
-
-    a.try-again-button:hover {
-      color: white;
-      text-decoration: none;
-    }
-
-    hr {
-      border: none;
-      height: 1px;
-      background-color: #F3F3F3;
-      margin-bottom: 15px;
-      margin-top: 15px;
-    }
-
-    .modal-title {
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    .try-again-button {
-      background-color: #555753;
-      font-family: Arial, Helvetica, sans-serif;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      padding: 1.5% 3%;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      cursor: pointer;
-    }
-
-    .wrapper {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      margin-top: 15%;
-    }
-
-    #main-box {
-      background-color: #FEFFFC;
-      border: solid 1px #D3D7CF;
-      text-align: center;
-      padding-bottom: 30px;
-      padding-top: 30px;
-    }
-
-    .box {
-      margin-left: 11%;
-      margin-right: 11%;
-      background-color: #FFFFFF;
-      border-radius: 3px;
-      padding: 15px;
-      text-align: left;
-    }
-
-    #dariah-flower {
-      margin-bottom: 10px;
-      width: 50px;
-      height: 50px;
-    }
-
-    #abort-button {
-      background-color: #5E5E5E;
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      border-radius: 3px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      font-weight: bold;
-      margin-top: 5px;
-    }
-
-    #current-state {
-      font-weight: bold;
-    }
-
-    #progressbar {
-      margin-top: 10px;
-      background-color: #F3F3F3;
-      border-radius: 2px;
-      padding: 3px;
-      height: 12px;
-    }
-    
-    #inner-progressbar {
-       background-color: #053967;
-       width: 0%;
-       height: 12px;
-       border-radius: 2px;
-    }
-
-  </style>
-</head>
-
-<body>
-  <div class="modal fade" id="error-popup"></div>
-  <div class="wrapper" id="inner-content">
-    <div class="box">
-      <b>This may take a while...</b>
-      <hr>
-      <div>
-        <p id="left-box-content">How long this process takes depends on how large your selected text corpus is, and how many iterations you have selected.</p>
-        <p>In the meantime, you could take a look at the Jupyter notebook that deals with topic modeling with MALLET on our GitHub page.</p>
-      </div>
+{% block main %}
+<main class="main">
+    <div class="main_content">
+        <h1>This may take a while...</h1>
+        <p>How long this process takes depends on the size of the corpus and the number of iterations. This can range from a
+            few seconds to several hours.</p>
+        <p class="main_notice -big">
+            <img class="dariah-flower" src="{{url_for('static', filename='img/logos/dariah-rotate.gif')}}">
+            <span class="modeling-status" id="status">Fetched all text files...</span>
+        </p>
+        <p>In the meantime you might want to check out some <a href="https://github.com/DARIAH-DE/Topics/tree/master/notebooks">Jupyter notebooks</a>. These are suitable for beginners as well as for advanced users of the programming
+            language Python.
+            Doing topic modeling in a programming language like Python makes you more flexible with everything. Experimenting with an example corpus on
+            <a href="https://mybinder.org/v2/gh/DARIAH-DE/Topics/master?filepath=notebooks%2FIntroducingLda.ipynb">Binder</a> does not require any software on your local machine.</p>
+        <blockquote>With recent scientific advances in support of unsupervised machine learning topic models promise to be an
+            important component for summarizing and understanding our growing digitized archive of information.<footer>
+                <cite>
+                    <a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">David M. Blei</a>
+                </cite>
+            </footer>
+        </blockquote>
     </div>
-    <div class="box" id="main-box">
-      {% if internet == "include" %}
-        <img id="dariah-flower" src="https://raw.githubusercontent.com/DARIAH-DE/TopicsExplorer/testing/application/static/img/dariah_wait.gif">
-        <div id="current-state">Collecting user input ...</div>
-      {% else %}
-        <div id="current-state" style="margin-top: 25px;">Collecting user input ...</div>
-      {% endif %}
-      <div id="progressbar">
-          <div id="inner-progressbar"></div>
-      </div>
-      <hr>
-      <a href="javascript:history.go(-1)" id="abort-button">Cancel</a>
-    </div>
-    <div class="box">
-      <b id="right-box-heading">Did you know?</b>
-      <hr>
-      <div id="right-box-content"></div>
-  </div>
-  <script>
-    var blei = [
-      '“Topic modeling algorithms are statistical methods that analyze the words of the original texts to discover the themes that run through them, how those themes are connected to each other, and how they change over time.” (Blei 2012)',
-      '“Topic models are algorithms for discovering the main themes that pervade a large and otherwise unstructured collection of documents. Topic models can organize the collection according to the discovered themes.” (Blei 2012)',
-      '“Topic modeling algorithms can be applied to massive collections of documents. Recent advances in this field allow us to analyze streaming collections, like you might find from a Web API.” (Blei 2012)',
-      '“Topic modeling algorithms can be adapted to many kinds of data. Among other applications, they have been used to find patterns in genetic data, images, and social networks.” (Blei 2012)',
-      '“A topic is formally defined to be a distribution over a fixed vocabulary. It is assumed that these topics are specified before any data has been generated.” (Blei 2012)',
-      '“One assumption that LDA makes is the <i>bag of words</i> assumption, that the order of the words in the document does not matter.” (Blei 2012)',
-      '“With recent scientific advances in support of unsupervised machine learning topic models promise to be an important component for summarizing and understanding our growing digitized archive of information.” (Blei 2012)'
-    ]
-
-    var randInt = Math.floor(Math.random() * 7);
-    document.getElementById('right-box-content').innerHTML = blei[randInt];
-  </script>
-
-  {% for identifier, state, percent, excerpt, documents, tokens, topics, iterations in stream %}
-  <script>
-
-    var corpus = "Your corpus consists of <b>{} documents</b>, or <b>{} tokens</b>. You have selected <b>{} topics</b> at <b>{} iterations</b>."
-
-    String.prototype.format = function () {
-      var i = 0,
-        args = arguments;
-      return this.replace(/{}/g, function () {
-        return typeof args[i] != "undefined" ? args[i++] : "";
-      });
+</main>
+<script>
+    function fetchStatus() {
+        // Fetch current status from modeling process
+        $.get("{{ url_for('get_status') }}", function (message) {
+            if (message.includes('Very nice, great success!')) {
+                // Redirect to the topics overview page if modeling complete
+                window.location.replace("{{ url_for('overview_topics') }}");
+            } else if (message.includes('Redirect to error page.')) {
+                // Redirect to the error page if something went wrong
+                window.location.replace("{{ url_for('error') }}");
+            } else {
+                // Or print current status to user interface
+                $('#status').html(message);
+            };
+        });
     };
 
-    {% if identifier == "running" %}
-      document.getElementById("current-state").innerText = "{{ state }}";
-      document.getElementById("inner-progressbar").setAttribute("style", "width: {{ percent }}%;")
-      {% if excerpt | length > 1 %}
-        document.getElementById("right-box-heading").innerText = "An excerpt from your corpus";
-        document.getElementById("right-box-content").innerText = "{{ excerpt }}";
-      {% endif %}
-      {% if documents | length > 1 %}
-        document.getElementById("left-box-content").innerHTML = corpus.format("{{ documents }}", "{{ tokens }}", "{{ topics }}", "{{ iterations }}");
-      {% endif %}
-    {% elif identifier == "done" %}
-      window.location.replace("{{ url_for('model') }}");
-    {% elif identifier == "error" %}
-      var parent = document.getElementById("error-popup");
-      parent.setAttribute("role", "dialog");
-      parent.setAttribute("aria-hidden", "true");
-      var newModalDialog = document.createElement("div");
-      parent.appendChild(newModalDialog);
-      newModalDialog.setAttribute("class", "modal-dialog modal dialog centered");
-      newModalDialog.setAttribute("role", "document");
-      var newModalContent = document.createElement("div");
-      newModalDialog.appendChild(newModalContent);
-      newModalContent.setAttribute("class", "modal-content");
-      var newModalHeader = document.createElement("div");
-      newModalContent.appendChild(newModalHeader);
-      newModalHeader.setAttribute("class", "modal-header");
-      var newModalTitle = document.createElement("h3");
-      newModalTitle.setAttribute("class", "modal-title");
-      newModalTitle.innerText = "Oops! I'm very sorry, but something went wrong...";
-      newModalHeader.appendChild(newModalTitle);
-      var newModalBody = document.createElement("div");
-      newModalBody.setAttribute("class", "modal-body");
-      newModalBody.innerHTML = "Looks like something didn't work out as expected. Maybe you can figure out this error message by yourself: <br><br><b>{{ state }}</b><br><br>In any case, it would be very useful for us if you write a bug report either on <a href='https://github.com/DARIAH-DE/TopicsExplorer/issues'>GitHub</a>, or send an email to <a href='mailto:severin.simmler@stud-mail.uni-wuerzburg.de'>Severin Simmler</a>. Please include the error message from above in your report, information about your operating system, and at best some details about your corpus (esp. file format).<br><br>";
-      newModalContent.appendChild(newModalBody);
-      var newModalFooter = document.createElement("div");
-      newModalBody.appendChild(newModalFooter);
-      newModalFooter.setAttribute("class", "modal-footer");
-      var newButton = document.createElement("a");
-      newButton.setAttribute("class", "try-again-button");
-      newButton.setAttribute("href", "javascript:history.go(-1)");
-      newButton.text = "Go back and try again";
-      newModalFooter.appendChild(newButton);
-      
-      $("#error-popup").modal({
-        keyboard: false,
-        backdrop: "static"
-      });
-      $("#error-popup").modal("show");
-    {% endif %}
-  </script>
-  {% endfor %}
-</body>
-</html>
+    // Make every second a status request
+    const interval = 1000;
+
+    // Call the function with interval
+    setInterval(fetchStatus, interval);
+</script>
+{% endblock %}
