@@ -2,11 +2,12 @@ import logging
 from pathlib import Path
 import sys
 import xml
-sys.path.insert(0, str(Path(".").absolute()))
 
 import cophi
 import numpy as np
 import pytest
+
+sys.path.insert(0, str(Path(".").absolute()))
 
 from application import utils
 
