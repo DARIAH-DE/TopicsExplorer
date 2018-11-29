@@ -23,6 +23,8 @@ Windows, macOS and Linux users **do not** have to install additional software. T
 2. Extract the content of the archive.
 3. Run the app by double-clicking the file `DARIAH Topics Explorer`.
 
+> If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway. **You will have to do this for two executables**. First, “topics-explorer-webengine” in the folder `resources/webengine`, afterwards “DARIAH Topics Explorer”.
+
 You can also use the source code (if you are not on Windows):
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the **source code** as ZIP archive.
