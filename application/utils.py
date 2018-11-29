@@ -137,8 +137,7 @@ def get_stopwords(data, corpus):
     """
     logging.info("Fetching stopwords...")
     if "stopwords" in data:
-        _, stopwords = load_textfile(data["stopwords"])
-        stopwords = cophi.model.Document(stopwords).tokens
+        stopwords = cophi.model.Document(data["stopwords"]).tokens
     else:
         stopwords = corpus.mfw(data["mfw"])
     return stopwords
@@ -152,7 +151,9 @@ def get_data(corpus, topics, iterations, stopwords, mfw):
             "topics": int(flask.request.form["topics"]),
             "iterations": int(flask.request.form["iterations"])}
     if flask.request.files.get("stopwords", None):
-        data["stopwords"] = flask.request.files["stopwords"]
+        textfile = flask.request.files["stopwords"]
+        _, stopwords = load_textfile(textfile)
+        data["stopwords"] = stopwords
     else:
         data["mfw"] = int(flask.request.form["mfw"])
     return data
