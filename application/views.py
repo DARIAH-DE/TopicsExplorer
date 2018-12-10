@@ -15,7 +15,7 @@ from application import workflow
 
 
 # Initialize logging with logfile in tempdir:
-utils.init_logging(logging.DEBUG)
+utils.init_logging(logging.INFO)
 
 # Initialize Flask application:
 web = utils.init_app("topicsexplorer")
