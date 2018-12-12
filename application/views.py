@@ -192,7 +192,6 @@ def topics(topic):
     similar_topics = topic_similarites[topic].sort_values(ascending=False)[1:4]
     logging.debug("Rendering topic page template...")
     return flask.render_template("detail-topic.html",
-                                 current="topics",
                                  help=True,
                                  reset=True,
                                  topics=True,
@@ -236,7 +235,6 @@ def documents(title):
                   "Top {}".format(n)]
     logging.debug("Rendering document page template...")
     return flask.render_template("detail-document.html",
-                                 current="documents",
                                  help=True,
                                  reset=True,
                                  topics=True,
