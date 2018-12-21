@@ -43,8 +43,10 @@ def wrapper():
         topics, descriptors, document_topic = get_model_output(model, dtm)
         logging.info("Got model output.")
         # 4. Calculate similarities:
-        topic_similarities, document_similarities = get_similarities(document_topic)
-        logging.info("Successfully calculated topic and document similarities.")
+        topic_similarities, document_similarities = get_similarities(
+            document_topic)
+        logging.info(
+            "Successfully calculated topic and document similarities.")
 
         data = {"document_topic": document_topic.to_json(orient="index", force_ascii=False),
                 "topics": json.dumps(topics, ensure_ascii=False),

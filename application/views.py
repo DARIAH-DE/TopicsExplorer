@@ -172,18 +172,22 @@ def topics(topic):
     logging.info("Get topics...")
     topics = json.loads(get_topics())
     logging.info("Get document-topic distributions...")
-    document_topic = pd.read_json(get_document_topic_distributions(), orient="index")
+    document_topic = pd.read_json(
+        get_document_topic_distributions(), orient="index")
     logging.info("Get topic similarity matrix...")
     topic_similarites = pd.read_json(get_topic_similarities())
 
     logging.info("Get related documents...")
     related_docs = document_topic[topic].sort_values(ascending=False)[:10]
     related_docs_proportions = utils.scale(related_docs, minimum=70)
-    related_docs_proportions = pd.Series(related_docs_proportions, index=related_docs.index)
-    related_docs_proportions = related_docs_proportions.sort_values(ascending=False)
+    related_docs_proportions = pd.Series(
+        related_docs_proportions, index=related_docs.index)
+    related_docs_proportions = related_docs_proportions.sort_values(
+        ascending=False)
 
     # Convert pandas.Series to a 2-D array:
-    related_docs_proportions = list(utils.series2array(related_docs_proportions))
+    related_docs_proportions = list(
+        utils.series2array(related_docs_proportions))
 
     logging.info("Get related words...")
     related_words = topics[topic][:15]
@@ -213,19 +217,24 @@ def documents(title):
     logging.info("Get textfiles...")
     text = get_textfile(title)
     logging.info("Get document-topics distributions...")
-    document_topic = pd.read_json(get_document_topic_distributions(), orient="index")
+    document_topic = pd.read_json(
+        get_document_topic_distributions(), orient="index")
     logging.info("Get document similarity matrix...")
     document_similarites = pd.read_json(get_document_similarities())
 
     logging.info("Get related topics...")
-    related_topics = document_topic.loc[title].sort_values(ascending=False) * 100
+    related_topics = document_topic.loc[title].sort_values(
+        ascending=False) * 100
     distribution = list(related_topics.to_dict().items())
 
     logging.info("Get similar documents...")
-    similar_docs = document_similarites[title].sort_values(ascending=False)[1:4]
+    similar_docs = document_similarites[title].sort_values(ascending=False)[
+        1:4]
 
-    logging.debug("Use only the first 10000 characters (or less) from document...")
-    text = text if len(text) < 10000 else "{}... This was an excerpt of the original text.".format(text[:10000])
+    logging.debug(
+        "Use only the first 10000 characters (or less) from document...")
+    text = text if len(
+        text) < 10000 else "{}... This was an excerpt of the original text.".format(text[:10000])
 
     logging.debug("Split paragraphs...")
     text = text.split("\n\n")
@@ -378,6 +387,7 @@ def handle_http_exception(e):
     """Handle errors..
     """
     return error()
+
 
 for code in werkzeug.exceptions.default_exceptions:
     web.errorhandler(code)(handle_http_exception)

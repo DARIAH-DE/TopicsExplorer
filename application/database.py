@@ -30,7 +30,7 @@ def _insert_into_textfiles(db, data):
         if content:
             logging.info("Insert '{}' into database...".format(title))
             db.execute("""
-                    INSERT INTO textfiles (title, content) 
+                    INSERT INTO textfiles (title, content)
                     VALUES(?, ?);
                     """, [title, content])
 
@@ -38,7 +38,7 @@ def _insert_into_textfiles(db, data):
 def _insert_into_token_freqs(db, data):
     logging.info("Insert token frequencies into database...")
     db.execute("""
-               INSERT INTO token_freqs (content) 
+               INSERT INTO token_freqs (content)
                VALUES(?);
                """, [data])
 
@@ -75,9 +75,9 @@ def _update_textfile_sizes(db, data):
     logging.info("Update textfile sizes in database...")
     for title, size in data.items():
         db.execute("""
-                   UPDATE textfiles 
-                   SET size = ? 
-                   WHERE title = ?; 
+                   UPDATE textfiles
+                   SET size = ?
+                   WHERE title = ?;
                    """,
                    [size, title])
 
@@ -148,7 +148,7 @@ def _select_textfile_sizes(cursor):
 def _select_parameters(cursor):
     logging.info("Select parameters from database...")
     return cursor.execute("""
-                           SELECT content 
+                           SELECT content
                            FROM parameters;
                            """).fetchone()
 
@@ -156,7 +156,7 @@ def _select_parameters(cursor):
 def _select_stopwords(cursor):
     logging.info("Select stopwords from database...")
     return cursor.execute("""
-                          SELECT content 
+                          SELECT content
                           FROM stopwords;
                           """).fetchone()[0]
 
@@ -164,7 +164,7 @@ def _select_stopwords(cursor):
 def _select_document_similarities(cursor):
     logging.info("Select document similarity matrix from database...")
     return cursor.execute("""
-                          SELECT document_similarities 
+                          SELECT document_similarities
                           FROM model;
                           """).fetchone()[0]
 
@@ -172,7 +172,7 @@ def _select_document_similarities(cursor):
 def _select_topic_similarities(cursor):
     logging.info("Select topic similarity matrix from database...")
     return cursor.execute("""
-                          SELECT topic_similarities 
+                          SELECT topic_similarities
                           FROM model;
                           """).fetchone()[0]
 
@@ -180,7 +180,7 @@ def _select_topic_similarities(cursor):
 def _select_token_freqs(cursor):
     logging.info("Select token frequencies from database...")
     return cursor.execute("""
-                          SELECT content 
+                          SELECT content
                           FROM token_freqs;
                           """).fetchone()[0]
 
@@ -188,7 +188,7 @@ def _select_token_freqs(cursor):
 def _select_textfiles(cursor):
     logging.info("Select textfiles from database...")
     return cursor.execute("""
-                   SELECT title, content 
+                   SELECT title, content
                    FROM textfiles;
                    """).fetchall()
 
@@ -196,7 +196,7 @@ def _select_textfiles(cursor):
 def _select_document_topic_distributions(cursor):
     logging.info("Select document-topic distributions from database...")
     return cursor.execute("""
-                          SELECT document_topic 
+                          SELECT document_topic
                           FROM model;
                           """).fetchone()[0]
 
@@ -204,7 +204,7 @@ def _select_document_topic_distributions(cursor):
 def _select_topics(cursor):
     logging.info("Select topics from database...")
     return cursor.execute("""
-                              SELECT topics 
+                              SELECT topics
                               FROM model;
                               """).fetchone()[0]
 
@@ -212,7 +212,7 @@ def _select_topics(cursor):
 def _select_textfile(cursor, title):
     logging.info("Select '{}' from database...".format(title))
     return cursor.execute("""
-                          SELECT content 
+                          SELECT content
                           FROM textfiles
                           WHERE title = ?;
                           """, [title]).fetchone()[0]
@@ -223,7 +223,7 @@ def _select_data_export(cursor):
 
     logging.info("Select model output from database...")
     model = cursor.execute("""
-                           SELECT document_topic, topics, document_similarities, topic_similarities 
+                           SELECT document_topic, topics, document_similarities, topic_similarities
                            FROM model;
                            """).fetchone()
     return model, stopwords

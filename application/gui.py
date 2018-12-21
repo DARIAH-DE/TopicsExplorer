@@ -16,30 +16,31 @@ PORT = 5000
 
 # This is for high DPI scaling:
 if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
-    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    QtWidgets.QApplication.setAttribute(
+        QtCore.Qt.AA_EnableHighDpiScaling, True)
 if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
 
 def download_request(item):
-        """Opens a file dialog to save the ZIP archive.
-        """
-        mimetype = item.mimeType()
-        if "octet-stream" in mimetype:
-            ext = ".png"
-        elif "svg" in item.mimeType():
-            ext = ".svg"
-        elif "zip" in mimetype:
-            ext = ".zip"
-        else:
-            ext = ""
+    """Opens a file dialog to save the ZIP archive.
+    """
+    mimetype = item.mimeType()
+    if "octet-stream" in mimetype:
+        ext = ".png"
+    elif "svg" in item.mimeType():
+        ext = ".svg"
+    elif "zip" in mimetype:
+        ext = ".zip"
+    else:
+        ext = ""
 
-        path = QtWidgets.QFileDialog.getSaveFileName(None,
-                                                    "Select destination folder and file name",
-                                                    "",
-                                                    "")[0]
-        item.setPath("{path}{ext}".format(path=path, ext=ext))
-        item.accept()
+    path = QtWidgets.QFileDialog.getSaveFileName(None,
+                                                 "Select destination folder and file name",
+                                                 "",
+                                                 "")[0]
+    item.setPath("{path}{ext}".format(path=path, ext=ext))
+    item.accept()
 
 
 class ApplicationThread(QtCore.QThread):
@@ -83,7 +84,7 @@ def init_gui(application, port=PORT, argv=None, title=TITLE, icon=ICON):
     qtapp = QtWidgets.QApplication(argv)
     web = ApplicationThread(application, port)
     web.start()
-    
+
     def kill(application=web):
         """Kill the Flask process.
         """
@@ -91,7 +92,7 @@ def init_gui(application, port=PORT, argv=None, title=TITLE, icon=ICON):
 
     qtapp.aboutToQuit.connect(kill)
 
-    # Setting width and height individually based on the 
+    # Setting width and height individually based on the
     # screen resolution: 93% of the screen for width,
     # 80% for height:
     screen = qtapp.primaryScreen()
@@ -104,11 +105,11 @@ def init_gui(application, port=PORT, argv=None, title=TITLE, icon=ICON):
     webview.resize(width, height)
     webview.setWindowTitle(title)
     webview.setWindowIcon(QtGui.QIcon(icon))
-    
+
     page = WebPage('http://localhost:{}'.format(port))
     page.home()
     webview.setPage(page)
-    
+
     # If the user clicks a download button, a window pops up:
     webview.page().profile().downloadRequested.connect(download_request)
 

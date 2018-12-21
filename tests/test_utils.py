@@ -19,13 +19,16 @@ def test_init_app():
     app = utils.init_app(TEST_STRING)
     assert app.name == TEST_STRING
 
+
 def test_init_logging():
     # TODO
     pass
 
+
 def test_init_db():
     # TODO
     pass
+
 
 def test_format_logging():
     a = "n_documents: 1"
@@ -55,6 +58,7 @@ def test_remove_markup():
         text = "<tag>{}</anothertag>".format(TEST_STRING)
         utils.remove_markup(text)
 
+
 def test_get_documents():
     textfiles = [("A", "This is a document.")]
     documents = list(utils.get_documents(textfiles))
@@ -62,25 +66,29 @@ def test_get_documents():
         assert document.title == "A"
         assert document.text == "This is a document."
 
+
 def test_get_stopwords():
     # TODO
     pass
+
 
 def test_get_data():
     # TODO
     pass
 
+
 def test_get_topics():
     # TODO
     pass
 
+
 def test_get_document_topic():
     # TODO
     pass
+
 
 def test_get_cosine():
     matrix = np.array([[1, 2], [1, 3]])
     descriptors = ["A", "B"]
     similarites = utils.get_cosine(matrix, descriptors)
     assert similarites.sum().sum() == 3.9611613513818402
-

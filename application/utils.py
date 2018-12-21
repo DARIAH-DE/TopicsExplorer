@@ -159,7 +159,8 @@ def get_topics(model, vocabulary, maximum=100):
     """
     logging.info("Fetching topics from topic model...")
     for distribution in model.topic_word_:
-        words = list(np.array(vocabulary)[np.argsort(distribution)][:-maximum-1:-1])
+        words = list(np.array(vocabulary)[
+                     np.argsort(distribution)][:-maximum - 1:-1])
         yield "{}, ...".format(", ".join(words[:3])), words
 
 
@@ -203,17 +204,20 @@ def export_data():
 
     logging.info("Preparing document-topic distributions...")
     document_topic = pd.read_json(document_topic, orient="index")
-    document_topic.columns = [col.replace(",", "").replace(" ...", "") for col in document_topic.columns]
+    document_topic.columns = [col.replace(",", "").replace(
+        " ...", "") for col in document_topic.columns]
 
     logging.info("Preparing topics...")
     topics = pd.read_json(topics, orient="index")
     topics.index = ["Topic {}".format(n) for n in range(topics.shape[0])]
-    topics.columns = ["Word {}".format(n) for n in  range(topics.shape[1])]
+    topics.columns = ["Word {}".format(n) for n in range(topics.shape[1])]
 
     logging.info("Preparing topic similarity matrix...")
     topic_similarities = pd.read_json(topic_similarities)
-    topic_similarities.columns = [col.replace(",", "").replace(" ...", "") for col in topic_similarities.columns]
-    topic_similarities.index = [ix.replace(",", "").replace(" ...", "") for ix in topic_similarities.index]
+    topic_similarities.columns = [col.replace(",", "").replace(
+        " ...", "") for col in topic_similarities.columns]
+    topic_similarities.index = [ix.replace(",", "").replace(
+        " ...", "") for ix in topic_similarities.index]
 
     logging.info("Preparing document similarity matrix...")
     document_similarities = pd.read_json(document_similarities)
