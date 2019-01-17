@@ -123,7 +123,6 @@ def overview_topics():
 def showGraph():
     logging.debug("Calling page for graph...")
 
-
     cutoff = flask.request.args.get(key='a',
                                     default=666,
                                     type=int)
@@ -139,6 +138,7 @@ def showGraph():
                                  document_topic_distributions=True,
                                  parameters=True,
                                  export_data=True,
+                                 go_back=True,
                                  corpus_size=corpus_size
                                  )
 
@@ -173,6 +173,7 @@ def overview_documents():
                                  graph=True,
                                  parameters=True,
                                  export_data=True,
+                                 go_back=True,
                                  proportions=proportions,
                                  corpus_size=corpus_size)
 
@@ -192,7 +193,8 @@ def document_topic_distributions():
                                  document_topic_distributions=True,
                                  graph=True,
                                  parameters=True,
-                                 export_data=True)
+                                 export_data=True,
+                                 go_back=True)
 
 
 @web.route("/topics/<topic>")
@@ -234,6 +236,7 @@ def topics(topic):
                                  document_topic_distributions=True,
                                  parameters=True,
                                  export_data=True,
+                                 go_back=True,
                                  topic=topic,
                                  similar_topics=similar_topics.index,
                                  related_words=related_words,
@@ -282,6 +285,7 @@ def documents(title):
                                  document_topic_distributions=True,
                                  parameters=True,
                                  export_data=True,
+                                 go_back=True,
                                  title=title,
                                  text=text,
                                  distribution=distribution,
@@ -308,6 +312,7 @@ def parameters():
                                  documents=True,
                                  document_topic_distributions=True,
                                  export_data=True,
+                                 go_back=True,
                                  **info)
 
 
