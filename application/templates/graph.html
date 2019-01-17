@@ -13,7 +13,7 @@
 
 
             <div class="slidecontainer">
-                <input type="range" min="50" max="95" value="75" class="slider" id="myRange">
+                <input type="range" min="5" max="99" value="75" class="slider" id="myRange" onchange="show_doc_doc_graph()">
                 <p>Cutoff: <span id="demo"></span></p>
             </div>
 
@@ -28,6 +28,13 @@
                 </div>
             </div>
         </div>
+
+    <p data-balloon-visible="True">
+        The slider will be an explorative feature; it lets you change the cutoff, with which the connections between the
+        single works are linked with edges...
+        The default setting is a cosine-similarity of .75 and the default range is from .5 (showing more edges) to .95
+        (showing only the edges for most similar works)
+    </p>
     </main>
 
     <script type="text/javascript">
@@ -35,7 +42,19 @@
         function show_doc_doc_graph() {
             $.getJSON("{{url_for('preprocessGraph')}}", function (data) {
 
+                var cutoff = document.getElementById("myRange").value;
+
                 var graph = data;
+
+                {# TODO: check in graph and only use only edges with value > cutoff #}
+
+                for(var i in graph.edges){
+                    if(graph.edges[i].value * 100 < cutoff){
+                        graph.edges.splice(i, 1);
+                        {#console.log(graph.edges.length());#}
+                    }
+                }
+
 
                 var options = {
                     nodes: {
@@ -46,9 +65,8 @@
                             type: 'continuous'
                         }
                     },
-                    font: {
-                        size: 35,
-                    },
+                    {#font: {#}
+                    {#    size: 35,#}
                     width: '1200px',
                     height: '600px',
                     //width: window.innerWidth,
@@ -105,9 +123,11 @@
                 output.innerHTML = slider.value; // Display the default slider value
 
 // Update the current slider value (each time you drag the slider handle)
+
+                {#TODO: JS-Slider-Value --> handover to views.py --> "reload" graph (no "live-interaction")#}
                 slider.oninput = function () {
                     output.innerHTML = this.value / 100;
-                    $.post('/graph', output);
+                    output.innerHTML = graph.edges.length();
                 }
 
             });

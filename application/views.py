@@ -122,7 +122,7 @@ def overview_topics():
 @web.route("/graph", methods=["POST", "GET"])
 def showGraph():
     if flask.request.method == "POST":
-        cutoff = flask.request.args.get(key='output', type=float)
+        cutoff = flask.request.args.get(key='cutoff', type=float)
         print()
 
     # logging.debug("Calling page for graph...")

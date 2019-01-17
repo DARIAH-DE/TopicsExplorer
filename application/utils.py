@@ -255,7 +255,7 @@ def series2array(s):
         yield [i, v]
 
 
-def createJsonGraph(graph, cutoff=.75):
+def createJsonGraph(graph, cutoff=.25):
     # create DataFrame for easier handling
     # TODO: sort Dataframe by Index and Columns! --> else: not "symmetrical" --Done below
     # df = pd.DataFrame(graph)
@@ -276,7 +276,9 @@ def createJsonGraph(graph, cutoff=.75):
 
     # TODO: translate from label to id
 
+    # translation: map title to a number and then undo it again...
     translation = {}
+
     nodes = []
     edges = []
 
@@ -295,7 +297,7 @@ def createJsonGraph(graph, cutoff=.75):
     for f, j in graph.items():
         for g, h in j.items():
             # below: which similarity is cut off --> for non-total-linked graph
-            if h < 1.0 and h >= cutoff:
+            if h < 1.0:# and h >= cutoff:
                 # if h >= 0.75:
                 # if h < 1.0:
                 edges.append({'from': translation[f], 'to': translation[g], 'value': h})
