@@ -12,7 +12,7 @@ from application import views
 PARENT = Path(__file__).parent
 TITLE = "Topics Explorer :: DARIAH-DE"
 ICON = str(Path(PARENT, "static", "img", "logos", "favicon-template.png"))
-PORT = 5000
+PORT = 5010
 
 # This is for high DPI scaling:
 if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
@@ -53,7 +53,7 @@ class ApplicationThread(QtCore.QThread):
         self.wait()
 
     def run(self):
-        self.application.run(port=self.port)
+        self.application.run(port=self.port, debug=True)
 
 
 class WebPage(QtWebEngineWidgets.QWebEnginePage):

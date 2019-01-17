@@ -13,7 +13,6 @@ from application import database
 from application import utils
 from application import workflow
 
-
 # Initialize logging with logfile in tempdir:
 utils.init_logging(logging.INFO)
 
@@ -119,6 +118,36 @@ def overview_topics():
                                  number_topics=number_topics)
 
 
+# added for graph
+@web.route("/graph", methods=["POST", "GET"])
+def showGraph():
+    logging.debug("Calling page for graph...")
+
+
+    cutoff = flask.request.args.get(key='a',
+                                    default=666,
+                                    type=int)
+    corpus_size = get_corpus_size()
+    print(cutoff)
+    return flask.render_template("graph.html",
+                                 current="graph",
+                                 help=True,
+                                 reset=True,
+                                 topics=True,
+                                 graph=True,
+                                 documents=True,
+                                 document_topic_distributions=True,
+                                 parameters=True,
+                                 export_data=True,
+                                 corpus_size=corpus_size
+                                 )
+
+
+@web.route("/api/graph")
+def preprocessGraph():
+    return utils.createJsonGraph(get_document_similarities())
+
+
 @web.route("/overview-documents")
 def overview_documents():
     """Documents overview page.
@@ -141,6 +170,7 @@ def overview_documents():
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
+                                 graph=True,
                                  parameters=True,
                                  export_data=True,
                                  proportions=proportions,
@@ -160,6 +190,7 @@ def document_topic_distributions():
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
+                                 graph=True,
                                  parameters=True,
                                  export_data=True)
 
@@ -229,7 +260,7 @@ def documents(title):
 
     logging.info("Get similar documents...")
     similar_docs = document_similarites[title].sort_values(ascending=False)[
-        1:4]
+                   1:4]
 
     logging.debug(
         "Use only the first 10000 characters (or less) from document...")
