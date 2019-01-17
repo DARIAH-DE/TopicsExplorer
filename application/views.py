@@ -121,11 +121,17 @@ def overview_topics():
 # added for graph
 @web.route("/graph", methods=["POST", "GET"])
 def showGraph():
-    logging.debug("Calling page for graph...")
+    if flask.request.method == "POST":
+        cutoff = flask.request.args.get(key='output', type=float)
+        print()
 
-    cutoff = flask.request.args.get(key='a',
-                                    default=666,
-                                    type=int)
+    # logging.debug("Calling page for graph...")
+    #
+    # cutoff = flask.request.args.get(key='a',
+    #                                 default=666,
+    #                                 type=int)
+
+    cutoff = None
     corpus_size = get_corpus_size()
     print(cutoff)
     return flask.render_template("graph.html",
@@ -146,6 +152,7 @@ def showGraph():
 @web.route("/api/graph")
 def preprocessGraph():
     return utils.createJsonGraph(get_document_similarities())
+# end graph
 
 
 @web.route("/overview-documents")
