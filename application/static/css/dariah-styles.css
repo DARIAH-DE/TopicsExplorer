@@ -1101,9 +1101,14 @@ th {
 }
 
 .header {
+    z-index: 10;
     background: #213365;
     padding: 0 12px;
-    position: relative
+    /*position: relative;*/
+    position: fixed;
+    top: 0;
+    width: 100%
+
 }
 
 .header:after,
@@ -1462,6 +1467,7 @@ th {
 }
 
 .main {
+    margin-top: 60px;
     -webkit-transition: -webkit-filter .2s;
     transition: -webkit-filter .2s;
     transition: filter .2s;
