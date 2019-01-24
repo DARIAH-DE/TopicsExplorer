@@ -13,7 +13,6 @@ from application import database
 from application import utils
 from application import workflow
 
-
 # Initialize logging with logfile in tempdir:
 utils.init_logging(logging.INFO)
 
@@ -119,6 +118,43 @@ def overview_topics():
                                  number_topics=number_topics)
 
 
+# added for graph
+@web.route("/graph", methods=["POST", "GET"])
+def showGraph():
+    if flask.request.method == "POST":
+        cutoff = flask.request.args.get(key='cutoff', type=float)
+        print()
+
+    # logging.debug("Calling page for graph...")
+    #
+    # cutoff = flask.request.args.get(key='a',
+    #                                 default=666,
+    #                                 type=int)
+
+    cutoff = None
+    corpus_size = get_corpus_size()
+    print(cutoff)
+    return flask.render_template("graph.html",
+                                 current="graph",
+                                 help=True,
+                                 reset=True,
+                                 topics=True,
+                                 graph=True,
+                                 documents=True,
+                                 document_topic_distributions=True,
+                                 parameters=True,
+                                 export_data=True,
+                                 go_back=True,
+                                 corpus_size=corpus_size
+                                 )
+
+
+@web.route("/api/graph")
+def preprocessGraph():
+    return utils.createJsonGraph(get_document_similarities())
+# end graph
+
+
 @web.route("/overview-documents")
 def overview_documents():
     """Documents overview page.
@@ -141,8 +177,10 @@ def overview_documents():
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
+                                 graph=True,
                                  parameters=True,
                                  export_data=True,
+                                 go_back=True,
                                  proportions=proportions,
                                  corpus_size=corpus_size)
 
@@ -160,8 +198,10 @@ def document_topic_distributions():
                                  topics=True,
                                  documents=True,
                                  document_topic_distributions=True,
+                                 graph=True,
                                  parameters=True,
-                                 export_data=True)
+                                 export_data=True,
+                                 go_back=True)
 
 
 @web.route("/topics/<topic>")
@@ -203,6 +243,7 @@ def topics(topic):
                                  document_topic_distributions=True,
                                  parameters=True,
                                  export_data=True,
+                                 go_back=True,
                                  topic=topic,
                                  similar_topics=similar_topics.index,
                                  related_words=related_words,
@@ -229,7 +270,7 @@ def documents(title):
 
     logging.info("Get similar documents...")
     similar_docs = document_similarites[title].sort_values(ascending=False)[
-        1:4]
+                   1:4]
 
     logging.debug(
         "Use only the first 10000 characters (or less) from document...")
@@ -251,6 +292,7 @@ def documents(title):
                                  document_topic_distributions=True,
                                  parameters=True,
                                  export_data=True,
+                                 go_back=True,
                                  title=title,
                                  text=text,
                                  distribution=distribution,
@@ -277,6 +319,7 @@ def parameters():
                                  documents=True,
                                  document_topic_distributions=True,
                                  export_data=True,
+                                 go_back=True,
                                  **info)
 
 

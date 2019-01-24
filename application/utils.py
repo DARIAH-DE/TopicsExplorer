@@ -7,6 +7,8 @@ import sys
 import tempfile
 from xml.etree import ElementTree
 
+import re
+
 import cophi
 import flask
 import numpy as np
@@ -14,7 +16,6 @@ import pandas as pd
 from werkzeug.utils import secure_filename
 
 from application import database
-
 
 TEMPDIR = tempfile.gettempdir()
 DATABASE = Path(TEMPDIR, "topicsexplorer.db")
@@ -160,7 +161,7 @@ def get_topics(model, vocabulary, maximum=100):
     logging.info("Fetching topics from topic model...")
     for distribution in model.topic_word_:
         words = list(np.array(vocabulary)[
-                     np.argsort(distribution)][:-maximum - 1:-1])
+                         np.argsort(distribution)][:-maximum - 1:-1])
         yield "{}, ...".format(", ".join(words[:3])), words
 
 
@@ -252,3 +253,59 @@ def series2array(s):
     """
     for i, v in zip(s.index, s):
         yield [i, v]
+
+
+def createJsonGraph(graph, cutoff=.25):
+    # create DataFrame for easier handling
+    # TODO: sort Dataframe by Index and Columns! --> else: not "symmetrical" --Done below
+    # df = pd.DataFrame(graph)
+    df = pd.read_json(graph)
+    df = df.T.sort_index()
+    df = df.T.sort_index()
+
+    # TODO: different for doc-topics-matrix: only transpose once; no symmetric matrix, skip step below; maybe redo function for this purpose
+
+    # half symmetric matrix
+    df = df.where(np.tril(np.ones(df.shape), -1).astype(bool))
+
+    graph = df.to_dict()
+
+    # TODO: special version for the seminar: groups from suffixes _s, _t, _k
+
+    r = re.compile(r'(_.{,2}\b)')
+
+    # TODO: translate from label to id
+
+    # translation: map title to a number and then undo it again...
+    translation = {}
+
+    nodes = []
+    edges = []
+
+    for e, i in enumerate(graph.keys()):
+        translation[i] = e
+        group = re.findall(r, i)
+        if len(group) > 0:
+            nodes.append({'id': e, 'label': i,
+                          'group': group[0]
+                          })
+        else:
+            nodes.append({'id': e, 'label': i,
+                          # 'group': group[0]
+                          })
+
+    for f, j in graph.items():
+        for g, h in j.items():
+            # below: which similarity is cut off --> for non-total-linked graph
+            if h < 1.0:# and h >= cutoff:
+                # if h >= 0.75:
+                # if h < 1.0:
+                edges.append({'from': translation[f], 'to': translation[g], 'value': h})
+
+    # create dict and json requested by vis.js
+    data = {
+        'nodes': nodes,
+        'edges': edges
+    }
+
+    return json.dumps(data, indent=4)

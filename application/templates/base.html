@@ -14,71 +14,100 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/apexcharts.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/dariah-script.js') }}" defer></script>
 
+
+{#    hinzugefügt ab hier für vis#}
+{#    <script src="/templates/vis-4.19.1/index.js"></script>#}
+
+    <!--from here necessary for viz-->
+{#    <script type="text/javascript" src="/static/vis-4.19.1/dist/vis.js"></script>#}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/vis-4.19.1/dist/vis.js') }}"></script>
+
+{#    <link href="/static/vis-4.19.1/dist/vis.css" rel="stylesheet" type="text/css"/> Änderung: auf vis.css in js verweisen#}
+    <link rel="stylesheet" href="{{ url_for('static', filename='js/vis-4.19.1/dist/vis.css') }}">
+
+{#    <script type="text/javascript" src="/static/jquery-3.3.1.min.js"></script> gibt's oben bereits#}
+
+{#    <link rel="stylesheet" href="{{ url_for('static', filename='css/intermediate.css') }}">#}
+{#    obige zeile nur vorrübergehend, bis an daria-styles angebunden #}
+
+
     <title>Topics Explorer :: DARIAH-DE</title>
 </head>
 
 <body class="site">
-    <div class="site_wrap">
-        <header class="header">
-            <div class="wrap">
-                <nav class="nav">
-                    <button type="button" class="nav_toggle -main">
-                        <svg class="icon">
-                            <use xlink:href="#icon-menu"></use>
-                        </svg> Menu
-                    </button>
-                    <div class="nav_menu -main">
-                        <ul class="nav_list -level-1">
-                            {% if reset %}
+<div class="site_wrap">
+    <header class="header">
+        <div class="wrap">
+            <nav class="nav">
+                <button type="button" class="nav_toggle -main">
+                    <svg class="icon">
+                        <use xlink:href="#icon-menu"></use>
+                    </svg>
+                    Menu
+                </button>
+                <div class="nav_menu -main">
+                    <ul class="nav_list -level-1">
+                        {% if reset %}
                             <li class="nav_item -level-1">
                                 <a class="nav_link" href="{{ url_for('index') }}"><b>Reset</b></a>
                             </li>
-                            {% endif %}
-                            {% if abort %}
+                        {% endif %}
+                        {% if abort %}
                             <li class="nav_item -level-1">
                                 <a class="nav_link" href="{{ url_for('index') }}"><b>Abort</b></a>
                             </li>
-                            {% endif %}
-                            {% if help %}
+                        {% endif %}
+                        {% if help %}
                             <li class="nav_item -level-1">
                                 <a class="nav_link" href="{{ url_for('help') }}">Help</a>
                             </li>
-                            {% endif %}
-                            {% if go_back %}
+                        {% endif %}
+                        {% if go_back %}
                             <li class="nav_item -level-1">
                                 <a class="nav_link" href="javascript:window.history.back()">Go Back</a>
                             </li>
-                            {% endif %}
-                            {% if topics %}
+                        {% endif %}
+                        {% if topics %}
                             <li class="nav_item -level-1 {% if current == 'topics' %}-current{% endif %}">
                                 <a class="nav_link" href="{{ url_for('overview_topics') }}">Topics</a>
                             </li>
-                            {% endif %}
-                            {% if documents %}
+                        {% endif %}
+                        {% if documents %}
                             <li class="nav_item -level-1 {% if current == 'documents' %}-current{% endif %}">
                                 <a class="nav_link" href="{{ url_for('overview_documents') }}">Documents</a>
                             </li>
-                            {% endif %}
-                            {% if document_topic_distributions %}
+                        {% endif %}
+                        {% if document_topic_distributions %}
                             <li class="nav_item -level-1 {% if current == 'document-topic-distributions' %}-current{% endif %}">
-                                <a class="nav_link" href="{{ url_for('document_topic_distributions') }}">Document-Topic Distributions</a>
+                                <a class="nav_link" href="{{ url_for('document_topic_distributions') }}">Document-Topic
+                                    Distributions</a>
                             </li>
-                            {% endif %}
-                            {% if parameters %}
+                        {% endif %}
+                        {% if parameters %}
                             <li class="nav_item -level-1 {% if current == 'parameters' %}-current{% endif %}">
                                 <a class="nav_link" href="{{ url_for('parameters') }}">Parameters</a>
                             </li>
-                            {% endif %}
-                            {% if export_data %}
+                        {% endif %}
+
+
+                        {% if graph %}
+                            <li class="nav_item -level-1 {% if current == 'graph' %}-current{% endif %}">
+                                <a class="nav_link" href="{{ url_for('showGraph') }}">Show Graph</a>
+                            </li>
+                        {% endif %}
+
+
+                        {% if export_data %}
                             <li class="nav_item -level-1">
-                                <a class="nav_link" href="{{ url_for('export', filename='topicsexplorer-data.zip') }}"><b>Export Data</b></a>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </nav>
-                <aside class="header_aside">
-                    <div class="button_right">
-                        <div class="search hidden">
+                            <a class="nav_link" href="{{ url_for('export', filename='topicsexplorer-data.zip') }}"><b>Export
+                                Data</b></a>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+            <aside class="header_aside">
+                <div class="button_right">
+                    <div class="search hidden">
                         <a class="search_toggle" href="javascript:" title="Suchen">
                             <svg class="icon">
                                 <use xlink:href="#icon-search"></use>
@@ -87,7 +116,8 @@
                         </a>
                         <form class="search_form" action="search" role="search">
                             <label for="overlay-search-input" class="sr-only">Suchbegriff</label>
-                            <input type="text" id="overlay-search-input" class="search_input" name="q" maxlength="99" placeholder="Suchbegriff">
+                            <input type="text" id="overlay-search-input" class="search_input" name="q" maxlength="99"
+                                   placeholder="Suchbegriff">
                             <button type="submit" class="search_submit">
                                 <svg class="icon">
                                     <use xlink:href="#icon-angle-right"></use>
@@ -96,79 +126,82 @@
                             </button>
                         </form>
                     </div>
-                </aside>
-                <nav class="nav -right">
+            </aside>
+            <nav class="nav -right">
                     <span class="nav_toggle -portal" style="pointer-events: none;">
-                        <img style="margin-top: 1px;" class="nav_logo -large" src="{{ url_for('static', filename='img/logos/dariah-logo-white.svg') }}"
-                            alt="DARIAH Portal">
-                        <img style="padding-bottom: 5px; padding-right: 5px;" class="nav_logo -small" src="{{ url_for('static', filename='img/logos/dariah-logo-white-small.svg') }}"
-                            alt="DARIAH Portal">
+                        <img style="margin-top: 1px;" class="nav_logo -large"
+                             src="{{ url_for('static', filename='img/logos/dariah-logo-white.svg') }}"
+                             alt="DARIAH Portal">
+                        <img style="padding-bottom: 5px; padding-right: 5px;" class="nav_logo -small"
+                             src="{{ url_for('static', filename='img/logos/dariah-logo-white-small.svg') }}"
+                             alt="DARIAH Portal">
                     </span>
-                    <div class="nav_menu -portal hidden" >
-                        <ul id="home_dropdown_menu" class="nav_list -level-2 -portal"></ul>
-                    </div>
-                </nav>
-            </div>
-        </header>
-
-        {% block main %}
-        {% endblock %}
-
-    </div>
-    <footer class="footer">
-        <div class="wrap">
-            <div class="footer_left">
-                <div>
-                    <p>
-                        {% if reset %}
-                        <a href="{{ url_for('index') }}">Reset</a>
-                        {% endif %}
-                        {% if help %}
-                        <a href="{{ url_for('help') }}">Help</a>
-                        {% endif %}
-                        {% if go_back %}
-                        <a href="javascript:window.history.back()">Go Back</a>
-                        {% endif %}
-                        {% if topics %}
-                        <a href="{{ url_for('overview_topics') }}">Topics</a>
-                        {% endif %}
-                        {% if documents %}
-                        <a href="{{ url_for('overview_documents') }}">Documents</a>
-                        {% endif %}
-                        {% if document_topic_distributions %}
-                        <a href="{{ url_for('document_topic_distributions') }}">Document-Topic Distributions</a>
-                        {% endif %}
-                        {% if parameters %}
-                        <a href="{{ url_for('parameters') }}">Parameters</a>
-                        {% endif %}
-                    </p>
+                <div class="nav_menu -portal hidden">
+                    <ul id="home_dropdown_menu" class="nav_list -level-2 -portal"></ul>
                 </div>
-                <br>
-                <br>
-                <p>
-                    <a href="https://de.dariah.eu/en/">
-                        DARIAH-DE
-                        <br>
-                        <small>Digital research infrastructure for humanities and cultural studies</small>
-                    </a>
-                </p>
-            </div>
-            <div class="footer_right">
-                <p>
-                    <a href="https://www.bmbf.de/">
-                        <img alt="Funded by the Federal Ministry of Education and Research" src="{{ url_for('static', filename='img/logos/bmbf-logo.svg') }}"
-                            height="108">
-                    </a>
-                </p>
-                <p>
-                    <small>Project number 01UG1610A to J</small>
-                </p>
-            </div>
+            </nav>
         </div>
-    </footer>
-    <svg xmlns="http://www.w3.org/2000/svg" class="hidden">
-        <symbol id="icon-menu" viewBox="0 0 17 17">
-            <path d="M16 3v2H1V3h15zM1 10h15V8H1v2zm0 5h15v-2H1v2z" />
-        </symbol>
-    </svg>
+    </header>
+
+    {% block main %}
+    {% endblock %}
+
+</div>
+<footer class="footer">
+    <div class="wrap">
+        <div class="footer_left">
+            <div>
+                <p>
+                    {% if reset %}
+                        <a href="{{ url_for('index') }}">Reset</a>
+                    {% endif %}
+                    {% if help %}
+                        <a href="{{ url_for('help') }}">Help</a>
+                    {% endif %}
+                    {% if go_back %}
+                        <a href="javascript:window.history.back()">Go Back</a>
+                    {% endif %}
+                    {% if topics %}
+                        <a href="{{ url_for('overview_topics') }}">Topics</a>
+                    {% endif %}
+                    {% if documents %}
+                        <a href="{{ url_for('overview_documents') }}">Documents</a>
+                    {% endif %}
+                    {% if document_topic_distributions %}
+                        <a href="{{ url_for('document_topic_distributions') }}">Document-Topic Distributions</a>
+                    {% endif %}
+                    {% if parameters %}
+                        <a href="{{ url_for('parameters') }}">Parameters</a>
+                    {% endif %}
+                </p>
+            </div>
+            <br>
+            <br>
+            <p>
+                <a href="https://de.dariah.eu/en/">
+                    DARIAH-DE
+                    <br>
+                    <small>Digital research infrastructure for humanities and cultural studies</small>
+                </a>
+            </p>
+        </div>
+        <div class="footer_right">
+            <p>
+                <a href="https://www.bmbf.de/">
+                    <img alt="Funded by the Federal Ministry of Education and Research"
+                         src="{{ url_for('static', filename='img/logos/bmbf-logo.svg') }}"
+                         height="108">
+                </a>
+            </p>
+            <p>
+                <small>Project number 01UG1610A to J</small>
+            </p>
+        </div>
+    </div>
+</footer>
+<svg xmlns="http://www.w3.org/2000/svg" class="hidden">
+    <symbol id="icon-menu" viewBox="0 0 17 17">
+        <path d="M16 3v2H1V3h15zM1 10h15V8H1v2zm0 5h15v-2H1v2z"/>
+    </symbol>
+</svg>
 </body>

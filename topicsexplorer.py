@@ -29,8 +29,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.browser:
-        webbrowser.open("http://localhost:5000/")
-        views.web.run()
+        #webbrowser.open("http://localhost:5010/")
+        views.web.run(port="5010", debug=True)
     elif getattr(sys, "frozen", False) or args.frozen:
         views.web.run()
     else:
