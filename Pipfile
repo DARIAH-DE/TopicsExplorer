@@ -9,7 +9,7 @@ lda = "*"
 flask = "*"
 pandas = "*"
 numpy = "*"
-pyqt5 = "*"
+pyqt5 = "==5.11.3"
 
 [dev-packages]
 pytest = "*"
