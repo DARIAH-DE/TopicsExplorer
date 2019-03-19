@@ -6,10 +6,10 @@ name = "pypi"
 [packages]
 cophi = "*"
 lda = "*"
-Flask = "*"
+flask = "*"
 pandas = "*"
 numpy = "*"
-PyQt5 = "*"
+pyqt5 = "==5.11.3"
 
 [dev-packages]
 pytest = "*"
