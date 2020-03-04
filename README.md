@@ -209,8 +209,6 @@ Regarding the source code:
 
 This application is developed with support from the DARIAH-DE initiative, the German branch of DARIAH-EU, the European Digital Research Infrastructure for the Arts and Humanities consortium. Funding has been provided by the German Federal Ministry for Research and Education (BMBF) under the identifier 01UG1610A to J.
 
-<img src="docs/img/bmbf-logo.svg" width="150px">
-
 
 ## License
 This project is licensed under [Apache 2.0](LICENSE). You can do what you like with the source code, as long as you include the original copyright, the full text of the Apache 2.0 license, and state significant changes. You cannot charge DARIAH-DE for damages, or use any of its trademarks like name or logos.
