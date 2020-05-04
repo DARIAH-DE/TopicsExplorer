@@ -17,7 +17,7 @@ The text mining technique _topic modeling_ has become a popular procedure for cl
 
 
 ## Getting started
-Windows, macOS (10.4 or earlier versions) and Linux users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
+Windows, macOS and Linux users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the ZIP archive for your OS.
 2. Extract the content of the archive.
@@ -25,7 +25,9 @@ Windows, macOS (10.4 or earlier versions) and Linux users **do not** have to ins
 
 > If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway. **You will have to do this for two executables**. First, “topics-explorer-webengine” in the folder `resources/webengine`, afterwards “DARIAH Topics Explorer”.
 
-You can also use the source code (if you are not on Windows):
+> With the release of macOS 10.15 Catalina, Apple has introduced new security features which result in issues with starting the TopicsExplorer. As a temporary workaraound follow the instructions below to install the application from source. (You need Python 3.6) 
+
+### You can also use the source code (if you are not on Windows):
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the **source code** as ZIP archive.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
@@ -185,6 +187,7 @@ Regarding the standalone executable:
 * If you are on a **Mac** and get an error message saying that the file is from an **“unidentified developer”**, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
 * You might get a similar error message as the one above on **Windows** systems: **“Windows Defender SmartScreen prevented an unrecognized app from starting”**. If this is the case, please select “More Info” and then “Run anyway”.
 * On a **Windows** machine, if you are not able to start the program, if nothing happens for a long time, or if you get an error message, go to the `src` folder, search for the file `webapp.exe` and click on it.
+* If you are currently running MacOS Catlina 10.15 you cannot run the executable due to new security features. As a temporary workaraound follow the instructions to install the application from source. (You need Python 3.6)
 
 Regarding the source code:
 * If you are unable to run **Pipenv**, e.g. `-bash: pipenv: command not found`, try `python -m pipenv` instead of only `pipenv`. Use `python3` instead of `python` if you are on a Mac or on a Linux machine.
