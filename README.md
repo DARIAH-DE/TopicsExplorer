@@ -187,7 +187,7 @@ Regarding the standalone executable:
 * If you are on a **Mac** and get an error message saying that the file is from an **“unidentified developer”**, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway.
 * You might get a similar error message as the one above on **Windows** systems: **“Windows Defender SmartScreen prevented an unrecognized app from starting”**. If this is the case, please select “More Info” and then “Run anyway”.
 * On a **Windows** machine, if you are not able to start the program, if nothing happens for a long time, or if you get an error message, go to the `src` folder, search for the file `webapp.exe` and click on it.
-* If you are currently running MacOS Catlina 10.15 you cannot run the executable due to new security features. As a temporary workaraound follow the instructions to install the application from source. (You need Python 3.6)
+* If you are running MacOS Catalina 10.15 you are not able to start the program due to new security features. As a temporary workaround follow the instructions for installing the application from source.
 
 Regarding the source code:
 * If you are unable to run **Pipenv**, e.g. `-bash: pipenv: command not found`, try `python -m pipenv` instead of only `pipenv`. Use `python3` instead of `python` if you are on a Mac or on a Linux machine.
