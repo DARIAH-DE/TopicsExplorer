@@ -25,7 +25,7 @@ Windows, macOS and Linux users **do not** have to install additional software. T
 
 > If you are on a Mac and get an error message saying that the file is from an “unidentified developer”, you can override it by holding control while double-clicking. The error message will still appear, but you will be given an option to run the file anyway. **You will have to do this for two executables**. First, “topics-explorer-webengine” in the folder `resources/webengine`, afterwards “DARIAH Topics Explorer”.
 
-> With the release of macOS 10.15 Catalina, Apple has introduced new security features which result in issues with starting the TopicsExplorer. As a temporary workaraound follow the instructions below to install the application from source. (You need Python 3.6) 
+> With the release of macOS 10.15 Catalina, Apple has introduced new security features which result in issues with starting the TopicsExplorer. As a temporary workaround follow the instructions below to install the application from source. (You need Python 3.6) 
 
 ### You can also use the source code (if you are not on Windows):
 
