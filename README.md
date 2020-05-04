@@ -17,7 +17,7 @@ The text mining technique _topic modeling_ has become a popular procedure for cl
 
 
 ## Getting started
-Windows, macOS and Linux users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
+Windows, macOS (10.4 or earlier versions) and Linux users **do not** have to install additional software. The application itself is [portable](https://en.wikipedia.org/wiki/Portable_application).
 
 1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the ZIP archive for your OS.
 2. Extract the content of the archive.
