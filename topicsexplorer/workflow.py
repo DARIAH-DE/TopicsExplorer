@@ -7,33 +7,27 @@ import lda
 import numpy as np
 import pandas as pd
 
-from application import database
-from application import utils
+from topicsexplorer import database
+from topicsexplorer import utils
 
 
 def wrapper():
-    """Wrapper for the topic modeling workflow.
-    """
+    """Wrapper for the topic modeling workflow."""
     try:
         logging.info("Just started topic modeling workflow.")
-        data = utils.get_data("corpus",
-                              "topics",
-                              "iterations",
-                              "stopwords",
-                              "mfw")
+        data = utils.get_data("corpus", "topics", "iterations", "stopwords", "mfw")
         if len(data["corpus"]) < 10:
-            raise ValueError("Your corpus is too small. "
-                             "Please select at least 10 text files.")
+            raise ValueError(
+                "Your corpus is too small. " "Please select at least 10 text files."
+            )
         logging.info("Fetched user data...")
-        database.insert_into("textfiles",
-                             data["corpus"])
+        database.insert_into("textfiles", data["corpus"])
         logging.info("Inserted data into database.")
 
         # 1. Preprocess:
         dtm, token_freqs, parameters = preprocess(data)
         logging.info("Successfully preprocessed data.")
-        database.insert_into("token_freqs",
-                             json.dumps(token_freqs))
+        database.insert_into("token_freqs", json.dumps(token_freqs))
         # 2. Create model:
         model = create_model(dtm, data["topics"], data["iterations"])
         parameters["log_likelihood"] = int(model.loglikelihood())
@@ -46,10 +40,12 @@ def wrapper():
         topic_similarities, document_similarities = get_similarities(document_topic)
         logging.info("Successfully calculated topic and document similarities.")
 
-        data = {"document_topic": document_topic.to_json(orient="index", force_ascii=False),
-                "topics": json.dumps(topics, ensure_ascii=False),
-                "document_similarities": document_similarities.to_json(force_ascii=False),
-                "topic_similarities": topic_similarities.to_json(force_ascii=False)}
+        data = {
+            "document_topic": document_topic.to_json(orient="index", force_ascii=False),
+            "topics": json.dumps(topics, ensure_ascii=False),
+            "document_similarities": document_similarities.to_json(force_ascii=False),
+            "topic_similarities": topic_similarities.to_json(force_ascii=False),
+        }
         database.insert_into("model", data)
         logging.info("Successfully inserted data into database.")
         logging.info("Very nice, great success!")
@@ -58,8 +54,10 @@ def wrapper():
         logging.error("ERROR: {}".format(error))
         logging.error("Redirect to error page...")
     except UnicodeDecodeError as error:
-        logging.error("ERROR: There is something wrong with your text files. "
-                      "Are they UTF-8 encoded?")
+        logging.error(
+            "ERROR: There is something wrong with your text files. "
+            "Are they UTF-8 encoded?"
+        )
         logging.error("ERROR: {}".format(error))
         logging.error("Redirect to error page...")
     except Exception as error:
@@ -68,12 +66,11 @@ def wrapper():
 
 
 def preprocess(data):
-    """Preprocess text data.
-    """
+    """Preprocess text data."""
     # Constructing corpus:
     textfiles = database.select("textfiles")
     documents = utils.get_documents(textfiles)
-    corpus = cophi.model.Corpus(documents)
+    corpus = cophi.text.model.Corpus(documents)
     num_tokens = corpus.num_tokens
     database.update("textfiles", num_tokens.to_dict())
     # Get paramter:
@@ -88,29 +85,28 @@ def preprocess(data):
     # Save stopwords:
     database.insert_into("stopwords", json.dumps(stopwords))
     # Save parameters:
-    parameters = {"n_topics": int(data["topics"]),
-                  "n_iterations": int(data["iterations"]),
-                  "n_documents": int(D),
-                  "n_stopwords": int(len(stopwords)),
-                  "n_hapax": int(len(hapax)),
-                  "n_tokens": int(N),
-                  "n_types": int(W)}
+    parameters = {
+        "n_topics": int(data["topics"]),
+        "n_iterations": int(data["iterations"]),
+        "n_documents": int(D),
+        "n_stopwords": int(len(stopwords)),
+        "n_hapax": int(len(hapax)),
+        "n_tokens": int(N),
+        "n_types": int(W),
+    }
     return dtm, num_tokens.tolist(), parameters
 
 
 def create_model(dtm, topics, iterations):
-    """Create a topic model.
-    """
+    """Create a topic model."""
     logging.info("Creating topic model...")
-    model = lda.LDA(n_topics=topics,
-                    n_iter=iterations)
-    model.fit(dtm.values)
+    model = lda.LDA(n_topics=topics, n_iter=iterations)
+    model.fit(dtm.fillna(0.0).astype("int64").values)
     return model
 
 
 def get_model_output(model, dtm):
-    """Get topics and distributions from topic model.
-    """
+    """Get topics and distributions from topic model."""
     logging.info("Fetching model output...")
     # Topics and their descriptors:
     topics = dict(utils.get_topics(model, dtm.columns))
@@ -121,8 +117,7 @@ def get_model_output(model, dtm):
 
 
 def get_similarities(document_topic):
-    """Calculate similarities between vectors.
-    """
+    """Calculate similarities between vectors."""
     logging.info("Calculating topic similarities...")
     topics = utils.get_cosine(document_topic.values, document_topic.columns)
     logging.info("Calculating document similarites...")
