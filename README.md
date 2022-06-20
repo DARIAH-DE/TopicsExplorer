@@ -47,7 +47,7 @@ You might want to check out some [Jupyter notebooks](https://github.com/DARIAH-D
 
 
 ## The sample corpus
-We provide a [sample corpus](data/british-fiction-corpus) (10 British novels) in this project. If you use Git, you can include the corpus, which is actually a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
+We provide a [sample corpus](https://github.com/cophi-wue/british-fiction-corpus) (10 British novels) in this project. If you use Git, you can include the corpus, which is actually a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in this repository, by writing:
 
 ```
 $ git clone --recursive https://github.com/DARIAH-DE/TopicsExplorer.git
