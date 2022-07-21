@@ -29,11 +29,11 @@ Windows, macOS and Linux users **do not** have to install additional software. T
 
 ### You can also use the source code (if you are not on Windows):
 
-1. Go to the [release-section](https://github.com/DARIAH-DE/TopicsExplorer/releases/latest) and download the **source code** as ZIP archive.
+1. [Download](https://github.com/DARIAH-DE/TopicsExplorer/archive/refs/heads/master.zip) this repository.
 2. Unzip the archive, e.g. using `unzip` via the command-line.
-3. Make sure you have [Pipenv](https://docs.pipenv.org/) installed (if not: `pip install --user pipenv`).
-4. Run `pipenv install` to set up a virtual environment and install dependencies.
-5. To start the application, type `pipenv run python topicsexplorer.py`, and press enter.
+3. Make sure you have [Poetry](https://python-poetry.org/) installed.
+4. Run `poetry install` to set up a virtual environment and install dependencies.
+5. To start the application, type `poetry run python topicsexplorer.py`, and press enter.
 
 > If you wish to use the sample corpus, you have to clone the repository with Git. See also section [Sample corpus](#the-sample-corpus). If you download one of the archives (except the source code) from the release section, the corpus is included.
 
