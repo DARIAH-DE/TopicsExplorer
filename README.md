@@ -33,7 +33,7 @@ Windows, macOS and Linux users **do not** have to install additional software. T
 2. Unzip the archive, e.g. using `unzip` via the command-line.
 3. Make sure you have [Poetry](https://python-poetry.org/) installed.
 4. Run `poetry install` to set up a virtual environment and install dependencies.
-5. To start the application, type `poetry run python topicsexplorer.py`, and press enter.
+5. To start the application, type `poetry run python application.py`, and press enter.
 
 > If you wish to use the sample corpus, you have to clone the repository with Git. See also section [Sample corpus](#the-sample-corpus). If you download one of the archives (except the source code) from the release section, the corpus is included.
 
@@ -103,19 +103,19 @@ $ pipenv install
 After spawning a shell within the virtual environment, using `pipenv shell`, you can run the application with:
 
 ```
-$ python topicsexplorer.py
+$ python application.py
 ```
 
 If you wish to access the application through your web browser, use the following command:
 
 ```
-$ python topicsexplorer.py --browser
+$ python application.py --browser
 ```
 
 Simulating a frozen app and just starting the backend, run:
 
 ```
-$ python topicsexplorer.py --frozen
+$ python application.py --frozen
 ```
 
 ### Freezing the backend
@@ -125,7 +125,7 @@ However, Python applications can be frozen with [PyInstaller](https://www.pyinst
 
 The whole workflow consists of freezing backend and frontend separately. This is because there have been enormous problems with the packaging of [PyQt5](https://www.riverbankcomputing.com/software/pyqt/) (the Python-based frontend), and we are using a JavaScript-based frontend, [Electron](https://electronjs.org/), instead. To run Topics Explorer from source code, we still use PyQt5 because it works pretty well and we stick with one programming language.
 
-The backend is a [Flask](http://flask.pocoo.org/) application that is started with the script `topicsexplorer.py` and the parameter `--frozen` (or in the actually frozen application also without this parameter). The home page will be available at `http://localhost:5001`.
+The backend is a [Flask](http://flask.pocoo.org/) application that is started with the script `application.py` and the parameter `--frozen` (or in the actually frozen application also without this parameter). The home page will be available at `http://localhost:5001`.
 
 It is recommended to install the current [`develop`](https://github.com/pyinstaller/pyinstaller/tree/develop) branch from PyInstaller on GitHub. If you encounter problems, you should try different versions of the application’s dependencies.
 
@@ -194,7 +194,7 @@ Regarding the source code:
 * If you have problems with **Pipenv**, for example `ModuleNotFoundError: No module named 'pkg_resources.extern'` or `Command "python setup.py egg_info" failed with error code 1`, make sure that the current version of `setuptools` is installed. You can fix that with `pip install --upgrade setuptools` within the virtual environment. Use `pip3` instead of `pip` if you are on a Mac or on a Linux machine.
 * If the application fails after **pulling from GitHub**, try updating the requirements in your virtual environment with `pipenv update`.
 * If you are on Linux and face issues with installing the dependencies (something with the library `regex` like `Python.h not found` or `x86_64-linux-gnu-gcc` not found), try installing the package `python3-dev` with `apt-get` first.
-* If you are on **Ubuntu 18.04** and get the error `[1:1:0100/000000.576372:ERROR:broker_posix.cc(43)] Invalid node channel message` after running the `topicsexplorer.py`, run `sudo apt-get install libglvnd-dev` in your command-line and try again.
+* If you are on **Ubuntu 18.04** and get the error `[1:1:0100/000000.576372:ERROR:broker_posix.cc(43)] Invalid node channel message` after running the `application.py`, run `sudo apt-get install libglvnd-dev` in your command-line and try again.
 
 
 ## What is Topic Modeling?
