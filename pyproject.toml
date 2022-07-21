@@ -6,12 +6,13 @@ authors = ["Severin Simmler <severin.simmler@stud-mail.uni-wuerzburg.de>"]
 license = "Apache 2.0"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "3.9.*"
 flask = "^1.1.2"
 cophi = "^1.3.2"
 numpy = "^1.19.4"
 pandas = "^1.1.5"
 Werkzeug = "^1.0.1"
+markupsafe = "2.0.1"
 lda = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
