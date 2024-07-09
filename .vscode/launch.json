@@ -2,18 +2,37 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "ng serve",
+      "name": "Renderer",
       "type": "chrome",
-      "request": "launch",
-      "preLaunchTask": "npm: start",
-      "url": "http://localhost:4200/"
+      "request": "attach",
+      "port": 9876,
+      "url": "http://localhost:4200",
+      "sourceMaps": true,
+      "timeout": 10000,
+      "trace": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${workspaceFolder}/*"
+      },
+      "preLaunchTask": "Build.Renderer"
     },
     {
-      "name": "ng test",
-      "type": "chrome",
+      "name": "Main",
+      "type": "node",
       "request": "launch",
-      "preLaunchTask": "npm: test",
-      "url": "http://localhost:9876/debug.html"
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "trace": true,
+      "runtimeArgs": ["--serve", ".", "--remote-debugging-port=9876"],
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+      },
+      "preLaunchTask": "Build.Main"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Application Debug",
+      "configurations": ["Renderer", "Main"]
     }
   ]
 }
