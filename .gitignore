@@ -38,3 +38,7 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Generated files
+app/main.js
+app/main.js.map
