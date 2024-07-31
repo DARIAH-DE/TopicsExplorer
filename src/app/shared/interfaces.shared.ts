@@ -30,5 +30,20 @@ export interface Features {
   /**
    * Mapping of document names to word counts.
    */
-  documents: Map<string, Map<number, number>>;
+  documents: Map<string, Map<string, number>>;
+}
+
+/**
+ * Trained topic model.
+ */
+export interface TopicModel {
+  /**
+   * Distribution of topics for each document.
+   */
+  documentTopicDistribution: number[][];
+
+  /**
+   * Distribution of words for each topic.
+   */
+  topicWordDistribution: number[][];
 }
