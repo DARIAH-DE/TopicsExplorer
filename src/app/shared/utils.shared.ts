@@ -1,7 +1,6 @@
 import { TextDocument } from './interfaces.shared';
 import { STOPWORDS } from './stopwords.shared';
-
-type BagOfWords = Map<string, Map<number, number>>;
+import { BagOfWords } from './types.shared';
 
 /**
  * Splits a text into tokens.
@@ -37,8 +36,8 @@ export function extractVocabulary(corpus: TextDocument[]): Map<string, number> {
 /**
  * Gets the bag-of-words representation of a corpus of text documents.
  */
-export function getBagOfWords(corpus: TextDocument[], vocabulary: Map<string, number>): BagOfWords {
-  const bagOfWords: BagOfWords = new Map();
+export function getBagOfWords(corpus: TextDocument[], vocabulary: Map<string, number>): BagOfWords[] {
+  const bagOfWords: BagOfWords[] = [];
 
   for (const document of corpus) {
     const counts = new Map<number, number>();
@@ -48,7 +47,7 @@ export function getBagOfWords(corpus: TextDocument[], vocabulary: Map<string, nu
         counts.set(tokenId, (counts.get(tokenId) || 0) + 1);
       }
     }
-    bagOfWords.set(document.name, counts);
+    bagOfWords.push({ name: document.name, counts });
   }
 
   return bagOfWords;
