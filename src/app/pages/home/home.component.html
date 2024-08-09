@@ -1,0 +1,84 @@
+<section class="section">
+  <div class="container">
+    <div class="content">
+      <div>
+        <h1>Explore your text collection with topic modeling</h1>
+        <div>
+          Topic models discover hidden themes or topics in a collection of documents. Imagine you have a large number of
+          articles or texts and you want to understand the main subjects they talk about without having to read each
+          one. Topic modeling helps by automatically identifying clusters of words that frequently appear together,
+          which are assumed to represent topics.
+        </div>
+        <div class="mt-3">
+          The goal of this application is to provide a simple and intuitive interface to explore your own text
+          collection using this technique.
+        </div>
+      </div>
+
+      <!-- Preprocessing -->
+      <div class="mt-5">
+        <div><b class="is-size-5">Corpus</b></div>
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat.
+        </div>
+        <div class="file is-boxed mt-3">
+          <label class="file-label">
+            <input
+              class="file-input"
+              type="file"
+              name="text-corpus"
+              accept=".txt"
+              (change)="onFilesChanged($event)"
+              multiple
+              required
+            />
+            <span class="file-cta">
+              <span class="file-icon">
+                <fa-icon [icon]="faFileArrowUp"></fa-icon>
+              </span>
+              <span class="file-label">Selected {{ numDocuments }} text files</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Modeling -->
+      <div class="mt-5">
+        <div><b class="is-size-5">Model</b></div>
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+          magna aliqua.
+        </div>
+
+        <div class="columns">
+          <div class="column">
+            <div class="field mt-3">
+              <div class="control">
+                <input class="input" type="number" min="1" [(ngModel)]="numIterations" />
+              </div>
+              <p class="help">Consectetur adipiscing elit.</p>
+            </div>
+          </div>
+          <div class="column"><div class="field mt-3">
+            <div class="control">
+              <input class="input" type="number" min="1" [(ngModel)]="numTopics" />
+            </div>
+            <p class="help">Consectetur adipiscing elit.</p>
+          </div></div>
+        </div>
+
+        <div class="mt-5">
+          <button class="button" [disabled]="numDocuments === 0" (click)="trainModel()">Train model</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{ currentProgress }}
+
+@for (topic of topics; track topic.id) {
+<div>{{topic.score}} {{ topic.topicText }}</div>
+}

@@ -1,0 +1,19 @@
+<div class="modal" [class.is-active]="isActive">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head" style="box-shadow: none">
+      <h2>Modeling</h2>
+      Modeling
+    </header>
+    <section class="modal-card-body">
+      <progress class="progress is-normal" [value]="currentProgress" max="1"></progress>
+    </section>
+    <footer class="modal-card-foot">
+      <div class="buttons">
+        <button class="button" (click)="onClose()">Cancel</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<progress class="progress is-normal" [value]="currentProgress" max="1"></progress>
