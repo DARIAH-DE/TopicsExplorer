@@ -1,3 +1,8 @@
+https://github.com/primaryobjects/lda/blob/master/lib/lda.js#L110
+https://github.com/stdlib-js/nlp-lda
+
+
+
 # Explore your own text collection with a topic model – without prior knowledge.
 The text mining technique _topic modeling_ has become a popular procedure for clustering documents into semantic groups. This application introduces a user-friendly workflow which leads from raw text data to an interactive visualization of the topic model. All you need is a text corpus and a little time.
 
