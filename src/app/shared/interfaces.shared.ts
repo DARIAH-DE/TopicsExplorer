@@ -1,49 +1,80 @@
 /**
+ * Represents a token extracted from a text document.
+ */
+export interface Token {
+  /**
+   * The text of the token.
+   */
+  text: string;
+
+  /**
+   * Maybe the assigned topic of the token.
+   */
+  topic?: number;
+}
+
+/**
  * Represents a text document.
  */
 export interface TextDocument {
   /**
-   * Name of the document.
+   * UUID of the text document.
+   */
+  id: string;
+
+  /**
+   * Name of the text document.
    */
   name: string;
 
   /**
-   * Text content of the document.
+   * Content of the text document.
    */
   text: string;
 
   /**
    * List of tokens extracted from the document.
    */
-  tokens: string[];
+  tokens: Token[];
+
+  /**
+   * Maybe topic counts for the document.
+   */
+  topicCounts?: number[];
 }
 
 /**
- * Represents the features extracted from a corpus of text documents.
+ * Text corpus containing a list of text documents and the vocabulary size.
  */
-export interface Features {
+export interface TextCorpus {
   /**
-   * Ordered list of unique words in the corpus.
+   * List of text documents.
    */
-  vocabulary: string[];
+  textDocuments: TextDocument[];
 
   /**
-   * Mapping of document names to word counts.
+   * Number of unique tokens in the corpus.
    */
-  documents: Map<string, Map<string, number>>;
+  vocabSize: number;
 }
 
 /**
- * Trained topic model.
+ * Parameters for the topic model.
  */
-export interface TopicModel {
+export interface TopicModelOptions {
   /**
-   * Distribution of topics for each document.
+   * Number of topics.
    */
-  documentTopicDistribution: number[][];
+  numTopics: number;
 
   /**
-   * Distribution of words for each topic.
+   * Number of iterations to run the Gibbs sampler.
    */
-  topicWordDistribution: number[][];
+  numIterations: number;
+}
+
+export interface Topic {
+  id: number;
+  words: string[];
+  weights: number[];
 }
