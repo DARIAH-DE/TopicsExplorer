@@ -178,10 +178,11 @@ export class TopicModel {
 
     this.calcDominantTopic();
 
-    let topicData = topicTopWords.map((words, index) => {
+    /*let topicData = topicTopWords.map((words, index) => {
       return { id: index, topicText: words, score: this.topicScores[index] };
     });
-    return topicData;
+    return topicData;*/
+    return [];
   }
 
   calcDominantTopic() {

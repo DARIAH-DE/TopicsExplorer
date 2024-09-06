@@ -9,7 +9,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class ProcessingModalComponent {
   @Input() isActive = false;
-  @Input() currentProgress = 0;
+  @Input() currentValue: number = 0;
+  @Input() maxValue: number = 0;
   @Output() close = new EventEmitter<void>();
 
 

@@ -1,3 +1,6 @@
+import { TopicModel } from "./topic-model.shared";
+import { Maybe } from "./types.shared";
+
 /**
  * Represents a token extracted from a text document.
  */
@@ -71,10 +74,25 @@ export interface TopicModelOptions {
    * Number of iterations to run the Gibbs sampler.
    */
   numIterations: number;
+
+  /**
+   * Dirichlet parameter for the document-topic distribution.
+   */
+  alpha: number;
+
+  /**
+   * Dirichlet parameter for the topic-word distribution.
+   */
+  beta: number;
 }
 
 export interface Topic {
   id: number;
   words: string[];
   weights: number[];
+}
+
+export interface WorkerMessage {
+  currentIteration: number;
+  model: Maybe<TopicModel>;
 }

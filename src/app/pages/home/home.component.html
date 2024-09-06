@@ -30,9 +30,10 @@
               type="file"
               name="text-corpus"
               accept=".txt"
-              (change)="onFilesChanged($event)"
               multiple
               required
+              [disabled]="isTraining()"
+              (change)="onFilesChanged($event)"
             />
             <span class="file-cta">
               <span class="file-icon">
@@ -56,7 +57,7 @@
           <div class="column">
             <div class="field mt-3">
               <div class="control">
-                <input class="input" type="number" min="1" [(ngModel)]="numIterations" />
+                <input class="input" type="number" min="1" [disabled]="isTraining()" [(ngModel)]="numIterations" />
               </div>
               <p class="help">Number of iterations</p>
             </div>
@@ -64,7 +65,7 @@
           <div class="column">
             <div class="field mt-3">
               <div class="control">
-                <input class="input" type="number" min="1" [(ngModel)]="numTopics" />
+                <input class="input" type="number" min="1" [disabled]="isTraining()" [(ngModel)]="numTopics" />
               </div>
               <p class="help">Number of topics</p>
             </div>
@@ -72,7 +73,7 @@
           <div class="column">
             <div class="field mt-3">
               <div class="control">
-                <input class="input" type="number" min="0" step="0.01" [(ngModel)]="alpha" />
+                <input class="input" type="number" min="0" step="0.01" [disabled]="isTraining()" [(ngModel)]="alpha" />
               </div>
               <p class="help">Alpha</p>
             </div>
@@ -80,7 +81,7 @@
           <div class="column">
             <div class="field mt-3">
               <div class="control">
-                <input class="input" type="number" min="0" step="0.01" [(ngModel)]="beta" />
+                <input class="input" type="number" min="0" step="0.01" [disabled]="isTraining()" [(ngModel)]="beta" />
               </div>
               <p class="help">Beta</p>
             </div>
@@ -94,8 +95,8 @@
   </div>
 </section>
 
-{{ currentProgress }}
-
-@for (topic of topics; track topic.id) {
-<div>{{ topic.score }} {{ topic.topicText }}</div>
-}
+<app-processing-modal
+  [isAcitve]="isTraining()"
+  [currentValue]="currentIteration()"
+  [maxValue]="numIterations"
+></app-processing-modal>

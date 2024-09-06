@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { ProcessingModalComponent } from '../../components/processing-modal/processing-modal.component';
-import { TextCorpus, TextDocument } from '../../shared/interfaces.shared';
+import { TextCorpus, TopicModelOptions } from '../../shared/interfaces.shared';
 import { TopicModel } from '../../shared/topic-model.shared';
-import { Maybe, Nullable } from '../../shared/types.shared';
-import { getTokens, getVocabulary, tokenizeText } from '../../shared/utils.shared';
+import { Maybe } from '../../shared/types.shared';
+import { getTokens, getVocabulary } from '../../shared/utils.shared';
 
 @Component({
   selector: 'app-home',
@@ -15,8 +15,11 @@ import { getTokens, getVocabulary, tokenizeText } from '../../shared/utils.share
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, OnDestroy {
   public faFileArrowUp = faFileArrowUp;
+
+  public currentIteration = signal(0);
+  public isTraining = signal(false);
 
   public textCorpus: Maybe<TextCorpus>;
   public numDocuments = 0;
@@ -28,9 +31,35 @@ export class HomeComponent {
   public beta: number = 0.01;
 
   public topics: any[] = [];
-  public currentProgress: number = 0;
 
-  public isTraining: boolean = false;
+  #worker: Maybe<Worker>;
+
+  /**
+   * Initializes the component and creates a new Web Worker.
+   */
+  public ngOnInit(): void {
+    if (typeof Worker !== 'undefined') {
+      this.#worker = new Worker(new URL('../../workers/topic-model.worker', import.meta.url));
+
+      this.#worker.onmessage = (message: MessageEvent<{ model: Maybe<TopicModel>; currentIteration: number }>) => {
+        this.currentIteration.set(message.data.currentIteration);
+        if (message.data.model) {
+          this.model = message.data.model;
+          this.topics = message.data.model.getTopics();
+          this.isTraining.set(false);
+        }
+      };
+    }
+  }
+
+  /**
+   * Terminates the Web Worker when the component is destroyed.
+   */
+  public ngOnDestroy(): void {
+    if (this.#worker) {
+      this.#worker.terminate();
+    }
+  }
 
   /**
    * Loads and tokenizes the text documents from the file input.
@@ -68,20 +97,19 @@ export class HomeComponent {
    * Trains the topic model on the currently loaded text documents.
    */
   public trainModel(): void {
-    this.isTraining = true;
-
-    const options = {
-      numTopics: this.numTopics,
-      numIterations: this.numIterations,
-    };
-
-    const model = new TopicModel(this.textCorpus!, options);
-    for (let i = 0; i < this.numIterations; i++) {
-      model.update();
-      this.currentProgress = i;
+    if (!this.#worker || !this.textCorpus) {
+      // TODO throw error
+      return;
     }
 
-    this.topics = []; //model.getTopicWords();
-    this.isTraining = false;
+    this.isTraining.set(true);
+    this.#worker.postMessage({
+      textCorpus: this.textCorpus,
+      options: this.topicModelOptions,
+    });
+  }
+
+  private get topicModelOptions(): TopicModelOptions {
+    return { numTopics: this.numTopics, numIterations: this.numIterations, alpha: this.alpha, beta: this.beta };
   }
 }
