@@ -24,6 +24,9 @@ export class HomeComponent {
 
   public numTopics: number = 10;
   public numIterations: number = 1000;
+  public alpha: number = 0.1;
+  public beta: number = 0.01;
+
   public topics: any[] = [];
   public currentProgress: number = 0;
 
@@ -78,7 +81,7 @@ export class HomeComponent {
       this.currentProgress = i;
     }
 
-    this.topics = model.getTopicWords();
+    this.topics = []; //model.getTopicWords();
     this.isTraining = false;
   }
 }

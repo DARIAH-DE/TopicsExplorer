@@ -4,14 +4,14 @@
       <div>
         <h1>Explore your text collection with topic modeling</h1>
         <div>
-          Topic models discover hidden themes or topics in a collection of documents. Imagine you have a large number of
-          articles or texts and you want to understand the main subjects they talk about without having to read each
-          one. Topic modeling helps by automatically identifying clusters of words that frequently appear together,
-          which are assumed to represent topics.
+          Topic models discover hidden themes in a collection of text documents. Imagine you have a large number of
+          articles and you want to understand the main topics they talk about without having to read each one. Topic
+          modeling helps by automatically identifying clusters of words that frequently appear together and are thought
+          to represent themes.
         </div>
         <div class="mt-3">
-          The goal of this application is to provide a simple and intuitive interface to explore your own text
-          collection using this technique.
+          The goal of this application is to provide a simple and intuitive interface for exploring your own text using
+          this technique.
         </div>
       </div>
 
@@ -58,17 +58,34 @@
               <div class="control">
                 <input class="input" type="number" min="1" [(ngModel)]="numIterations" />
               </div>
-              <p class="help">Consectetur adipiscing elit.</p>
+              <p class="help">Number of iterations</p>
             </div>
           </div>
-          <div class="column"><div class="field mt-3">
-            <div class="control">
-              <input class="input" type="number" min="1" [(ngModel)]="numTopics" />
+          <div class="column">
+            <div class="field mt-3">
+              <div class="control">
+                <input class="input" type="number" min="1" [(ngModel)]="numTopics" />
+              </div>
+              <p class="help">Number of topics</p>
             </div>
-            <p class="help">Consectetur adipiscing elit.</p>
-          </div></div>
+          </div>
+          <div class="column">
+            <div class="field mt-3">
+              <div class="control">
+                <input class="input" type="number" min="0" step="0.01" [(ngModel)]="alpha" />
+              </div>
+              <p class="help">Alpha</p>
+            </div>
+          </div>
+          <div class="column">
+            <div class="field mt-3">
+              <div class="control">
+                <input class="input" type="number" min="0" step="0.01" [(ngModel)]="beta" />
+              </div>
+              <p class="help">Beta</p>
+            </div>
+          </div>
         </div>
-
         <div class="mt-5">
           <button class="button" [disabled]="numDocuments === 0" (click)="trainModel()">Train model</button>
         </div>
@@ -80,5 +97,5 @@
 {{ currentProgress }}
 
 @for (topic of topics; track topic.id) {
-<div>{{topic.score}} {{ topic.topicText }}</div>
+<div>{{ topic.score }} {{ topic.topicText }}</div>
 }
