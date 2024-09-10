@@ -1,4 +1,5 @@
 import { TextCorpus, Topic } from './interfaces.shared';
+import { Maybe } from './types.shared';
 import { getZeroVector } from './utils.shared';
 
 interface TopicModelOptions {
@@ -81,6 +82,9 @@ export class TopicModel {
     return topicNormalizer;
   }
 
+  /**
+   * Sorts the topic words.
+   */
   private sortTopicWords(): void {
     this.topicWordCounts = [];
     for (let topic = 0; topic < this.numTopics; topic++) {
@@ -101,6 +105,9 @@ export class TopicModel {
     }
   }
 
+  /**
+   * Updates the topic model (i.e. one iteration).
+   */
   public update(): void {
     const topicNormalizer = this.getTopicNormalizer();
 
@@ -149,40 +156,22 @@ export class TopicModel {
         }
         textDocument.topicCounts[token.topic]++;
 
-        topicNormalizer[token.topic] =
-          1.0 / (this.vocabSize * this.topicWordSmoothing + this.tokensPerTopic[token.topic]);
+        topicNormalizer[token.topic] = 1.0 / (this.vocabSize * this.topicWordSmoothing + this.tokensPerTopic[token.topic]);
       }
     }
 
     this.sortTopicWords();
   }
 
-  topNWords(wordCounts: any, n: any) {
-    return wordCounts
-      .slice(0, n)
-      .map((d: { word: any; }) => {
-        return d.word;
-      })
-      .join(' ');
-  }
+  public getTopics(numWords: Maybe<number>): Topic[] {
+    const topics: Topic[] = [];
 
-  public getTopics(): Topic[] {
-    const topics = [];
-
-    for (const topic of this.topicWordCounts) {
-      topics.push(topic.slice(0, 1_000));
+    let id = 0;
+    for (const words of this.topicWordCounts) {
+      topics.push({ id, words: words.slice(0, numWords) });
     }
 
-
-
-
-    this.calcDominantTopic();
-
-    /*let topicData = topicTopWords.map((words, index) => {
-      return { id: index, topicText: words, score: this.topicScores[index] };
-    });
-    return topicData;*/
-    return [];
+    return topics;
   }
 
   calcDominantTopic() {
