@@ -86,13 +86,52 @@ export interface TopicModelOptions {
   beta: number;
 }
 
+/**
+ * Represents a topic.
+ */
 export interface Topic {
+  /**
+   * ID of the topic.
+   */
   id: number;
-  words: string[];
-  weights: number[];
+
+  /**
+   * Words and their weights of the topic.
+   */
+  words: TopicWord[];
 }
 
+/**
+ * Represents a word in a topic.
+ */
+export interface TopicWord {
+  /**
+   * The word.
+   */
+  text: string;
+
+  /**
+   * The weight of the word in the topic.
+   */
+  weight: number;
+}
+
+/**
+ * Represents a message sent from the Web Worker.
+ */
 export interface WorkerMessage {
+  /**
+   * The current iteration of the Gibbs sampler.
+   */
   currentIteration: number;
+
+  /**
+   * Maybe the topic model.
+   */
   model: Maybe<TopicModel>;
+
+  /**
+   * Current topics.
+   */
+  topics: Topic[];
 }
