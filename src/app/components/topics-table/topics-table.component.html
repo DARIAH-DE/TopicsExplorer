@@ -1,0 +1,13 @@
+<div class="table-container">
+  <table class="table">
+    <tbody>
+      @for (topic of topics; track topic.id) {
+      <tr>
+        @for (word of topic.words; track word) {
+        <td>{{ word.word }}</td>
+        }
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
