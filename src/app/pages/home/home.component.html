@@ -95,8 +95,19 @@
   </div>
 </section>
 
-<app-processing-modal
-  [isAcitve]="isTraining()"
+<!-- Modal to show progress during training -->
+<app-training-modal
+  [isActive]="isTraining()"
   [currentValue]="currentIteration()"
   [maxValue]="numIterations"
-></app-processing-modal>
+  [topics]="topics"
+  (cancel)="onCancel()"
+></app-training-modal>
+
+<!-- Table to display topics -->
+@if (!isTraining() && topics) {
+  <app-topics-table [topics]="topics"></app-topics-table>
+}
+
+<!-- Template for toast messages -->
+<ng-template #toastContainer></ng-template>

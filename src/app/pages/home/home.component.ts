@@ -1,21 +1,33 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
-import { ProcessingModalComponent } from '../../components/processing-modal/processing-modal.component';
-import { TextCorpus, TopicModelOptions } from '../../shared/interfaces.shared';
+import { ProcessingModalComponent } from '../../components/training-modal/training-modal.component';
+import { ToastService } from '../../services/toast.service';
+import { TextCorpus, TopicModelOptions, WorkerMessage } from '../../shared/interfaces.shared';
 import { TopicModel } from '../../shared/topic-model.shared';
 import { Maybe } from '../../shared/types.shared';
 import { getTokens, getVocabulary } from '../../shared/utils.shared';
+import { TopicsTableComponent } from "../../components/topics-table/topics-table.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FaIconComponent, FormsModule, ProcessingModalComponent],
+  imports: [FaIconComponent, FormsModule, ProcessingModalComponent, TopicsTableComponent],
+  providers: [ToastService],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   public faFileArrowUp = faFileArrowUp;
 
   public currentIteration = signal(0);
@@ -33,22 +45,48 @@ export class HomeComponent implements OnInit, OnDestroy {
   public topics: any[] = [];
 
   #worker: Maybe<Worker>;
+  #toastService = inject(ToastService);
+
+  @ViewChild('toastContainer', { read: ViewContainerRef }) viewContainerRef!: ViewContainerRef;
 
   /**
    * Initializes the component and creates a new Web Worker.
    */
   public ngOnInit(): void {
+    this.setWorker();
+  }
+
+  /**
+   * Sets the view container reference for the toast service.
+   */
+  public ngAfterViewInit(): void {
+    this.#toastService.setViewContainerRef(this.viewContainerRef);
+  }
+
+  /**
+   * Creates a new Web Worker for training the topic model.
+   */
+  private setWorker(): void {
     if (typeof Worker !== 'undefined') {
       this.#worker = new Worker(new URL('../../workers/topic-model.worker', import.meta.url));
 
-      this.#worker.onmessage = (message: MessageEvent<{ model: Maybe<TopicModel>; currentIteration: number }>) => {
-        this.currentIteration.set(message.data.currentIteration);
-        if (message.data.model) {
-          this.model = message.data.model;
-          this.topics = message.data.model.getTopics();
-          this.isTraining.set(false);
-        }
-      };
+      this.#worker.onmessage = this.onMessage.bind(this);
+    } else {
+      this.#toastService.showDangerToast('Sorry, your browser does not support Web Workers.');
+    }
+  }
+
+  /**
+   * Handles the message event from the Web Worker.
+   */
+  private onMessage(message: MessageEvent<WorkerMessage>): void {
+    this.currentIteration.set(message.data.currentIteration);
+    this.topics = message.data.topics;
+
+    if (message.data.currentIteration === this.numIterations) {
+      this.isTraining.set(false);
+      this.model = message.data.model;
+      this.topics = message.data.model?.getTopics(5) ?? [];
     }
   }
 
@@ -66,7 +104,7 @@ export class HomeComponent implements OnInit, OnDestroy {
    */
   public async onFilesChanged(event: Event): Promise<void> {
     if (!(event.target instanceof HTMLInputElement) || !event.target.files) {
-      // TODO throw error
+      this.#toastService.showDangerToast('No files selected');
       return;
     }
 
@@ -98,17 +136,31 @@ export class HomeComponent implements OnInit, OnDestroy {
    */
   public trainModel(): void {
     if (!this.#worker || !this.textCorpus) {
-      // TODO throw error
+      this.#toastService.showDangerToast('Sorry, cannot start training.');
       return;
     }
 
     this.isTraining.set(true);
-    this.#worker.postMessage({
-      textCorpus: this.textCorpus,
-      options: this.topicModelOptions,
-    });
+    this.#worker.postMessage({ textCorpus: this.textCorpus, options: this.topicModelOptions });
   }
 
+  /**
+   * Cancels the training of the topic model and resets the worker.
+   */
+  public onCancel(): void {
+    if (this.#worker) {
+      this.#worker.terminate();
+    }
+
+    this.currentIteration.set(0);
+    this.isTraining.set(false);
+
+    this.setWorker();
+  }
+
+  /**
+   * Current options for the topic model.
+   */
   private get topicModelOptions(): TopicModelOptions {
     return { numTopics: this.numTopics, numIterations: this.numIterations, alpha: this.alpha, beta: this.beta };
   }
