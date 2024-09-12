@@ -22,7 +22,7 @@ export class TopicModel {
   public topicWordCounts: any;
   public wordTopicCounts: any;
   public vocabCounts: any;
-  public topicWeights: number[]
+  public topicWeights: number[];
   public topicScores: any;
   public numIterations: number = 100;
 
@@ -101,7 +101,7 @@ export class TopicModel {
     }
 
     for (let topic = 0; topic < this.numTopics; topic++) {
-      this.topicWordCounts[topic].sort((a: { count: number; }, b: { count: number; }) => b.count - a.count);
+      this.topicWordCounts[topic].sort((a: { count: number }, b: { count: number }) => b.count - a.count);
     }
   }
 
@@ -122,7 +122,8 @@ export class TopicModel {
         let currentWordTopicCounts = this.wordTopicCounts[token.text];
         currentWordTopicCounts[token.topic]--;
         textDocument.topicCounts[token.topic]--;
-        topicNormalizer[token.topic] = 1.0 / (this.vocabSize * this.topicWordSmoothing + this.tokensPerTopic[token.topic]);
+        topicNormalizer[token.topic] =
+          1.0 / (this.vocabSize * this.topicWordSmoothing + this.tokensPerTopic[token.topic]);
 
         let sum = 0.0;
         for (let topic = 0; topic < this.numTopics; topic++) {
@@ -133,7 +134,9 @@ export class TopicModel {
               topicNormalizer[topic];
           } else {
             this.topicWeights[topic] =
-              (this.docTopicSmoothing + textDocument.topicCounts[topic]) * this.topicWordSmoothing * topicNormalizer[topic];
+              (this.docTopicSmoothing + textDocument.topicCounts[topic]) *
+              this.topicWordSmoothing *
+              topicNormalizer[topic];
           }
           sum += this.topicWeights[topic];
         }
@@ -156,7 +159,8 @@ export class TopicModel {
         }
         textDocument.topicCounts[token.topic]++;
 
-        topicNormalizer[token.topic] = 1.0 / (this.vocabSize * this.topicWordSmoothing + this.tokensPerTopic[token.topic]);
+        topicNormalizer[token.topic] =
+          1.0 / (this.vocabSize * this.topicWordSmoothing + this.tokensPerTopic[token.topic]);
       }
     }
 
@@ -178,14 +182,9 @@ export class TopicModel {
     this.textCorpus.textDocuments.map((doc, i) => {
       let topic = -1;
       let score = -1;
-      for (
-        let selectedTopic = 0;
-        selectedTopic < this.numTopics;
-        selectedTopic++
-      ) {
+      for (let selectedTopic = 0; selectedTopic < this.numTopics; selectedTopic++) {
         let tempScore =
-          (doc.topicCounts![selectedTopic] + this.docSortSmoothing) /
-          (doc.tokens.length + this.sumDocSortSmoothing);
+          (doc.topicCounts![selectedTopic] + this.docSortSmoothing) / (doc.tokens.length + this.sumDocSortSmoothing);
         if (tempScore >= score) {
           score = tempScore;
           topic = selectedTopic;
