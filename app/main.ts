@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -33,6 +33,12 @@ function createWindow(): BrowserWindow {
     const url = new URL(path.join('file:', __dirname, pathIndex));
     browserWindow.loadURL(url.href);
   }
+
+  // Open external links in the default browser
+  browserWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
 
   return browserWindow;
 }
