@@ -1,4 +1,4 @@
-import { ComponentRef, Injectable, signal, ViewContainerRef } from '@angular/core';
+import { ComponentRef, Injectable, ViewContainerRef } from '@angular/core';
 import { ToastComponent } from '../components/toast/toast.component';
 import { Maybe } from '../shared/types.shared';
 
