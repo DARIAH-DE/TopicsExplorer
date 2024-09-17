@@ -99,6 +99,11 @@ export interface Topic {
    * Words and their weights of the topic.
    */
   words: TopicWord[];
+
+  /**
+   * Overall presence of the topic in the corpus.
+   */
+  presence: number;
 }
 
 /**
@@ -114,24 +119,4 @@ export interface TopicWord {
    * The weight of the word in the topic.
    */
   weight: number;
-}
-
-/**
- * Represents a message sent from the Web Worker.
- */
-export interface WorkerMessage {
-  /**
-   * The current iteration of the Gibbs sampler.
-   */
-  currentIteration: number;
-
-  /**
-   * Maybe the topic model.
-   */
-  model: Maybe<TopicModel>;
-
-  /**
-   * Current topics.
-   */
-  topics: Topic[];
 }

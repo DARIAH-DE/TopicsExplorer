@@ -1,4 +1,4 @@
-import { TextCorpus, Topic } from './interfaces.shared';
+import { TextCorpus, TextDocument, Topic } from './interfaces.shared';
 import { Maybe } from './types.shared';
 import { getZeroVector } from './utils.shared';
 
@@ -18,7 +18,7 @@ export class TopicModel {
   public sumDocSortSmoothing: number;
   public vocabSize: number;
   public tokensPerTopic: number[];
-  public textCorpus: TextCorpus;
+  public textDocuments: TextDocument[];
   public topicWordCounts: any;
   public wordTopicCounts: any;
   public vocabCounts: any;
@@ -26,16 +26,16 @@ export class TopicModel {
   public topicScores: any;
   public numIterations: number = 100;
 
-  constructor(textCorpus: TextCorpus, options: TopicModelOptions) {
+  constructor(textDocuments: TextDocument[], vocabSize: number, options: TopicModelOptions) {
     this.numTopics = options.numTopics || 10;
     this.docTopicSmoothing = options.docTopicSmoothing || 0.1;
     this.topicWordSmoothing = options.topicWordSmoothing || 0.01;
     this.docSortSmoothing = options.docSortSmoothing || 10.0;
     this.sumDocSortSmoothing = this.docSortSmoothing * this.numTopics;
 
-    this.textCorpus = textCorpus;
+    this.textDocuments = textDocuments;
     this.tokensPerTopic = getZeroVector(this.numTopics);
-    this.vocabSize = this.textCorpus.vocabSize;
+    this.vocabSize = vocabSize;
     this.vocabCounts = {};
 
     this.topicWeights = getZeroVector(this.numTopics);
@@ -44,7 +44,7 @@ export class TopicModel {
     this.topicWordCounts = [];
     this.wordTopicCounts = {};
 
-    for (const textDocument of this.textCorpus.textDocuments) {
+    for (const textDocument of this.textDocuments) {
       textDocument.topicCounts = getZeroVector(this.numTopics);
       for (const token of textDocument.tokens) {
         token.topic = this.getRandomTopic();
@@ -111,7 +111,7 @@ export class TopicModel {
   public update(): void {
     const topicNormalizer = this.getTopicNormalizer();
 
-    for (const textDocument of this.textCorpus.textDocuments) {
+    for (const textDocument of this.textDocuments) {
       for (const token of textDocument.tokens) {
         if (!token.topic || !textDocument.topicCounts) {
           // TODO
@@ -172,14 +172,14 @@ export class TopicModel {
 
     let id = 0;
     for (const words of this.topicWordCounts) {
-      topics.push({ id, words: words.slice(0, numWords) });
+      topics.push({ id, words: words.slice(0, numWords), presence: this.topicScores[id] });
     }
 
     return topics;
   }
 
   calcDominantTopic() {
-    this.textCorpus.textDocuments.map((doc, i) => {
+    this.textDocuments.map((doc, i) => {
       let topic = -1;
       let score = -1;
       for (let selectedTopic = 0; selectedTopic < this.numTopics; selectedTopic++) {
@@ -192,6 +192,6 @@ export class TopicModel {
       }
       this.topicScores[topic] += 1;
     });
-    this.topicScores = this.topicScores.map((val: number) => val / this.textCorpus.textDocuments.length);
+    this.topicScores = this.topicScores.map((val: number) => val / this.textDocuments.length);
   }
 }
