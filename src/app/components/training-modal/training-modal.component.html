@@ -1,13 +1,14 @@
-<div class="modal" [class.is-active]="isActive">
+<div class="modal" [class.is-active]="isTraining()">
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <!-- Progress bar -->
-      <progress class="progress is-normal" [value]="currentValue" [max]="maxValue"></progress>
+      <progress class="progress is-normal" [value]="currentValue()" [max]="maxValue()"></progress>
     </header>
+
     <section class="modal-card-body">
       <!-- Current topics -->
-      <app-topics-table [topics]="topics"></app-topics-table>
+      <app-topics-table [topics]="topics()"></app-topics-table>
     </section>
     <footer class="modal-card-foot">
       <div class="buttons">

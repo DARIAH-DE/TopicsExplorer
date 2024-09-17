@@ -1,22 +1,26 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
+import { Topic } from '../../shared/interfaces.shared';
 import { TopicsTableComponent } from '../topics-table/topics-table.component';
 
 @Component({
   selector: 'app-training-modal',
-  standalone: true,
-  imports: [TopicsTableComponent],
   templateUrl: './training-modal.component.html',
   styleUrl: './training-modal.component.scss',
+  imports: [TopicsTableComponent],
+  standalone: true,
 })
-export class ProcessingModalComponent {
-  @Input() isActive = false;
-  @Input() currentValue: number = 0;
-  @Input() maxValue: number = 0;
-  @Input() topics: any[] = [];
-  @Output() cancel = new EventEmitter<void>();
+export class TrainingModalComponent {
+  public readonly isTraining = input(false);
+  public readonly currentValue = input(0);
+  public readonly maxValue = input(0);
+  public readonly topics = input<Topic[]>([]);
 
+  public readonly cancel = output<void>();
+
+  /**
+   * Cancels the training process.
+   */
   public onCancel(): void {
     this.cancel.emit();
-    this.isActive = false;
   }
 }
