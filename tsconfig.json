@@ -13,7 +13,8 @@
     "target": "ES2022",
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2017", "es2016", "es2015", "es2018", "dom", "dom.iterable"],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "skipLibCheck": true
   },
   "exclude": ["node_modules"],
   "angularCompilerOptions": {
