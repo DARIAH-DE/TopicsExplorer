@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Topic } from '../../shared/interfaces.shared';
 
 @Component({
@@ -8,5 +8,5 @@ import { Topic } from '../../shared/interfaces.shared';
   standalone: true,
 })
 export class TopicsTableComponent {
-  @Input() topics!: Topic[];
+  public readonly topics = input.required<Topic[]>();
 }
