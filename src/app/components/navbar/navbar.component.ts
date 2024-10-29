@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faDownload, faLayerGroup, faMoon, faRotateLeft, faSun, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { ModelService } from '../../services/model.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   standalone: true,
-  imports: [FaIconComponent]
+  imports: [FaIconComponent],
 })
 export class NavbarComponent {
   #theme: 'dark' | 'light' = 'dark';
@@ -29,13 +29,15 @@ export class NavbarComponent {
    * Uploads a previously saved model.
    */
   public uploadModel(): void {
-    // this.#modelService.setModel();
+    // TODO: implement this
   }
 
   /**
    * Downloads the current model.
    */
-  public downloadModel(): void {}
+  public downloadModel(): void {
+    // TODO: implement this
+  }
 
   /**
    * Resets the current model.
