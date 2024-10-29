@@ -2,7 +2,7 @@ import { ComponentRef, Injectable, ViewContainerRef } from '@angular/core';
 import { ToastComponent } from '../components/toast/toast.component';
 import { Maybe } from '../shared/types.shared';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ToastService {
   #toastComponentRef: Maybe<ComponentRef<ToastComponent>>;
   #viewContainerRef: Maybe<ViewContainerRef>;
@@ -29,9 +29,16 @@ export class ToastService {
   }
 
   /**
+   * Shows a warning toast with the given message.
+   */
+  public showInfoToast(message: string, duration: number = 3000) {
+    this.showToast('info', message, duration);
+  }
+
+  /**
    * Shows a toast of given type with the given message.
    */
-  public showToast(type: 'warning' | 'danger', message: string, duration: number = 3000) {
+  public showToast(type: 'info' | 'warning' | 'danger', message: string, duration: number = 3000) {
     if (this.#toastComponentRef || !this.#viewContainerRef) {
       return;
     }
