@@ -1,6 +1,7 @@
-import { Component, input, output } from '@angular/core';
-import { Topic } from '../../shared/interfaces.shared';
+import { Component, inject, output } from '@angular/core';
+import { ModelService } from '../../services/model.service';
 import { TopicsTableComponent } from '../topics-table/topics-table.component';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-training-modal',
@@ -10,10 +11,12 @@ import { TopicsTableComponent } from '../topics-table/topics-table.component';
   standalone: true,
 })
 export class TrainingModalComponent {
-  public readonly isTraining = input(false);
-  public readonly currentValue = input(0);
-  public readonly maxValue = input(0);
-  public readonly topics = input<Topic[]>([]);
+  #modelService = inject(ModelService);
+  #toastService = inject(ToastService);
+
+  public readonly isTraining = this.#modelService.isTraining;
+  public readonly currentIteration = this.#modelService.currentIteration;
+  public readonly numIterations = this.#modelService.numIterations;
 
   public readonly cancel = output<void>();
 
@@ -21,6 +24,7 @@ export class TrainingModalComponent {
    * Cancels the training process.
    */
   public onCancel(): void {
+    this.#toastService.showInfoToast(`You have stopped training after ${this.currentIteration} iterations.`);
     this.cancel.emit();
   }
 }
