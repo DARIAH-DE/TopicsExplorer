@@ -1,39 +1,8 @@
-<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
-  <div class="navbar-menu">
-    <div class="navbar-brand">
-      <span class="navbar-item">
-        <a class="icon-text" href="https://github.com/DARIAH-DE/TopicsExplorer" target="_blank">
-          <span class="icon">
-            <fa-icon [icon]="faLayerGroup"></fa-icon>
-          </span>
-          <b>TopicsExplorer</b>
-        </a>
-      </span>
-    </div>
+<!-- Navbar -->
+<app-navbar></app-navbar>
 
-    <div class="navbar-start"></div>
-    <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="buttons">
-          <!-- Download -->
-          <button class="button">
-            <span class="icon is-small">
-              <fa-icon [icon]="faDownload"></fa-icon>
-            </span>
-          </button>
+<!-- Current view -->
+<router-outlet></router-outlet>
 
-          <!-- Theme -->
-          <button class="button" (click)="toggleTheme()">
-            <span class="icon is-small">
-              <fa-icon [icon]="isDarkTheme ? faSun : faMoon"></fa-icon>
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-
-<app-home></app-home>
-
-<app-model></app-model>
+<!-- Template for toast messages -->
+<ng-template #toastContainer></ng-template>
