@@ -27,16 +27,16 @@ export class CorpusService {
    * Saves the given text document and increments the number of documents.
    */
   public async saveTextDocument(textDocument: TextDocument): Promise<void> {
-    this.numDocuments.update((numDocuments) => numDocuments + 1);
     await db.saveTextDocument(textDocument);
+    this.numDocuments.update((numDocuments) => numDocuments + 1);
   }
 
   /**
    * Saves the given vocabulary and sets the vocabulary size.
    */
   public async saveVocabulary(vocabulary: string[]): Promise<void> {
-    this.vocabSize.set(vocabulary.length);
     await db.saveVocabulary(vocabulary);
+    this.vocabSize.set(vocabulary.length);
   }
 
   /**
@@ -51,9 +51,9 @@ export class CorpusService {
    */
   public async clearCorpus(): Promise<void> {
     if (this.hasCorpus()) {
+      await Promise.all([db.clearTextDocuments(), db.clearVocabulary()]);
       this.numDocuments.set(0);
       this.vocabSize.set(0);
-      await Promise.all([db.clearTextDocuments(), db.clearVocabulary()]);
     }
   }
 }
