@@ -1,9 +1,9 @@
-<div class="modal" [class.is-active]="isTraining">
+<div class="modal" [class.is-active]="isTraining()">
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <!-- Progress bar -->
-      <progress class="progress is-normal" [value]="currentIteration" [max]="numIterations"></progress>
+      <progress class="progress is-normal" [value]="currentIteration()" [max]="numIterations()"></progress>
     </header>
 
     <section class="modal-card-body">
