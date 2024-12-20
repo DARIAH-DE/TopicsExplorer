@@ -31,17 +31,22 @@ export class ModelService {
    * Gets the current model.
    */
   public async getModel(): Promise<Maybe<TopicModel>> {
-    return await db.getModel();
-  }
-
-  public async getTopics(numWords: number = 10): Promise<Topic[]> {
-    const model = await this.getModel();
-    console.error(model)
-    if (model) {
-      return model.getTopics(numWords);
+    if (!this.#model) {
+      this.#model = await db.getModel();
     }
 
-    return [];
+    return this.#model;
+  }
+
+  /**
+   * Gets the topics from the current model.
+   *
+   * @param numWords Number of words per topic.
+   */
+  public async getTopics(numWords: number = 10): Promise<Topic[]> {
+    const model = await this.getModel();
+
+    return model?.getTopics(numWords) ?? [];
   }
 
   /**
@@ -59,5 +64,25 @@ export class ModelService {
    */
   public getOptions(): TopicModelOptions {
     return { numTopics: this.numTopics(), numIterations: this.numIterations(), alpha: this.alpha(), beta: this.beta() };
+  }
+
+  public startTraining(): void {
+    this.isTraining.set(true);
+    this.currentIteration.set(0);
+  }
+
+  public async finishTraining(): Promise<void> {
+    this.isTraining.set(false);
+    this.hasModel.set(true);
+    this.currentIteration.set(0);
+
+    const model = await db.getModel();
+    if (model) {
+      await this.setModel(model);
+    }
+  }
+
+  public setCurrentIteration(iteration: number): void {
+    this.currentIteration.set(iteration);
   }
 }

@@ -1,197 +1,180 @@
-import { TextCorpus, TextDocument, Topic } from './interfaces.shared';
-import { Maybe } from './types.shared';
-import { getZeroVector } from './utils.shared';
+import { TextDocument, Topic, TopicWord } from './interfaces.shared';
 
-interface TopicModelOptions {
-  numTopics?: number;
-  docTopicSmoothing?: number;
-  topicWordSmoothing?: number;
-  docSortSmoothing?: number;
-  sumDocSortSmoothing?: number;
-}
 
 export class TopicModel {
-  public numTopics: number;
-  public docTopicSmoothing: number;
-  public topicWordSmoothing: number;
-  public docSortSmoothing: number;
-  public sumDocSortSmoothing: number;
-  public vocabSize: number;
-  public tokensPerTopic: number[];
-  public textDocuments: TextDocument[];
-  public topicWordCounts: any;
-  public wordTopicCounts: any;
-  public vocabCounts: any;
-  public topicWeights: number[];
-  public topicScores: any;
-  public numIterations: number = 100;
+  public numTopics: number = 0;
+  public alpha: number = 0;
+  public beta: number = 0;
 
-  constructor(textDocuments: TextDocument[], vocabSize: number, options: TopicModelOptions) {
-    this.numTopics = options.numTopics || 10;
-    this.docTopicSmoothing = options.docTopicSmoothing || 0.1;
-    this.topicWordSmoothing = options.topicWordSmoothing || 0.01;
-    this.docSortSmoothing = options.docSortSmoothing || 10.0;
-    this.sumDocSortSmoothing = this.docSortSmoothing * this.numTopics;
+  public textDocuments: TextDocument[] = [];
+  public vocabulary: string[] = [];
 
+  public docTopicCounts: number[][] = []; // docTopicCounts[docId][topicId]
+  public topicWordCounts: number[][] = []; // topicWordCounts[topicId][wordId]
+  public topicCounts: number[] = []; // total number of words assigned to each topic
+  public docLengths: number[] = []; // total number of words in each document
+  public topicAssignments: number[][] = []; // topicAssignments[docId][wordPosition]
+
+  #numDocuments: number = 0;
+  #vocabularySize: number = 0;
+  #wordMap: Map<string, number> = new Map();
+
+  /**
+   * Sets the hyperparameters for the LDA model.
+   */
+  public setHyperparameters(numTopics: number, alpha: number, beta: number): void {
+    this.numTopics = numTopics;
+    this.alpha = alpha;
+    this.beta = beta;
+  }
+
+  /**
+   * Sets the corpus of text documents and the vocabulary.
+   */
+  public setCorpus(textDocuments: TextDocument[], vocabulary: string[]): void {
     this.textDocuments = textDocuments;
-    this.tokensPerTopic = getZeroVector(this.numTopics);
-    this.vocabSize = vocabSize;
-    this.vocabCounts = {};
+    this.vocabulary = vocabulary;
+    this.#numDocuments = textDocuments.length;
+    this.#vocabularySize = vocabulary.length;
 
-    this.topicWeights = getZeroVector(this.numTopics);
-    this.topicScores = getZeroVector(this.numTopics);
+    this.#wordMap = new Map();
+    for (let i = 0; i < this.#vocabularySize; i++) {
+      this.#wordMap.set(vocabulary[i], i);
+    }
+  }
 
-    this.topicWordCounts = [];
-    this.wordTopicCounts = {};
+  /**
+   * Randomly initializes the topic assignments and counts.
+   */
+  public initializeValues(): void {
+    this.docTopicCounts = new Array(this.#numDocuments);
+    this.topicWordCounts = new Array(this.numTopics);
+    this.topicCounts = new Array(this.numTopics).fill(0);
+    this.docLengths = new Array(this.#numDocuments).fill(0);
+    this.topicAssignments = new Array(this.#numDocuments);
 
-    for (const textDocument of this.textDocuments) {
-      textDocument.topicCounts = getZeroVector(this.numTopics);
-      for (const token of textDocument.tokens) {
-        token.topic = this.getRandomTopic();
+    for (let d = 0; d < this.#numDocuments; d++) {
+      this.docTopicCounts[d] = new Array(this.numTopics).fill(0);
+      this.topicAssignments[d] = [];
+    }
 
-        this.tokensPerTopic[token.topic]++;
-        if (!this.wordTopicCounts[token.text]) {
-          this.wordTopicCounts[token.text] = {};
+    for (let k = 0; k < this.numTopics; k++) {
+      this.topicWordCounts[k] = new Array(this.#vocabularySize).fill(0);
+    }
+
+    for (let d = 0; d < this.#numDocuments; d++) {
+      const doc = this.textDocuments[d];
+      for (let n = 0; n < doc.tokens.length; n++) {
+        const token = doc.tokens[n];
+        if (this.#wordMap.has(token.text)) {
+          const word = token.text;
+          const wordId = this.#wordMap.get(word)!;
+
+          const topic = Math.floor(Math.random() * this.numTopics);
+
+          this.topicAssignments[d].push(topic);
+
+          this.docTopicCounts[d][topic]++;
+          this.topicWordCounts[topic][wordId]++;
+          this.topicCounts[topic]++;
+          this.docLengths[d]++;
         }
-        if (!this.wordTopicCounts[token.text][token.topic]) {
-          this.wordTopicCounts[token.text][token.topic] = 0;
-        }
-        this.wordTopicCounts[token.text][token.topic] += 1;
-        textDocument.topicCounts[token.topic] += 1;
       }
     }
   }
 
-  /**
-   * Gets a random topic.
-   */
-  private getRandomTopic(): number {
-    return Math.floor(Math.random() * this.numTopics);
-  }
-
-  /**
-   * Gets the normalizer for the topic distribution.
-   */
-  private getTopicNormalizer(): number[] {
-    const topicNormalizer = getZeroVector(this.numTopics);
-
-    for (let i = 0; i < this.numTopics; i++) {
-      topicNormalizer[i] = 1.0 / (this.vocabSize * this.topicWordSmoothing + this.tokensPerTopic[i]);
-    }
-
-    return topicNormalizer;
-  }
-
-  /**
-   * Sorts the topic words.
-   */
-  private sortTopicWords(): void {
-    this.topicWordCounts = [];
-    for (let topic = 0; topic < this.numTopics; topic++) {
-      this.topicWordCounts[topic] = [];
-    }
-
-    for (let word in this.wordTopicCounts) {
-      for (let topic in this.wordTopicCounts[word]) {
-        this.topicWordCounts[topic].push({
-          word: word,
-          count: this.wordTopicCounts[word][topic],
-        });
-      }
-    }
-
-    for (let topic = 0; topic < this.numTopics; topic++) {
-      this.topicWordCounts[topic].sort((a: { count: number }, b: { count: number }) => b.count - a.count);
-    }
-  }
-
-  /**
-   * Updates the topic model (i.e. one iteration).
-   */
   public update(): void {
-    const topicNormalizer = this.getTopicNormalizer();
+    for (let d = 0; d < this.#numDocuments; d++) {
+      const doc = this.textDocuments[d];
+      const tokens = doc.tokens;
+      const docLength = this.docLengths[d];
+      const docTopicCounts = this.docTopicCounts[d];
+      const topicAssignments = this.topicAssignments[d];
 
-    for (const textDocument of this.textDocuments) {
-      for (const token of textDocument.tokens) {
-        if (!token.topic || !textDocument.topicCounts) {
-          // TODO
-          continue;
-        }
+      let n = 0;
+      for (let t = 0; t < tokens.length; t++) {
+        const token = tokens[t];
+        if (this.#wordMap.has(token.text)) {
+          const word = token.text;
+          const wordId = this.#wordMap.get(word)!;
+          const topic = topicAssignments[n];
 
-        this.tokensPerTopic[token.topic]--;
-        let currentWordTopicCounts = this.wordTopicCounts[token.text];
-        currentWordTopicCounts[token.topic]--;
-        textDocument.topicCounts[token.topic]--;
-        topicNormalizer[token.topic] =
-          1.0 / (this.vocabSize * this.topicWordSmoothing + this.tokensPerTopic[token.topic]);
+          docTopicCounts[topic]--;
+          this.topicWordCounts[topic][wordId]--;
+          this.topicCounts[topic]--;
 
-        let sum = 0.0;
-        for (let topic = 0; topic < this.numTopics; topic++) {
-          if (currentWordTopicCounts[topic]) {
-            this.topicWeights[topic] =
-              (this.docTopicSmoothing + textDocument.topicCounts[topic]) *
-              (this.topicWordSmoothing + currentWordTopicCounts[topic]) *
-              topicNormalizer[topic];
-          } else {
-            this.topicWeights[topic] =
-              (this.docTopicSmoothing + textDocument.topicCounts[topic]) *
-              this.topicWordSmoothing *
-              topicNormalizer[topic];
+          const p = new Array(this.numTopics);
+          let sumP = 0;
+          for (let k = 0; k < this.numTopics; k++) {
+            const term1 = (docTopicCounts[k] + this.alpha) / (docLength - 1 + this.numTopics * this.alpha);
+            const term2 =
+              (this.topicWordCounts[k][wordId] + this.beta) / (this.topicCounts[k] + this.#vocabularySize * this.beta);
+            p[k] = term1 * term2;
+            sumP += p[k];
           }
-          sum += this.topicWeights[topic];
-        }
 
-        // Sample from an unnormalized discrete distribution
-        let sample = sum * Math.random();
-        let i = 0;
-        sample -= this.topicWeights[i];
-        while (sample > 0.0) {
-          i++;
-          sample -= this.topicWeights[i];
-        }
-        token.topic = i;
+          for (let k = 0; k < this.numTopics; k++) {
+            p[k] /= sumP;
+          }
 
-        this.tokensPerTopic[token.topic]++;
-        if (!currentWordTopicCounts[token.topic]) {
-          currentWordTopicCounts[token.topic] = 1;
-        } else {
-          currentWordTopicCounts[token.topic] += 1;
-        }
-        textDocument.topicCounts[token.topic]++;
+          const newTopic = this.sampleTopic(p);
 
-        topicNormalizer[token.topic] =
-          1.0 / (this.vocabSize * this.topicWordSmoothing + this.tokensPerTopic[token.topic]);
+          topicAssignments[n] = newTopic;
+          docTopicCounts[newTopic]++;
+          this.topicWordCounts[newTopic][wordId]++;
+          this.topicCounts[newTopic]++;
+
+          n++;
+        }
       }
     }
-
-    this.sortTopicWords();
   }
 
-  public getTopics(numWords: Maybe<number>): Topic[] {
+  private sampleTopic(p: number[]): number {
+    const cumulative = [];
+    let sum = 0;
+    for (let i = 0; i < p.length; i++) {
+      sum += p[i];
+      cumulative.push(sum);
+    }
+    const r = Math.random();
+    for (let i = 0; i < cumulative.length; i++) {
+      if (r < cumulative[i]) {
+        return i;
+      }
+    }
+    return p.length - 1;
+  }
+
+  public getTopics(numWords: number = 100): Topic[] {
     const topics: Topic[] = [];
 
-    let id = 0;
-    for (const words of this.topicWordCounts) {
-      topics.push({ id, words: words.slice(0, numWords), presence: this.topicScores[id] });
-    }
-
-    return topics;
-  }
-
-  calcDominantTopic() {
-    this.textDocuments.map((doc, i) => {
-      let topic = -1;
-      let score = -1;
-      for (let selectedTopic = 0; selectedTopic < this.numTopics; selectedTopic++) {
-        let tempScore =
-          (doc.topicCounts![selectedTopic] + this.docSortSmoothing) / (doc.tokens.length + this.sumDocSortSmoothing);
-        if (tempScore >= score) {
-          score = tempScore;
-          topic = selectedTopic;
+    for (let k = 0; k < this.numTopics; k++) {
+      const wordWeights: TopicWord[] = [];
+      for (let v = 0; v < this.#vocabularySize; v++) {
+        const count = this.topicWordCounts[k][v];
+        const weight = (count + this.beta) / (this.topicCounts[k] + this.#vocabularySize * this.beta);
+        if (count > 0) {
+          wordWeights.push({
+            text: this.vocabulary[v],
+            weight,
+          });
         }
       }
-      this.topicScores[topic] += 1;
-    });
-    this.topicScores = this.topicScores.map((val: number) => val / this.textDocuments.length);
+
+      wordWeights.sort((a, b) => b.weight - a.weight);
+
+      topics.push({
+        id: k.toString(),
+        words: wordWeights.slice(0, numWords),
+        presence: this.topicCounts[k] / this.totalWords(),
+      });
+    }
+
+    return topics.sort((a, b) => b.presence - a.presence);
+  }
+
+  private totalWords(): number {
+    return this.topicCounts.reduce((sum, count) => sum + count, 0);
   }
 }

@@ -1,8 +1,9 @@
 <section class="section">
   <div class="container">
     <div class="content">
+      <!-- Introduction -->
       <div>
-        <h1>Explore your text collection with topic modeling</h1>
+        <h2>Explore your text collection with topic modeling</h2>
         <div>
           Topic models discover hidden themes in a collection of text documents. Imagine you have a large number of
           articles and you want to understand the main topics they talk about without having to read each one. Topic
@@ -19,9 +20,11 @@
       <div class="mt-5">
         <div><b class="is-size-5">Corpus</b></div>
         <div>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-          consequat.
+          The documents should be in plain text (.txt) format. Each document is split into words and cleaned to remove
+          punctuation, numbers and common words (stop words). The words in each document are counted and transformed
+          into a
+          <a href="https://en.wikipedia.org/wiki/Document-term_matrix">document-term matrix</a>. This matrix is the
+          input to the topic modeling algorithm, which discovers the hidden themes based on word frequencies alone.
         </div>
         <div class="file is-boxed mt-3">
           <label class="file-label">
@@ -32,14 +35,13 @@
               accept=".txt"
               multiple
               required
-              [disabled]="isTraining()"
               (change)="onFilesChanged($event)"
             />
             <span class="file-cta">
               <span class="file-icon">
                 <fa-icon [icon]="faFileArrowUp"></fa-icon>
               </span>
-              <span class="file-label">Selected {{ numDocuments }} text files</span>
+              <span class="file-label">Selected {{ numDocuments() }} text files</span>
             </span>
           </label>
         </div>
@@ -48,16 +50,19 @@
       <!-- Modeling -->
       <div class="mt-5">
         <div><b class="is-size-5">Model</b></div>
-        <div>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua.
-        </div>
+        <div>The</div>
 
         <div class="columns">
           <div class="column">
             <div class="field mt-3">
               <div class="control">
-                <input class="input" type="number" min="1" [disabled]="isTraining()" [(ngModel)]="numIterations" />
+                <input
+                  class="input"
+                  [class.is-danger]="!numIterations"
+                  type="number"
+                  min="1"
+                  [(ngModel)]="numIterations"
+                />
               </div>
               <p class="help">Number of iterations</p>
             </div>
@@ -65,7 +70,7 @@
           <div class="column">
             <div class="field mt-3">
               <div class="control">
-                <input class="input" type="number" min="1" [disabled]="isTraining()" [(ngModel)]="numTopics" />
+                <input class="input" [class.is-danger]="!numTopics" type="number" min="1" [(ngModel)]="numTopics" />
               </div>
               <p class="help">Number of topics</p>
             </div>
@@ -73,7 +78,7 @@
           <div class="column">
             <div class="field mt-3">
               <div class="control">
-                <input class="input" type="number" min="0" step="0.01" [disabled]="isTraining()" [(ngModel)]="alpha" />
+                <input class="input" [class.is-danger]="!alpha" type="number" min="0" step="0.01" [(ngModel)]="alpha" />
               </div>
               <p class="help">Alpha</p>
             </div>
@@ -81,33 +86,20 @@
           <div class="column">
             <div class="field mt-3">
               <div class="control">
-                <input class="input" type="number" min="0" step="0.01" [disabled]="isTraining()" [(ngModel)]="beta" />
+                <input class="input" [class.is-danger]="!beta" type="number" min="0" step="0.01" [(ngModel)]="beta" />
               </div>
               <p class="help">Beta</p>
             </div>
           </div>
         </div>
-        <div class="mt-5">
-          <button class="button" [disabled]="numDocuments === 0" (click)="trainModel()">Train model</button>
-        </div>
+      </div>
+
+      <!-- Train model -->
+      <div class="mt-5">
+        <button class="button" (click)="trainModel()" [disabled]="!isReady">Train model</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Modal to show progress during training -->
-<app-training-modal
-  [isActive]="isTraining()"
-  [currentValue]="currentIteration()"
-  [maxValue]="numIterations"
-  [topics]="topics"
-  (cancel)="onCancel()"
-></app-training-modal>
-
-<!-- Table to display topics -->
-@if (!isTraining() && topics) {
-  <app-topics-table [topics]="topics"></app-topics-table>
-}
-
-<!-- Template for toast messages -->
-<ng-template #toastContainer></ng-template>
+<app-training-modal (cancel)="onCancel()"></app-training-modal>

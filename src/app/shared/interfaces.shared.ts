@@ -1,23 +1,5 @@
-import { TopicModel } from "./topic-model.shared";
-import { Maybe } from "./types.shared";
-
 /**
- * Represents a token extracted from a text document.
- */
-export interface Token {
-  /**
-   * The text of the token.
-   */
-  text: string;
-
-  /**
-   * Maybe the assigned topic of the token.
-   */
-  topic?: number;
-}
-
-/**
- * Represents a text document.
+ * Text document.
  */
 export interface TextDocument {
   /**
@@ -39,26 +21,77 @@ export interface TextDocument {
    * List of tokens extracted from the document.
    */
   tokens: Token[];
-
-  /**
-   * Maybe topic counts for the document.
-   */
-  topicCounts?: number[];
 }
 
 /**
- * Text corpus containing a list of text documents and the vocabulary size.
+ * Corpus.
  */
-export interface TextCorpus {
+export interface Corpus {
   /**
-   * List of text documents.
+   * Text documents of the corpus.
    */
   textDocuments: TextDocument[];
 
   /**
-   * Number of unique tokens in the corpus.
+   * Vocabulary of the corpus
    */
-  vocabSize: number;
+  vocabulary: string[];
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { TopicModel } from "./topic-model.shared";
+import { Maybe } from "./types.shared";
+
+/**
+ * Represents a token extracted from a text document.
+ */
+export interface Token {
+  /**
+   * The text of the token.
+   */
+  text: string;
+
+  /**
+   * Indicates whether the token is a stopword (and should be ignored).
+   */
+  isStopword?: boolean;
 }
 
 /**
@@ -91,9 +124,9 @@ export interface TopicModelOptions {
  */
 export interface Topic {
   /**
-   * ID of the topic.
+   * UUID of the topic.
    */
-  id: number;
+  id: string;
 
   /**
    * Words and their weights of the topic.
@@ -101,7 +134,7 @@ export interface Topic {
   words: TopicWord[];
 
   /**
-   * Overall presence of the topic in the corpus.
+   * Overall presence/dominance of the topic in the corpus.
    */
   presence: number;
 }
@@ -109,12 +142,7 @@ export interface Topic {
 /**
  * Represents a word in a topic.
  */
-export interface TopicWord {
-  /**
-   * The word.
-   */
-  text: string;
-
+export interface TopicWord extends Token {
   /**
    * The weight of the word in the topic.
    */

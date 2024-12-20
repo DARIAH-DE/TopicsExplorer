@@ -33,15 +33,7 @@ export function getMostCommonWords(counts: Map<string, number>, n: number = 10):
  *
  * @note Also filters out stopwords, the 10 most common words, single character tokens and hapax legomena.
  */
-export function getVocabulary(textDocuments: TextDocument[]): Set<string> {
-  const counts = new Map<string, number>();
-
-  for (const textDocument of textDocuments) {
-    for (const token of textDocument.tokens) {
-      counts.set(token.text, (counts.get(token.text) || 0) + 1);
-    }
-  }
-
+export function getVocabulary(counts: Map<string, number>): string[] {
   const vocabulary = new Set<string>();
   const mostCommonWords = getMostCommonWords(counts);
   for (const [token, count] of counts.entries()) {
@@ -55,7 +47,7 @@ export function getVocabulary(textDocuments: TextDocument[]): Set<string> {
     }
   }
 
-  return vocabulary;
+  return Array.from(vocabulary);
 }
 
 export function getZeroVector(n: number): number[] {
