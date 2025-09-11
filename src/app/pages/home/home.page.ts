@@ -1,6 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { CorpusComponent } from '../../components/corpus/corpus.component';
 import { HyperparametersComponent } from '../../components/hyperparameters/hyperparameters.component';
@@ -11,7 +10,7 @@ import { HyperparametersService } from '../../services/hyperparameters.service';
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrl: './home.page.css',
-  imports: [FaIconComponent, CorpusComponent, HyperparametersComponent],
+  imports: [CorpusComponent, HyperparametersComponent],
 })
 export class HomePage {
   readonly #documentService = inject(CorpusService);

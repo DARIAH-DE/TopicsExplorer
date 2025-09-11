@@ -32,7 +32,7 @@ export interface Topic {
   dominanceScore: number;
 }
 
-export interface CurrentState {
+export interface LdaProgress {
   iteration: number;
   logLikelihood: number;
   perplexity: number;

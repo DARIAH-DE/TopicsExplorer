@@ -1,5 +1,5 @@
 .box {
-  border: solid 1px grey;
+  border: solid 1px #808080;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
@@ -8,6 +8,6 @@
 
 @media (prefers-color-scheme: dark) {
   .box {
-    border-color: white;
+    border-color: #ffffff;
   }
 }
