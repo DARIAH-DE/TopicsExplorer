@@ -6,12 +6,11 @@ import { ToastService } from './services/toast.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  styleUrl: './app.component.css',
   imports: [NavbarComponent, RouterOutlet],
-  standalone: true,
 })
 export class AppComponent implements AfterViewInit {
-  #toastService = inject(ToastService);
+  readonly #toastService = inject(ToastService);
 
   public readonly toastContainer = viewChild.required('toastContainer', { read: ViewContainerRef });
 
