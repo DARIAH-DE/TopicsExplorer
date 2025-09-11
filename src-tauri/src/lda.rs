@@ -17,7 +17,7 @@ pub struct TextDocument {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct LdaSettings {
+pub struct LdaHyperparameters {
     pub num_topics: usize,
     pub num_iterations: usize,
     pub alpha: f64,
@@ -25,7 +25,7 @@ pub struct LdaSettings {
     pub seed: Option<u64>,
 }
 
-impl Default for LdaSettings {
+impl Default for LdaHyperparameters {
     fn default() -> Self {
         Self {
             num_topics: 10,
@@ -75,7 +75,7 @@ pub struct WordProb {
 pub fn train_lda(
     app: Option<&AppHandle>,
     text_documents: Vec<TextDocument>,
-    settings: LdaSettings,
+    settings: LdaHyperparameters,
 ) -> Result<LdaResult> {
     let tokenized: Vec<Vec<String>> = preprocess_text_documents(&text_documents)?;
     let (vocab, corpus, doc_lengths, stopwords) = build_corpus(tokenized)?;

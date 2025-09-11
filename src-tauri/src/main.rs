@@ -2,14 +2,14 @@
 
 mod lda;
 
-use lda::{train_lda, LdaSettings, LdaResult, TextDocument};
+use lda::{train_lda, LdaHyperparameters, LdaResult, TextDocument};
 use tauri::AppHandle;
 
 #[tauri::command]
 async fn train_model(
     app: AppHandle,
     docs: Vec<TextDocument>,
-    params: Option<LdaSettings>,
+    params: Option<LdaHyperparameters>,
 ) -> Result<LdaResult, String> {
     if docs.is_empty() {
         return Err("No documents provided".into());
