@@ -11,7 +11,7 @@ import { faFileArrowUp, faBook, faAngleUp, faAngleDown } from '@fortawesome/free
 })
 export class CorpusComponent {
   readonly #documentService = inject(CorpusService);
-  
+
   public readonly faAngleUp = faAngleUp;
   public readonly faAngleDown = faAngleDown;
   public readonly faBook = faBook;
