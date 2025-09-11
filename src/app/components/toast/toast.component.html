@@ -1,11 +1,11 @@
 <div class="toast-container">
   <div
-    class="notification"
-    [class.is-info]="isInfo"
-    [class.is-success]="isSuccess"
-    [class.is-warning]="isWarning"
-    [class.is-danger]="isDanger"
+    class="notification is-light"
+    [class.is-info]="isInfo()"
+    [class.is-success]="isSuccess()"
+    [class.is-warning]="isWarning()"
+    [class.is-danger]="isDanger()"
   >
-    {{ message }}
+    {{ message() }}
   </div>
 </div>
