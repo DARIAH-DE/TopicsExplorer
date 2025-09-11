@@ -1,0 +1,21 @@
+[package]
+name = "topics-explorer"
+version = "0.1.0"
+description = "Explore your text collection with a topic model"
+authors = ["Severin Simmler"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["wry"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+rand = "0.8"
+rand_pcg = "0.3"
+regex = "1"
+itertools = "0.13"
+rayon = "1.7"
+ahash = "0.8"
