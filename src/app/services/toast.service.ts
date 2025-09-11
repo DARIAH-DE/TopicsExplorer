@@ -1,11 +1,10 @@
 import { ComponentRef, Injectable, ViewContainerRef } from '@angular/core';
-import { ToastComponent } from '../components/toast/toast.component';
-import { Maybe } from '../shared/types.shared';
+import { ToastComponent, type ToastType } from '../components/toast/toast.component';
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-  #toastComponentRef: Maybe<ComponentRef<ToastComponent>>;
-  #viewContainerRef: Maybe<ViewContainerRef>;
+  #toastComponentRef: ComponentRef<ToastComponent> | undefined;
+  #viewContainerRef: ViewContainerRef | undefined;
 
   /**
    * Sets the view container reference for the toast service.
@@ -38,14 +37,14 @@ export class ToastService {
   /**
    * Shows a toast of given type with the given message.
    */
-  public showToast(type: 'info' | 'warning' | 'danger', message: string, duration: number = 3000) {
+  public showToast(type: ToastType, message: string, duration: number = 3000) {
     if (this.#toastComponentRef || !this.#viewContainerRef) {
       return;
     }
 
     this.#toastComponentRef = this.#viewContainerRef.createComponent(ToastComponent);
-    this.#toastComponentRef.instance.message = message;
-    this.#toastComponentRef.instance.type = type;
+    this.#toastComponentRef.setInput('message', message);
+    this.#toastComponentRef.setInput('type', type);
 
     setTimeout(() => this.closeToast(), duration);
   }
