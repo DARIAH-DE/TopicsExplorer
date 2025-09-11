@@ -2,29 +2,23 @@
   "compileOnSave": false,
   "compilerOptions": {
     "strict": true,
-    "outDir": "./dist/out-tsc",
-    "module": "es2022",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
     "experimentalDecorators": true,
-    "allowJs": true,
+    "importHelpers": true,
     "target": "ES2022",
-    "typeRoots": ["node_modules/@types"],
-    "lib": ["es2017", "es2016", "es2015", "es2018", "dom", "dom.iterable"],
-    "useDefineForClassFields": false,
-    "skipLibCheck": true
+    "module": "preserve"
   },
-  "exclude": ["node_modules"],
   "angularCompilerOptions": {
-    "strictTemplates": true,
-    "fullTemplateTypeCheck": true,
-    "annotateForClosureCompiler": true,
+    "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "skipTemplateCodegen": false,
-    "preserveWhitespaces": true,
-    "skipMetadataEmit": false,
-    "disableTypeScriptVersionCheck": true
-  }
+    "strictInputAccessModifiers": true,
+    "typeCheckHostBindings": true,
+    "strictTemplates": true
+  },
+  "references": [{ "path": "./tsconfig.app.json" }]
 }
