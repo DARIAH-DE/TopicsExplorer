@@ -1,10 +1,17 @@
-import { Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { invoke } from '@tauri-apps/api/core';
 import { LdaHyperparameters, LdaResult, TextDocument, Topic } from '../core/core.models';
 
 @Injectable({ providedIn: 'root' })
 export class LdaService {
   public readonly isTraining = signal(false);
+
+  public readonly hasModel = computed(() => {
+    const theta = this.theta();
+    const phi = this.phi();
+    const topics = this.topics();
+    return theta.length > 0 && phi.length > 0 && topics.length > 0;
+  });
 
   public readonly theta = signal<number[][]>([]);
   public readonly phi = signal<number[][]>([]);
