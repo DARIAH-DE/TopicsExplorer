@@ -29,7 +29,7 @@
               <fa-icon [icon]="faDownload"></fa-icon>
             </span>
           </button>
-          } @if (!hasModel()) {
+          } @else {
           <!-- Upload -->
           <button class="button" (click)="uploadModel()">
             <span class="icon is-small">
@@ -41,7 +41,7 @@
           <!-- Theme -->
           <button class="button" (click)="toggleTheme()">
             <span class="icon is-small">
-              <fa-icon [icon]="isDarkTheme ? faSun : faMoon"></fa-icon>
+              <fa-icon [icon]="isDarkTheme() ? faSun : faMoon"></fa-icon>
             </span>
           </button>
         </div>
