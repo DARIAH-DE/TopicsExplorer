@@ -16,8 +16,4 @@ export class TrainingPage {
   public readonly yAxisLabel = signal('Perplexity');
   public readonly xAxisLabel = signal('Iteration');
   public readonly numIterations = this.#ldaService.numIterations;
-
-  public xAxisTickFormatting(value: number): string {
-    return value % 10 === 0 ? String(value) : '';
-  }
 }
