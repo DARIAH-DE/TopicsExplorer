@@ -1,7 +1,7 @@
-import { NgStyle } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Topic } from '../../core/core.models';
+import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-topic-bar',
@@ -9,7 +9,7 @@ import { Topic } from '../../core/core.models';
   styleUrl: './topic-bar.component.css',
 })
 export class TopicBarComponent {
-  readonly #router = inject(Router);
+  readonly #navigationService = inject(NavigationService);
 
   public readonly topic = input.required<Topic>();
 
@@ -19,9 +19,13 @@ export class TopicBarComponent {
       .map(({ word }) => word)
       .join(' '),
   );
-  public readonly width = computed(() => `${this.topic().dominanceScore * 100}%`);
+  public readonly width = computed(() => {
+    const score = this.topic().dominanceScore;
+    const percentage = Math.min(score * 100 + 50, 100);
+    return `${percentage}%`;
+  });
 
   public onClick(): void {
-    this.#router.navigate(['topics', this.topic().topicIndex]);
+    this.#navigationService.navigateTopic(this.topic().topicIndex);
   }
 }

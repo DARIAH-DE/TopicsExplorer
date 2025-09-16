@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faAngleDown, faAngleUp, faFlask } from '@fortawesome/free-solid-svg-icons';
-import { HyperparametersService } from '../../services/hyperparameters.service';
+import { LdaService } from '../../services/lda.service';
 
 @Component({
   selector: 'app-hyperparameters',
@@ -11,7 +11,7 @@ import { HyperparametersService } from '../../services/hyperparameters.service';
   imports: [FaIconComponent, FormsModule],
 })
 export class HyperparametersComponent {
-  readonly #hyperparametersService = inject(HyperparametersService);
+  readonly #ldaService = inject(LdaService);
 
   public readonly isCollapsed = signal(true);
 
@@ -19,10 +19,10 @@ export class HyperparametersComponent {
   public readonly faAngleUp = faAngleUp;
   public readonly faAngleDown = faAngleDown;
 
-  public readonly numTopics = this.#hyperparametersService.numTopics;
-  public readonly numIterations = this.#hyperparametersService.numIterations;
-  public readonly alpha = this.#hyperparametersService.alpha;
-  public readonly beta = this.#hyperparametersService.beta;
+  public readonly numTopics = this.#ldaService.numTopics;
+  public readonly numIterations = this.#ldaService.numIterations;
+  public readonly alpha = this.#ldaService.alpha;
+  public readonly beta = this.#ldaService.beta;
 
   public toggleCard(): void {
     this.isCollapsed.set(!this.isCollapsed());

@@ -1,44 +1,66 @@
 <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
   <div class="navbar-menu">
     <div class="navbar-brand">
-      <span class="navbar-item">
-        <a class="icon-text" href="https://github.com/DARIAH-DE/TopicsExplorer" target="_blank">
-          <span class="icon">
-            <fa-icon [icon]="faLayerGroup"></fa-icon>
-          </span>
-          <b>TopicsExplorer</b>
-        </a>
+      <span class="navbar-item icon-text">
+        <span class="icon">
+          <fa-icon [icon]="faLayerGroup"></fa-icon>
+        </span>
+        <b>TopicsExplorer</b>
       </span>
     </div>
-
-    <div class="navbar-start"></div>
+    <div class="navbar-start">
+      <div class="navbar-item">
+        <div class="tags">
+          @if (showTraining() || hasModel()) {
+          <button
+            class="tag"
+            [class.has-background-grey-lighter]="isLightTheme() && isHome()"
+            [class.has-background-grey-dark]="isDarkTheme() && isHome()"
+            (click)="navigateHome()"
+          >
+            Home
+          </button>
+          } @if (showTraining()) {
+          <button
+            class="tag"
+            [class.has-background-grey-lighter]="isLightTheme() && isTraining()"
+            [class.has-background-grey-dark]="isDarkTheme() && isTraining()"
+            (click)="navigateTraining()"
+          >
+            Training
+          </button>
+          } @if (hasModel()) {
+          <button
+            class="tag"
+            [class.has-background-grey-lighter]="isLightTheme() && isTopics()"
+            [class.has-background-grey-dark]="isDarkTheme() && isTopics()"
+            (click)="navigateTopics()"
+          >
+            Topics
+          </button>
+          <button
+            class="tag"
+            [class.has-background-grey-lighter]="isLightTheme() && isDocumentTopic()"
+            [class.has-background-grey-dark]="isDarkTheme() && isDocumentTopic()"
+            (click)="navigateDocumentTopic()"
+          >
+            Document-Topic Distribution
+          </button>
+          <button
+            class="tag"
+            [class.has-background-grey-lighter]="isLightTheme() && isExport()"
+            [class.has-background-grey-dark]="isDarkTheme() && isExport()"
+            (click)="navigateExport()"
+          >
+            Export
+          </button>
+          }
+        </div>
+      </div>
+    </div>
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
-          @if (hasModel()) {
-          <!-- Reset -->
-          <button class="button" (click)="clearModel()">
-            <span class="icon is-small">
-              <fa-icon [icon]="faRotateLeft"></fa-icon>
-            </span>
-          </button>
-
-          <!-- Download -->
-          <button class="button" (click)="downloadModel()">
-            <span class="icon is-small">
-              <fa-icon [icon]="faDownload"></fa-icon>
-            </span>
-          </button>
-          } @else {
-          <!-- Upload -->
-          <button class="button" (click)="uploadModel()">
-            <span class="icon is-small">
-              <fa-icon [icon]="faUpload"></fa-icon>
-            </span>
-          </button>
-          }
-
-          <!-- Theme -->
           <button class="button" (click)="toggleTheme()">
             <span class="icon is-small">
               <fa-icon [icon]="isDarkTheme() ? faSun : faMoon"></fa-icon>
