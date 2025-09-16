@@ -1,42 +1,45 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { CorpusService } from '../../services/corpus.service';
-import { HyperparametersService } from '../../services/hyperparameters.service';
+import { Component, computed, inject, signal, effect } from '@angular/core';
 import { LdaService } from '../../services/lda.service';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @Component({
   selector: 'app-training',
   templateUrl: './training.page.html',
   styleUrl: './training.page.css',
-  imports: [NgxChartsModule],
+  imports: [NgxChartsModule]
 })
-export class TrainingPage implements OnInit {
-  readonly #documentService = inject(CorpusService);
+export class TrainingPage {
   readonly #ldaService = inject(LdaService);
-  readonly #router = inject(Router);
-  readonly #hyperparametersService = inject(HyperparametersService);
 
+  results: any = [
+    {
+      name: 'Series',
+      series: [],
+    },
+  ]
+
+  yAxisLabel = signal('Perplexity');
+  xAxisLabel = signal('Iteration')
+  xScaleMax = this.#ldaService.numIterations;
+
+  xAxisTickFormatting = (val: number) => (val % 10 === 0 ? String(val) : '');
+
+  public readonly numIterations = this.#ldaService.numIterations;
   public readonly currentIteration = this.#ldaService.currentIteration;
+  public readonly currentPerplexity = this.#ldaService.currentPerplexity;
 
-  public ngOnInit(): void {
-    void this.trainModel();
-  }
+  constructor() {
+    effect(() => {
+      if (this.currentPerplexity() === 0) {
+        return;
+      }
+      this.results[0].series.push({
+        name: this.currentIteration(),
+        value: this.currentPerplexity()
+      });
 
-  public async trainModel(): Promise<void> {
-    const textDocuments = this.#documentService.textDocuments();
-    const numTopics = this.#hyperparametersService.numTopics();
-    const numIterations = this.#hyperparametersService.numIterations();
-    const alpha = this.#hyperparametersService.alpha();
-    const beta = this.#hyperparametersService.beta();
-
-    await this.#ldaService.trainModel(textDocuments, {
-      numTopics,
-      numIterations,
-      alpha,
-      beta,
+      this.results[0].series = [...this.results[0].series];
+      this.results = [...this.results];
     });
-
-    this.#router.navigate(['/topics']);
   }
 }

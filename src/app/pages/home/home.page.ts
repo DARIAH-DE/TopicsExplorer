@@ -4,7 +4,8 @@ import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { CorpusComponent } from '../../components/corpus/corpus.component';
 import { HyperparametersComponent } from '../../components/hyperparameters/hyperparameters.component';
 import { CorpusService } from '../../services/corpus.service';
-import { HyperparametersService } from '../../services/hyperparameters.service';
+import { LdaService } from '../../services/lda.service';
+import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-home',
@@ -14,24 +15,28 @@ import { HyperparametersService } from '../../services/hyperparameters.service';
 })
 export class HomePage {
   readonly #documentService = inject(CorpusService);
-  readonly #router = inject(Router);
-  readonly #hyperparametersService = inject(HyperparametersService);
+  readonly #navigationService = inject(NavigationService);
+  readonly #ldaService = inject(LdaService);
 
   public readonly faFileArrowUp = faFileArrowUp;
 
   public readonly numDocuments = this.#documentService.numDocuments;
-  public readonly numTopics = this.#hyperparametersService.numTopics;
-  public readonly numIterations = this.#hyperparametersService.numIterations;
-  public readonly alpha = this.#hyperparametersService.alpha;
-  public readonly beta = this.#hyperparametersService.beta;
+  public readonly numTopics = this.#ldaService.numTopics;
+  public readonly numIterations = this.#ldaService.numIterations;
+  public readonly alpha = this.#ldaService.alpha;
+  public readonly beta = this.#ldaService.beta;
 
   public readonly isReady = computed(() => {
     const hasDocuments = this.#documentService.hasDocuments();
-    const hasValidHyperparameters = this.#hyperparametersService.hasValidHyperparameters();
+    const hasValidHyperparameters = this.#ldaService.hasValidHyperparameters();
     return hasDocuments && hasValidHyperparameters;
   });
 
   public async trainModel(): Promise<void> {
-    this.#router.navigate(['/training']);
+    const textDocuments = this.#documentService.textDocuments();
+
+    this.#ldaService.trainModel(textDocuments);
+
+    this.#navigationService.navigateTraining();
   }
 }

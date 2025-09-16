@@ -1,0 +1,11 @@
+<section class="section">
+  <div class="container">
+    <div class="content">
+      @for (topic of topics(); track topic.topicIndex) {
+      <div class="block">
+        <app-topic-bar [topic]="topic"></app-topic-bar>
+      </div>
+      }
+    </div>
+  </div>
+</section>

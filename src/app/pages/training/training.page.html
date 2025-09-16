@@ -1,1 +1,27 @@
-{{ currentIteration() }}
+<section class="section">
+  <div class="container">
+    <div class="content">
+      <div class="block">{{ currentIteration() }} / {{ numIterations() }} iterations</div>
+      <div class="block">Perplexity: {{ currentPerplexity().toFixed(2) }}</div>
+      <div class="block" style="height: 400px;">        
+        <ngx-charts-line-chart
+          [results]="results"
+          [legend]="false"
+          [xAxis]="true"
+          [yAxis]="true"
+          [showXAxisLabel]="true"
+          [showYAxisLabel]="true"
+          [xAxisLabel]="xAxisLabel()"
+          [yAxisLabel]="yAxisLabel()"
+          [xScaleMin]="0"
+          [xScaleMax]="xScaleMax()"
+          [xAxisTickFormatting]="xAxisTickFormatting"
+          [showGridLines]="false"
+          [autoScale]="true"
+          [tooltipDisabled]="true"
+        >
+        </ngx-charts-line-chart>
+      </div>
+    </div>
+  </div>
+</section>
