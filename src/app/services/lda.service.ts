@@ -1,4 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
+import { DataItem } from '@swimlane/ngx-charts';
 import { invoke } from '@tauri-apps/api/core';
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { LdaHyperparameters, LdaProgress, LdaResult, TextDocument, Topic } from '../core/core.models';
@@ -14,6 +15,8 @@ export class LdaService {
   public readonly beta = signal(0.01);
 
   public readonly isTraining = signal(false);
+
+  public readonly perplexityOverTime = signal<DataItem[]>([]);
 
   public readonly hasValidNumTopics = computed(() => {
     const numTopics = this.numTopics();
@@ -92,6 +95,16 @@ export class LdaService {
     return await listen<LdaProgress>('lda:progress', ({ payload }) => {
       this.currentIteration.set(payload.iteration);
       this.currentPerplexity.set(payload.perplexity);
+
+      if (this.currentPerplexity() !== 0) {
+        this.perplexityOverTime.update((previous) => [
+          ...previous,
+          {
+            name: this.currentIteration(),
+            value: this.currentPerplexity(),
+          },
+        ]);
+      }
     });
   }
 

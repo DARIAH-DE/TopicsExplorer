@@ -1,9 +1,9 @@
 <section class="section">
   <div class="container">
     <div class="content">
-      <div class="block line-plot-container">        
+      <div class="block line-plot-container">
         <ngx-charts-line-chart
-          [results]="results"
+          [results]="results()"
           [legend]="false"
           [xAxis]="true"
           [yAxis]="true"
@@ -12,7 +12,7 @@
           [xAxisLabel]="xAxisLabel()"
           [yAxisLabel]="yAxisLabel()"
           [xScaleMin]="0"
-          [xScaleMax]="xScaleMax()"
+          [xScaleMax]="numIterations()"
           [xAxisTickFormatting]="xAxisTickFormatting"
           [showGridLines]="false"
           [autoScale]="true"

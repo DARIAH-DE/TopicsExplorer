@@ -128,6 +128,29 @@ pub fn train_lda(
 
     let v_beta: f64 = (v as f64) * beta;
 
+    if let Some(app) = app {
+        let (ll, n_tokens) = log_likelihood_from_counts(
+            &corpus,
+            &ndk,
+            &nkw,
+            &nk,
+            &doc_lengths,
+            alpha,
+            beta,
+            v,
+        );
+        let perp = f64::exp(-ll / (n_tokens as f64));
+
+        let _ = app.emit(
+            "lda:progress",
+            ProgressEvent {
+                iteration: 0,
+                log_likelihood: ll,
+                perplexity: perp,
+            },
+        );
+    }
+
     for iter in 0..num_iterations {
         corpus.par_iter().enumerate().for_each(|(d_i, doc)| {
             let thread_index = rayon::current_thread_index().unwrap_or(0) % num_threads;
