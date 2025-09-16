@@ -18,6 +18,6 @@ export class TrainingPage {
 
   public readonly yAxisLabel = signal('Perplexity');
   public readonly xAxisLabel = signal('Iteration');
-  public readonly style = computed(() => `fill: ${this.#themeService.isDarkTheme() ? '#ffffff' : '#000000'};`);
+  public readonly color = computed(() => this.#themeService.isDarkTheme() ? '#ffffff' : '#000000');
   public readonly numIterations = this.#ldaService.numIterations;
 }
