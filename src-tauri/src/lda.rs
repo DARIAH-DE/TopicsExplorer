@@ -332,7 +332,7 @@ fn build_corpus(
             if stopwords_set.contains(t) {
                 continue;
             }
-            if global_counts.get(t).unwrap_or(&0) < &5 {
+            if global_counts.get(t).unwrap_or(&0) < &3 {
                 continue;
             }
             if !vocab_map.contains_key(t) {
