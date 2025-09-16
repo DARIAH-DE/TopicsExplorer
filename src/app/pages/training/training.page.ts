@@ -1,28 +1,26 @@
-import { Component, computed, inject, signal, effect } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
+import { NgxChartsModule, Series } from '@swimlane/ngx-charts';
 import { LdaService } from '../../services/lda.service';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @Component({
   selector: 'app-training',
   templateUrl: './training.page.html',
   styleUrl: './training.page.css',
-  imports: [NgxChartsModule]
+  imports: [NgxChartsModule],
 })
 export class TrainingPage {
   readonly #ldaService = inject(LdaService);
 
-  results: any = [
+  public results: Series[] = [
     {
-      name: 'Series',
+      name: 'Progress',
       series: [],
     },
-  ]
+  ];
 
-  yAxisLabel = signal('Perplexity');
-  xAxisLabel = signal('Iteration')
-  xScaleMax = this.#ldaService.numIterations;
-
-  xAxisTickFormatting = (val: number) => (val % 10 === 0 ? String(val) : '');
+  public readonly yAxisLabel = signal('Perplexity');
+  public readonly xAxisLabel = signal('Iteration');
+  public readonly xScaleMax = this.#ldaService.numIterations;
 
   public readonly numIterations = this.#ldaService.numIterations;
   public readonly currentIteration = this.#ldaService.currentIteration;
@@ -33,13 +31,17 @@ export class TrainingPage {
       if (this.currentPerplexity() === 0) {
         return;
       }
+
       this.results[0].series.push({
         name: this.currentIteration(),
-        value: this.currentPerplexity()
+        value: this.currentPerplexity(),
       });
 
-      this.results[0].series = [...this.results[0].series];
       this.results = [...this.results];
     });
+  }
+
+  public xAxisTickFormatting(value: number): string {
+    return value % 10 === 0 ? String(value) : '';
   }
 }
