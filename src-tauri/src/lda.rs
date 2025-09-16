@@ -2,6 +2,7 @@ use ahash::RandomState;
 use anyhow::Result;
 use itertools::Itertools;
 use rand::prelude::*;
+use rand::SeedableRng;
 use rayon::prelude::*;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -100,9 +101,20 @@ pub fn train_lda(
     let nk: Vec<AtomicUsize> = (0..k).map(|_| AtomicUsize::new(0)).collect();
     let z_assignments: Vec<Mutex<Vec<usize>>> = (0..d).map(|_| Mutex::new(Vec::new())).collect();
 
-    // Parallelize initial assignment with thread-local RNG
+    let mut rng = if let Some(seed) = settings.seed {
+        rand_pcg::Pcg64Mcg::seed_from_u64(seed)
+    } else {
+        rand_pcg::Pcg64Mcg::from_entropy()
+    };
+
+    let num_threads = rayon::current_num_threads();
+    let rngs: Vec<Mutex<rand_pcg::Pcg64Mcg>> = (0..num_threads)
+        .map(|_| Mutex::new(rand_pcg::Pcg64Mcg::seed_from_u64(rng.gen())))
+        .collect();
+
     corpus.par_iter().enumerate().for_each(|(di, doc)| {
-        let mut local_rng = rand_pcg::Pcg64Mcg::from_entropy();
+        let thread_index = rayon::current_thread_index().unwrap_or(0) % num_threads;
+        let mut local_rng = rngs[thread_index].lock().unwrap();
         let mut z_for_doc: Vec<usize> = Vec::with_capacity(doc.len());
         for &w in doc.iter() {
             let z: usize = local_rng.gen_range(0..k);
@@ -116,20 +128,10 @@ pub fn train_lda(
 
     let v_beta: f64 = (v as f64) * beta;
 
-    // Precompute denominators for right side
-    let mut denom_right: Vec<f64> = vec![0.0; k];
-    for z in 0..k {
-        denom_right[z] = nk[z].load(Ordering::Relaxed) as f64 + v_beta;
-    }
-
     for iter in 0..num_iterations {
-        // Update denom_right at start of iteration
-        for z in 0..k {
-            denom_right[z] = nk[z].load(Ordering::Relaxed) as f64 + v_beta;
-        }
-
         corpus.par_iter().enumerate().for_each(|(d_i, doc)| {
-            let mut local_rng = rand_pcg::Pcg64Mcg::from_entropy();
+            let thread_index = rayon::current_thread_index().unwrap_or(0) % num_threads;
+            let mut local_rng = rngs[thread_index].lock().unwrap();
             let mut z_assignments_local = z_assignments[d_i].lock().unwrap();
             let doc_z = &mut *z_assignments_local;
             for (pos, &w) in doc.iter().enumerate() {
@@ -143,7 +145,8 @@ pub fn train_lda(
                 for z in 0..k {
                     let left: f64 = ndk[d_i][z].load(Ordering::Relaxed) as f64 + alpha;
                     let right_num: f64 = nkw[z][w].load(Ordering::Relaxed) as f64 + beta;
-                    let p: f64 = left * (right_num / denom_right[z]);
+                    let denom = nk[z].load(Ordering::Relaxed) as f64 + v_beta;
+                    let p: f64 = left * (right_num / denom);
                     probs[z] = p;
                     sum += p;
                 }
@@ -194,7 +197,6 @@ pub fn train_lda(
     let mut phi: Vec<Vec<f64>> = vec![vec![0f64; v]; k];
     let mut theta: Vec<Vec<f64>> = vec![vec![0f64; k]; d];
 
-    // Parallelize phi computation
     phi.par_iter_mut().enumerate().for_each(|(z, phi_row)| {
         let denom = nk[z].load(Ordering::Relaxed) as f64 + v_beta;
         for w in 0..v {
@@ -202,7 +204,6 @@ pub fn train_lda(
         }
     });
 
-    // Parallelize theta computation
     theta
         .par_iter_mut()
         .enumerate()
@@ -228,7 +229,6 @@ pub fn train_lda(
 
     let top_n: usize = 50.min(v.max(1));
     let mut topics: Vec<Topic> = Vec::with_capacity(k);
-    // Parallelize topics computation
     topics.par_extend((0..k).into_par_iter().map(|z| {
         let mut pairs: Vec<(usize, f64)> = (0..v).map(|w| (w, phi[z][w])).collect();
         pairs.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
