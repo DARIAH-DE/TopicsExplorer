@@ -1,6 +1,7 @@
 <section class="section">
   <div class="container">
     <div class="content">
+      @if (hasResults()) {
       <div class="block line-plot-container">
         <ngx-charts-line-chart
           [results]="results()"
@@ -16,9 +17,11 @@
           [showGridLines]="false"
           [autoScale]="true"
           [tooltipDisabled]="true"
+          [style]="style()"
         >
         </ngx-charts-line-chart>
       </div>
+      }
     </div>
   </div>
 </section>
