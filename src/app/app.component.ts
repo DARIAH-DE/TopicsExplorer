@@ -12,7 +12,7 @@ import { ToastService } from './services/toast.service';
 export class AppComponent implements AfterViewInit {
   readonly #toastService = inject(ToastService);
 
-  public readonly toastContainer = viewChild.required('toastContainer', { read: ViewContainerRef });
+  private readonly toastContainer = viewChild.required('toastContainer', { read: ViewContainerRef });
 
   /**
    * Sets the view container reference for the toast service.
