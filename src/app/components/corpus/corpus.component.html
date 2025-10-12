@@ -1,54 +1,28 @@
-<div class="card">
-  <header class="card-header">
-    <div class="card-header-title">
-      <span class="icon-text">
-        <span class="icon">
-          <fa-icon [icon]="faBook"></fa-icon>
-        </span>
-        <span>Text corpus</span>
-      </span>
-      @if (!isCollapsed()) {
-      <div class="tags ml-3">
-        <span class="tag">{{ numDocuments() }} documents</span>
-      </div>
-      }
-    </div>
-    <button class="card-header-icon" aria-label="toggle card" (click)="toggleCard()">
-      <span class="icon">
-        @if (isCollapsed()) {
-        <fa-icon [icon]="faAngleDown"></fa-icon>
-        } @else {
-        <fa-icon [icon]="faAngleUp"></fa-icon>}
-      </span>
-    </button>
+<section>
+  <header class="icon-text">
+    <span class="icon">
+      <fa-icon [icon]="faBook"></fa-icon>
+    </span>
+    <span>Text corpus</span>
   </header>
-  @if (isCollapsed()) {
-  <div class="card-content">
-    <div class="content">
-      The documents should be in plain text (.txt) format. Each document is split into words and cleaned to remove
-      punctuation, numbers and common words (stop words). The words in each document are counted and transformed into a
-      <a href="https://en.wikipedia.org/wiki/Document-term_matrix" target="_blank">document-term matrix</a>. This matrix
-      is the input to the topic modeling algorithm, which discovers the hidden themes based on word frequencies alone.
-      <div class="file is-boxed mt-3">
-        <label class="file-label">
-          <input
-            class="file-input"
-            type="file"
-            name="text-corpus"
-            accept=".txt"
-            multiple
-            required
-            (change)="onFilesChanged($event)"
-          />
-          <span class="file-cta">
-            <span class="file-icon">
-              <fa-icon [icon]="faFileArrowUp"></fa-icon>
-            </span>
-            <span class="file-label">Selected {{ numDocuments() }} text files</span>
-          </span>
-        </label>
-      </div>
-    </div>
+  <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+  <div class="file is-boxed mt-3">
+    <label class="file-label">
+      <input
+        class="file-input"
+        type="file"
+        name="text-corpus"
+        accept=".txt"
+        multiple
+        required
+        (change)="onFilesChanged($event)"
+      />
+      <span class="file-cta">
+        <span class="file-icon">
+          <fa-icon [icon]="faFileArrowUp"></fa-icon>
+        </span>
+        <span class="file-label">Selected {{ numDocuments() }} text files</span>
+      </span>
+    </label>
   </div>
-  }
-</div>
+</section>

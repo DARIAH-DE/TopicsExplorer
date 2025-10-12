@@ -10,9 +10,7 @@
         </p>
         <p>
           This application provides a simple and intuitive interface for exploring your own text corpus using
-          <a href="https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank"
-            >latent Dirichlet allocation</a
-          >, one of the most popular topic models.
+          <b>latent Dirichlet allocation</b>, one of the most popular topic models.
         </p>
       </div>
       <div class="block">
@@ -21,8 +19,8 @@
       <div class="block">
         <app-hyperparameters></app-hyperparameters>
       </div>
-      <div class="block">
-        <button class="button is-primary" [disabled]="!isReady()" (click)="trainModel()">Train model</button>
+      <div class="buttons is-centered mt-6">
+        <button class="button is-medium is-success is-outlined" [disabled]="!isReady()" (click)="trainModel()">Train model</button>
       </div>
     </div>
   </div>
