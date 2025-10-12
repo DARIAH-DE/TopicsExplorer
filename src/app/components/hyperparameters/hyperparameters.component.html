@@ -1,0 +1,56 @@
+<section>
+  <header class="icon-text">
+    <span class="icon">
+      <fa-icon [icon]="faFlask"></fa-icon>
+    </span>
+    <span>Hyperparameters</span>
+  </header>
+  <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+  <div class="columns">
+    <div class="column">
+      <div class="field mt-3">
+        <div class="control">
+          <input
+            class="input"
+            [class.is-danger]="numIterations() === 0"
+            type="number"
+            min="1"
+            [(ngModel)]="numIterations"
+          />
+        </div>
+        <p class="help">Number of iterations</p>
+      </div>
+    </div>
+    <div class="column">
+      <div class="field mt-3">
+        <div class="control">
+          <input class="input" [class.is-danger]="numTopics() === 0" type="number" min="1" [(ngModel)]="numTopics" />
+        </div>
+        <p class="help">Number of topics</p>
+      </div>
+    </div>
+    <div class="column">
+      <div class="field mt-3">
+        <div class="control">
+          <input
+            class="input"
+            [class.is-danger]="alpha() === 0"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="alpha"
+          />
+        </div>
+        <p class="help">Alpha</p>
+      </div>
+    </div>
+    <div class="column">
+      <div class="field mt-3">
+        <div class="control">
+          <input class="input" [class.is-danger]="beta() === 0" type="number" min="0" step="0.01" [(ngModel)]="beta" />
+        </div>
+        <p class="help">Beta</p>
+      </div>
+    </div>
+  </div>
+</section>

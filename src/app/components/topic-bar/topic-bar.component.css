@@ -1,0 +1,13 @@
+.box {
+  border: solid 1px #808080;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (prefers-color-scheme: dark) {
+  .box {
+    border-color: #ffffff;
+  }
+}

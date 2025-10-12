@@ -1,0 +1,28 @@
+<section>
+  <header class="icon-text">
+    <span class="icon">
+      <fa-icon [icon]="faBook"></fa-icon>
+    </span>
+    <span>Text corpus</span>
+  </header>
+  <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+  <div class="file is-boxed mt-3">
+    <label class="file-label">
+      <input
+        class="file-input"
+        type="file"
+        name="text-corpus"
+        accept=".txt"
+        multiple
+        required
+        (change)="onFilesChanged($event)"
+      />
+      <span class="file-cta">
+        <span class="file-icon">
+          <fa-icon [icon]="faFileArrowUp"></fa-icon>
+        </span>
+        <span class="file-label">Selected {{ numDocuments() }} text files</span>
+      </span>
+    </label>
+  </div>
+</section>
