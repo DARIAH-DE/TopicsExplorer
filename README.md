@@ -7,7 +7,7 @@ This application provides a simple and intuitive interface for exploring your ow
 > [!IMPORTANT]  
 > Version 3 is currently under development and will be a complete reimplementation.
 
-## Setup
+## Development
 
 Install Node.js and Rust with `mise`:
 
@@ -19,4 +19,10 @@ then the project dependencies:
 
 ```
 $ npm ci
+```
+
+Run the application:
+
+```
+$ npm run tauri dev
 ```
