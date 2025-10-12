@@ -15,7 +15,7 @@ export class DocumentTopicPage {
   readonly #ldaService = inject(LdaService);
   readonly #themeService = inject(ThemeService);
 
-  public readonly height = computed(() => this.#corpusService.numDocuments() * 50 + 100)
+  public readonly height = computed(() => this.#corpusService.numDocuments() * 50 + 100);
   public readonly color = computed(() => (this.#themeService.isDarkTheme() ? '#ffffff' : '#000000'));
   public readonly xAxisLabel = signal('Topics');
   public readonly yAxisLabel = signal('Probability');
@@ -24,12 +24,12 @@ export class DocumentTopicPage {
     const theta = this.#ldaService.theta();
     const topics = this.#ldaService.topics();
 
-      return topics.map((_, topicIndex) => ({
-        name: this.#ldaService.getTopicLabel(topicIndex, 3),
-        series: theta.map((docTopics, docIndex) => ({
-          name: this.#corpusService.getDocumentName(docIndex),
-          value: docTopics[topicIndex],
-        })),
-      }));
-    });
+    return topics.map((_, topicIndex) => ({
+      name: this.#ldaService.getTopicLabel(topicIndex, 3),
+      series: theta.map((docTopics, docIndex) => ({
+        name: this.#corpusService.getDocumentName(docIndex),
+        value: docTopics[topicIndex],
+      })),
+    }));
+  });
 }
