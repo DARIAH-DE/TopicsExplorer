@@ -108,7 +108,20 @@ export class LdaService {
     });
   }
 
+  /**
+   * Downloads the current model as a file.
+   */
   public async downloadModel(): Promise<void> {
     alert('Not implemented yet');
+  }
+
+  /**
+   * Gets a label for the specified topic by joining its top words.
+   */
+  public getTopicLabel(index: number, numWords: number): string {
+    return this.topics()
+      [index].topWords.slice(0, numWords)
+      .map(({ word }) => word)
+      .join(' ');
   }
 }

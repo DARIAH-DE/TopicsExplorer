@@ -18,4 +18,15 @@ export class CorpusService {
 
     this.textDocuments.set(textDocuments);
   }
+
+  /**
+   * Gets the name of the document at the specified index.
+   */
+  public getDocumentName(index: number): string {
+    const { name } = this.textDocuments()[index];
+
+    // Remove file extension for better readability
+    const lastDotIndex = name.lastIndexOf('.');
+    return lastDotIndex !== -1 ? name.slice(0, lastDotIndex) : name;
+  }
 }
