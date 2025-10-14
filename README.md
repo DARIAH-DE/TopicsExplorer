@@ -4,7 +4,7 @@ Topic models discover the main themes in a collection of text documents. They au
 
 This application provides a simple and intuitive interface for exploring your own text corpus using **latent Dirichlet allocation**, one of the most popular topic models.
 
-Check out this [tutorial](https://programminghistorian.org/en/lessons/working-with-batches-of-pdf-files#topic-modelling) on how to use LDA with PDF documents.
+Check out this [tutorial](https://doi.org/10.46430/phen0088) on how to use LDA with PDF documents.
 
 > [!IMPORTANT]  
 > Version 3 is currently under development and will be a complete reimplementation. You can find the old README below and can still download version 2 from the release section.
