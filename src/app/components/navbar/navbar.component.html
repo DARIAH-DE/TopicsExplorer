@@ -11,7 +11,7 @@
     <div class="navbar-start">
       <div class="navbar-item">
         <div class="tags">
-          @if (showTraining() || hasModel()) {
+          @if (showTraining() || hasModel() || hasDocuments()) {
           <button
             class="tag"
             [class.has-background-grey-lighter]="isLightTheme() && isHome()"
@@ -40,11 +40,27 @@
           </button>
           <button
             class="tag"
+            [class.has-background-grey-lighter]="isLightTheme() && (isDocuments() || isDocument())"
+            [class.has-background-grey-dark]="isDarkTheme() && (isDocuments() || isDocument())"
+            (click)="navigateDocuments()"
+          >
+            Documents
+          </button>
+          <button
+            class="tag"
+            [class.has-background-grey-lighter]="isLightTheme() && isVocabulary()"
+            [class.has-background-grey-dark]="isDarkTheme() && isVocabulary()"
+            (click)="navigateVocabulary()"
+          >
+            Vocabulary
+          </button>
+          <button
+            class="tag"
             [class.has-background-grey-lighter]="isLightTheme() && isDocumentTopic()"
             [class.has-background-grey-dark]="isDarkTheme() && isDocumentTopic()"
             (click)="navigateDocumentTopic()"
           >
-            Document-Topic Distribution
+            Heatmap
           </button>
           <button
             class="tag"
@@ -61,6 +77,13 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
+          @if (hasModel()) {
+          <button class="button" (click)="downloadModel()" title="Download Model">
+            <span class="icon is-small">
+              <fa-icon [icon]="faDownload"></fa-icon>
+            </span>
+          </button>
+          }
           <button class="button" (click)="toggleTheme()">
             <span class="icon is-small">
               <fa-icon [icon]="isDarkTheme() ? faSun : faMoon"></fa-icon>

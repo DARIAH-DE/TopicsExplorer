@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { CorpusService } from '../../services/corpus.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faFileArrowUp, faBook, faAngleUp, faAngleDown } from '@fortawesome/free-solid-svg-icons';
@@ -7,7 +8,8 @@ import { faFileArrowUp, faBook, faAngleUp, faAngleDown } from '@fortawesome/free
   selector: 'app-corpus',
   templateUrl: './corpus.component.html',
   styleUrl: './corpus.component.css',
-  imports: [FaIconComponent],
+  imports: [FaIconComponent, DecimalPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CorpusComponent {
   readonly #documentService = inject(CorpusService);
@@ -19,6 +21,7 @@ export class CorpusComponent {
 
   public readonly isCollapsed = signal(true);
   public readonly numDocuments = this.#documentService.numDocuments;
+  public readonly statistics = this.#documentService.statistics;
 
   public async onFilesChanged(event: Event): Promise<void> {
     if (!(event.target instanceof HTMLInputElement) || !event.target.files) {

@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { CorpusService } from '../../services/corpus.service';
 import { LdaService } from '../../services/lda.service';
@@ -9,6 +9,7 @@ import { ThemeService } from '../../services/theme.service';
   templateUrl: './document-topic.page.html',
   styleUrl: './document-topic.page.css',
   imports: [NgxChartsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentTopicPage {
   readonly #corpusService = inject(CorpusService);

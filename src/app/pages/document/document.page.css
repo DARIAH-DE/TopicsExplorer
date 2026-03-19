@@ -1,0 +1,51 @@
+.chart-container {
+  height: 300px;
+}
+
+.document-text {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.document-text pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  background-color: var(--bulma-background);
+}
+
+.keywords {
+  font-size: 0.875rem;
+  color: var(--bulma-text-weak);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prob-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prob-bar {
+  height: 8px;
+  background-color: var(--bulma-primary);
+  border-radius: 4px;
+  min-width: 4px;
+}
+
+.prob-text {
+  font-size: 0.875rem;
+  white-space: nowrap;
+}

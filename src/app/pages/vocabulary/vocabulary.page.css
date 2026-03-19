@@ -1,0 +1,43 @@
+.word-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.word-tag {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.word-tag:hover {
+  transform: scale(1.05);
+}
+
+.chart-container {
+  height: 300px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  background-color: var(--bulma-background);
+}
+
+.clickable-title {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.clickable-title:hover {
+  text-decoration: underline;
+}
+
+.keywords {
+  font-size: 0.875rem;
+  color: var(--bulma-text-weak);
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

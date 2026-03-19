@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faAngleDown, faAngleUp, faFlask } from '@fortawesome/free-solid-svg-icons';
@@ -9,6 +9,7 @@ import { LdaService } from '../../services/lda.service';
   templateUrl: './hyperparameters.component.html',
   styleUrl: './hyperparameters.component.css',
   imports: [FaIconComponent, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HyperparametersComponent {
   readonly #ldaService = inject(LdaService);

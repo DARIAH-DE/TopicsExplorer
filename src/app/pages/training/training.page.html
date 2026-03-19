@@ -1,25 +1,68 @@
 <section class="section">
   <div class="container">
     <div class="content">
+      <div class="block">
+        <h2>Model Training</h2>
+        <p class="status-text" [class.is-training]="isTraining()">{{ status() }}</p>
+      </div>
+
+      <div class="block">
+        <div class="progress-container">
+          <div class="level mb-2">
+            <div class="level-left">
+              <span>Iteration {{ currentIteration() | number }} of {{ numIterations() | number }}</span>
+            </div>
+            <div class="level-right">
+              <span>{{ progressPercent() }}%</span>
+            </div>
+          </div>
+          <progress class="progress is-primary" [value]="progress()" max="1">{{ progressPercent() }}%</progress>
+        </div>
+      </div>
+
+      @if (currentPerplexity() > 0) {
+      <div class="block">
+        <div class="columns">
+          <div class="column is-narrow">
+            <div class="metric-card">
+              <span class="metric-value">{{ currentPerplexity() | number:'1.2-2' }}</span>
+              <span class="metric-label">Current Perplexity</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+
       @if (hasResults()) {
-      <div class="block line-plot-container">
-        <ngx-charts-line-chart
-          [results]="results()"
-          [legend]="false"
-          [xAxis]="true"
-          [yAxis]="true"
-          [showXAxisLabel]="true"
-          [showYAxisLabel]="true"
-          [xAxisLabel]="xAxisLabel()"
-          [yAxisLabel]="yAxisLabel()"
-          [xScaleMin]="0"
-          [xScaleMax]="numIterations()"
-          [showGridLines]="false"
-          [autoScale]="true"
-          [tooltipDisabled]="true"
-          [style.fill]="color()"
-        >
-        </ngx-charts-line-chart>
+      <div class="block">
+        <h4>Perplexity over Iterations</h4>
+        <div class="line-plot-container">
+          <ngx-charts-line-chart
+            [results]="results()"
+            [legend]="false"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            [xAxisLabel]="xAxisLabel()"
+            [yAxisLabel]="yAxisLabel()"
+            [xScaleMin]="0"
+            [xScaleMax]="numIterations()"
+            [showGridLines]="false"
+            [autoScale]="true"
+            [tooltipDisabled]="true"
+            [style.fill]="color()"
+          >
+          </ngx-charts-line-chart>
+        </div>
+      </div>
+      }
+
+      @if (!hasResults() && !isTraining()) {
+      <div class="block">
+        <div class="notification is-info is-light">
+          <p>No training data yet. Go to the Home page to upload documents and start training.</p>
+        </div>
       </div>
       }
     </div>

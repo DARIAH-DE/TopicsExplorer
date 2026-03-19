@@ -1,0 +1,113 @@
+<section class="section">
+  <div class="container">
+    <div class="content">
+      <div class="block">
+        <h2>Documents</h2>
+        <p>Browse and explore all documents in your corpus.</p>
+      </div>
+
+      <div class="block">
+        <div class="columns">
+          <div class="column is-half">
+            <div class="field has-addons">
+              <div class="control has-icons-left is-expanded">
+                <input
+                  class="input"
+                  type="text"
+                  placeholder="Search documents..."
+                  [ngModel]="searchQuery()"
+                  (ngModelChange)="searchQuery.set($event)"
+                />
+                <span class="icon is-left">
+                  <fa-icon [icon]="faSearch"></fa-icon>
+                </span>
+              </div>
+            </div>
+          </div>
+          @if (hasModel()) {
+          <div class="column">
+            <div class="field">
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <select [ngModel]="selectedTopicFilter()" (ngModelChange)="selectedTopicFilter.set($event)">
+                    <option [ngValue]="null">All Topics</option>
+                    @for (topic of topics(); track topic.topicIndex) {
+                    <option [ngValue]="topic.topicIndex">Topic {{ topic.topicIndex + 1 }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          }
+          <div class="column is-narrow">
+            <button class="button" (click)="clearFilters()">Clear Filters</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="has-text-grey">Showing {{ filteredDocuments().length }} of {{ documents().length }} documents</p>
+      </div>
+
+      <div class="block">
+        <table class="table is-fullwidth is-hoverable">
+          <thead>
+            <tr>
+              <th class="sortable" (click)="toggleSort('name')">
+                Document
+                @if (sortField() === 'name') {
+                <fa-icon [icon]="sortDirection() === 'asc' ? faSortAmountUp : faSortAmountDown"></fa-icon>
+                }
+              </th>
+              <th>Preview</th>
+              @if (hasModel()) {
+              <th class="sortable" (click)="toggleSort('dominantTopic')">
+                Dominant Topic
+                @if (sortField() === 'dominantTopic') {
+                <fa-icon [icon]="sortDirection() === 'asc' ? faSortAmountUp : faSortAmountDown"></fa-icon>
+                }
+              </th>
+              <th class="sortable" (click)="toggleSort('probability')">
+                Probability
+                @if (sortField() === 'probability') {
+                <fa-icon [icon]="sortDirection() === 'asc' ? faSortAmountUp : faSortAmountDown"></fa-icon>
+                }
+              </th>
+              }
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (doc of filteredDocuments(); track doc.index) {
+            <tr>
+              <td>
+                <span class="icon-text">
+                  <span class="icon">
+                    <fa-icon [icon]="faFile"></fa-icon>
+                  </span>
+                  <strong>{{ doc.name }}</strong>
+                </span>
+              </td>
+              <td class="preview-cell">{{ doc.textPreview }}</td>
+              @if (hasModel()) {
+              <td>
+                <span class="tag">Topic {{ doc.dominantTopicIndex + 1 }}</span>
+              </td>
+              <td>{{ formatPercent(doc.dominantTopicProb) }}</td>
+              }
+              <td>
+                <button class="button is-small" (click)="viewDocument(doc.index)">View</button>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="5" class="has-text-centered has-text-grey">No documents found</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

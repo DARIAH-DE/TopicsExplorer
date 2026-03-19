@@ -1,13 +1,15 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { DataItem } from '@swimlane/ngx-charts';
 import { invoke } from '@tauri-apps/api/core';
-import { listen, UnlistenFn } from '@tauri-apps/api/event';
+import { listen } from '@tauri-apps/api/event';
 import { LdaHyperparameters, LdaProgress, LdaResult, TextDocument, Topic } from '../core/core.models';
 import { NavigationService } from './navigation.service';
+import { ToastService } from './toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class LdaService {
   readonly #navigationService = inject(NavigationService);
+  readonly #toastService = inject(ToastService);
 
   public readonly numTopics = signal(10);
   public readonly numIterations = signal(1_000);
@@ -15,7 +17,6 @@ export class LdaService {
   public readonly beta = signal(0.01);
 
   public readonly isTraining = signal(false);
-
   public readonly perplexityOverTime = signal<DataItem[]>([]);
 
   public readonly hasValidNumTopics = computed(() => {
@@ -67,6 +68,11 @@ export class LdaService {
   public async trainModel(docs: TextDocument[]): Promise<void> {
     this.isTraining.set(true);
 
+    // Reset progress state for a fresh training run
+    this.perplexityOverTime.set([]);
+    this.currentIteration.set(0);
+    this.currentPerplexity.set(0);
+
     const unlisten = await this.registerListener();
 
     const params: LdaHyperparameters = {
@@ -77,12 +83,15 @@ export class LdaService {
     };
 
     try {
-      const { theta, phi, topics, perplexity } = await invoke<LdaResult>('train_model', { docs, params });
+      const { theta, phi, topics, perplexity } = (await invoke('train_model', { docs, params })) as LdaResult;
 
-      this.theta.set(theta);
-      this.phi.set(phi);
-      this.topics.set(topics);
-      this.perplexity.set(perplexity);
+      // Assign in one microtask to batch change detection
+      queueMicrotask(() => {
+        this.theta.set(theta);
+        this.phi.set(phi);
+        this.topics.set(topics);
+        this.perplexity.set(perplexity);
+      });
 
       this.#navigationService.navigateTopics();
     } finally {
@@ -91,8 +100,47 @@ export class LdaService {
     }
   }
 
-  private async registerListener(): Promise<UnlistenFn> {
-    return await listen<LdaProgress>('lda:progress', ({ payload }) => {
+  /**
+   * Imports a previously exported model from a JSON file.
+   */
+  public async importModel(file: File): Promise<void> {
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      const hyper = data.hyperparameters as Partial<LdaHyperparameters> | undefined;
+      const topics = data.topics as Topic[] | undefined;
+      const theta = data.documentTopicDistribution as number[][] | undefined;
+      const phi = data.topicWordDistribution as number[][] | undefined;
+
+      if (!hyper || !topics || !theta || !phi) {
+        throw new Error('Missing required fields in model file');
+      }
+
+      this.numTopics.set(hyper.numTopics ?? topics.length);
+      this.numIterations.set(hyper.numIterations ?? this.numIterations());
+      this.alpha.set(hyper.alpha ?? this.alpha());
+      this.beta.set(hyper.beta ?? this.beta());
+
+      this.topics.set(topics);
+      this.theta.set(theta);
+      this.phi.set(phi);
+      this.perplexity.set((data.metrics?.perplexity as number | undefined) ?? 0);
+
+      this.perplexityOverTime.set([]);
+      this.currentIteration.set(this.numIterations());
+      this.currentPerplexity.set(this.perplexity());
+
+      await this.#navigationService.navigateTopics();
+      this.#toastService.showInfoToast('Model imported successfully');
+    } catch (error) {
+      console.error(error);
+      this.#toastService.showDangerToast('Failed to import model. Please select a valid JSON export.');
+    }
+  }
+
+  private async registerListener(): Promise<() => void> {
+    return await listen('lda:progress', ({ payload }: { payload: LdaProgress }) => {
       this.currentIteration.set(payload.iteration);
       this.currentPerplexity.set(payload.perplexity);
 
@@ -109,10 +157,37 @@ export class LdaService {
   }
 
   /**
-   * Downloads the current model as a file.
+   * Downloads the current model as a JSON file.
    */
   public async downloadModel(): Promise<void> {
-    alert('Not implemented yet');
+    if (!this.hasModel()) {
+      return;
+    }
+
+    const data = {
+      hyperparameters: {
+        numTopics: this.numTopics(),
+        numIterations: this.numIterations(),
+        alpha: this.alpha(),
+        beta: this.beta(),
+      },
+      metrics: {
+        perplexity: this.perplexity(),
+      },
+      topics: this.topics(),
+      documentTopicDistribution: this.theta(),
+      topicWordDistribution: this.phi(),
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'lda-model.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   }
 
   /**

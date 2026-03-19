@@ -1,1 +1,110 @@
-tbd
+<section class="section">
+  <div class="container">
+    <div class="content">
+      @if (topic(); as topic) {
+      <div class="block">
+        <h2>Topic {{ topic.topicIndex + 1 }}</h2>
+        <p class="has-text-grey">Dominance score: {{ formatPercent(topic.dominanceScore) }}</p>
+      </div>
+
+      <div class="block">
+        <h4>Top Words</h4>
+        <div class="chart-container">
+          <ngx-charts-bar-horizontal
+            [results]="wordChartData()"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            [xAxisLabel]="'Probability'"
+            [yAxisLabel]="'Word'"
+            [gradient]="false"
+            [showGridLines]="false"
+            [style.fill]="color()"
+          >
+          </ngx-charts-bar-horizontal>
+        </div>
+      </div>
+
+      <div class="block">
+        <h4>Word Cloud</h4>
+        <div class="word-cloud">
+          @for (wc of wordCloud(); track wc.word) {
+          <span class="word" [style.fontSize.px]="wc.size">{{ wc.word }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="block">
+        <h4>Word Probabilities</h4>
+        <div class="table-container">
+          <table class="table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Word</th>
+                <th>Probability</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (wordProb of topWords(); track wordProb.word; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td><strong>{{ wordProb.word }}</strong></td>
+                <td>{{ formatPercent(wordProb.prob) }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      @if (topDocuments().length > 0) {
+      <div class="block">
+        <h4>Most Related Documents</h4>
+        <div class="chart-container">
+          <ngx-charts-bar-horizontal
+            [results]="documentChartData()"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            [xAxisLabel]="'Topic Probability'"
+            [yAxisLabel]="'Document'"
+            [gradient]="false"
+            [showGridLines]="false"
+            [style.fill]="color()"
+          >
+          </ngx-charts-bar-horizontal>
+        </div>
+
+        <div class="table-container mt-4">
+          <table class="table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Document</th>
+                <th>Topic Probability</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (doc of topDocuments(); track doc.index; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td><strong>{{ doc.name }}</strong></td>
+                <td>{{ formatPercent(doc.probability) }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      }
+      } @else {
+      <div class="notification is-warning">
+        <p>Topic not found. Please go back to the topics overview.</p>
+      </div>
+      }
+    </div>
+  </div>
+</section>

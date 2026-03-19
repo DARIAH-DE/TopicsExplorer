@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Topic } from '../../core/core.models';
 import { NavigationService } from '../../services/navigation.service';
@@ -7,6 +7,7 @@ import { NavigationService } from '../../services/navigation.service';
   selector: 'app-topic-bar',
   templateUrl: './topic-bar.component.html',
   styleUrl: './topic-bar.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopicBarComponent {
   readonly #navigationService = inject(NavigationService);

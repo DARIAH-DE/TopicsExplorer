@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 
 export type ToastType = 'info' | 'success' | 'warning' | 'danger';
 
@@ -6,6 +6,7 @@ export type ToastType = 'info' | 'success' | 'warning' | 'danger';
   selector: 'app-toast',
   templateUrl: 'toast.component.html',
   styleUrl: 'toast.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToastComponent {
   public readonly message = input.required<string>();

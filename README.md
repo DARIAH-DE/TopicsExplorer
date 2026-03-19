@@ -1,3 +1,5 @@
+https://franktisellano.github.io/datatype/
+
 # Explore your text collection with a topic model
 
 Topic models discover the main themes in a collection of text documents. They automatically find recurring topics by looking at which words tend to appear together. Each document is represented as a mix of these topics and lists the most characteristic words for each.

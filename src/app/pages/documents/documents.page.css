@@ -1,0 +1,21 @@
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable:hover {
+  background-color: var(--bulma-background);
+}
+
+.preview-cell {
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  color: var(--bulma-text-weak);
+}
+
+.table tbody tr:hover {
+  cursor: pointer;
+}

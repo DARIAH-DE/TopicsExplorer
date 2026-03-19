@@ -1,3 +1,28 @@
 header {
-    font-weight: bold;
+  font-weight: bold;
+}
+
+.stats-container {
+  padding: 1rem;
+  background-color: var(--bulma-background);
+  border-radius: 6px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--bulma-primary);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--bulma-text-weak);
+  text-transform: uppercase;
 }

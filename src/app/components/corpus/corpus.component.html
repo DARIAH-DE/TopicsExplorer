@@ -5,7 +5,7 @@
     </span>
     <span>Text corpus</span>
   </header>
-  <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+  <div>Upload your text files (.txt) to build a corpus for topic modeling. Each file will be treated as a separate document.</div>
   <div class="file is-boxed mt-3">
     <label class="file-label">
       <input
@@ -25,4 +25,34 @@
       </span>
     </label>
   </div>
+  @if (statistics(); as stats) {
+  <div class="stats-container mt-4">
+    <div class="columns is-multiline">
+      <div class="column is-one-quarter">
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.totalDocuments | number }}</span>
+          <span class="stat-label">Documents</span>
+        </div>
+      </div>
+      <div class="column is-one-quarter">
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.totalWords | number }}</span>
+          <span class="stat-label">Total Words</span>
+        </div>
+      </div>
+      <div class="column is-one-quarter">
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.uniqueWords | number }}</span>
+          <span class="stat-label">Unique Words</span>
+        </div>
+      </div>
+      <div class="column is-one-quarter">
+        <div class="stat-item">
+          <span class="stat-value">{{ stats.avgWordsPerDocument | number }}</span>
+          <span class="stat-label">Avg. Words/Doc</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
 </section>

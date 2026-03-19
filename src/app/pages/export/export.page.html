@@ -1,1 +1,164 @@
-tbd
+<section class="section">
+  <div class="container">
+    <div class="content">
+      @if (hasModel()) {
+      <div class="block">
+        <h2>Export Model</h2>
+        <p>Download your topic model results in various formats for further analysis or visualization.</p>
+      </div>
+
+      <div class="block">
+        <h4>Import Model</h4>
+        <p class="is-size-7 has-text-grey mb-2">Load a previously exported model JSON to continue exploring.</p>
+        <div class="buttons">
+          <button class="button" (click)="triggerImport()">
+            <span class="icon">
+              <fa-icon [icon]="faDownload"></fa-icon>
+            </span>
+            <span>Import Model (JSON)</span>
+          </button>
+          <input
+            type="file"
+            #fileInput
+            accept="application/json"
+            style="display: none"
+            (change)="onImportModel($event)"
+          />
+        </div>
+      </div>
+
+      <div class="block">
+        <h4>Model Summary</h4>
+        <table class="table is-bordered">
+          <tbody>
+            <tr>
+              <th>Documents</th>
+              <td>{{ summary().numDocuments }}</td>
+            </tr>
+            <tr>
+              <th>Topics</th>
+              <td>{{ summary().numTopics }}</td>
+            </tr>
+            <tr>
+              <th>Iterations</th>
+              <td>{{ summary().numIterations }}</td>
+            </tr>
+            <tr>
+              <th>Alpha</th>
+              <td>{{ summary().alpha }}</td>
+            </tr>
+            <tr>
+              <th>Beta</th>
+              <td>{{ summary().beta }}</td>
+            </tr>
+            <tr>
+              <th>Perplexity</th>
+              <td>{{ summary().perplexity.toFixed(2) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="block">
+        <h4>
+          <span class="icon-text">
+            <span class="icon">
+              <fa-icon [icon]="faDownload"></fa-icon>
+            </span>
+            <span>Full Model</span>
+          </span>
+        </h4>
+        <p class="is-size-7 has-text-grey mb-2">
+          Complete export including hyperparameters, topics, and all distributions.
+        </p>
+        <div class="buttons">
+          <button class="button is-primary" (click)="exportFullModel()">
+            <span class="icon">
+              <fa-icon [icon]="faFileCode"></fa-icon>
+            </span>
+            <span>Download Full Model (JSON)</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="block">
+        <h4>
+          <span class="icon-text">
+            <span class="icon">
+              <fa-icon [icon]="faTable"></fa-icon>
+            </span>
+            <span>Topics</span>
+          </span>
+        </h4>
+        <p class="is-size-7 has-text-grey mb-2">Topics with their top words and probabilities.</p>
+        <div class="buttons">
+          <button class="button" (click)="exportTopicsJson()">
+            <span class="icon">
+              <fa-icon [icon]="faFileCode"></fa-icon>
+            </span>
+            <span>JSON</span>
+          </button>
+          <button class="button" (click)="exportTopicsCsv()">
+            <span class="icon">
+              <fa-icon [icon]="faFileCsv"></fa-icon>
+            </span>
+            <span>CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="block">
+        <h4>
+          <span class="icon-text">
+            <span class="icon">
+              <fa-icon [icon]="faTable"></fa-icon>
+            </span>
+            <span>Document-Topic Distribution (θ)</span>
+          </span>
+        </h4>
+        <p class="is-size-7 has-text-grey mb-2">
+          The probability of each topic in each document. Rows are documents, columns are topics.
+        </p>
+        <div class="buttons">
+          <button class="button" (click)="exportThetaJson()">
+            <span class="icon">
+              <fa-icon [icon]="faFileCode"></fa-icon>
+            </span>
+            <span>JSON</span>
+          </button>
+          <button class="button" (click)="exportThetaCsv()">
+            <span class="icon">
+              <fa-icon [icon]="faFileCsv"></fa-icon>
+            </span>
+            <span>CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="block">
+        <h4>
+          <span class="icon-text">
+            <span class="icon">
+              <fa-icon [icon]="faTable"></fa-icon>
+            </span>
+            <span>Topic-Word Distribution (φ)</span>
+          </span>
+        </h4>
+        <p class="is-size-7 has-text-grey mb-2">The probability of each word in each topic (raw distribution).</p>
+        <div class="buttons">
+          <button class="button" (click)="exportPhiJson()">
+            <span class="icon">
+              <fa-icon [icon]="faFileCode"></fa-icon>
+            </span>
+            <span>JSON</span>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <div class="notification is-warning">
+        <p>No model available. Please train a model first.</p>
+      </div>
+      }
+    </div>
+  </div>
+</section>

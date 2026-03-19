@@ -1,0 +1,134 @@
+<section class="section">
+  <div class="container">
+    <div class="content">
+      @if (hasModel()) {
+      <div class="block">
+        <h2>Vocabulary Explorer</h2>
+        <p>Search for words to see which topics they appear in and explore the vocabulary.</p>
+      </div>
+
+      <div class="columns">
+        <div class="column is-one-third">
+          <div class="block">
+            <div class="field">
+              <div class="control has-icons-left">
+                <input
+                  class="input"
+                  type="text"
+                  placeholder="Search words..."
+                  [ngModel]="searchQuery()"
+                  (ngModelChange)="searchQuery.set($event)"
+                />
+                <span class="icon is-left">
+                  <fa-icon [icon]="faSearch"></fa-icon>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="block word-list">
+            <p class="has-text-grey is-size-7 mb-2">
+              {{ filteredWords().length }} words {{ searchQuery() ? 'found' : '(showing first 100)' }}
+            </p>
+            <div class="tags">
+              @for (word of filteredWords(); track word) {
+              <span
+                class="tag is-medium word-tag"
+                [class.is-primary]="selectedWord() === word"
+                (click)="selectWord(word)"
+              >
+                {{ word }}
+              </span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          @if (selectedWord(); as word) {
+          <div class="block">
+            <div class="level">
+              <div class="level-left">
+                <h3 class="mb-0">"{{ word }}"</h3>
+              </div>
+              <div class="level-right">
+                <button class="button is-small" (click)="clearSelection()">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          @if (wordTopicDistribution().length > 0) {
+          <div class="block">
+            <h4>Topic Distribution</h4>
+            <div class="chart-container">
+              <ngx-charts-bar-horizontal
+                [results]="chartData()"
+                [xAxis]="true"
+                [yAxis]="true"
+                [showXAxisLabel]="true"
+                [xAxisLabel]="'Probability'"
+                [gradient]="false"
+                [showGridLines]="false"
+                [style.fill]="color()"
+              >
+              </ngx-charts-bar-horizontal>
+            </div>
+          </div>
+
+          <div class="block">
+            <h4>Appears in Topics</h4>
+            <table class="table is-fullwidth is-striped">
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Keywords</th>
+                  <th>Rank</th>
+                  <th>Probability</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (result of wordTopicDistribution(); track result.topicIndex) {
+                <tr class="clickable" (click)="navigateToTopic(result.topicIndex)">
+                  <td><strong>Topic {{ result.topicIndex + 1 }}</strong></td>
+                  <td class="keywords">{{ result.topicLabel }}</td>
+                  <td>#{{ result.rank }}</td>
+                  <td>{{ formatPercent(result.probability) }}</td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          } @else {
+          <div class="notification is-info is-light">
+            <p>This word does not appear in any topic's top words.</p>
+          </div>
+          }
+          } @else {
+          <div class="block">
+            <h4>Top Words by Topic</h4>
+            <p class="has-text-grey">Select a word from the list to see its distribution, or browse top words by topic below.</p>
+          </div>
+
+          @for (topicWords of topWordsPerTopic(); track topicWords.topicIndex) {
+          <div class="block">
+            <h5 class="clickable-title" (click)="navigateToTopic(topicWords.topicIndex)">
+              Topic {{ topicWords.topicIndex + 1 }}
+            </h5>
+            <div class="tags">
+              @for (wp of topicWords.words; track wp.word) {
+              <span class="tag word-tag" (click)="selectWord(wp.word)">{{ wp.word }}</span>
+              }
+            </div>
+          </div>
+          }
+          }
+        </div>
+      </div>
+      } @else {
+      <div class="notification is-warning">
+        <p>No model available. Please train a model first to explore the vocabulary.</p>
+      </div>
+      }
+    </div>
+  </div>
+</section>

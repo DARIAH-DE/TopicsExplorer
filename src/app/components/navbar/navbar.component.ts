@@ -1,7 +1,8 @@
 import { Location } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faArrowLeft, faArrowRight, faDownload, faLayerGroup, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { CorpusService } from '../../services/corpus.service';
 import { LdaService } from '../../services/lda.service';
 import { NavigationService } from '../../services/navigation.service';
 import { ThemeService } from '../../services/theme.service';
@@ -11,13 +12,16 @@ import { ThemeService } from '../../services/theme.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
   imports: [FaIconComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
+  readonly #corpusService = inject(CorpusService);
   readonly #ldaService = inject(LdaService);
   readonly #location = inject(Location);
   readonly #navigationService = inject(NavigationService);
   readonly #themeService = inject(ThemeService);
 
+  public readonly hasDocuments = this.#corpusService.hasDocuments;
   public readonly hasModel = this.#ldaService.hasModel;
 
   public readonly theme = this.#themeService.theme;
@@ -38,7 +42,10 @@ export class NavbarComponent {
   public readonly isTraining = this.#navigationService.isTraining;
   public readonly isTopics = this.#navigationService.isTopics;
   public readonly isTopic = this.#navigationService.isTopic;
+  public readonly isDocuments = this.#navigationService.isDocuments;
+  public readonly isDocument = this.#navigationService.isDocument;
   public readonly isDocumentTopic = this.#navigationService.isDocumentTopic;
+  public readonly isVocabulary = this.#navigationService.isVocabulary;
   public readonly isExport = this.#navigationService.isExport;
 
   public readonly showTraining = computed(
@@ -57,8 +64,16 @@ export class NavbarComponent {
     await this.#navigationService.navigateTopics();
   }
 
+  public async navigateDocuments(): Promise<void> {
+    await this.#navigationService.navigateDocuments();
+  }
+
   public async navigateDocumentTopic(): Promise<void> {
     await this.#navigationService.navigateDocumentTopic();
+  }
+
+  public async navigateVocabulary(): Promise<void> {
+    await this.#navigationService.navigateVocabulary();
   }
 
   public async navigateExport(): Promise<void> {

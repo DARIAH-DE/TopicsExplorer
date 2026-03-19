@@ -1,0 +1,74 @@
+<section class="section">
+  <div class="container">
+    <div class="content">
+      @if (document(); as doc) {
+      <div class="block">
+        <h2>{{ documentName() }}</h2>
+        <div class="tags">
+          <span class="tag">{{ wordCount() }} words</span>
+          <span class="tag">{{ charCount() }} characters</span>
+          @if (dominantTopic(); as dominant) {
+          <span class="tag is-primary">Dominant: Topic {{ dominant.topicIndex + 1 }} ({{ formatPercent(dominant.probability) }})</span>
+          }
+        </div>
+      </div>
+
+      @if (hasModel()) {
+      <div class="block">
+        <h4>Topic Distribution</h4>
+        <div class="columns">
+          <div class="column is-half">
+            <div class="chart-container">
+              <ngx-charts-pie-chart
+                [results]="chartData()"
+                [legend]="false"
+                [labels]="true"
+                [doughnut]="true"
+                [style.fill]="color()"
+              >
+              </ngx-charts-pie-chart>
+            </div>
+          </div>
+          <div class="column is-half">
+            <table class="table is-fullwidth is-striped">
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Keywords</th>
+                  <th>Probability</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (tp of topicProbabilities(); track tp.topicIndex) {
+                <tr class="clickable" (click)="navigateToTopic(tp.topicIndex)">
+                  <td><strong>Topic {{ tp.topicIndex + 1 }}</strong></td>
+                  <td class="keywords">{{ tp.label }}</td>
+                  <td>
+                    <div class="prob-bar-container">
+                      <div class="prob-bar" [style.width]="formatPercent(tp.probability)"></div>
+                      <span class="prob-text">{{ formatPercent(tp.probability) }}</span>
+                    </div>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      }
+
+      <div class="block">
+        <h4>Document Text</h4>
+        <div class="document-text box">
+          <pre>{{ documentText() }}</pre>
+        </div>
+      </div>
+      } @else {
+      <div class="notification is-warning">
+        <p>Document not found.</p>
+      </div>
+      }
+    </div>
+  </div>
+</section>

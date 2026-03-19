@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { CorpusComponent } from '../../components/corpus/corpus.component';
@@ -12,6 +12,7 @@ import { NavigationService } from '../../services/navigation.service';
   templateUrl: './home.page.html',
   styleUrl: './home.page.css',
   imports: [CorpusComponent, HyperparametersComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePage {
   readonly #documentService = inject(CorpusService);

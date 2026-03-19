@@ -1,0 +1,20 @@
+.chart-container {
+  height: 400px;
+}
+
+.table-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.word-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  line-height: 1.2;
+}
+
+.word-cloud .word {
+  cursor: default;
+  color: var(--bulma-text-strong);
+}
