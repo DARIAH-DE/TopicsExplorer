@@ -1,22 +1,27 @@
 [package]
 name = "topics-explorer"
-version = "0.1.0"
+version = "3.0.0"
 description = "Explore your text collection with a topic model"
 authors = ["Severin Simmler"]
 edition = "2021"
 
+[lib]
+name = "topics_explorer_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
 [build-dependencies]
-tauri-build = { version = "^2", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "^2", features = ["wry"] }
-serde = { version = "^1", features = ["derive"] }
-serde_json = "^1"
-anyhow = "^1"
-rand = "^0.8"
-rand_pcg = "^0.3"
-regex = "^1"
-itertools = "^0.13"
-rayon = "^1.7"
-ahash = "^0.8"
-dashmap = "^6.1.0"
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true

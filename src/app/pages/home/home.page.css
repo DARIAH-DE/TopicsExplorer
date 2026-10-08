@@ -1,0 +1,22 @@
+.home-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hyperparameters-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .input-container {
+    display: flex;
+    flex-basis: 25%;
+    gap: 4px;
+    flex-direction: column;
+
+    label {
+        font-size: 12px;
+    }
+  }
+}

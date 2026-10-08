@@ -1,4 +1,70 @@
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
-  -webkit-appearance: none;
+:root {
+  --black: #1b1a19;
+  --white: #ffffff;
+  --grey: #a0a19a;
+  --cream: #d1cbba;
+  --brown: #36342b;
+  --red: #a73326;
+  --yellow: #b78c2a;
+  --green: #609245;
+
+  --border-radius: 16px;
+}
+
+html {
+  font-family: sans-serif;
+  font-size: 15px;
+  color: var(--black);
+}
+
+button {
+  cursor: pointer;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--border-radius);
+  color: var(--white);
+  background-color: var(--brown);
+}
+
+a {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+hr {
+  border: none;
+  border-top: 2px solid var(--cream);
+}
+
+main {
+  padding: 16px;
+  width: 750px;
+  border: solid 2px var(--cream);
+  border-radius: var(--border-radius);
+}
+
+input::file-selector-button {
+  cursor: pointer;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--border-radius);
+  color: var(--white);
+  background-color: var(--brown);
+}
+
+input[type='number'] {
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--brown);
+}
+
+section {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+
+  h1 {
+    font-size: 18px;
+    margin: 0;
+  }
 }

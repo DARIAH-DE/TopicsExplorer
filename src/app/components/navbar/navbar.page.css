@@ -1,0 +1,25 @@
+nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: sticky;
+  top: 8px;
+  margin-bottom: 16px;
+  border-radius: var(--border-radius);
+  padding: 16px;
+  color: var(--white);
+  background-color: var(--brown);
+
+  .right-aligned {
+    margin-left: auto;
+  }
+}
+
+.navbar-icon {
+  height: 24px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 8px;
+}
